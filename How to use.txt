@@ -1,0 +1,66 @@
+Hệ thống zoom cơ bản
+// Thiết lập camera controls
+camera.wheelDeltaPercentage = 0.02;  // Tốc độ zoom bằng chuột
+camera.pinchDeltaPercentage = 0.02;  // Tốc độ zoom bằng touch
+
+// Giới hạn zoom tạm thời (sẽ thay đổi sau)
+camera.lowerRadiusLimit = 1.5;       // Zoom gần tối đa
+camera.upperRadiusLimit = 150;       // Zoom xa tối đa
+
+// Cải thiện chất lượng hình ảnh
+camera.minZ = 0.1;   // Không bị "cắt" khi gần
+camera.maxZ = 1000;  // Không bị "biến mất" khi xa
+
+Chức năng: Thiết lập tốc độ zoom và giới hạn cơ bản
+
+
+Hệ thống tính toán thông minh
+// Đo kích thước mô hình tank
+const minSafeDistance = maxDimension * 0.25;  // 25% kích thước = khoảng cách an toàn
+const maxViewDistance = maxDimension * 8;     // 8x kích thước = zoom xa tối đa
+
+// Cập nhật giới hạn thực tế
+camera.lowerRadiusLimit = Math.max(minSafeDistance, 0.8);  // Gần nhất có thể
+camera.upperRadiusLimit = maxViewDistance;                 // Xa nhất có thể
+
+// Đặt camera ở vị trí phù hợp ban đầu
+camera.radius = Math.max(maxDimension * 2, 4);
+
+Chức năng: Tự động tính toán giới hạn zoom dựa trên kích thước thực của tank
+
+
+HỆ THỐNG COLLISION DETECTION
+const setupAdvancedCameraCollision = () => {
+  // Lọc ra các mesh có thể va chạm
+  const tankMeshes = result.meshes.filter(mesh => mesh instanceof Mesh && mesh.geometry);
+  
+  // Chạy liên tục mỗi frame
+  scene.registerBeforeRender(() => {
+    // 🔍 BƯỚC 1: Lấy vị trí hiện tại
+    const cameraPosition = camera.position;
+    const targetPosition = camera.getTarget();
+    
+    // 🔍 BƯỚC 2: Tạo tia laser từ center tank đến camera
+    const direction = cameraPosition.subtract(targetPosition).normalize();
+    const ray = new Ray(targetPosition, direction);
+    
+    // 🔍 BƯỚC 3: Kiểm tra tia laser có đâm vào tank không
+    let closestDistance = Infinity;
+    tankMeshes.forEach(mesh => {
+      const hit = ray.intersectsMesh(mesh as Mesh);
+      if (hit.hit && hit.distance > 0) {
+        closestDistance = Math.min(closestDistance, hit.distance);
+      }
+    });
+    
+    // 🔍 BƯỚC 4: Nếu sắp đâm vào, đẩy camera ra
+    if (closestDistance !== Infinity) {
+      const safeDistance = closestDistance * 0.8; // Chỉ cho phép 80% khoảng cách
+      if (camera.radius < safeDistance) {
+        camera.radius = Math.max(safeDistance, 0.5); // Tối thiểu 0.5 units
+      }
+    }
+  });
+};
+
+Chức năng: Bắn tia laser mỗi frame để phát hiện va chạm và tự động đẩy camera ra
