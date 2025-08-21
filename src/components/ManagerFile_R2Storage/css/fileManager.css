@@ -1,0 +1,31 @@
+.container_list_file {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.side_bar {
+    width: 345px;
+    height: 100%;
+    background-color: var(--white-blue);
+}
+
+.main_content {
+    width: calc(100vw - 345px);
+    
+    background-color: rgb(24, 92, 86);
+}
+
+.side_bar_header {
+    width: 100%;
+    min-height: 120px;
+
+    background-color: brown;
+}
+
+.side_bar_body {
+}
+
+.side_bar_footer {
+
+}
