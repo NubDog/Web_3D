@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import './css/fileManager.css';
 import { useR2} from '../../hooks/useR2'; //hook này dùng để kết nối đến với R2
 
 const FileManager: React.FC = () => {
