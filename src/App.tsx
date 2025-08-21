@@ -5,7 +5,7 @@ import FileManager from './components/ManagerFile_R2Storage/FileManager';
 function App() {
   return (
     <div>
-      <BabylonTankViewer />
+      {/* <BabylonTankViewer /> */}
       <FileManager />
     </div>
   )
