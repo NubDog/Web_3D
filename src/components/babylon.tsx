@@ -90,8 +90,7 @@ const BabylonModulViewer = () => {
                 }
                 
             } catch (error) {
-                console.error('❌ Lỗi loading:', error);
-                console.log('💡 Thử copy file vào public/models/ và dùng đường dẫn /models/...');
+                console.error('Lỗi loading:', error);
             }
         };
           
@@ -103,7 +102,7 @@ const BabylonModulViewer = () => {
     return (
         <canvas
             ref={canvasRef} 
-            style={{ width: '400px', height: '400px' }}
+            style={{ width: '800px', height: '800px' }}
         />
     );
 };
