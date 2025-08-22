@@ -23,6 +23,12 @@
     background-color: brown;
 }
 
+.side_bar-header_logo {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
 .side_bar_body {
 }
 
