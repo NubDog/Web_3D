@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import './css/fileManager.css';
 import Logo from '../Logo/logo.tsx';
+import HamburgerMenu from '../hamburgermenu/hamburgermenu.tsx';
 import { useR2} from '../../hooks/useR2'; //hook này dùng để kết nối đến với R2
 
 const FileManager: React.FC = () => {
@@ -30,6 +31,10 @@ const FileManager: React.FC = () => {
             <Logo />
             <p>Shark Eat Rice </p>
           </div>
+
+          <button className= "side_bar-menu">
+            <HamburgerMenu />
+          </button>
         </div>
 
         <div className= "side_bar_body"></div>

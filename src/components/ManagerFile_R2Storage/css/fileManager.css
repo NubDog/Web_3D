@@ -6,6 +6,7 @@
 
 .side_bar {
     width: 345px;
+    max-width: 345px;
     height: 100%;
     background-color: var(--white-blue);
 }
@@ -17,19 +18,36 @@
 }
 
 .side_bar_header {
-    width: 100%;
+    max-width: 345px;
     min-height: 120px;
-
-    background-color: brown;
+    width: 100%;
+    display: flex;
+    padding: 12px;
+    justify-content: space-between;
 }
 
 .side_bar-header_logo {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 8px;
+}
+
+.side_bar-header_logo p {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-gray);
+}
+
+.side_bar-menu {
+
+}
+
+.icon_hamburger-menu {
+    background-color: transparent;
 }
 
 .side_bar_body {
+    background-color: red;
 }
 
 .side_bar_footer {
