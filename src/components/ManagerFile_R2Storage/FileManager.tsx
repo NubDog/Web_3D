@@ -37,7 +37,9 @@ const FileManager: React.FC = () => {
           </button>
         </div>
 
-        <div className= "side_bar_body"></div>
+        <div className= "side_bar_body">
+          
+        </div>
 
         <div className= "side_bar_footer"></div>
       </div>
