@@ -11,6 +11,14 @@
 		"enabled": true
 	},
 
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "cho_thue_phuong_tien",
+			"database_id": "b285a4be-4ab2-4921-9547-675581cab90b"
+		}
+	],
+
 	"r2_buckets": [
 		{
 			"binding": "r2",
