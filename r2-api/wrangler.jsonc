@@ -10,20 +10,24 @@
 	"observability": {
 		"enabled": true
 	},
-
 	"d1_databases": [
 		{
 			"binding": "DB",
-			"database_name": "cho_thue_phuong_tien",
-			"database_id": "b285a4be-4ab2-4921-9547-675581cab90b"
+			"database_name": "rental-db",
+			"database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe",
+			"preview_database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe"
 		}
 	],
-
 	"r2_buckets": [
 		{
 			"binding": "r2",
-			"bucket_name": "models-3d"
+			"bucket_name": "models-3d",
+			"preview_bucket_name": "models-3d-dev"
 		}
+		// {
+		// 	"bucket_name": "models-3d-dev",
+		// 	"binding": "models_3d_dev"
+		// }
 	]
 	/**
 	 * Smart Placement
