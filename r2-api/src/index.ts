@@ -1,9 +1,10 @@
 /**
- * Simple D1 Database Worker - CLEAN VERSION
+ * R2 API Worker for handling file operations and database
  */
 
 interface Env {
-  rental_db: D1Database;
+  r2: R2Bucket;
+  DB: D1Database;
 }
 
 export default {
@@ -11,118 +12,47 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // CORS headers
+    // R2 Public URL của bạn
+    const R2_PUBLIC_URL = 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev';
+
+    // CORS headers cho localhost
     const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Origin': 'http://localhost:5173',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Max-Age': '86400',
     };
 
-    // Handle preflight requests
+    // Xử lý preflight requests (OPTIONS)
     if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: corsHeaders });
+      return new Response(null, { 
+        status: 204,
+        headers: corsHeaders 
+      });
     }
 
     try {
-      // ==================== MAIN ENDPOINT: GET BOTH TABLES ====================
-      if (path === '/' || path === '/data') {
-        console.log('CLEAN VERSION - Fetching PhuongTien and KhachHang data...');
+      // ==================== TEST DATABASE ====================
+      if (path === '/test-db' && request.method === 'GET') {
+        console.log('Testing database connection...');
         
-        // Get PhuongTien data - sử dụng tên cột đúng theo database
-        const phuongTienResult = await env.rental_db.prepare(`
-          SELECT 
-            phuong_tien_id,
-            ten_phuong_tien,
-            loai,
-            danh_muc_id,
-            trang_thai,
-            bien_so,
-            so_km,
-            chinh_sach_id,
-            so_khung,
-            ngay_tao,
-            ngay_cap_nhat
-          FROM PhuongTien
-        `).all();
-
-        // Get KhachHang data - sử dụng bảng NguoiDung với tên cột đúng
-        const khachHangResult = await env.rental_db.prepare(`
-          SELECT 
-            nguoi_dung_id,
-            ten_dang_nhap,
-            vai_tro,
-            trang_thai,
-            ho_ten,
-            email,
-            so_dien_thoai,
-            ngay_tao,
-            ngay_cap_nhat
-          FROM NguoiDung 
-          WHERE vai_tro = 'KhachHang'
-        `).all();
-
-        const result = {
-          success: true,
-          version: 'CLEAN_VERSION_2024_UPDATED',
-          message: 'Dữ liệu từ D1 Database - Updated Column Names',
-          data: {
-            phuongTien: phuongTienResult.results,
-            khachHang: khachHangResult.results
-          },
-          count: {
-            phuongTien: phuongTienResult.results.length,
-            khachHang: khachHangResult.results.length
-          },
-          timestamp: new Date().toISOString()
-        };
-        
-        return new Response(JSON.stringify(result, null, 2), {
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        });
-      }
-
-      // ==================== TEST CONNECTION ====================
-      if (path === '/test') {
         try {
-          // Kiểm tra bảng có tồn tại không
-          const tables = await env.rental_db.prepare(`
-            SELECT name FROM sqlite_master WHERE type='table' ORDER BY name
-          `).all();
-          
-          // Test query từng bảng
-          let testResults = {};
-          
-          // Test PhuongTien
-          try {
-            const phuongTienTest = await env.rental_db.prepare('SELECT COUNT(*) as count FROM PhuongTien').all();
-            testResults.phuongTien = { count: phuongTienTest.results[0].count, status: 'OK' };
-          } catch (error) {
-            testResults.phuongTien = { error: error.message, status: 'ERROR' };
-          }
-          
-          // Test NguoiDung
-          try {
-            const nguoiDungTest = await env.rental_db.prepare('SELECT COUNT(*) as count FROM NguoiDung').all();
-            testResults.nguoiDung = { count: nguoiDungTest.results[0].count, status: 'OK' };
-          } catch (error) {
-            testResults.nguoiDung = { error: error.message, status: 'ERROR' };
-          }
+          const result = await env.DB.prepare('SELECT * FROM ChiNhanh LIMIT 5').all();
           
           return new Response(JSON.stringify({ 
             success: true,
-            version: 'CLEAN_VERSION_2024_UPDATED',
-            message: 'Database connected - Updated Column Names!',
-            tables: tables.results.map(t => t.name),
-            tableTests: testResults,
+            message: 'Database connection successful',
+            data: result.results,
+            count: result.results.length,
             timestamp: new Date().toISOString()
           }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
           });
-        } catch (error) {
+        } catch (dbError) {
+          console.error('Database error:', dbError);
           return new Response(JSON.stringify({ 
             success: false,
-            version: 'CLEAN_VERSION_2024_UPDATED',
-            error: error.message
+            error: `Database error: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`
           }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -130,14 +60,295 @@ export default {
         }
       }
 
-      // Default response
+      // ==================== GET CHI NHANH ====================
+      if (path === '/chi-nhanh' && request.method === 'GET') {
+        console.log('Fetching chi nhanh data...');
+        
+        try {
+          const result = await env.DB.prepare('SELECT * FROM ChiNhanh').all();
+          
+          return new Response(JSON.stringify({ 
+            success: true,
+            data: result.results,
+            count: result.results.length
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (dbError) {
+          return new Response(JSON.stringify({ 
+            success: false,
+            error: `Database error: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+
+      // ==================== GET LOAI XE ====================  
+      if (path === '/loai-xe' && request.method === 'GET') {
+        console.log('Fetching loai xe data...');
+        
+        try {
+          const result = await env.DB.prepare('SELECT * FROM LoaiXe').all();
+          
+          return new Response(JSON.stringify({ 
+            success: true,
+            data: result.results,
+            count: result.results.length
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (dbError) {
+          return new Response(JSON.stringify({ 
+            success: false,
+            error: `Database error: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+
+      // ==================== GET PHUONG TIEN ====================
+      if (path === '/phuong-tien' && request.method === 'GET') {
+        console.log('Fetching phuong tien data...');
+        
+        try {
+          const result = await env.DB.prepare(`
+            SELECT p.*, l.TenLoaiXe, c.TenChiNhanh 
+            FROM PhuongTien p 
+            JOIN LoaiXe l ON p.MaLoaiXe = l.MaLoaiXe 
+            JOIN ChiNhanh c ON p.MaChiNhanh = c.MaChiNhanh
+          `).all();
+          
+          return new Response(JSON.stringify({ 
+            success: true,
+            data: result.results,
+            count: result.results.length
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (dbError) {
+          return new Response(JSON.stringify({ 
+            success: false,
+            error: `Database error: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+
+      // ==================== GET NGUOI DUNG ====================
+      if (path === '/nguoi-dung' && request.method === 'GET') {
+        console.log('Fetching nguoi dung data...');
+        
+        try {
+          const result = await env.DB.prepare(`
+            SELECT MaNguoiDung, HoTen, Email, SoDienThoai, VaiTro, NgayTao 
+            FROM NguoiDung
+          `).all();
+          
+          return new Response(JSON.stringify({ 
+            success: true,
+            data: result.results,
+            count: result.results.length
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (dbError) {
+          return new Response(JSON.stringify({ 
+            success: false,
+            error: `Database error: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+
+      // ==================== GET DON THUE ====================
+      if (path === '/don-thue' && request.method === 'GET') {
+        console.log('Fetching don thue data...');
+        
+        try {
+          const result = await env.DB.prepare(`
+            SELECT d.*, n.HoTen as TenKhachHang, p.TenXe, p.BienSo,
+                   cn1.TenChiNhanh as ChiNhanhNhan, cn2.TenChiNhanh as ChiNhanhTra
+            FROM DonThue d
+            JOIN NguoiDung n ON d.MaNguoiDung = n.MaNguoiDung
+            JOIN PhuongTien p ON d.MaXe = p.MaXe
+            JOIN ChiNhanh cn1 ON d.MaChiNhanhNhan = cn1.MaChiNhanh
+            JOIN ChiNhanh cn2 ON d.MaChiNhanhTra = cn2.MaChiNhanh
+          `).all();
+          
+          return new Response(JSON.stringify({ 
+            success: true,
+            data: result.results,
+            count: result.results.length
+          }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        } catch (dbError) {
+          return new Response(JSON.stringify({ 
+            success: false,
+            error: `Database error: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`
+          }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+      }
+
+      // ==================== UPLOAD FILE ====================
+      if (path === '/upload' && request.method === 'POST') {
+        console.log('Processing file upload...');
+        
+        const formData = await request.formData();
+        const file = formData.get('file') as File;
+        
+        if (!file) {
+          return new Response(JSON.stringify({ 
+            success: false,
+            error: 'No file provided' 
+          }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Tạo tên file unique
+        const timestamp = Date.now();
+        const fileName = `${timestamp}-${file.name}`;
+        
+        console.log(`Uploading file: ${fileName}, Size: ${file.size} bytes`);
+
+        // Upload to R2
+        await env.r2.put(fileName, file.stream(), {
+          httpMetadata: {
+            contentType: file.type,
+          },
+        });
+
+        const publicUrl = `${R2_PUBLIC_URL}/${fileName}`;
+
+        console.log(`Upload successful: ${fileName}`);
+
+        return new Response(JSON.stringify({ 
+          success: true, 
+          fileName,
+          url: publicUrl,
+          size: file.size,
+          type: file.type
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // ==================== LIST FILES ====================
+      if (path === '/files' && request.method === 'GET') {
+        console.log('Fetching files list...');
+        
+        const objects = await env.r2.list();
+        const files = objects.objects.map(obj => ({
+          key: obj.key,
+          size: obj.size,
+          uploaded: obj.uploaded,
+          url: `${R2_PUBLIC_URL}/${obj.key}`
+        }));
+
+        console.log(`Found ${files.length} files`);
+
+        return new Response(JSON.stringify({ 
+          success: true,
+          files 
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // ==================== DELETE FILE ====================
+      if (path.startsWith('/delete/') && request.method === 'DELETE') {
+        const fileName = decodeURIComponent(path.split('/delete/')[1]);
+        
+        if (!fileName) {
+          return new Response(JSON.stringify({ 
+            success: false,
+            error: 'No filename provided' 
+          }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        console.log(`Deleting file: ${fileName}`);
+
+        await env.r2.delete(fileName);
+
+        console.log(`Delete successful: ${fileName}`);
+
+        return new Response(JSON.stringify({ 
+          success: true,
+          message: `File ${fileName} deleted successfully`
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // ==================== GET FILE INFO ====================
+      if (path.startsWith('/file/') && request.method === 'GET') {
+        const fileName = decodeURIComponent(path.split('/file/')[1]);
+        const object = await env.r2.get(fileName);
+        
+        if (!object) {
+          return new Response(JSON.stringify({ 
+            success: false,
+            error: 'File not found' 
+          }), {
+            status: 404,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
+        // Return file content
+        return new Response(object.body, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
+            'Content-Length': object.size.toString(),
+          }
+        });
+      }
+
+      // ==================== HEALTH CHECK ====================
+      if (path === '/health' && request.method === 'GET') {
+        return new Response(JSON.stringify({ 
+          success: true,
+          message: 'R2 API is running',
+          timestamp: new Date().toISOString(),
+          r2_public_url: R2_PUBLIC_URL
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // Route không tồn tại
       return new Response(JSON.stringify({ 
         success: false,
-        version: 'CLEAN_VERSION_2024_UPDATED',
-        error: 'Route not found - Updated Column Names',
-        available_endpoints: [
-          'GET / hoặc /data - Lấy cả PhuongTien và NguoiDung (KhachHang)',
-          'GET /test - Test kết nối database và kiểm tra bảng'
+        error: 'Route not found',
+        availableRoutes: [
+          'GET /test-db - Test database connection',
+          'GET /chi-nhanh - Get all branches',
+          'GET /loai-xe - Get all vehicle types', 
+          'GET /phuong-tien - Get all vehicles with details',
+          'GET /nguoi-dung - Get all users (without passwords)',
+          'GET /don-thue - Get all rental orders with details',
+          'POST /upload',
+          'GET /files', 
+          'DELETE /delete/{filename}',
+          'GET /file/{filename}',
+          'GET /health'
         ]
       }), {
         status: 404,
@@ -145,9 +356,10 @@ export default {
       });
 
     } catch (error) {
+      console.error('Error:', error);
+      
       return new Response(JSON.stringify({ 
         success: false,
-        version: 'CLEAN_VERSION_2024_UPDATED',
         error: error instanceof Error ? error.message : 'Internal server error'
       }), {
         status: 500,
