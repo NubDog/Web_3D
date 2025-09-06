@@ -22,7 +22,6 @@ const FileManager: React.FC = () => {
   // }
 
   return (
-    
     <div className= 'container_list_file'>
 
       <div className= "side_bar">
