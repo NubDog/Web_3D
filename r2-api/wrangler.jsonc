@@ -3,28 +3,33 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "r2-api",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-08-20",
-	"observability": {
-		"enabled": true
-	},
+	
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "r2-api",
+    "main": "src/index.ts",
+    "compatibility_date": "2025-08-20",
+    "observability": {
+        "enabled": true
+    },
 
-	"d1_databases": [
-		{
-			"binding": "rental_db",
-      		"database_name": "rental-db",
-      		"database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe"
-		}
-	],
+    "d1_databases": [
+        {
+            "binding": "rental_db",
+            "database_name": "rental-db",
+            "database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe",
+            // THÊM DÒNG NÀY: Báo cho wrangler sử dụng remote binding cho D1
+            "experimental_remote": true
+        }
+    ],
 
-	"r2_buckets": [
-		{
-			"binding": "r2",
-			"bucket_name": "models-3d"
-		}
-	]
+    "r2_buckets": [
+        {
+            "binding": "r2",
+            "bucket_name": "models-3d",
+            // Tên của bucket R2 dùng cho môi trường preview/dev
+            "preview_bucket_name": "models-3d-preview"
+        }
+    ]
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
