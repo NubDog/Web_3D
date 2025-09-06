@@ -39,6 +39,9 @@ const validateUniqueness = async (env: Env, body: any, currentUserId: string | n
     return { error: null };
 };
 
+const created_date_time = "datetime('now', '+7 hours')";
+const updated_date_time = "datetime('now', '+7 hours')";
+
 
 // --- CÁC HÀM XỬ LÝ ĐƯỢC EXPORT ---
 
@@ -65,7 +68,7 @@ export const handleCreateUser = async (request: Request, env: Env) => {
     }
 
     const stmt = env.rental_db.prepare(
-        `INSERT INTO NguoiDung (ten_dang_nhap, ho_ten, email, mat_khau, so_dien_thoai, vai_tro) VALUES (?, ?, ?, ?, ?, ?)`
+        `INSERT INTO NguoiDung (ten_dang_nhap, ho_ten, email, mat_khau, so_dien_thoai, vai_tro, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, ?, ?, ?,datetime('now', '+7 hours'),datetime('now', '+7 hours'))`
     ).bind(body.TenDangNhap, body.HoTen, body.Email, body.MatKhau, body.SoDienThoai || null, body.VaiTro);
 
     await stmt.run();
@@ -88,8 +91,8 @@ export const handleUpdateUser = async (request: Request, env: Env, id: string) =
     }
 
     const stmt = env.rental_db.prepare(
-        `UPDATE NguoiDung SET ten_dang_nhap = ?, ho_ten = ?, email = ?, so_dien_thoai = ?, vai_tro = ? WHERE nguoi_dung_id = ?`
-    ).bind(body.TenDangNhap, body.HoTen, body.Email, body.SoDienThoai || null, body.VaiTro, id);
+        `UPDATE NguoiDung SET ten_dang_nhap = ?, ho_ten = ?, email = ?, so_dien_thoai = ?, vai_tro = ?,ngay_cap_nhat = datetime('now', '+7 hours') WHERE nguoi_dung_id = ?`
+    ).bind(body.TenDangNhap, body.HoTen, body.Email, body.SoDienThoai || null, body.VaiTro,  id);
 
     await stmt.run();
     return jsonResponse({ success: true, message: 'Cập nhật người dùng thành công' });

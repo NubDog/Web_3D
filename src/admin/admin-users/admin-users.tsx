@@ -13,6 +13,8 @@ interface User {
     ngay_cap_nhat: string;
 }
 
+
+
 // Component chính
 const UserAdmin: React.FC = () => {
     const API_BASE_URL = 'http://127.0.0.1:8787';
@@ -166,6 +168,7 @@ const UserAdmin: React.FC = () => {
             setIsDeleteModalOpen(false);
             setUserIdToDelete(null);
         }
+        const STT = 0;
     };
 
     return (
@@ -186,6 +189,7 @@ const UserAdmin: React.FC = () => {
                     <table className={styles.table}>
                         <thead>
                             <tr>
+                                <th>STT</th>
                                 <th>Tên đăng nhập</th>
                                 <th>Họ Tên</th>
                                 <th>Email</th>
@@ -202,8 +206,10 @@ const UserAdmin: React.FC = () => {
                             ) : error ? (
                                 <tr><td colSpan={7} className={`${styles.tableMessage} ${styles.errorText}`}>{error}</td></tr>
                             ) : users.length > 0 ? (
-                                users.map(user => (
+                             
+                                users.map((user,index) => (
                                     <tr key={user.nguoi_dung_id}>
+                                        <td>{index+1}</td>
                                         <td>{user.ten_dang_nhap}</td>
                                         <td>{user.ho_ten}</td>
                                         <td>{user.email}</td>
