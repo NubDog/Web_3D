@@ -1,0 +1,132 @@
+/* src/components/Admin/Sidebar/Sidebar.css */
+.sidebar {
+  background: linear-gradient(180deg, #1d2b3a, #111827);
+  color: #e5e7eb;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+  /* Hiệu ứng trượt cho chiều rộng */
+  transition: width 0.3s ease-in-out;
+}
+
+/* Trạng thái mở rộng */
+.sidebar.open {
+  width: 260px;
+}
+
+/* Trạng thái thu gọn */
+.sidebar.closed {
+  width: 80px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 64px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.sidebar.closed .sidebar-header {
+  justify-content: center;
+}
+
+.sidebar-header h3 {
+  white-space: nowrap; /* Ngăn text xuống dòng */
+  overflow: hidden;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 10px 0;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  padding: 0 20px;
+  color: #d1d5db;
+  text-decoration: none;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar.closed .nav-link {
+  justify-content: center;
+  padding: 0;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.nav-link.active {
+  background-color: #3b82f6;
+  color: #ffffff;
+  font-weight: 600;
+}
+.sidebar.open .nav-link.active {
+  border-left: 4px solid #ffffff;
+  padding-left: 16px;
+}
+
+.nav-icon {
+  font-size: 1.3rem;
+  /* Căn icon luôn ở giữa khi đóng/mở */
+  min-width: 40px;
+  text-align: center;
+}
+.sidebar.open .nav-icon {
+  margin-right: 15px;
+}
+
+/* Dropdown */
+.dropdown-toggle {
+  justify-content: space-between;
+  width: 100%;
+}
+.nav-link-main {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-arrow {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+}
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.2);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-in-out;
+}
+.dropdown-menu.open {
+  max-height: 200px;
+}
+.dropdown-menu .nav-link {
+  padding-left: 45px;
+}

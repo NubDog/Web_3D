@@ -1,0 +1,16 @@
+
+.admin-content {
+  background-color: #f4f6f9;
+  height: 100vh;
+  padding: 20px;
+  overflow-y: auto;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.admin-content.sidebar-open {
+  margin-left: 260px;
+}
+
+.admin-content.sidebar-closed {
+  margin-left: 80px;
+}
