@@ -1,14 +1,6 @@
 import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser } from './Admin/admin-users';
-// import { Env } from './type';
+import { Env } from './type';
 import { addphuongtien, deletePhuongTien, getPhuongTienById, getPhuongTiens, updatePhuongTien } from './Admin/Phuong-tien';
-
-// Cần xác định xem bạn muốn giữ lại giao diện Env nào.
-// Có vẻ như cả hai đều cần thiết.
-interface Env {
-	r2: R2Bucket;
-	DB: D1Database;
-	rental_db: D1Database;
-}
 
 const jsonResponse = (data: any, status = 200) => {
 	const headers = {

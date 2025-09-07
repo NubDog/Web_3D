@@ -31,7 +31,7 @@ const validateUniqueness = async (env: Env, body: any, currentUserId: string | n
             params.push(currentUserId);
         }
 
-        const existing = await env.rental_db.prepare(query).bind(...params).first();
+        const existing = await env.DB.prepare(query).bind(...params).first();
         if (existing) {
             return { error: check.error };
         }
@@ -46,7 +46,7 @@ const updated_date_time = "datetime('now', '+7 hours')";
 // --- CÁC HÀM XỬ LÝ ĐƯỢC EXPORT ---
 
 export const handleGetUsers = async (env: Env) => {
-    const { results } = await env.rental_db.prepare(
+    const { results } = await env.DB.prepare(
         `SELECT nguoi_dung_id, ten_dang_nhap, ho_ten, email, so_dien_thoai, vai_tro, ngay_tao, ngay_cap_nhat FROM NguoiDung`
     ).all();
     return jsonResponse({ success: true, data: results });
@@ -67,7 +67,7 @@ export const handleCreateUser = async (request: Request, env: Env) => {
         return jsonResponse({ success: false, error }, 409);
     }
 
-    const stmt = env.rental_db.prepare(
+    const stmt = env.DB.prepare(
         `INSERT INTO NguoiDung (ten_dang_nhap, ho_ten, email, mat_khau, so_dien_thoai, vai_tro, ngay_tao, ngay_cap_nhat) VALUES (?, ?, ?, ?, ?, ?,datetime('now', '+7 hours'),datetime('now', '+7 hours'))`
     ).bind(body.TenDangNhap, body.HoTen, body.Email, body.MatKhau, body.SoDienThoai || null, body.VaiTro);
 
@@ -90,7 +90,7 @@ export const handleUpdateUser = async (request: Request, env: Env, id: string) =
         return jsonResponse({ success: false, error: error.replace('đã tồn tại.', 'đã thuộc về người dùng khác.') }, 409);
     }
 
-    const stmt = env.rental_db.prepare(
+    const stmt = env.DB.prepare(
         `UPDATE NguoiDung SET ten_dang_nhap = ?, ho_ten = ?, email = ?, so_dien_thoai = ?, vai_tro = ?,ngay_cap_nhat = datetime('now', '+7 hours') WHERE nguoi_dung_id = ?`
     ).bind(body.TenDangNhap, body.HoTen, body.Email, body.SoDienThoai || null, body.VaiTro,  id);
 
@@ -99,7 +99,7 @@ export const handleUpdateUser = async (request: Request, env: Env, id: string) =
 };
 
 export const handleDeleteUser = async (env: Env, id: string) => {
-    await env.rental_db.prepare('DELETE FROM NguoiDung WHERE nguoi_dung_id = ?').bind(id).run();
+    await env.DB.prepare('DELETE FROM NguoiDung WHERE nguoi_dung_id = ?').bind(id).run();
     return jsonResponse({ success: true, message: 'Xóa người dùng thành công' });
 };
 

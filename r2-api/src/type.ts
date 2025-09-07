@@ -1,5 +1,5 @@
 export interface Env {
-    r2: R2Bucket;
-    rental_db: D1Database;
+    r2: R2Bucket;
+    DB: D1Database;
 }
 
