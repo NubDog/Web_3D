@@ -23,12 +23,6 @@ function App() {
           <Route path='admin_dashboard' element={<Admin_dashboard />}/>
           <Route path="users" element={<UserAdmin />} />
           <Route path="users/:userId/customer-detail" element={<CustomerDetail />} />
-
-          <Route path="*" element={
-              <div style={{ color: 'blue', padding: '2rem', fontSize: '2rem', fontWeight: 'bold' }}>
-                  ĐÂY LÀ TRANG 404 CỦA FRONTEND
-              </div>
-          } /> 
         
           <Route path="phuong-tien" element={<PhuongTienList />} />
         </Route>
