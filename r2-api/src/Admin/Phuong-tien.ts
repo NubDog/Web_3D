@@ -15,13 +15,25 @@ export async function getPhuongTiens(request: Request, env: Env): Promise<Respon
 		try {
 			const result = await env.DB.prepare(
 				`
-        SELECT p.phuong_tien_id, p.ten_phuong_tien, p.bien_so, p.so_km, p.trang_thai,
-               d.ten_danh_muc,
-               c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh
-        FROM PhuongTien p
-        LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
-        LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
-        `
+				SELECT 
+			p.phuong_tien_id,
+			p.ten_phuong_tien,
+			p.loai,
+			p.danh_muc_id,
+			p.trang_thai,
+			p.bien_so,
+			p.so_km,
+			p.chinh_sach_id,
+			p.so_khung,
+			d.ten_danh_muc,
+			c.ten_chinh_sach,
+			c.gia_co_ban,
+			c.tien_coc_mac_dinh
+		FROM PhuongTien p
+		LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
+		LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id;
+
+				`
 			).all();
 
 			return Response.json({ success: true, data: result.results });

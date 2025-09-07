@@ -15,7 +15,7 @@
 			"binding": "DB",
 			"database_name": "rental-db",
 			"database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe",
-			"preview_database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe"
+			// "preview_database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe"
 		}
 	],
 	"r2_buckets": [
