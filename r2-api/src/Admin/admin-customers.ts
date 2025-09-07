@@ -1,6 +1,4 @@
-// import { Env } from '../type';
 
-// --- HÀM TIỆN ÍCH ---
 interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
