@@ -1,6 +1,5 @@
 
 import { validateCustomerData } from '../admin/admin-customers';
-
 interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
@@ -148,7 +147,15 @@ export const handleUpdateUser = async (request: Request, env: Env, id: string) =
 };
 
 export const handleDeleteUser = async (env: Env, id: string) => {
-    await env.DB.prepare('DELETE FROM NguoiDung WHERE nguoi_dung_id = ?').bind(id).run();
-    return jsonResponse({ success: true, message: 'Xóa người dùng thành công' });
-};
+    try {
+        await env.DB.batch([
 
+            env.DB.prepare('DELETE FROM KhachHang WHERE nguoi_dung_id = ?').bind(id),
+
+            env.DB.prepare('DELETE FROM NguoiDung WHERE nguoi_dung_id = ?').bind(id)
+        ]);
+        return jsonResponse({ success: true, message: 'Xóa người dùng và dữ liệu liên quan thành công' });
+    } catch (e: any) {
+        return jsonResponse({ success: false, error: 'Lỗi khi xóa người dùng', details: e.message }, 500);
+    }
+};
