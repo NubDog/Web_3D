@@ -1,5 +1,5 @@
 import React, { useState, useEffect, type FormEvent } from 'react';
-import styles from './admin.module.css'; // NHẬP KHẨU file CSS
+import styles from '../css/admin.module.css'; // NHẬP KHẨU file CSS
 
 // Định nghĩa kiểu dữ liệu cho một User
 interface User {
@@ -168,7 +168,6 @@ const UserAdmin: React.FC = () => {
             setIsDeleteModalOpen(false);
             setUserIdToDelete(null);
         }
-        const STT = 0;
     };
 
     return (

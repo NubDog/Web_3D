@@ -1,19 +1,36 @@
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+// --- Giữ nguyên toàn bộ phần import của bạn ---
 import "./App.css";
-import PhuongTienList from "./components/Admin/Phuong_tien/Danhsach";
 import BabylonTankViewer from "./components/babylon";
 import FileManager from "./components/ManagerFile_R2Storage/FileManager";
 import TestConectSql from "./components/test_conect-sql";
-import UserAdmin from "./admin/admin-users/admin-users";
+import Admin_dashboard from './components/Admin/admin_dashboard/admin_dashboard';
+import UserAdmin from "./components/Admin/admin-users/admin-users";
+import PhuongTienList from "./components/Admin/Phuong_tien/Danhsach";
+
+// Import layout mới đã tạo ở bước trước
+import AdminLayout from './components/Admin/adminLayout';
 
 function App() {
   return (
-    <div>
-      {/* <BabylonTankViewer /> */}
-      <PhuongTienList />
-      <FileManager />
-      <UserAdmin />
-      {/* <TestConectSql /> */}
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<FileManager />} />
+        {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="users" />} /> 
+          <Route path='admin_dashboard' element={<Admin_dashboard />}/>
+          <Route path="users" element={<UserAdmin />} />
+          <Route path="phuong-tien" element={<PhuongTienList />} />
+        </Route>
+        
+        {/* <Route path="/babylon" element={<BabylonTankViewer />} />
+        <Route path="/test-sql" element={<TestConectSql />} /> 
+        */}
+
+      </Routes>
+    </BrowserRouter>
   );
 }
 
