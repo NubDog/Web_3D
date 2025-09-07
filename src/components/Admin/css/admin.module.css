@@ -215,14 +215,22 @@
 /* --- Form --- */
 .formFields {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.25rem;
 }
+.formFields > div {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 1rem;
+    align-items: center;
+}
 .formFields label {
-    display: block;
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+    text-align: right;
+    padding-right: 1rem;
+    transition: color 0.2s ease-in-out;
 }
 .formFields input,
 .formFields select {
@@ -233,29 +241,52 @@
     background-color: #f9fafb;
     transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     color: var(--text-primary);
-    text-size: 1rem;
     font-size: 15px;
 }
+
+/* Tinh chỉnh hiệu ứng :focus cho đẹp hơn */
 .formFields input:focus,
 .formFields select:focus {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
+    outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 0 3px var(--focus-ring-color);
     background-color: var(--white);
 }
 
-.formFields select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    padding-right: 2.5rem;
+/* Khi input được focus, label cũng đổi màu */
+.formFields > div:focus-within label {
+    color: var(--primary-color);
 }
 
+.formFields .fullWidth {
+    grid-column: 1 / -1;
+    display: block;
+}
+
+.formSectionTitle {
+    margin-top: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* --- PHẦN MỚI: Lớp bọc cho hiệu ứng trượt --- */
+.customerFieldsContainer {
+    grid-column: 1 / -1; /* Luôn chiếm toàn bộ chiều rộng của formFields */
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out, margin-top 0.5s ease-in-out;
+    margin-top: 0;
+}
+/* Trạng thái "mở" của hiệu ứng trượt */
+.customerFieldsContainer.open {
+    max-height: 500px; /* Chiều cao đủ lớn để chứa các trường con */
+    opacity: 1;
+    margin-top: 1.5rem; /* Tạo khoảng cách khi mở ra */
+}
 
 /* --- Toast --- */
 .toast {
@@ -277,5 +308,49 @@
 }
 .errorText {
     color: var(--danger-color);
+}
+
+/* Thêm các class này vào cuối file CSS của bạn */
+
+/* --- Style cho các nút hành động mới --- */
+.viewButton {
+  color: #2563eb; /* --primary-color */
+  margin-left: 1rem;
+}
+.viewButton:hover {
+  color: #1d4ed8; /* --primary-hover-color */
+}
+
+.lockButton {
+  color: #f59e0b; /* Amber-500 */
+  margin-left: 1rem;
+}
+.lockButton:hover {
+  color: #d97706; /* Amber-600 */
+}
+
+/* --- Style cho tiêu đề section trong form --- */
+.formSectionTitle {
+    grid-column: 1 / -1;
+    margin-top: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* --- Style cho chi tiết khách hàng trong modal --- */
+.customerDetails p {
+    margin: 0.75rem 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-secondary);
+}
+.customerDetails p strong {
+    color: var(--text-primary);
+    min-width: 120px;
+    display: inline-block;
+    font-weight: 600;
 }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, type FormEvent } from 'react';
-import styles from '../css/admin.module.css'; // NHẬP KHẨU file CSS
+import styles from '../css/admin.module.css';
+import { Link } from 'react-router-dom';
 
 // Định nghĩa kiểu dữ liệu cho một User
 interface User {
@@ -13,6 +14,17 @@ interface User {
     ngay_cap_nhat: string;
 }
 
+interface Customer {
+    khach_hang_id: number;
+    nguoi_dung_id: number;
+    ho_ten: string;
+    ngay_sinh: string;
+    dia_chi: string;
+    thanh_pho: string;
+    tinh: string;
+    ma_buu_chinh?: string;
+    quoc_gia?: string;
+}
 
 
 // Component chính
@@ -20,20 +32,28 @@ const UserAdmin: React.FC = () => {
     const API_BASE_URL = 'http://127.0.0.1:8787';
 
     // States
-    const [users, setUsers] = useState<User[]>([]);
+   const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    
+    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [currentUser, setCurrentUser] = useState<Partial<User> | null>(null);
+    const [selectedRole, setSelectedRole] = useState('KhachHang'); 
+
+    const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+    const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
+    const [isCustomerLoading, setIsCustomerLoading] = useState(false);
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [userIdToDelete, setUserIdToDelete] = useState<number | null>(null);
 
+    // States cho modal Khóa/Mở khóa (sẽ làm ở bước sau)
+    // const [isLockModalOpen, setIsLockModalOpen] = useState(false);
+    // const [userToLock, setUserToLock] = useState<User | null>(null);
+
+    // State cho thông báo (Toast)
     const [toast, setToast] = useState<{ message: string; isError: boolean; show: boolean }>({
-        message: '',
-        isError: false,
-        show: false,
+        message: '', isError: false, show: false,
     });
 
     // Fetch users khi component được render
@@ -50,14 +70,12 @@ const UserAdmin: React.FC = () => {
     };
     
     // Hàm định dạng ngày tháng
-    const formatDate = (dateString: string) => {
+     const formatDate = (dateString: string) => {
+        if (!dateString) return 'N/A';
         try {
             return new Intl.DateTimeFormat('vi-VN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit',
             }).format(new Date(dateString));
         } catch (e) {
             return 'N/A';
@@ -70,15 +88,16 @@ const UserAdmin: React.FC = () => {
         setError(null);
         try {
             const response = await fetch(`${API_BASE_URL}/nguoi-dung`);
-            if (!response.ok) throw new Error('Network response was not ok');
+            if (!response.ok) throw new Error('Lỗi mạng hoặc server không phản hồi');
             const result = await response.json();
             if (result.success) {
                 setUsers(result.data);
             } else {
-                throw new Error(result.error || 'Failed to fetch users');
+                throw new Error(result.error || 'Không thể tải danh sách người dùng');
             }
         } catch (err: any) {
-            setError(`Lỗi khi tải dữ liệu: ${err.message}`);
+            setError(`Lỗi: ${err.message}`);
+            showToast(`Lỗi: ${err.message}`, true);
         } finally {
             setIsLoading(false);
         }
@@ -87,37 +106,31 @@ const UserAdmin: React.FC = () => {
     // Mở modal để thêm/sửa
     const handleOpenModal = (user: User | null = null) => {
         setCurrentUser(user ? { ...user } : {});
-        setIsModalOpen(true);
+        setSelectedRole(user?.vai_tro || 'KhachHang'); // Cập nhật role khi mở modal
+        setIsUserModalOpen(true);
     };
 
     // Đóng modal
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
+     const handleCloseModal = () => {
+        setIsUserModalOpen(false);
+        setIsCustomerModalOpen(false);
+        setIsDeleteModalOpen(false);
         setCurrentUser(null);
+        setCurrentCustomer(null);
     };
 
+
+        
     // Xử lý submit form
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const form = e.currentTarget;
-        const formData = new FormData(form);
-        
-        const password = formData.get('MatKhau') as string;
-        if (!currentUser?.nguoi_dung_id && !password) {
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        // Logic cũ của bạn cho mật khẩu
+        if (!currentUser?.nguoi_dung_id && !data.MatKhau) {
             showToast('Mật khẩu là bắt buộc khi tạo người dùng mới.', true);
             return;
-        }
-
-        const data: any = {
-            HoTen: formData.get('HoTen'),
-            TenDangNhap:formData.get('TenDangNhap'),
-            Email: formData.get('Email'),
-            SoDienThoai: formData.get('SoDienThoai'),
-            VaiTro: formData.get('VaiTro'),
-        };
-
-        if (!currentUser?.nguoi_dung_id) {
-            data.MatKhau = password;
         }
 
         const url = currentUser?.nguoi_dung_id
@@ -137,17 +150,42 @@ const UserAdmin: React.FC = () => {
                 handleCloseModal();
                 fetchUsers();
             } else {
-                throw new Error(result.error || 'Operation failed');
+                throw new Error(result.error || 'Thao tác thất bại');
             }
         } catch (error: any) {
             showToast(error.message, true);
         }
     };
 
+
     // Mở modal xác nhận xóa
-    const handleDeleteClick = (id: number) => {
+   const handleDeleteClick = (id: number) => {
         setUserIdToDelete(id);
         setIsDeleteModalOpen(true);
+    };
+
+    
+    const handleViewCustomer = async (userId: number) => {
+        setIsCustomerLoading(true);
+        setIsCustomerModalOpen(true);
+        setCurrentCustomer(null);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/customers/by-user/${userId}`);
+            const result = await response.json();
+            if (response.status === 404) {
+                 throw new Error('Người dùng này chưa có hồ sơ khách hàng.');
+            }
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'Không thể tải thông tin khách hàng');
+            }
+            setCurrentCustomer(result.data);
+        } catch (error: any) {
+            showToast(error.message, true);
+            // Có lỗi thì đóng luôn modal
+            setTimeout(() => setIsCustomerModalOpen(false), 2000);
+        } finally {
+            setIsCustomerLoading(false);
+        }
     };
 
     // Xác nhận xóa
@@ -186,29 +224,16 @@ const UserAdmin: React.FC = () => {
                 </div>
                 <div className={styles.tableContainer}>
                     <table className={styles.table}>
-                        <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Tên đăng nhập</th>
-                                <th>Họ Tên</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Vai trò</th>
-                                <th>Ngày tạo</th>
-                                <th>Cập nhật</th>
-                                <th className={styles.textRight}>Hành động</th>
-                            </tr>
-                        </thead>
+                        {/* ... (Phần thead của bạn giữ nguyên) ... */}
                         <tbody>
                             {isLoading ? (
-                                <tr><td colSpan={7} className={styles.tableMessage}>Đang tải dữ liệu...</td></tr>
+                                <tr><td colSpan={9} className={styles.tableMessage}>Đang tải dữ liệu...</td></tr>
                             ) : error ? (
-                                <tr><td colSpan={7} className={`${styles.tableMessage} ${styles.errorText}`}>{error}</td></tr>
+                                <tr><td colSpan={9} className={`${styles.tableMessage} ${styles.errorText}`}>{error}</td></tr>
                             ) : users.length > 0 ? (
-                             
-                                users.map((user,index) => (
+                                users.map((user, index) => (
                                     <tr key={user.nguoi_dung_id}>
-                                        <td>{index+1}</td>
+                                        <td>{index + 1}</td>
                                         <td>{user.ten_dang_nhap}</td>
                                         <td>{user.ho_ten}</td>
                                         <td>{user.email}</td>
@@ -217,57 +242,78 @@ const UserAdmin: React.FC = () => {
                                         <td>{formatDate(user.ngay_tao)}</td>
                                         <td>{formatDate(user.ngay_cap_nhat)}</td>
                                         <td className={styles.textRight}>
+                                            {/* --- CÁC NÚT HÀNH ĐỘNG MỚI --- */}
+                                            {user.vai_tro !== 'admin' && (
+                                                <>
+                                                    <Link 
+                                                        to={`/admin/users/${user.nguoi_dung_id}/customer-detail`}
+                                                        className="actionButton viewButton"
+                                                    >
+                                                        Xem
+                                                    </Link>
+                                                    <button 
+                                                        className={`${styles.actionButton} ${styles.lockButton}`}
+                                                        onClick={() => showToast('Chức năng Khóa đang được phát triển!')}
+                                                    >
+                                                        Khóa
+                                                    </button>
+                                                </>
+                                            )}
                                             <button className={`${styles.actionButton} ${styles.editButton}`} onClick={() => handleOpenModal(user)}>Sửa</button>
                                             <button className={`${styles.actionButton} ${styles.deleteButton}`} onClick={() => handleDeleteClick(user.nguoi_dung_id)}>Xóa</button>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
-                                <tr><td colSpan={7} className={styles.tableMessage}>Không có người dùng nào.</td></tr>
+                                <tr><td colSpan={9} className={styles.tableMessage}>Không có người dùng nào.</td></tr>
                             )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Modal Thêm/Sửa */}
-            {isModalOpen && (
+            {/* --- CÁC MODAL --- */}
+
+            {/* Modal Thêm/Sửa User (ĐÃ CẬP NHẬT) */}
+            {isUserModalOpen && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
                         <form onSubmit={handleSubmit} className={styles.modalForm}>
                             <h3 className={styles.modalTitle}>{currentUser?.nguoi_dung_id ? 'Chỉnh sửa người dùng' : 'Thêm người dùng mới'}</h3>
                             <div className={styles.formFields}>
-                                <div>
-                                    <label htmlFor="TenDangNhap">Tên đăng nhập</label>
-                                    <input type="text" id="TenDangNhap" name="TenDangNhap" defaultValue={currentUser?.ten_dang_nhap} required />
-                                </div>
-                                <div>
-                                    <label htmlFor="HoTen">Họ Tên</label>
-                                    <input type="text" id="HoTen" name="HoTen" defaultValue={currentUser?.ho_ten} required />
-                                </div>
-                                <div>
-                                    <label htmlFor="Email">Email</label>
-                                    <input type="email" id="Email" name="Email" defaultValue={currentUser?.email} required />
-                                </div>
+                                {/* Các trường thông tin người dùng */}
+                                <div><label>Tên đăng nhập</label><input name="TenDangNhap" defaultValue={currentUser?.ten_dang_nhap} required /></div>
+                                <div><label>Họ Tên</label><input name="HoTen" defaultValue={currentUser?.ho_ten} required /></div>
+                                <div><label>Email</label><input type="email" name="Email" defaultValue={currentUser?.email} required /></div>
                                 {!currentUser?.nguoi_dung_id && (
-                                    <div>
-                                        <label htmlFor="MatKhau">Mật khẩu</label>
-                                        <input type="password" id="MatKhau" name="MatKhau" required />
-                                    </div>
+                                    <div><label>Mật khẩu</label><input type="password" name="MatKhau" required /></div>
                                 )}
+                                <div><label>Số điện thoại</label><input type="tel" name="SoDienThoai" defaultValue={currentUser?.so_dien_thoai} /></div>
                                 <div>
-                                    <label htmlFor="SoDienThoai">Số điện thoại</label>
-                                    <input type="tel" id="SoDienThoai" name="SoDienThoai" defaultValue={currentUser?.so_dien_thoai} />
-                                </div>
-                                <div>
-                                    <label htmlFor="VaiTro">Vai trò</label>
-                                    <select id="VaiTro" name="VaiTro" defaultValue={currentUser?.vai_tro || 'KhachHang'}>
+                                    <label>Vai trò</label>
+                                    <select name="VaiTro" defaultValue={selectedRole} onChange={e => setSelectedRole(e.target.value)}>
                                         <option value="KhachHang">Khách hàng</option>
                                         <option value="NhanVien">Nhân viên</option>
                                         <option value="admin">Quản trị viên</option>
                                     </select>
                                 </div>
                             </div>
+                            
+                            {/* --- PHẦN MỚI: Hiển thị nếu vai trò là Khách Hàng khi tạo mới --- */}
+                            {selectedRole === 'KhachHang' && !currentUser?.nguoi_dung_id && (
+                                <>
+                                    <h4 className={styles.formSectionTitle}>Thông tin hồ sơ khách hàng</h4>
+                                    <div className={styles.formFields}>
+                                        <div><label>Ngày sinh (YYYY-MM-DD)</label><input type="date" name="ngay_sinh" required /></div>
+                                        <div><label>Địa chỉ</label><input name="dia_chi" required /></div>
+                                        <div><label>Thành phố</label><input name="thanh_pho" required /></div>
+                                        <div><label>Tỉnh</label><input name="tinh" required /></div>
+                                        <div><label>Mã bưu chính</label><input name="ma_buu_chinh" /></div>
+                                        <div><label>Quốc gia</label><input name="quoc_gia" defaultValue="Việt Nam" /></div>
+                                    </div>
+                                </>
+                            )}
+
                             <div className={styles.modalActions}>
                                 <button type="button" onClick={handleCloseModal} className={`${styles.button} ${styles.buttonSecondary}`}>Hủy</button>
                                 <button type="submit" className={`${styles.button} ${styles.buttonPrimary}`}>Lưu</button>
@@ -290,6 +336,30 @@ const UserAdmin: React.FC = () => {
                     </div>
                 </div>
              )}
+
+             {isCustomerModalOpen && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContent}>
+                         <h3 className={styles.modalTitle}>Thông tin chi tiết khách hàng</h3>
+                         {isCustomerLoading ? (
+                            <p>Đang tải...</p>
+                         ) : currentCustomer ? (
+                            <div className={styles.customerDetails}>
+                                <p><strong>Họ tên:</strong> {currentCustomer.ho_ten}</p>
+                                <p><strong>Ngày sinh:</strong> {formatDate(currentCustomer.ngay_sinh).split(' ')[0]}</p>
+                                <p><strong>Địa chỉ:</strong> {`${currentCustomer.dia_chi}, ${currentCustomer.thanh_pho}, ${currentCustomer.tinh}`}</p>
+                                <p><strong>Mã bưu chính:</strong> {currentCustomer.ma_buu_chinh || 'N/A'}</p>
+                                <p><strong>Quốc gia:</strong> {currentCustomer.quoc_gia || 'N/A'}</p>
+                            </div>
+                         ) : (
+                            <p className={styles.errorText}>Không có dữ liệu.</p>
+                         )}
+                         <div className={styles.modalActions}>
+                            <button onClick={handleCloseModal} className={`${styles.button} ${styles.buttonSecondary}`}>Đóng</button>
+                         </div>
+                    </div>
+                </div>
+            )}
             
              {/* Toast */}
             {toast.show && (

@@ -1,7 +1,12 @@
-import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser } from './Admin/admin-users';
+import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser } from './admin/admin-users';
 // import { Env } from './type';
-import { addphuongtien, deletePhuongTien, getPhuongTienById, getPhuongTiens, updatePhuongTien } from './Admin/Phuong-tien';
-
+import * as PhuongTien from './admin/Phuong-tien';
+import { 
+    handleGetCustomers, 
+    handleGetCustomerById,
+    handleUpdateCustomer,
+    handleGetCustomerByUserId 
+} from './admin/admin-customers';
 // Cần xác định xem bạn muốn giữ lại giao diện Env nào.
 // Có vẻ như cả hai đều cần thiết.
 interface Env {
@@ -25,9 +30,11 @@ export default {
 		if (request.method === 'OPTIONS') {
 			return jsonResponse(null);
 		}
+		
 
 		const url = new URL(request.url);
 		const path = url.pathname;
+		 const method = request.method;
 
 		try {
 			// Kiểm tra đã kết nối R2 chưa
@@ -84,29 +91,55 @@ export default {
 
 			// Route cho phương tiện
 			if (path === '/Admin/phuong-tien' && request.method === 'POST') {
-				return addphuongtien(request, env);
+				return PhuongTien.addphuongtien(request, env);
 			}
 			if (path.startsWith('/Admin/phuong-tien/') && request.method === 'PUT') {
 				const id = path.split('/')[3];
 				if (id) {
-					return updatePhuongTien(request, env, id);
+					return PhuongTien.updatePhuongTien(request, env, id);
 				}
 			}
 			if (path.startsWith('/Admin/phuong-tien/') && request.method === 'DELETE') {
 				const id = path.split('/')[3];
 				if (id) {
-					return deletePhuongTien(request, env, id);
+					return PhuongTien.deletePhuongTien(request, env, id);
 				}
 			}
 
 			const phuongTienIdMatch = path.match(/^\/Admin\/phuong-tien\/(\d+)$/);
 			if (phuongTienIdMatch) {
 				const id = phuongTienIdMatch[1];
-				return getPhuongTienById(request, env, id);
+				return PhuongTien.getPhuongTienById(request, env, id);
 			}
 			if (path.startsWith('/Admin/phuong-tien')) {
-				return getPhuongTiens(request, env);
+				return PhuongTien.getPhuongTiens(request, env);
 			}
+
+			else if (path.startsWith('/api/customers')) {
+            // Route: GET /api/customers/by-user/:userId
+            const byUserMatch = path.match(/^\/api\/customers\/by-user\/([^\/]+)/);
+            if (byUserMatch && method === 'GET') {
+                const userId = byUserMatch[1];
+                return handleGetCustomerByUserId(env, userId);
+            }
+
+            // Route: GET /api/customers/:id hoặc PUT /api/customers/:id
+            const detailMatch = path.match(/^\/api\/customers\/([^\/]+)/);
+            if (detailMatch) {
+                const customerId = detailMatch[1];
+                if (method === 'GET') {
+                    return handleGetCustomerById(env, customerId);
+                }
+                if (path === 'PUT') {
+                    return handleUpdateCustomer(request, env, customerId);
+                }
+            }
+
+            // Route: GET /api/customers (lấy tất cả)
+            if (path === '/api/customers' && method === 'GET') {
+                return handleGetCustomers(env);
+            }
+        }
 
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
