@@ -1,4 +1,4 @@
-import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser } from './admin/admin-users';
+import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser } from './Admin/admin-users';
 // import { Env } from './type';
 import { addphuongtien, deletePhuongTien, getPhuongTienById, getPhuongTiens, updatePhuongTien } from './Admin/Phuong-tien';
 
@@ -7,6 +7,7 @@ import { addphuongtien, deletePhuongTien, getPhuongTienById, getPhuongTiens, upd
 interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
+	rental_db: D1Database;
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -68,7 +69,7 @@ export default {
 				}
 			}
 
-			// Route cho người dùng 
+			// Route cho người dùng
 			if (path === '/nguoi-dung') {
 				if (request.method === 'GET') return handleGetUsers(env);
 				if (request.method === 'POST') return handleCreateUser(request, env);
@@ -81,7 +82,7 @@ export default {
 				if (request.method === 'DELETE') return handleDeleteUser(env, id);
 			}
 
-			// Route cho phương tiện 
+			// Route cho phương tiện
 			if (path === '/Admin/phuong-tien' && request.method === 'POST') {
 				return addphuongtien(request, env);
 			}
