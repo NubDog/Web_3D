@@ -22,7 +22,6 @@ const FileManager: React.FC = () => {
   // }
 
   return (
-    
     <div className= 'container_list_file'>
 
       <div className= "side_bar">
@@ -46,7 +45,7 @@ const FileManager: React.FC = () => {
 
       <div className= "main_content"></div>
 
-
+      
       {/* <h2>Danh sách file trong R2 Storage</h2> */}
 
       {/*  nút này để reload lại danh sách file */}
