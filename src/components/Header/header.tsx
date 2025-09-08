@@ -1,6 +1,8 @@
 import React from 'react';
 import './../../styles/Header/Header.css'
+import './../../styles/Header/Responsive.css'
 import Logo from './../Logo/logo.tsx'
+import Button from '../Button/Button.tsx'
 
 const Header = () => {
     return (
@@ -16,12 +18,11 @@ const Header = () => {
                 <li className="header-menu_items"><a href="#">Tàu thủy</a></li>
                 <li className="header-menu_items"><a href="#">Thiết bị quay phim</a></li>
                 <li className="header-menu_items"><a href="#">Hỗ trợ</a></li>
-                <li className="header-menu_items"><a href="#">Tìm kiếm</a></li>
+                <li className="header-menu_items"><a href="#"><i className="fa-solid fa-magnifying-glass"></i></a></li>
             </ul>
 
             <div className="user-login">
-                <a href="#">Đăng nhập</a>
-                <a href="#">Đăng ký</a>
+                <Button conttent="Đăng nhập / đăng ký" />
             </div>
         </div>
     )
