@@ -372,7 +372,7 @@ const UserAdmin: React.FC = () => {
                 </div>
             </div>
 
-            {/* --- CÁC MODAL --- */}
+            {/* --- CÁC MODALL  --- */}
 
             {/* Modal Thêm/Sửa User*/}
             {isUserModalOpen && (
