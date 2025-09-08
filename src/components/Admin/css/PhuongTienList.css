@@ -152,12 +152,12 @@
   color: #16a34a;
 }
 .status.maintenance {
-  background-color: #fef9c3;
-  color: #a16207;
+  background-color: #ff0505;
+  color: #ffffff;
 }
 .status.inactive {
-  background-color: #fecaca;
-  color: #dc2626;
+  background-color: #ebe176;
+  color: #ffffff;
 }
 
 /* --- Action Buttons --- */

@@ -357,7 +357,7 @@ const UserAdmin: React.FC = () => {
                                                  
                                             ) : (
                                                 <>
-                                                    <div> Khoa đẹp trai </div>
+                                                    <div>Thành,Khoa đẹp trai </div>
                                                 </> 
                                                 )}
                                            
