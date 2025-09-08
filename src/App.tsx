@@ -12,11 +12,15 @@ import CustomerDetail from "./components/Admin/admin-users/custom/CustomerDetail
 // Import layout mới đã tạo ở bước trước
 import AdminLayout from './components/Admin/adminLayout';
 
+// Import trang HomePage
+import HomePage from './pages/HomePage';
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<FileManager />} />
+        <Route path="/" element={<HomePage />} />
+        
         {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="users" />} /> 
