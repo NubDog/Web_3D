@@ -368,7 +368,7 @@ const UserAdmin: React.FC = () => {
 
             {/* --- CÁC MODAL --- */}
 
-            {/* Modal Thêm/Sửa User (ĐÃ CẬP NHẬT) */}
+            {/* Modal Thêm/Sửa User*/}
             {isUserModalOpen && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
