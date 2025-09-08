@@ -337,7 +337,7 @@ const UserAdmin: React.FC = () => {
                                         <td>{formatDate(user.ngay_tao)}</td>
                                         <td>{formatDate(user.ngay_cap_nhat)}</td>
                                         <td className={styles.textRight}>
-                                            {user.vai_tro !== 'admin' && (
+                                            {user.vai_tro !== 'admin' ? (
                                                 <>
                                                     <Link 
                                                         to={`/admin/users/${user.nguoi_dung_id}/customer-detail`}
@@ -351,10 +351,16 @@ const UserAdmin: React.FC = () => {
                                                     >
                                                         {user.trang_thai === 'active' ? 'Khóa' : user.trang_thai === "hoat_dong" ? 'Khóa':'Mở khóa'}
                                                     </button>
-                                                </>
-                                            )}
-                                            <button className={`${styles.actionButton} ${styles.editButton}`} onClick={() => handleOpenModal(user)}>Sửa</button>
+                                                     <button className={`${styles.actionButton} ${styles.editButton}`} onClick={() => handleOpenModal(user)}>Sửa</button>
                                             <button className={`${styles.actionButton} ${styles.deleteButton}`} onClick={() => handleDeleteClick(user.nguoi_dung_id)}>Xóa</button>
+                                                </>
+                                                 
+                                            ) : (
+                                                <>
+                                                    <div> Khoa đẹp trai </div>
+                                                </> 
+                                                )}
+                                           
                                         </td>
                                     </tr>
                                 ))

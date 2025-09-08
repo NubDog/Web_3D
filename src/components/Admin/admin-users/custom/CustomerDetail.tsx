@@ -16,8 +16,8 @@ interface Customer {
     ho_ten: string;
     ngay_sinh: string;
     dia_chi: string;
-    thanh_pho: string; // Tương ứng Quận/Huyện
-    tinh: string;       // Tương ứng Tỉnh/Thành phố
+    thanh_pho: string; 
+    tinh: string;      
     ma_buu_chinh?: string;
     quoc_gia?: string;
     ngay_tao: string;
