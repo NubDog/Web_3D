@@ -1,6 +1,7 @@
-import React, { useState, useEffect, type FormEvent } from 'react';
+import React, { useState, useEffect, type FormEvent,type ChangeEvent } from 'react';
 import styles from '../css/admin.module.css';
 import { Link } from 'react-router-dom';
+import locations from '../../../data/data.json';
 
 // Định nghĩa kiểu dữ liệu cho một User
 interface User {
@@ -8,6 +9,7 @@ interface User {
     ten_dang_nhap:string;
     ho_ten: string;
     vai_tro: string;
+    trang_thai:string;
     email: string;
     so_dien_thoai?: string;
     ngay_tao: string;
@@ -26,6 +28,10 @@ interface Customer {
     quoc_gia?: string;
 }
 
+interface District {
+    Id: string;
+    Name: string;
+}
 
 // Component chính
 const UserAdmin: React.FC = () => {
@@ -47,14 +53,17 @@ const UserAdmin: React.FC = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [userIdToDelete, setUserIdToDelete] = useState<number | null>(null);
 
-    // States cho modal Khóa/Mở khóa (sẽ làm ở bước sau)
-    // const [isLockModalOpen, setIsLockModalOpen] = useState(false);
-    // const [userToLock, setUserToLock] = useState<User | null>(null);
+    // States cho modal Khóa/Mở khóa 
+    const [isLockModalOpen, setIsLockModalOpen] = useState(false);
+    const [userToLock, setUserToLock] = useState<User | null>(null);
 
     // State cho thông báo (Toast)
     const [toast, setToast] = useState<{ message: string; isError: boolean; show: boolean }>({
         message: '', isError: false, show: false,
     });
+
+    const [districts, setDistricts] = useState<District[]>([]);
+
 
     // Fetch users khi component được render
     useEffect(() => {
@@ -119,7 +128,43 @@ const UserAdmin: React.FC = () => {
         setCurrentCustomer(null);
     };
 
+    const handleLockUnlock = async (user: User) => {
+        setUserToLock(user);
+        setIsLockModalOpen(true);
+    };
+    
 
+    const confirmLockUnlock = async () => {
+    if (!userToLock) return;
+    
+    try {
+            const newStatus = userToLock.trang_thai === 'active' ? 'inactive' : 'active';
+            const response = await fetch(`${API_BASE_URL}/nguoi-dung/${userToLock.nguoi_dung_id}/status`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ trang_thai: newStatus })
+            });
+            
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'Không thể thay đổi trạng thái người dùng');
+            }
+
+            // Update the users list with the new status
+            setUsers(users.map(u => 
+                u.nguoi_dung_id === userToLock.nguoi_dung_id 
+                    ? { ...u, trang_thai: newStatus }
+                    : u
+            ));
+
+            showToast(result.message || 'Cập nhật trạng thái thành công');
+        } catch (error: any) {
+            showToast(`Lỗi: ${error.message}`, true);
+        } finally {
+            setIsLockModalOpen(false);
+            setUserToLock(null);
+        }
+    };
         
     // Xử lý submit form
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -157,7 +202,21 @@ const UserAdmin: React.FC = () => {
         }
     };
 
-
+    const handleProvinceChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const provinceName = e.target.value;
+    const selectedProvince = locations.find(p => p.Name === provinceName);
+    
+    // If currentUser exists, update it
+    if (currentUser) {
+        setCurrentUser(prev => ({
+            ...prev,
+            tinh: provinceName,
+            thanh_pho: '',
+        }));
+    }
+    
+    setDistricts(selectedProvince ? selectedProvince.Districts : []);
+};
     // Mở modal xác nhận xóa
    const handleDeleteClick = (id: number) => {
         setUserIdToDelete(id);
@@ -224,7 +283,20 @@ const UserAdmin: React.FC = () => {
                 </div>
                 <div className={styles.tableContainer}>
                     <table className={styles.table}>
-                        {/* ... (Phần thead của bạn giữ nguyên) ... */}
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tên đăng nhập</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Số điện thoại</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tạo</th>
+                                <th>Ngày cập nhật</th>
+                                <th className={styles.textRight}>Hành động</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             {isLoading ? (
                                 <tr><td colSpan={9} className={styles.tableMessage}>Đang tải dữ liệu...</td></tr>
@@ -238,11 +310,33 @@ const UserAdmin: React.FC = () => {
                                         <td>{user.ho_ten}</td>
                                         <td>{user.email}</td>
                                         <td>{user.so_dien_thoai || 'N/A'}</td>
-                                        <td>{user.vai_tro}</td>
+                                        <td>{user.vai_tro }</td>
+                                       <td style={{ textAlign: "center" }}>
+                                            <span
+                                                style={{
+                                                display: "inline-block",
+                                                minWidth: "80px",
+                                                padding: "4px 12px",
+                                                borderRadius: "20px",
+                                                fontWeight: "bold",
+                                                backgroundColor:
+                                                    user.trang_thai === "active" || user.trang_thai === "hoat_dong"
+                                                    ? "rgba(0, 200, 0, 0.15)"   // nền xanh nhạt
+                                                    : "rgba(255, 0, 0, 0.15)",  // nền đỏ nhạt
+                                                color:
+                                                    user.trang_thai === "active" || user.trang_thai === "hoat_dong"
+                                                    ? "green"
+                                                    : "red",
+                                                }}
+                                            >
+                                                {user.trang_thai === "active" || user.trang_thai === "hoat_dong"
+                                                ? "Active"
+                                                : "Inactive"}
+                                            </span>
+                                            </td>
                                         <td>{formatDate(user.ngay_tao)}</td>
                                         <td>{formatDate(user.ngay_cap_nhat)}</td>
                                         <td className={styles.textRight}>
-                                            {/* --- CÁC NÚT HÀNH ĐỘNG MỚI --- */}
                                             {user.vai_tro !== 'admin' && (
                                                 <>
                                                     <Link 
@@ -252,10 +346,10 @@ const UserAdmin: React.FC = () => {
                                                         Xem
                                                     </Link>
                                                     <button 
-                                                        className={`${styles.actionButton} ${styles.lockButton}`}
-                                                        onClick={() => showToast('Chức năng Khóa đang được phát triển!')}
+                                                        className={`${styles.actionButton} ${user.trang_thai === 'active' ? styles.lockButton : user.trang_thai === 'hoat_dong'?  styles.lockButton  : styles.unlockButton}`}
+                                                        onClick={() => handleLockUnlock(user)}
                                                     >
-                                                        Khóa
+                                                        {user.trang_thai === 'active' ? 'Khóa' : user.trang_thai === "hoat_dong" ? 'Khóa':'Mở khóa'}
                                                     </button>
                                                 </>
                                             )}
@@ -299,15 +393,40 @@ const UserAdmin: React.FC = () => {
                                 </div>
                             </div>
                             
-                            {/* --- PHẦN MỚI: Hiển thị nếu vai trò là Khách Hàng khi tạo mới --- */}
+                            {/*  Hiển thị nếu vai trò là Khách Hàng khi tạo mới --- */}
                             {selectedRole === 'KhachHang' && !currentUser?.nguoi_dung_id && (
                                 <>
                                     <h4 className={styles.formSectionTitle}>Thông tin hồ sơ khách hàng</h4>
                                     <div className={styles.formFields}>
                                         <div><label>Ngày sinh (YYYY-MM-DD)</label><input type="date" name="ngay_sinh" required /></div>
                                         <div><label>Địa chỉ</label><input name="dia_chi" required /></div>
-                                        <div><label>Thành phố</label><input name="thanh_pho" required /></div>
-                                        <div><label>Tỉnh</label><input name="tinh" required /></div>
+                                        <div>
+                                            <label>Tỉnh/Thành phố</label>
+                                            <select 
+                                                name="tinh" 
+                                                onChange={handleProvinceChange}
+                                                required
+                                            >
+                                                <option value="">-- Chọn Tỉnh/Thành --</option>
+                                                {locations.map(p => (
+                                                    <option key={p.Id} value={p.Name}>{p.Name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label>Quận/Huyện</label>
+                                            <select 
+                                                name="thanh_pho" 
+                                                required
+                                                disabled={districts.length === 0}
+                                            >
+                                                <option value="">-- Chọn Quận/Huyện --</option>
+                                                {districts.map(d => (
+                                                    <option key={d.Id} value={d.Name}>{d.Name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
                                         <div><label>Mã bưu chính</label><input name="ma_buu_chinh" /></div>
                                         <div><label>Quốc gia</label><input name="quoc_gia" defaultValue="Việt Nam" /></div>
                                     </div>
@@ -336,6 +455,44 @@ const UserAdmin: React.FC = () => {
                     </div>
                 </div>
              )}
+
+             {/* Modal Khóa/Mở khóa */}
+            {isLockModalOpen && userToLock && (
+                <div className={styles.modalOverlay}>
+                    <div className={styles.modalContentSmall}>
+                        <h3 className={styles.modalTitle}>
+                            {userToLock.trang_thai === 'active' 
+                                ? 'Xác nhận khóa người dùng' 
+                                :  userToLock.trang_thai === 'hoat_dong'? 'Xác nhận khóa người dùng'  : 'Xác nhận mở khóa người dùng'}
+                        </h3>
+                        <p>
+                            {userToLock.trang_thai === 'active' 
+                                ? `Bạn có chắc chắn muốn khóa người dùng "${userToLock.ho_ten}" không?` 
+                                : userToLock.trang_thai === 'hoat_dong'? `Bạn có chắc chắn muốn khóa người dùng "${userToLock.ho_ten}" không?` : `Bạn có chắc chắn muốn mở khóa người dùng "${userToLock.ho_ten}" không?`}
+                        </p>
+                        <div className={styles.modalActions}>
+                            <button 
+                                onClick={() => setIsLockModalOpen(false)} 
+                                className={`${styles.button} ${styles.buttonSecondary}`}
+                            >
+                                Hủy
+                            </button>
+                            <button 
+                                onClick={confirmLockUnlock} 
+                                className={`${styles.button} ${
+                                    userToLock.trang_thai === 'active' 
+                                        ? styles.buttonDanger 
+                                        : userToLock.trang_thai === "hoat_dong"
+                                        ? styles.buttonDanger  
+                                        : styles.buttonSuccess
+                                }`}
+                            >
+                                {userToLock.trang_thai === 'active' ? 'Khóa' : userToLock.trang_thai === "hoat_dong"? 'Khóa':'Mở khóa'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
              {isCustomerModalOpen && (
                 <div className={styles.modalOverlay}>

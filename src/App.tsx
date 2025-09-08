@@ -23,6 +23,7 @@ function App() {
           <Route path='admin_dashboard' element={<Admin_dashboard />}/>
           <Route path="users" element={<UserAdmin />} />
           <Route path="users/:userId/customer-detail" element={<CustomerDetail />} />
+          
         
           <Route path="phuong-tien" element={<PhuongTienList />} />
         </Route>

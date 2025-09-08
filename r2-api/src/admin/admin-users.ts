@@ -49,7 +49,7 @@ const updated_date_time = "datetime('now', '+7 hours')";
 
 export const handleGetUsers = async (env: Env) => {
     const { results } = await env.DB.prepare(
-        `SELECT nguoi_dung_id, ten_dang_nhap, ho_ten, email, so_dien_thoai, vai_tro, ngay_tao, ngay_cap_nhat FROM NguoiDung`
+        `SELECT nguoi_dung_id, ten_dang_nhap, ho_ten, email, so_dien_thoai, vai_tro, trang_thai,ngay_tao, ngay_cap_nhat FROM NguoiDung`
     ).all();
     return jsonResponse({ success: true, data: results });
 };
@@ -80,8 +80,8 @@ export const handleCreateUser = async (request: Request, env: Env) => {
         }
 
         const userStmt = env.DB.prepare(
-            `INSERT INTO NguoiDung (ten_dang_nhap, ho_ten, email, mat_khau, so_dien_thoai, vai_tro, ngay_tao, ngay_cap_nhat) 
-             VALUES (?, ?, ?, ?, ?, ?, datetime('now', '+7 hours'), datetime('now', '+7 hours'))
+            `INSERT INTO NguoiDung (ten_dang_nhap, ho_ten, email, mat_khau, so_dien_thoai, vai_tro, trang_thai, ngay_tao, ngay_cap_nhat) 
+             VALUES (?, ?, ?, ?, ?, ?,?, datetime('now', '+7 hours'), datetime('now', '+7 hours'))
              RETURNING nguoi_dung_id` 
         ).bind(
             body.TenDangNhap, 
@@ -89,7 +89,8 @@ export const handleCreateUser = async (request: Request, env: Env) => {
             body.Email, 
             body.MatKhau, 
             body.SoDienThoai || null, 
-            body.VaiTro
+            body.VaiTro,
+            "active"
         );
         
         const newUser = await userStmt.first<{ nguoi_dung_id: number }>();
@@ -144,6 +145,55 @@ export const handleUpdateUser = async (request: Request, env: Env, id: string) =
 
     await stmt.run();
     return jsonResponse({ success: true, message: 'Cập nhật người dùng thành công' });
+};
+
+export const handleToggleUserStatus = async (env: Env, id: string) => {
+    try {
+        // Đầu tiên kiểm tra trạng thái hiện tại của người dùng
+        const currentUser = await env.DB.prepare(
+            'SELECT trang_thai FROM NguoiDung WHERE nguoi_dung_id = ?'
+        ).bind(id).first();
+
+        if (!currentUser) {
+            return jsonResponse({ 
+                success: false, 
+                error: 'Không tìm thấy người dùng' 
+            }, 404);
+        }
+
+        // Chuyển đổi trạng thái
+        const newStatus = currentUser.trang_thai === 'active' ? 'inactive' : currentUser.trang_thai === 'hoat_dong'? 'inactive' : 'active';
+
+        // Cập nhật trạng thái mới
+        const stmt = env.DB.prepare(
+            `UPDATE NguoiDung 
+             SET trang_thai = ?, 
+                 ngay_cap_nhat = datetime('now', '+7 hours') 
+             WHERE nguoi_dung_id = ?`
+        ).bind(newStatus, id);
+
+        const result = await stmt.run();
+
+        if (result.meta.changes === 0) {
+            return jsonResponse({ 
+                success: false, 
+                error: 'Không thể cập nhật trạng thái người dùng' 
+            }, 500);
+        }
+
+        return jsonResponse({ 
+            success: true, 
+            message: `Đã ${['active', 'hoat_dong'].includes(newStatus) ? 'mở khóa' : 'khóa'} người dùng thành công`,
+            newStatus: newStatus
+        });
+
+    } catch (e: any) {
+        return jsonResponse({ 
+            success: false, 
+            error: 'Lỗi khi thay đổi trạng thái người dùng', 
+            details: e.message 
+        }, 500);
+    }
 };
 
 export const handleDeleteUser = async (env: Env, id: string) => {

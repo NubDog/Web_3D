@@ -1,4 +1,4 @@
-import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser } from './admin/admin-users';
+import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser,handleToggleUserStatus } from './admin/admin-users';
 // import { Env } from './type';
 import * as PhuongTien from './admin/Phuong-tien';
 import { 
@@ -24,6 +24,8 @@ const jsonResponse = (data: any, status = 200) => {
 	};
 	return new Response(JSON.stringify(data), { status, headers });
 };
+
+
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -82,12 +84,19 @@ export default {
 				if (request.method === 'POST') return handleCreateUser(request, env);
 			}
 
+			const statusMatch = path.match(/^\/nguoi-dung\/(\d+)\/status$/);
+			if (statusMatch && request.method === 'PUT') {
+				const id = statusMatch[1];
+				return handleToggleUserStatus(env, id);
+			}
+
 			const userMatch = path.match(/^\/nguoi-dung\/(\d+)$/);
 			if (userMatch) {
 				const id = userMatch[1];
 				if (request.method === 'PUT') return handleUpdateUser(request, env, id);
 				if (request.method === 'DELETE') return handleDeleteUser(env, id);
 			}
+
 
 			// Route cho phương tiện
 			if (path === '/Admin/phuong-tien' && request.method === 'POST') {
@@ -130,9 +139,12 @@ export default {
                 if (method === 'GET') {
                     return handleGetCustomerById(env, customerId);
                 }
-                if (path === 'PUT') {
-                    return handleUpdateCustomer(request, env, customerId);
-                }
+                // if (path === 'PUT') {
+                //     return handleUpdateCustomer(request, env, customerId);
+                // }
+				if (method === 'PUT') { 
+					return handleUpdateCustomer(request, env, customerId);
+				}
             }
 
             // Route: GET /api/customers (lấy tất cả)

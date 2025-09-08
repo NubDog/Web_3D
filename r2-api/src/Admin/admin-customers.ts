@@ -1,4 +1,4 @@
-test
+
 interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
@@ -156,21 +156,39 @@ export const handleUpdateCustomer = async (request: Request, env: Env, id: strin
             body.ho_ten,
             body.ngay_sinh,
             body.dia_chi,
-            body.thanh_pho,
             body.tinh,
+            body.thanh_pho,
             body.ma_buu_chinh || null,
             body.quoc_gia || null,
             id
         );
-        
         const result = await stmt.run();
+     
+        
+            
+        
         
         if (result.meta.changes === 0) {
              return jsonResponse({ success: false, error: 'Không tìm thấy khách hàng để cập nhật' }, 404);
         }
 
+         if (body.nguoi_dung_id) {
+            const userStmt = env.DB.prepare(
+                `UPDATE NguoiDung SET 
+                    ho_ten = ?,
+                    ngay_cap_nhat = datetime('now', '+7 hours')
+                WHERE nguoi_dung_id = ?`
+            ).bind(
+                body.ho_ten,
+                body.nguoi_dung_id
+            );
+            
+            await userStmt.run();
+        }
+
         return jsonResponse({ success: true, message: 'Cập nhật khách hàng thành công' });
 
+        
     } catch (e: any) {
         return jsonResponse({ success: false, error: 'Lỗi khi xử lý yêu cầu', details: e.message }, 500);
     }
