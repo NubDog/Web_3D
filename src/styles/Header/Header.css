@@ -1,0 +1,17 @@
+.header{
+    display: flex;
+    gap: 40px;
+    align-items: center;
+
+    font-size: 14px;
+}
+
+.header-menu {
+    display: flex;
+    gap: 40px;
+}
+
+.header-menu_items {
+    min-width: 40px;
+    font-size: 14px;
+}
