@@ -53,6 +53,9 @@ button {
   background-color: transparent;
   border: none;
   font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-gray);
 }
 
 @media (prefers-color-scheme: light) {
