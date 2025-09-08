@@ -52,6 +52,7 @@ h1 {
 button {
   background-color: transparent;
   border: none;
+  font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 @media (prefers-color-scheme: light) {
