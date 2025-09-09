@@ -1,4 +1,4 @@
-button {
+.main-button {
   --primary-color: #645bff;
   --secondary-color: #fff;
   --hover-color: #111;
@@ -16,13 +16,13 @@ button {
   font-weight: bold;
 }
 
-button .arrow-wrapper {
+.main-button .arrow-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-button .arrow {
+.main-button .arrow {
   margin-top: 1px;
   width: var(--arrow-width);
   height: var(--arrow-stroke);
@@ -30,7 +30,7 @@ button .arrow {
   transition: 0.2s;
 }
 
-button .arrow::before {
+.main-button .arrow::before {
   content: "";
   box-sizing: border-box;
   position: absolute;
@@ -44,15 +44,15 @@ button .arrow::before {
   transform: rotate(-45deg);
 }
 
-button:hover {
+.main-button:hover {
   background-color: var(--hover-color);
   cursor: pointer;
 }
 
-button:hover .arrow {
+.main-button:hover .arrow {
   background: var(--secondary-color);
 }
 
-button:hover .arrow:before {
+.main-button:hover .arrow:before {
   right: 0;
 }

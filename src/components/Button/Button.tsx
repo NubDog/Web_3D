@@ -3,7 +3,7 @@ import './Button.css';
 
 const Button = ({ conttent }: { conttent: string }) => {
     return (
-        <button>
+        <button className="main-button">
             {conttent}
             <div className="arrow-wrapper">
                 <div className="arrow"></div>   
