@@ -10,7 +10,7 @@ import BigBanner from './../components/BigBanner/BigBanner.tsx'
 
 
 const HomePage = () => {
-    const lamborghini_model = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/modul_bike.glb";
+    const lamborghini_model_Revuelto = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Lamborghini%20Sian.glb";
     return (
         <div className="home-page">
             <Header />
@@ -25,7 +25,7 @@ const HomePage = () => {
                 sub_title="Giới thiệu dòng Hypercar" 
                 link_content="Tìm hiểu thêm"
                 link_sub_content="Thuê Hypercar"
-                model_url={lamborghini_model}
+                model_url={lamborghini_model_Revuelto}
             />
         </div>
     )

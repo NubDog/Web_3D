@@ -6,7 +6,12 @@ import {
     ArcRotateCamera,
     Vector3,
     HemisphericLight,
-    SceneLoader
+    SceneLoader,
+    Color4,
+    CubeTexture,
+    Texture,
+    PBRMaterial,
+    HDRCubeTexture
 } from '@babylonjs/core';
 
 import '@babylonjs/loaders/glTF';
@@ -22,17 +27,25 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
     if (reactCanvas.current) {
       const engine = new Engine(reactCanvas.current, true);
       const scene = new Scene(engine);
+      
+      // Set màu nền background
+      scene.clearColor = new Color4(0, 0, 0, 0);
 
       const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, Vector3.Zero(), scene);
       camera.attachControl(reactCanvas.current, true);
       camera.wheelPrecision = 50; // Tăng tốc độ zoom
 
       const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-      light.intensity = 0.7;
+      light.intensity = 0.1; // Giảm cường độ ánh sáng cũ
+
+      // Tải HDRI để cải thiện chất lượng model
+      const hdrTexture = new HDRCubeTexture("https://playground.babylonjs.com/textures/environment.hdr", scene, 512);
+      scene.environmentTexture = hdrTexture;
+      scene.createDefaultSkybox(hdrTexture, true, 1000, 0.3);
 
       // Xóa model cũ trước khi tải model mới để tránh trùng lặp
       scene.meshes.forEach(mesh => {
-        if (mesh.name !== "camera") { // Giữ lại camera
+        if (mesh.name !== "camera" && mesh.name !== "skyBox") { // không xóa skyBox
             mesh.dispose();
         }
       });

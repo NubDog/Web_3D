@@ -6,6 +6,7 @@
     background-color: #f5f5f7;
     width: 100vw;
     height: 692px;
+    overflow: hidden;
 }
 
 .big-banner a {
@@ -44,4 +45,12 @@
     gap: 20px;
 
     font-size: 12px;
+}
+
+.model-container {
+    position: absolute;
+    margin-top: 20px;
+    left: 0;
+    height: 100%;
+    width: 100%;
 }
