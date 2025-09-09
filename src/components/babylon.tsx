@@ -11,7 +11,8 @@ import {
     CubeTexture,
     Texture,
     PBRMaterial,
-    HDRCubeTexture
+    HDRCubeTexture,
+    ImageProcessingConfiguration
 } from '@babylonjs/core';
 
 import '@babylonjs/loaders/glTF';
@@ -28,6 +29,12 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       const engine = new Engine(reactCanvas.current, true);
       const scene = new Scene(engine);
       
+      // Bật Tone mapping & Gamma correction cho màu sắc chân thực nhất
+      scene.imageProcessingConfiguration.toneMappingEnabled = true;
+      scene.imageProcessingConfiguration.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
+      scene.imageProcessingConfiguration.exposure = 0.8;
+      scene.imageProcessingConfiguration.contrast = 1.2;
+
       // Set màu nền background
       scene.clearColor = new Color4(0, 0, 0, 0);
 
@@ -58,6 +65,20 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
             arcRotateCamera.alpha += Math.PI; // Xoay camera để nhìn từ phía trước
             arcRotateCamera.radius = meshes[0].getBoundingInfo().boundingSphere.radius * 2.5; // Điều chỉnh khoảng cách zoom
           }
+
+        // Điều chỉnh các thông số chất liệu cho xexe
+        meshes.forEach(mesh => {
+            if (mesh.material && mesh.material instanceof PBRMaterial) {
+                const pbr = mesh.material as PBRMaterial;
+                pbr.metallic = 0.22; // Tăng tối đa độ kim loại
+                pbr.roughness = 1; // Giảm độ nhám để bề mặt bóng hơn
+
+                // Thêm lớp sơn bóng (clear coat) để tạo chiều sâu
+                pbr.clearCoat.isEnabled = true;
+                pbr.clearCoat.intensity = 0.9;
+                pbr.clearCoat.roughness = 0.1;
+            }
+        });
       });
 
       engine.runRenderLoop(() => {
