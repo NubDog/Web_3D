@@ -37,7 +37,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       scene.imageProcessingConfiguration.exposure = 0.8;
       scene.imageProcessingConfiguration.contrast = 1.2;
 
-      // Set màu nền background
+      // Set màu nền background (trong suốt)
       scene.clearColor = new Color4(0, 0, 0, 0);
 
       const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, Vector3.Zero(), scene);
@@ -45,12 +45,25 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       camera.wheelPrecision = 50; // Tăng tốc độ zoom
 
       const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-      light.intensity = 0.1; // Giảm cường độ ánh sáng cũ
+      light.intensity = 0.1; // Giảm cường độ ánh sáng
 
-      // Tải HDRI để cải thiện chất lượng model
-      const hdrTexture = new HDRCubeTexture("https://playground.babylonjs.com/textures/environment.hdr", scene, 512);
-      scene.environmentTexture = hdrTexture;
-      scene.createDefaultSkybox(hdrTexture, true, 1000, 0.3);
+      // Tải HDRI để cải thiện chất lượng model và đảm bảo nó được tải xong trước khi sử dụng
+      const hdrTexture = new CubeTexture(
+        "/env/environment.env", 
+        scene,
+        null, // extensions
+        false, // noMipmap
+        null, // files
+        () => {
+          // Callback này chỉ chạy KHI texture đã tải xong
+          scene.environmentTexture = hdrTexture;
+          // scene.createDefaultSkybox(hdrTexture, true, 1000, 0.3); // <-- Vô hiệu hóa dòng này để ẩn background
+        },
+        (message, exception) => {
+          // log ra lỗi nếu không tải được texture
+          console.error("Lỗi khi tải HDR texture:", message, exception);
+        }
+      );
 
       // Xóa model cũ trước khi tải model mới để tránh trùng lặp
       scene.meshes.forEach(mesh => {
