@@ -12,8 +12,7 @@ import {
     Texture,
     PBRMaterial,
     HDRCubeTexture,
-    ImageProcessingConfiguration,
-    FxaaPostProcess
+    ImageProcessingConfiguration
 } from '@babylonjs/core';
 
 import '@babylonjs/loaders/glTF';
@@ -27,14 +26,12 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
 
   useEffect(() => {
     if (reactCanvas.current) {
-      const engine = new Engine(reactCanvas.current, true, {
-        preserveDrawingBuffer: true,
-        stencil: true,
-        adaptToDeviceRatio: true
+      const engine = new Engine(reactCanvas.current, true, { 
+        adaptToDeviceRatio: true 
       });
       const scene = new Scene(engine);
       
-      // Bật Tone mapping & Gamma correction cho màu sắc chân thực nhất
+      // Bật Tone mapping & Gamma correction cho màu sắc chân thực
       scene.imageProcessingConfiguration.toneMappingEnabled = true;
       scene.imageProcessingConfiguration.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
       scene.imageProcessingConfiguration.exposure = 0.8;
@@ -46,9 +43,6 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, Vector3.Zero(), scene);
       camera.attachControl(reactCanvas.current, true);
       camera.wheelPrecision = 50; // Tăng tốc độ zoom
-
-      // Bật khử răng cưa FXAA cho các cạnh mượt mà hơn
-      const fxaaPostProcess = new FxaaPostProcess("fxaa", 1.0, camera);
 
       const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
       light.intensity = 0.1; // Giảm cường độ ánh sáng cũ
@@ -74,7 +68,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
             arcRotateCamera.radius = meshes[0].getBoundingInfo().boundingSphere.radius * 2.5; // Điều chỉnh khoảng cách zoom
           }
 
-        // Điều chỉnh các thông số chất liệu cho xexe
+        // Nâng cấp chất liệu để trông giống sơn xe hơi cao cấp
         meshes.forEach(mesh => {
             if (mesh.material && mesh.material instanceof PBRMaterial) {
                 const pbr = mesh.material as PBRMaterial;
