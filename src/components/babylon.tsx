@@ -12,7 +12,9 @@ import {
     Texture,
     PBRMaterial,
     HDRCubeTexture,
-    ImageProcessingConfiguration
+    ImageProcessingConfiguration,
+    GlowLayer,
+    SSAORenderingPipeline
 } from '@babylonjs/core';
 
 import '@babylonjs/loaders/glTF';
@@ -34,8 +36,8 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       // Bật Tone mapping & Gamma correction cho màu sắc chân thực
       scene.imageProcessingConfiguration.toneMappingEnabled = true;
       scene.imageProcessingConfiguration.toneMappingType = ImageProcessingConfiguration.TONEMAPPING_ACES;
-      scene.imageProcessingConfiguration.exposure = 0.8;
-      scene.imageProcessingConfiguration.contrast = 1.2;
+      scene.imageProcessingConfiguration.exposure = 1.5; // Tăng độ phơi sáng để cảnh rực rỡ hơn
+      scene.imageProcessingConfiguration.contrast = 1.6; // Tăng độ tương phản cho hình ảnh sắc nét
 
       // Set màu nền background (trong suốt)
       scene.clearColor = new Color4(0, 0, 0, 0);
@@ -44,8 +46,21 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       camera.attachControl(reactCanvas.current, true);
       camera.wheelPrecision = 50; // Tăng tốc độ zoom
 
+      // Thêm hiệu ứng SSAO để tăng chiều sâu và độ chân thực
+      // Cần kiểm tra xem trình duyệt có hỗ trợ không trước khi khởi tạo
+      let ssao: SSAORenderingPipeline | null = null;
+      if (SSAORenderingPipeline.IsSupported) {
+        ssao = new SSAORenderingPipeline("ssao", scene, 0.5, [camera]);
+      } else {
+        console.warn("SSAO is not supported on this browser/hardware.");
+      }
+
+      // Thêm hiệu ứng Glow để làm đèn và các chi tiết phát sáng
+      const glowLayer = new GlowLayer("glow", scene);
+      glowLayer.intensity = 1.7; // Điều chỉnh cường độ phát sáng
+
       const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-      light.intensity = 0.1; // Giảm cường độ ánh sáng
+      light.intensity = 0.05; // Giảm cường độ ánh sáng
 
       // Tải HDRI để cải thiện chất lượng model và đảm bảo nó được tải xong trước khi sử dụng
       const hdrTexture = new CubeTexture(
@@ -85,13 +100,13 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
         meshes.forEach(mesh => {
             if (mesh.material && mesh.material instanceof PBRMaterial) {
                 const pbr = mesh.material as PBRMaterial;
-                pbr.metallic = 0.22; // Tăng tối đa độ kim loại
-                pbr.roughness = 1; // Giảm độ nhám để bề mặt bóng hơn
+                pbr.metallic = 0.7; // Tăng tối đa độ kim loại để phản chiếu mạnh hơn
+                pbr.roughness = 1; // Giảm mạnh độ nhám để bề mặt cực bóng và phản chiếu rõ nét
 
                 // Thêm lớp sơn bóng (clear coat) để tạo chiều sâu
                 pbr.clearCoat.isEnabled = true;
-                pbr.clearCoat.intensity = 0.9;
-                pbr.clearCoat.roughness = 0.1;
+                pbr.clearCoat.intensity = 0.4; // Tăng cường độ lớp sơn bóng
+                pbr.clearCoat.roughness = 0.2;
             }
         });
       });
@@ -108,6 +123,10 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
 
       return () => {
         window.removeEventListener("resize", resize);
+        if (ssao) {
+          ssao.dispose();
+        }
+        glowLayer.dispose();
         engine.dispose();
       };
     }
