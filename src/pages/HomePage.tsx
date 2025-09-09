@@ -8,7 +8,9 @@ import './../components/Logo/logo.tsx'
 import Header from './../components/Header/header.tsx'
 import BigBanner from './../components/BigBanner/BigBanner.tsx'
 
+
 const HomePage = () => {
+    const lamborghini_model = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/modul_bike.glb";
     return (
         <div className="home-page">
             <Header />
@@ -19,10 +21,11 @@ const HomePage = () => {
             </div>
             
             <BigBanner 
-                main_title="Hyper Car" 
-                sub_title="Giới thiệu dòng Hyper Car" 
+                main_title="Hypercar" 
+                sub_title="Giới thiệu dòng Hypercar" 
                 link_content="Tìm hiểu thêm"
-                link_sub_content="Thuê Hyper car"
+                link_sub_content="Thuê Hypercar"
+                model_url={lamborghini_model}
             />
         </div>
     )

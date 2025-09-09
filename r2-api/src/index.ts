@@ -9,6 +9,10 @@ import {
 	deleteDanhmucphuongtien,
 	putDanhmucphuongtien,
 } from './Admin/Danh-muc-phuong-tien';
+
+
+import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile } from './r2-handler';
+
 // Cần xác định xem bạn muốn giữ lại giao diện Env nào.
 // Có vẻ như cả hai đều cần thiết.
 interface Env {
@@ -38,7 +42,23 @@ export default {
 		const method = request.method;
 
 		try {
-			// Kiểm tra đã kết nối R2 chưa
+			if (path === '/upload' && method === 'POST') {
+				return handleUploadFile(request, env);
+			}
+			if (path === '/files' && method === 'GET') {
+				return handleListFiles(request, env);
+			}
+			const deleteMatch = path.match(/^\/delete\/(.+)/);
+			if (deleteMatch && method === 'DELETE') {
+				const key = decodeURIComponent(deleteMatch[1]);
+				return handleDeleteFile(request, env, key);
+			}
+			const fileMatch = path.match(/^\/file\/(.+)/);
+			if (fileMatch && method === 'GET') {
+				const key = decodeURIComponent(fileMatch[1]);
+				return handleGetFile(request, env, key);
+			}
+
 			if (path === '/test-r2' && request.method === 'GET') {
 				try {
 					const listResponse = await env.r2.list();
