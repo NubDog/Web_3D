@@ -42,7 +42,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       // Set màu nền background (trong suốt)
       scene.clearColor = new Color4(0, 0, 0, 0);
 
-      const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 400, Vector3.Zero(), scene);
+      const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 600, Vector3.Zero(), scene);
       camera.attachControl(reactCanvas.current, true);
       camera.wheelPrecision = 50; // Tăng tốc độ zoom
 
@@ -72,7 +72,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
         () => {
           // Callback này chỉ chạy KHI texture đã tải xong
           scene.environmentTexture = hdrTexture;
-          // scene.createDefaultSkybox(hdrTexture, true, 1000, 0.3); // <-- Vô hiệu hóa dòng này để ẩn background
+          scene.createDefaultSkybox(hdrTexture, true, 1000, 0.3); // <-- Vô hiệu hóa dòng này để ẩn background
         },
         (message, exception) => {
           // log ra lỗi nếu không tải được texture
@@ -92,8 +92,8 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
         scene.createDefaultCameraOrLight(true, true, true);
         if (scene.activeCamera) {
             const arcRotateCamera = scene.activeCamera as ArcRotateCamera;
-            arcRotateCamera.alpha += Math.PI; // Xoay camera để nhìn từ phía trước
-            arcRotateCamera.radius = meshes[0].getBoundingInfo().boundingSphere.radius * 2.5; // Điều chỉnh khoảng cách zoom
+            arcRotateCamera.alpha += Math.PI / 2; // Xoay camera để nhìn từ phía bên hông
+            arcRotateCamera.radius = meshes[0].getBoundingInfo().boundingSphere.radius * 2; // Điều chỉnh khoảng cách zoom để gần hơn
           }
 
         // Nâng cấp chất liệu để trông giống sơn xe hơi cao cấp
