@@ -42,14 +42,14 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       // Set màu nền background (trong suốt)
       scene.clearColor = new Color4(0, 0, 0, 0);
 
-      const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, Vector3.Zero(), scene);
+      const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 400, Vector3.Zero(), scene);
       camera.attachControl(reactCanvas.current, true);
       camera.wheelPrecision = 50; // Tăng tốc độ zoom
 
       // Thêm hiệu ứng SSAO để tăng chiều sâu và độ chân thực
-      // Cần kiểm tra xem trình duyệt có hỗ trợ không trước khi khởi tạo
+      // Cần kiểm tra xem trình duyệt có hỗ-trợ không trước khi khởi tạo
       let ssao: SSAORenderingPipeline | null = null;
-      if (SSAORenderingPipeline.IsSupported) {
+      if (engine.getCaps().ssao) {
         ssao = new SSAORenderingPipeline("ssao", scene, 0.5, [camera]);
       } else {
         console.warn("SSAO is not supported on this browser/hardware.");
