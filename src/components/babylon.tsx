@@ -64,7 +64,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
 
       // Tải HDRI để cải thiện chất lượng model và đảm bảo nó được tải xong trước khi sử dụng
       const hdrTexture = new CubeTexture(
-        "/env/environment.env", 
+        "/env/environment.env",
         scene,
         null, // extensions
         false, // noMipmap

@@ -10,7 +10,7 @@ import BigBanner from './../components/BigBanner/BigBanner.tsx'
 
 
 const HomePage = () => {
-    const lamborghini_model_Revuelto = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Lamborghini%20Revuelto.glb";
+    const lamborghini_model_Revuelto = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Lamborghini%20Terzo%20Millennio.glb";
     return (
         <div className="home-page">
             <Header />
