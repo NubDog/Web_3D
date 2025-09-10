@@ -106,22 +106,60 @@ export const handleGetCustomerById = async (env: Env, id: string) => {
 /**
  * Lấy thông tin khách hàng dựa trên ID người dùng (nguoi_dung_id)
  */
+// export const handleGetCustomerByUserId = async (env: Env, userId: string) => {
+//     try {
+//         if (!userId) {
+//             return jsonResponse({ success: false, error: 'Thiếu ID người dùng' }, 400);
+//         }
+
+//         const customer = await env.DB.prepare(
+//             `SELECT * FROM KhachHang WHERE nguoi_dung_id = ?`
+//         ).bind(userId).first();
+
+//         if (!customer) {
+//             return jsonResponse({ success: false, error: 'Không tìm thấy hồ sơ khách hàng cho người dùng này' }, 404);
+//         }
+
+//         return jsonResponse({ success: true, data: customer });
+
+//     } catch (e: any) {
+//         return jsonResponse({ success: false, error: 'Lỗi truy vấn cơ sở dữ liệu', details: e.message }, 500);
+//     }
+// };
+
 export const handleGetCustomerByUserId = async (env: Env, userId: string) => {
+    if (!userId) {
+        return jsonResponse({ success: false, error: 'Thiếu ID người dùng' }, 400);
+    }
     try {
-        if (!userId) {
-            return jsonResponse({ success: false, error: 'Thiếu ID người dùng' }, 400);
+        const query = `
+            SELECT
+                kh.khach_hang_id,
+                kh.ho_ten,
+                kh.ngay_sinh,
+                kh.dia_chi,
+                kh.thanh_pho,
+                kh.tinh,
+                kh.avatar,
+                nd.nguoi_dung_id,
+                nd.ten_dang_nhap,
+                nd.email,
+                nd.vai_tro,
+                kh.ma_buu_chinh,
+                nd.trang_thai,
+                nd.ngay_tao,
+                nd.ngay_cap_nhat
+            FROM KhachHang kh
+            LEFT JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
+            WHERE kh.nguoi_dung_id = ?;
+        `;
+        const { results } = await env.DB.prepare(query).bind(userId).all();
+
+        if (results && results.length > 0) {
+            return jsonResponse({ success: true, data: results[0] });
+        } else {
+            return jsonResponse({ success: false, error: 'Không tìm thấy khách hàng' }, 404);
         }
-
-        const customer = await env.DB.prepare(
-            `SELECT * FROM KhachHang WHERE nguoi_dung_id = ?`
-        ).bind(userId).first();
-
-        if (!customer) {
-            return jsonResponse({ success: false, error: 'Không tìm thấy hồ sơ khách hàng cho người dùng này' }, 404);
-        }
-
-        return jsonResponse({ success: true, data: customer });
-
     } catch (e: any) {
         return jsonResponse({ success: false, error: 'Lỗi truy vấn cơ sở dữ liệu', details: e.message }, 500);
     }
@@ -149,7 +187,7 @@ export const handleUpdateCustomer = async (request: Request, env: Env, id: strin
             `UPDATE KhachHang SET 
                 nguoi_dung_id = ?, ho_ten = ?, ngay_sinh = ?, dia_chi = ?, 
                 thanh_pho = ?, tinh = ?, ma_buu_chinh = ?, quoc_gia = ?, 
-                ngay_cap_nhat = datetime('now', '+7 hours') 
+                ngay_cap_nhat = datetime('now', '+7 hours'), avatar = ?
              WHERE khach_hang_id = ?`
         ).bind(
             body.nguoi_dung_id,
@@ -160,6 +198,7 @@ export const handleUpdateCustomer = async (request: Request, env: Env, id: strin
             body.thanh_pho,
             body.ma_buu_chinh || null,
             body.quoc_gia || null,
+            body.avatar,
             id
         );
         const result = await stmt.run();

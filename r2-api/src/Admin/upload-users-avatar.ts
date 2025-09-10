@@ -21,7 +21,7 @@ export const handleImageUpload = async (request: Request, env: Env) => {
             httpMetadata: { contentType: file.type },
         });
 
-        const publicUrl = `https://pub-37009d2027064d8a8bd8177645558bda.r2.dev/${uniqueKey}`;
+        const publicUrl = `https://pub-835d991ae08743e2937fa6d3c13f82df.r2.dev/${uniqueKey}`;
         
         return jsonResponse({ success: true, url: publicUrl });
 
