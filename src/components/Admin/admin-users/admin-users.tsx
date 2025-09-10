@@ -341,7 +341,7 @@ const UserAdmin: React.FC = () => {
                                                 <>
                                                     <Link 
                                                         to={`/admin/users/${user.nguoi_dung_id}/customer-detail`}
-                                                        className="actionButton viewButton"
+                                                        className={`${styles.actionButton} ${styles.viewButton}`}
                                                     >
                                                         Xem
                                                     </Link>

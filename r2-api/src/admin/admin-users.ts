@@ -1,5 +1,5 @@
 
-import { validateCustomerData } from '../Admin/admin-customers';
+import { validateCustomerData } from '../admin/admin-customers';
 interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
@@ -144,6 +144,11 @@ export const handleUpdateUser = async (request: Request, env: Env, id: string) =
     ).bind(body.TenDangNhap, body.HoTen, body.Email, body.SoDienThoai || null, body.VaiTro,  id);
 
     await stmt.run();
+    const stmt2 = env.DB.prepare(
+        `UPDATE KhachHang set ho_ten =?, ngay_cap_nhat = datetime('now', '+7 hours') WHERE nguoi_dung_id = ?`
+    ).bind(body.HoTen,id)
+    await stmt2.run();
+
     return jsonResponse({ success: true, message: 'Cập nhật người dùng thành công' });
 };
 
