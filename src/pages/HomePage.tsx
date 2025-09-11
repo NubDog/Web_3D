@@ -12,6 +12,7 @@ import BigBanner from './../components/BigBanner/BigBanner.tsx'
 const HomePage = () => {
     // Model từ URL bên ngoài
     const lamborghini_model_Revuelto = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Lamborghini%20Terzo%20Millennio.glb";
+    const Honda_model_Vino = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/vino.glb"; // dùng 4G thì nên đóng dòng này lại không là nó bú sạch dữ liệu đấy
 
     return (
         <div className="home-page">
@@ -28,6 +29,14 @@ const HomePage = () => {
                 link_content="Tìm hiểu thêm"
                 link_sub_content="Thuê Hypercar"
                 model_url={lamborghini_model_Revuelto}
+            />
+
+            <BigBanner 
+                main_title="Motorbike" 
+                sub_title="Giới thiệu dòng Motorbike" 
+                link_content="Tìm hiểu thêm"
+                link_sub_content="Thuê Motorbike"
+                model_url={Honda_model_Vino}
             />
         </div>
     )
