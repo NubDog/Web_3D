@@ -21,6 +21,8 @@
   --white-blue: #F0F4F8;
   --text-gray: #111827;
   --background-gray: rgba(22, 22, 23, .8);
+  --background-dark-car: #E0E0E0;
+  --background-light-car: #1E1E1E;
 
   margin: 0;
   padding: 0; 

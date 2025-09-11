@@ -3,9 +3,9 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    background-color: #f5f5f7;
+    /* background-color: var(--background-dark-car); */
     width: 100vw;
-    height: 892px;
+    height: 790px;
     overflow: hidden;
 }
 
@@ -79,4 +79,12 @@
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
+}
+
+#hypercar-banner {
+    background-color: var(--background-dark-car);
+}
+
+#suv-banner {
+    background-color: var(--background-light-car);
 }

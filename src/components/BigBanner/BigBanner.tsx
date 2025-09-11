@@ -1,4 +1,3 @@
-import React from 'react';
 import '../../styles/BigBanner/BigBanner.css'
 import LinkA from '../LinkA/linkA.tsx'
 import BabylonScene from '../babylon.tsx'
@@ -10,11 +9,12 @@ interface BigbannerProps {
     link_content: string;
     link_sub_content: string;
     model_url: string;
+    id?: string;
 }
 
-const BigBanner = ({main_title, sub_title, link_content, link_sub_content, model_url}: BigbannerProps) => {
+const BigBanner = ({main_title, sub_title, link_content, link_sub_content, model_url, id}: BigbannerProps) => {
     return (
-        <div className="big-banner">
+        <div className="big-banner" id={id}>
             <div className="model-container">
                 <div className="model-container-inner">
                     <BabylonScene modelUrl={model_url} />
