@@ -84,3 +84,14 @@ button {
     transform: translateY(0);
   }
 }
+
+@keyframes down-to-up {
+  0% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

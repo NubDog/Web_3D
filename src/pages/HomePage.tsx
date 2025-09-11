@@ -12,7 +12,7 @@ import BigBanner from './../components/BigBanner/BigBanner.tsx'
 const HomePage = () => {
     // Model từ URL bên ngoài
     const Lamborghini_model_Millennio = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Lamborghini%20Terzo%20Millennio.glb";
-    const Mercedes_model_Maybach = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Mersedes%20Benz%20Maybach%20GLS%20600.glb"; // dùng 4G thì nên đóng dòng này lại không là nó bú sạch dữ liệu đấy
+    const Lamborghini_model_Urus = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/glb.glb"; // dùng 4G thì nên đóng dòng này lại không là nó bú sạch dữ liệu đấy
 
     return (
         <div className="home-page">
@@ -50,7 +50,7 @@ const HomePage = () => {
                 sub_title="Giới thiệu dòng SUV" 
                 link_content="Tìm hiểu thêm"
                 link_sub_content="Thuê SUV"
-                model_url={Mercedes_model_Maybach}
+                model_url={Lamborghini_model_Urus}
             />
 
             <button className="suv-button-view" onClick={() => {
@@ -58,6 +58,8 @@ const HomePage = () => {
             }}>
                 <i className="icon-down fa-solid fa-angle-down"></i>
             </button>
+
+
         </div>
     )
 }

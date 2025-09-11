@@ -80,3 +80,8 @@
     outline: none !important;
     box-shadow: none !important;
 }
+
+.suv-banner {
+    animation: down-to-up 2s ease-in-out;
+    will-change: transform;
+}
