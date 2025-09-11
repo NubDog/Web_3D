@@ -23,11 +23,13 @@
 
 .suv-button-view {
     height: 100px;
-    width: 200px;
+    width: 100vw;
+    cursor: pointer;
 
-    background-color: red;
+    background-color: var(--background-dark-car);
 }
 
 .icon-down {
     font-size: 100px;
+    animation: up-down 2s infinite;
 }
