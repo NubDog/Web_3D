@@ -9,12 +9,9 @@ import {
     SceneLoader,
     Color4,
     CubeTexture,
-    Texture,
     PBRMaterial,
-    HDRCubeTexture,
     ImageProcessingConfiguration,
-    GlowLayer,
-    SSAORenderingPipeline
+    GlowLayer
 } from '@babylonjs/core';
 
 import '@babylonjs/loaders/glTF';
@@ -42,18 +39,12 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       // Set màu nền background (trong suốt)
       scene.clearColor = new Color4(0, 0, 0, 0);
 
-      const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 600, Vector3.Zero(), scene);
+      const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 2, Vector3.Zero(), scene); // Khoảng cách camera = 2 unit (2 mét)
       camera.attachControl(reactCanvas.current, true);
       camera.wheelPrecision = 50; // Tăng tốc độ zoom
 
-      // Thêm hiệu ứng SSAO để tăng chiều sâu và độ chân thực
-      // Cần kiểm tra xem trình duyệt có hỗ-trợ không trước khi khởi tạo
-      let ssao: SSAORenderingPipeline | null = null;
-      if (engine.getCaps().ssao) {
-        ssao = new SSAORenderingPipeline("ssao", scene, 0.5, [camera]);
-      } else {
-        console.warn("SSAO is not supported on this browser/hardware.");
-      }
+      // SSAO bị tạm thời vô hiệu hóa vì gây lỗi postProcess
+      // let ssao: SSAORenderingPipeline | null = null;
 
       // Thêm hiệu ứng Glow để làm đèn và các chi tiết phát sáng
       const glowLayer = new GlowLayer("glow", scene);
@@ -72,7 +63,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
         () => {
           // Callback này chỉ chạy KHI texture đã tải xong
           scene.environmentTexture = hdrTexture;
-          scene.createDefaultSkybox(hdrTexture, true, 1000, 0.3); // <-- Vô hiệu hóa dòng này để ẩn background
+          // scene.createDefaultSkybox(hdrTexture, true, 1000, 0.3); // <-- Vô hiệu hóa dòng này để ẩn background
         },
         (message, exception) => {
           // log ra lỗi nếu không tải được texture
@@ -87,29 +78,52 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
         }
       });
       
-      SceneLoader.ImportMesh("", "", modelUrl, scene, (meshes) => {
-        // Tự động điều chỉnh camera để nhìn thấy toàn bộ model
-        scene.createDefaultCameraOrLight(true, true, true);
-        if (scene.activeCamera) {
-            const arcRotateCamera = scene.activeCamera as ArcRotateCamera;
-            arcRotateCamera.alpha += Math.PI / 2; // Xoay camera để nhìn từ phía bên hông
-            arcRotateCamera.radius = meshes[0].getBoundingInfo().boundingSphere.radius * 2; // Điều chỉnh khoảng cách zoom để gần hơn
+      SceneLoader.ImportMesh("", "", modelUrl, scene, 
+        (meshes) => {
+          // Success callback
+          console.log("Model loaded successfully with", meshes.length, "meshes");
+          
+          if (meshes.length > 0) {
+            // Tính toán bounding box của toàn bộ model
+            const boundingInfo = meshes[0].getBoundingInfo();
+            const modelSize = boundingInfo.boundingSphere.radius;
+            
+            // Điều chỉnh camera để nhìn thấy toàn bộ model với khoảng cách 2 mét
+            camera.radius = Math.max(4, modelSize * 0.8); // Tối thiểu 2m, tối đa theo kích thước model
+            camera.alpha = -Math.PI; // Xoay camera để nhìn từ phía bên hông
+            camera.beta = Math.PI / 2.5; // Góc nhìn từ trên xuống một chút
+            
+            console.log("Camera distance adjusted to:", camera.radius, "units");
           }
 
-        // Nâng cấp chất liệu để trông giống sơn xe hơi cao cấp
-        meshes.forEach(mesh => {
-            if (mesh.material && mesh.material instanceof PBRMaterial) {
-                const pbr = mesh.material as PBRMaterial;
-                pbr.metallic = 0.7; // Tăng tối đa độ kim loại để phản chiếu mạnh hơn
-                pbr.roughness = 1; // Giảm mạnh độ nhám để bề mặt cực bóng và phản chiếu rõ nét
+          // Nâng cấp chất liệu để trông giống sơn xe hơi cao cấp
+          meshes.forEach(mesh => {
+              if (mesh.material && mesh.material instanceof PBRMaterial) {
+                  const pbr = mesh.material as PBRMaterial;
+                  pbr.metallic = 0.7; // Tăng độ kim loại để phản chiếu mạnh hơn
+                  pbr.roughness = 0.1; // Giảm độ nhám để bề mặt bóng và phản chiếu rõ nét (0 = cực bóng, 1 = rất thô)
 
-                // Thêm lớp sơn bóng (clear coat) để tạo chiều sâu
-                pbr.clearCoat.isEnabled = true;
-                pbr.clearCoat.intensity = 0.4; // Tăng cường độ lớp sơn bóng
-                pbr.clearCoat.roughness = 0.2;
-            }
-        });
-      });
+                  // Thêm lớp sơn bóng (clear coat) để tạo chiều sâu
+                  pbr.clearCoat.isEnabled = true;
+                  pbr.clearCoat.intensity = 0.4; // Tăng cường độ lớp sơn bóng
+                  pbr.clearCoat.roughness = 0.1; // Lớp sơn bóng mịn
+              }
+          });
+        },
+        (progress) => {
+          // Progress callback
+          console.log("Loading progress:", Math.round((progress.loaded / progress.total) * 100) + "%");
+        },
+        (_, message, exception) => {
+          // Error callback
+          console.error("Lỗi khi tải model 3D:", message);
+          console.error("Model URL:", modelUrl);
+          console.error("Exception:", exception);
+          
+          // Thêm thông báo lỗi cho user
+          alert(`Không thể tải model 3D!\nLỗi: ${message}\nVui lòng kiểm tra đường dẫn: ${modelUrl}`);
+        }
+      );
 
       engine.runRenderLoop(() => {
         scene.render();
@@ -123,9 +137,6 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
 
       return () => {
         window.removeEventListener("resize", resize);
-        if (ssao) {
-          ssao.dispose();
-        }
         glowLayer.dispose();
         engine.dispose();
       };
