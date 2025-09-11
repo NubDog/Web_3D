@@ -38,6 +38,12 @@ const HomePage = () => {
                 <i className="icon-down fa-solid fa-angle-down"></i>
             </button>
 
+            <button className="suv-button-view" onClick={() => {
+                document.getElementById('hypercar-banner')?.scrollIntoView({ behavior: 'smooth' });
+            }}>
+                <i className="icon-up fa-solid fa-angle-up"></i>
+            </button>
+
             <BigBanner
                 id="suv-banner"
                 main_title="SUV"
@@ -46,6 +52,12 @@ const HomePage = () => {
                 link_sub_content="Thuê SUV"
                 model_url={Mercedes_model_Maybach}
             />
+
+            <button className="suv-button-view" onClick={() => {
+                document.getElementById('hypercar-banner')?.scrollIntoView({ behavior: 'smooth' });
+            }}>
+                <i className="icon-down fa-solid fa-angle-down"></i>
+            </button>
         </div>
     )
 }

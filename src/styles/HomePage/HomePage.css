@@ -29,7 +29,10 @@
     background-color: var(--background-dark-car);
 }
 
-.icon-down {
+
+
+.icon-down, .icon-up {
     font-size: 100px;
     animation: up-down 2s infinite;
+    will-change: transform;
 }
