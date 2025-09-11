@@ -42,6 +42,41 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       const camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 2, Vector3.Zero(), scene); // Khoảng cách camera = 2 unit (2 mét)
       camera.attachControl(reactCanvas.current, true);
       camera.wheelPrecision = 50; // Tăng tốc độ zoom
+      camera.pinchPrecision = 200; // Tăng độ nhạy pinch-to-zoom cho touchpad
+      
+      // Cài đặt zoom mượt mà hơn khi ở gần model
+      camera.inertia = 0.9; // Giảm inertia để zoom chính xác hơn
+      camera.panningInertia = 0.9; // Giảm inertia cho pan
+      
+      // Đặt giới hạn zoom để tránh zoom quá xa, cho phép zoom gần vào bên trong model
+      camera.lowerRadiusLimit = 0.01; // Cho phép zoom rất gần (1cm) để xem bên trong
+      camera.upperRadiusLimit = 20; // Zoom xa nhất = 20 mét
+      
+      // Điều chỉnh near/far plane để hiển thị tốt khi zoom gần
+      camera.minZ = 0.001; // Near plane rất gần (1mm) để không cắt model khi zoom
+      camera.maxZ = 1000; // Far plane xa để không mất model
+
+      // Ngăn chặn wheel events từ canvas lan ra ngoài (zoom cả trang web)
+      const canvas = reactCanvas.current;
+      
+      const preventWheelZoom = (event: WheelEvent) => {
+        // Chỉ ngăn chặn wheel events (touchpad zoom và mouse wheel)
+        event.preventDefault();
+        event.stopPropagation();
+      };
+
+      const preventTouchZoom = (event: TouchEvent) => {
+        // Chỉ ngăn chặn khi có 2 fingers trở lên (pinch-to-zoom gesture)
+        if (event.touches.length > 1) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+      };
+
+      // Thêm event listeners
+      canvas.addEventListener('wheel', preventWheelZoom, { passive: false });
+      canvas.addEventListener('touchstart', preventTouchZoom, { passive: false });
+      canvas.addEventListener('touchmove', preventTouchZoom, { passive: false });
 
       // SSAO bị tạm thời vô hiệu hóa vì gây lỗi postProcess
       // let ssao: SSAORenderingPipeline | null = null;
@@ -107,6 +142,10 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
                   pbr.clearCoat.isEnabled = true;
                   pbr.clearCoat.intensity = 0.4; // Tăng cường độ lớp sơn bóng
                   pbr.clearCoat.roughness = 0.1; // Lớp sơn bóng mịn
+                  
+                  // Cho phép hiển thị cả hai mặt khi zoom vào bên trong model
+                  pbr.backFaceCulling = false; // Hiển thị cả mặt trước và mặt sau
+                  pbr.twoSidedLighting = true; // Ánh sáng chiếu cả hai mặt
               }
           });
         },
@@ -137,13 +176,33 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
 
       return () => {
         window.removeEventListener("resize", resize);
+        
+        // Cleanup event listeners để tránh memory leaks
+        if (canvas) {
+          canvas.removeEventListener('wheel', preventWheelZoom);
+          canvas.removeEventListener('touchstart', preventTouchZoom);
+          canvas.removeEventListener('touchmove', preventTouchZoom);
+        }
+        
         glowLayer.dispose();
         engine.dispose();
       };
     }
   }, [modelUrl]);
 
-  return <canvas ref={reactCanvas} style={{ width: '100%', height: '100%' }} />;
+  return (
+    <canvas 
+      ref={reactCanvas} 
+      tabIndex={-1} // Cho phép canvas nhận focus để xử lý events
+      style={{ 
+        width: '100%', 
+        height: '100%',
+        touchAction: 'none', // Ngăn chặn default touch behaviors (quan trọng!)
+        userSelect: 'none', // Ngăn chặn text selection
+        outline: 'none' // Xóa outline khi focus
+      }} 
+    />
+  );
 };
 
 export default BabylonScene;
