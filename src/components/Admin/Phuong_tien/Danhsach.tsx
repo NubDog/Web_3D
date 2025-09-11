@@ -1,7 +1,6 @@
-import React, { useState, useEffect, type FormEvent } from "react";
-import "../css/PhuongTienList.css"; // Import your CSS file for styling
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-// Define the data types
 export interface PhuongTien {
   phuong_tien_id: number;
   ten_phuong_tien: string;
@@ -27,20 +26,13 @@ export interface ApiResponse {
 
 // The main component
 const PhuongTienList: React.FC = () => {
-  const API_BASE_URL = ""; // Replace with your actual API URL
-
   // States for the list, loading, and errors
   const [phuongTien, setPhuongTien] = useState<PhuongTien[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // States for Modals
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // States for Modals (Chỉ giữ lại modal Xóa)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  // States for managing the current item
-  const [currentPhuongTien, setCurrentPhuongTien] =
-    useState<Partial<PhuongTien> | null>(null);
   const [phuongTienIdToDelete, setPhuongTienIdToDelete] = useState<
     number | null
   >(null);
@@ -102,61 +94,6 @@ const PhuongTienList: React.FC = () => {
     fetchPhuongTien();
   }, []);
 
-  // Open the Add/Edit Modal
-  const handleOpenModal = (item: PhuongTien | null = null) => {
-    setCurrentPhuongTien(item ? { ...item } : {});
-    setIsModalOpen(true);
-  };
-
-  // Close the Add/Edit Modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setCurrentPhuongTien(null);
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const data: Partial<PhuongTien> = {
-      ten_phuong_tien: formData.get("ten_phuong_tien") as string,
-      bien_so: formData.get("bien_so") as string,
-      so_km: Number(formData.get("so_km")),
-      trang_thai: formData.get("trang_thai") as string,
-      gia_co_ban: Number(formData.get("gia_co_ban")),
-      tien_coc_mac_dinh: Number(formData.get("tien_coc_mac_dinh")),
-      loai: formData.get("loai") as string,
-      danh_muc_id: Number(formData.get("danh_muc_id")),
-      chinh_sach_id: Number(formData.get("chinh_sach_id")),
-      so_khung: formData.get("so_khung") as string,
-    };
-
-    const url = currentPhuongTien?.phuong_tien_id
-      ? `${API_BASE_URL}/api/Admin/phuong-tien/${currentPhuongTien.phuong_tien_id}`
-      : `${API_BASE_URL}/api/Admin/phuong-tien`;
-    const method = currentPhuongTien?.phuong_tien_id ? "PUT" : "POST";
-
-    try {
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      if (response.ok && result.success) {
-        showToast(result.message || "Thao tác thành công!");
-        handleCloseModal();
-        fetchPhuongTien(); // Re-fetch the data to update the table
-      } else {
-        throw new Error(result.error || "Thao tác thất bại.");
-      }
-    } catch (err: any) {
-      showToast(`Lỗi: ${err.message}`, true);
-    }
-  };
-
   // Open the Delete Confirmation Modal
   const handleDeleteClick = (id: number) => {
     setPhuongTienIdToDelete(id);
@@ -188,72 +125,92 @@ const PhuongTienList: React.FC = () => {
 
   // JSX render logic
   if (loading) {
-    return <div className="phuong-tien-container">Đang tải dữ liệu...</div>;
+    return (
+      <div className="phuong-tien-container p-8 bg-gray-50 rounded-xl shadow-lg m-8 max-w-6xl mx-auto overflow-x-auto">
+        Đang tải dữ liệu...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="phuong-tien-container">Lỗi: {error}</div>;
+    return (
+      <div className="phuong-tien-container p-8 bg-gray-50 rounded-xl shadow-lg m-8 max-w-6xl mx-auto overflow-x-auto">
+        Lỗi: {error}
+      </div>
+    );
   }
 
   return (
-    <div className="phuong-tien-container">
-      <div className="table-header">
-        <h2 className="title">Danh sách Phương tiện</h2>
-        <button className="add-button" onClick={() => handleOpenModal()}>
-          + Thêm Phương tiện
-        </button>
+    <div className="phuong-tien-container p-8 bg-gray-50 rounded-xl shadow-lg my-8 max-w-7xl mx-auto font-sans">
+      <div className="table-header flex justify-between items-center mb-6">
+        <h2 className="title text-2xl font-semibold text-gray-800">
+          Danh sách Phương tiện
+        </h2>
+        {/* Nút Thêm bây giờ là một Link */}
+        <Link to="them" className="add-button-link no-underline">
+          <button className="add-button bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-colors">
+            + Thêm Phương tiện
+          </button>
+        </Link>
       </div>
 
-      <div className="table-responsive">
-        <table className="phuong-tien-table">
+      <div className="table-responsive overflow-x-auto rounded-lg shadow-md">
+        <table className="phuong-tien-table min-w-full bg-white border-collapse rounded-lg">
           <thead>
-            <tr>
-              <th>STT</th>
-              <th>Tên Phương tiện</th>
-              <th>Biển số</th>
-              <th>Trạng thái</th>
-              <th>Giá cơ bản</th>
-              <th>Danh mục</th>
-              <th>Chính sách</th>
-              <th>Số khung</th>
-              <th>Số Km đã đi</th>
-              <th>Chức năng</th>
+            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+              <th className="py-3 px-6 text-left">STT</th>
+              <th className="py-3 px-6 text-left">Tên Phương tiện</th>
+              <th className="py-3 px-6 text-left">Biển số</th>
+              <th className="py-3 px-6 text-left">Trạng thái</th>
+              <th className="py-3 px-6 text-left">Giá cơ bản</th>
+              <th className="py-3 px-6 text-left">Danh mục</th>
+              <th className="py-3 px-6 text-left">Chính sách</th>
+              <th className="py-3 px-6 text-left">Số khung</th>
+              <th className="py-3 px-6 text-left">Số Km đã đi</th>
+              <th className="py-3 px-6 text-center">Chức năng</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-gray-600 text-sm font-light">
             {phuongTien.map((item, index) => (
-              <tr key={item.phuong_tien_id}>
-                <td>{index + 1}</td>
-                <td>{item.ten_phuong_tien}</td>
-                <td>{item.bien_so}</td>
-                <td>
+              <tr
+                key={item.phuong_tien_id}
+                className="border-b border-gray-200 hover:bg-gray-100"
+              >
+                <td className="py-3 px-6 text-left whitespace-nowrap">
+                  {index + 1}
+                </td>
+                <td className="py-3 px-6 text-left">{item.ten_phuong_tien}</td>
+                <td className="py-3 px-6 text-left">{item.bien_so}</td>
+                <td className="py-3 px-6 text-left">
                   <span
-                    className={`status ${
+                    className={`status py-1 px-3 rounded-full text-xs font-semibold ${
                       item.trang_thai === "Hoạt động"
-                        ? "active"
+                        ? "bg-green-500 text-white"
                         : item.trang_thai === "Bảo trì"
-                        ? "maintenance"
-                        : "inactive"
+                        ? "bg-yellow-500 text-white"
+                        : "bg-red-500 text-white"
                     }`}
                   >
                     {item.trang_thai}
                   </span>
                 </td>
-                <td>{item.gia_co_ban.toLocaleString("vi-VN")} VNĐ</td>
-                <td>{item.ten_danh_muc}</td>
-                <td>{item.ten_chinh_sach}</td>
-                <td>{item.so_khung}</td>
-                <td>{item.so_km}</td>
-                <td>
-                  <div className="action-buttons">
+                <td className="py-3 px-6 text-left">
+                  {item.gia_co_ban.toLocaleString("vi-VN")} VNĐ
+                </td>
+                <td className="py-3 px-6 text-left">{item.ten_danh_muc}</td>
+                <td className="py-3 px-6 text-left">{item.ten_chinh_sach}</td>
+                <td className="py-3 px-6 text-left">{item.so_khung}</td>
+                <td className="py-3 px-6 text-left">{item.so_km}</td>
+                <td className="py-3 px-6 text-center">
+                  <div className="action-buttons flex item-center justify-center space-x-2">
+                    {/* Nút Sửa bây giờ là một Link */}
+                    <Link to={`them/${item.phuong_tien_id}`}>
+                      <button className="btn btn-edit bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 transition-colors">
+                        Sửa
+                      </button>
+                    </Link>
                     <button
-                      className="btn btn-edit"
-                      onClick={() => handleOpenModal(item)}
-                    >
-                      Sửa
-                    </button>
-                    <button
-                      className="btn btn-delete"
+                      className="btn btn-delete bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 transition-colors"
                       onClick={() => handleDeleteClick(item.phuong_tien_id)}
                     >
                       Xóa
@@ -266,140 +223,29 @@ const PhuongTienList: React.FC = () => {
         </table>
       </div>
 
-      {/* Thêm Modal cho Thêm/Sửa */}
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <form onSubmit={handleSubmit}>
-              <h2>
-                {currentPhuongTien?.phuong_tien_id
-                  ? "Sửa Phương tiện"
-                  : "Thêm Phương tiện"}
-              </h2>
-              <div className="form-group">
-                <label>Tên Phương tiện:</label>
-                <input
-                  type="text"
-                  name="ten_phuong_tien"
-                  defaultValue={currentPhuongTien?.ten_phuong_tien}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Biển số:</label>
-                <input
-                  type="text"
-                  name="bien_so"
-                  defaultValue={currentPhuongTien?.bien_so}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Số KM:</label>
-                <input
-                  type="number"
-                  name="so_km"
-                  defaultValue={currentPhuongTien?.so_km}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Trạng thái:</label>
-                <select
-                  name="trang_thai"
-                  defaultValue={currentPhuongTien?.trang_thai || "Hoạt động"}
-                  required
-                >
-                  <option value="Hoạt động">Hoạt động</option>
-                  <option value="Bảo trì">Bảo trì</option>
-                  <option value="Ngừng hoạt động">Ngừng hoạt động</option>
-                </select>
-              </div>
-              <div className="form-group">
-                <label>Giá cơ bản:</label>
-                <input
-                  type="number"
-                  name="gia_co_ban"
-                  defaultValue={currentPhuongTien?.gia_co_ban}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Tiền cọc:</label>
-                <input
-                  type="number"
-                  name="tien_coc_mac_dinh"
-                  defaultValue={currentPhuongTien?.tien_coc_mac_dinh}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Loại:</label>
-                <input
-                  type="text"
-                  name="loai"
-                  defaultValue={currentPhuongTien?.loai}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Danh mục ID:</label>
-                <input
-                  type="number"
-                  name="danh_muc_id"
-                  defaultValue={currentPhuongTien?.danh_muc_id}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Chính sách ID:</label>
-                <input
-                  type="number"
-                  name="chinh_sach_id"
-                  defaultValue={currentPhuongTien?.chinh_sach_id}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Số khung:</label>
-                <input
-                  type="text"
-                  name="so_khung"
-                  defaultValue={currentPhuongTien?.so_khung}
-                  required
-                />
-              </div>
-              <div className="form-actions">
-                <button type="button" onClick={handleCloseModal}>
-                  Hủy
-                </button>
-                <button type="submit">Lưu</button>
-              </div>
-            </form>
-            <button className="modal-close" onClick={handleCloseModal}>
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Modal Xóa */}
       {isDeleteModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content-small">
-            <h2>Xác nhận xóa</h2>
-            <p>
+        <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="modal-content-small bg-white p-8 rounded-xl text-center max-w-sm w-full shadow-lg">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              Xác nhận xóa
+            </h2>
+            <p className="text-gray-600 mb-6">
               Bạn có chắc chắn muốn xóa phương tiện này không? Hành động này
               không thể hoàn tác.
             </p>
-            <div className="form-actions">
-              <button type="button" onClick={() => setIsDeleteModalOpen(false)}>
+            <div className="form-actions flex justify-center space-x-4">
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="bg-gray-300 text-gray-800 py-2 px-6 rounded-lg font-medium hover:bg-gray-400 transition-colors"
+              >
                 Hủy
               </button>
               <button
                 type="submit"
                 onClick={confirmDelete}
-                className="btn-danger"
+                className="btn-danger bg-red-500 text-white py-2 px-6 rounded-lg font-medium hover:bg-red-600 transition-colors"
               >
                 Xóa
               </button>
@@ -411,9 +257,11 @@ const PhuongTienList: React.FC = () => {
       {/* Toast */}
       {toast.show && (
         <div
-          className={`toast ${toast.isError ? "toast-error" : "toast-success"}`}
+          className={`toast fixed bottom-8 right-8 py-3 px-6 rounded-lg text-white shadow-lg transition-opacity duration-300 z-50 ${
+            toast.isError ? "bg-red-500" : "bg-green-500"
+          }`}
         >
-          <p>{toast.message}</p>
+          <p className="font-semibold">{toast.message}</p>
         </div>
       )}
     </div>

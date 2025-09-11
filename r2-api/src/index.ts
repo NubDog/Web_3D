@@ -1,6 +1,6 @@
-import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser, handleToggleUserStatus } from './admin/admin-users';
+import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser, handleToggleUserStatus } from './Admin/admin-users';
 // import { Env } from './type';
-import * as PhuongTien from './admin/Phuong-tien';
+import * as PhuongTien from './Admin/Phuong-tien';
 import { handleGetCustomers, handleGetCustomerById, handleUpdateCustomer, handleGetCustomerByUserId } from './admin/admin-customers';
 import {
 	getDanhmucphuongtienid,
@@ -8,11 +8,11 @@ import {
 	Adddanhmucphuongtien,
 	deleteDanhmucphuongtien,
 	putDanhmucphuongtien,
-} from './admin/Danh-muc-phuong-tien';
-import { handleImageUpload } from './admin/upload-users-avatar';
+} from './Admin/Danh-muc-phuong-tien';
+import { getChinhSachGias } from './Admin/Chinh-sach-gia';
+import { handleImageUpload } from './Admin/upload-users-avatar';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile } from './r2-handler';
-
 
 interface Env {
 	ua: R2Bucket;
@@ -98,7 +98,7 @@ export default {
 			}
 
 			// Route cho người dùng
-			if (path=== '/api/users/upload-avatar' && method === 'POST') {
+			if (path === '/api/users/upload-avatar' && method === 'POST') {
 				return handleImageUpload(request, env);
 			}
 
@@ -182,6 +182,10 @@ export default {
 			} else if (path === '/Admin/danh-muc-phuong-tien') {
 				if (method === 'GET') return getDanhmucphuongtiens(request, env);
 				if (method === 'POST') return Adddanhmucphuongtien(request, env);
+			}
+			// Chính sách giá
+			if (path === '/Admin/chinh-sach-gia') {
+				if (method === 'GET') return getChinhSachGias(request, env);
 			}
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
