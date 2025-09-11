@@ -5,7 +5,7 @@
     flex-direction: column;
     background-color: #f5f5f7;
     width: 100vw;
-    height: 692px;
+    height: 892px;
     overflow: hidden;
 }
 
@@ -49,8 +49,34 @@
 
 .model-container {
     position: absolute;
-    margin-top: 20px;
+    top: 0;
+    /* margin-top: 120px; */
     left: 0;
     height: 100%;
     width: 100%;
+
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.model-container:focus,
+.model-container:focus-visible,
+.model-container * {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.model-container canvas {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.model-container canvas:focus,
+.model-container canvas:focus-visible {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }

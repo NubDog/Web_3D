@@ -50,7 +50,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
       
       // Đặt giới hạn zoom để tránh zoom quá xa, cho phép zoom gần vào bên trong model
       camera.lowerRadiusLimit = 0.01; // Cho phép zoom rất gần (1cm) để xem bên trong
-      camera.upperRadiusLimit = 20; // Zoom xa nhất = 20 mét
+      camera.upperRadiusLimit = 50; // Zoom xa nhất = 50 mét
       
       // Điều chỉnh near/far plane để hiển thị tốt khi zoom gần
       camera.minZ = 0.001; // Near plane rất gần (1mm) để không cắt model khi zoom
@@ -199,7 +199,10 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
         height: '100%',
         touchAction: 'none', // Ngăn chặn default touch behaviors (quan trọng!)
         userSelect: 'none', // Ngăn chặn text selection
-        outline: 'none' // Xóa outline khi focus
+        outline: 'none !important', // Xóa outline khi focus  
+        border: 'none !important', // Xóa border
+        boxShadow: 'none !important', // Xóa shadow nếu có
+        WebkitTapHighlightColor: 'transparent' // Xóa highlight trên mobile
       }} 
     />
   );

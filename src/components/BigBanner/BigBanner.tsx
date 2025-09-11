@@ -16,7 +16,9 @@ const BigBanner = ({main_title, sub_title, link_content, link_sub_content, model
     return (
         <div className="big-banner">
             <div className="model-container">
-                <BabylonScene modelUrl={model_url} />
+                <div className="model-container-inner">
+                    <BabylonScene modelUrl={model_url} />
+                </div>
             </div>
             <div className="content-banner">
                 <div className="banner-tittle">
