@@ -15,6 +15,7 @@ import {
 } from '@babylonjs/core';
 
 import '@babylonjs/loaders/glTF';
+import { normalizeModel } from '../utils/babylonUtils';
 
 interface BabylonProps {
   modelUrl: string;
@@ -119,14 +120,18 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
           console.log("Model loaded successfully with", meshes.length, "meshes");
           
           if (meshes.length > 0) {
-            // Tính toán bounding box của toàn bộ model
-            const boundingInfo = meshes[0].getBoundingInfo();
-            const modelSize = boundingInfo.boundingSphere.radius;
-            
-            // Điều chỉnh camera để nhìn thấy toàn bộ model với khoảng cách 2 mét
-            camera.radius = Math.max(4, modelSize * 0.8); // Tối thiểu 2m, tối đa theo kích thước model
-            camera.alpha = -Math.PI; // Xoay camera để nhìn từ phía bên hông
-            camera.beta = Math.PI / 2.5; // Góc nhìn từ trên xuống một chút
+            // Gom model vào một wrapper, scale và căn chỉnh
+            const modelWrapper = normalizeModel(meshes, scene);
+
+            // Cập nhật target của camera vào tâm của model đã chuẩn hóa
+            const bounds = modelWrapper.getHierarchyBoundingVectors(true);
+            const center = bounds.min.add(bounds.max).scale(0.5);
+            camera.target = center;
+
+            // Điều chỉnh camera để nhìn thấy toàn bộ model
+            camera.radius = 4; // Khoảng cách cố định vì model đã được scale
+            camera.alpha = -Math.PI / 1; // Nhìn từ phía trước
+            camera.beta = Math.PI / 2.5; // Hơi nhìn từ trên xuống
             
             console.log("Camera distance adjusted to:", camera.radius, "units");
           }
