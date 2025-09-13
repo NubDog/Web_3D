@@ -102,8 +102,8 @@ export const handleUpdateCccdSet = async (request: Request, env: Env, customerId
         const noi_cap = formData.get('noi_cap') as string ?? '';
         const ngay_cap = formData.get('ngay_cap') as string ?? '';
         const ngay_het_han = formData.get('ngay_het_han') as string ?? '';
-        const trang_thai = formData.get('trang_thai') as string ?? 'Pending'; // Mặc định là Pending
-        const adminId = 1; // Tạm thời hardcode, bạn nên lấy từ session/token sau này
+        const trang_thai = formData.get('trang_thai') as string ?? 'Chờ xac thực'; 
+        const adminId = 1; 
 
         // Cập nhật các trường text cho CẢ BỘ CCCD
         const updateTextQuery = `
