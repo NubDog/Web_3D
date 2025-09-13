@@ -23,7 +23,17 @@
 			"binding": "r2",
 			"bucket_name": "models-3d",
 			"preview_bucket_name": "models-3d-dev"
-		}
+		},
+		{
+			"binding": "ua",
+			"bucket_name": "user-avatar",
+			"preview_bucket_name": "user-avt-dev"
+		},
+		{
+			"binding": "kyc",
+			"bucket_name": "kyc-img",
+			"preview_bucket_name": "kyc-img"
+		},
 		// {
 		// 	"bucket_name": "models-3d-dev",
 		// 	"binding": "models_3d_dev"

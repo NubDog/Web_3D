@@ -1,7 +1,7 @@
 import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser, handleToggleUserStatus } from './Admin/admin-users';
 // import { Env } from './type';
 import * as PhuongTien from './Admin/Phuong-tien';
-import { handleGetCustomers, handleGetCustomerById, handleUpdateCustomer, handleGetCustomerByUserId } from './admin/admin-customers';
+import { handleGetCustomers, handleGetCustomerById, handleUpdateCustomer, handleGetCustomerByUserId } from './Admin/admin-customers';
 import {
 	getDanhmucphuongtienid,
 	getDanhmucphuongtiens,
@@ -11,6 +11,7 @@ import {
 } from './Admin/Danh-muc-phuong-tien';
 import { getChinhSachGias } from './Admin/Chinh-sach-gia';
 import { handleImageUpload } from './Admin/upload-users-avatar';
+import { handleGetKycDocuments, handleAddKycDocument,handleUpdateCccdSet } from './Admin/admin-KYC';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile } from './r2-handler';
 
@@ -19,6 +20,7 @@ interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
 	rental_db: D1Database;
+	kyc: R2Bucket;
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -41,6 +43,8 @@ export default {
 		const path = url.pathname;
 		const method = request.method;
 
+		 
+			
 		try {
 			if (path === '/upload' && method === 'POST') {
 				return handleUploadFile(request, env);
@@ -96,6 +100,23 @@ export default {
 					);
 				}
 			}
+
+			//kyc
+			const kycListMatch = path.match(/^\/api\/customers\/(\d+)\/kyc$/);
+            if (kycListMatch && method === 'GET') {
+                const customerId = kycListMatch[1];
+                return handleGetKycDocuments(env, customerId);
+            }
+            
+            const kycCccdSetMatch = path.match(/^\/api\/kyc\/cccd\/(\d+)$/);
+            if (kycCccdSetMatch && method === 'PUT') {
+                const customerId = kycCccdSetMatch[1];
+                return handleUpdateCccdSet(request, env, customerId);
+            }
+
+            if (path === '/api/kyc' && method === 'POST') {
+                return handleAddKycDocument(request, env);
+            }
 
 			// Route cho người dùng
 			if (path === '/api/users/upload-avatar' && method === 'POST') {
@@ -187,6 +208,8 @@ export default {
 			if (path === '/Admin/chinh-sach-gia') {
 				if (method === 'GET') return getChinhSachGias(request, env);
 			}
+
+			
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
 		} catch (e: any) {

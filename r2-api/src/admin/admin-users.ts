@@ -1,5 +1,5 @@
 
-import { validateCustomerData } from '../admin/admin-customers';
+import { validateCustomerData } from '../Admin/admin-customers';
 interface Env {
 	r2: R2Bucket;
 	DB: D1Database;

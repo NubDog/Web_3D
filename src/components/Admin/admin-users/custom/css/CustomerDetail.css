@@ -220,3 +220,438 @@
     background-color: #ff7c7c65;
     color: #ff0000;
 }
+
+.kyc-item-wrapper {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+.kyc-document-item-admin {
+    display: grid;
+    grid-template-columns: 200px 1fr 100px;
+    gap: 16px;
+    padding: 16px;
+    align-items: center;
+}
+.kyc-admin-preview {
+    width: 100%;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 6px;
+    background-color: #f0f2f5;
+}
+.kyc-doc-info p { margin: 4px 0; font-size: 14px; }
+.kyc-doc-actions { text-align: right; }
+
+.kyc-edit-form {
+    padding: 16px;
+    background-color: #f9fafb;
+}
+.kyc-edit-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.kyc-edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+}
+.modal-header h2{
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+}
+.modal-body h3, p{
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #555;
+}
+
+/* === NỀN VÀ KHUNG MODAL === */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content.kyc-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 28px;
+    font-weight: 300;
+    color: #888;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.modal-body {
+    padding: 24px;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+/* === CHẾ ĐỘ XEM DANH SÁCH (LIST VIEW) === */
+.kyc-list-actions {
+    margin-bottom: 16px;
+    text-align: right;
+}
+
+.kyc-document-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.kyc-document-item-admin {
+    display: grid;
+    grid-template-columns: 180px 1fr 100px;
+    gap: 16px;
+    padding: 16px;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: box-shadow 0.2s;
+}
+
+.kyc-document-item-admin:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+
+
+.kyc-doc-info p { 
+    margin: 2px 0; 
+    font-size: 14px; 
+    color: #555;
+}
+.kyc-doc-info p strong {
+    color: #111;
+}
+
+.kyc-doc-actions {
+    text-align: right;
+}
+
+
+/* === CHẾ ĐỘ FORM (SỬA VÀ THÊM MỚI) === */
+.kyc-form-view {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+}
+
+.kyc-edit-image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.kyc-edit-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-item-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.detail-item-modal .detail-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #555;
+}
+
+.kyc-form-actions {
+    grid-column: 1 / -1; /* Actions chiếm toàn bộ chiều rộng grid */
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Các nút bấm chung */
+.action-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    background-color: #4CAF50; /* Màu chính */
+    color: white;
+}
+.action-button:hover {
+    background-color: #45a049;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.action-button.secondary {
+    background-color: #f0f2f5;
+    color: #333;
+    border: 1px solid #dcdfe3;
+}
+.action-button.secondary:hover {
+    background-color: #e4e6e9;
+}
+
+/* === KHUNG MODAL CHUNG === */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.modal-content.kyc-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 850px; /* Tăng chiều rộng để chứa 2 cột */
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 28px;
+    font-weight: 300;
+    color: #9ca3af;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+}
+.close-button:hover {
+    color: #111827;
+}
+
+.modal-body {
+    padding: 24px;
+    max-height: 75vh;
+    overflow-y: auto;
+    background-color: #f9fafb;
+}
+
+/* === CHẾ ĐỘ XEM DANH SÁCH === */
+.kyc-list-view .kyc-list-actions {
+    margin-bottom: 16px;
+    text-align: right;
+}
+
+.kyc-document-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.kyc-document-item-admin {
+    display: grid;
+    grid-template-columns: 160px 1fr auto;
+    gap: 16px;
+    padding: 16px;
+    align-items: center;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+/* === CHẾ ĐỘ FORM (SỬA & THÊM) === */
+.kyc-form-view {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.kyc-add-form-full, .kyc-edit-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.kyc-upload-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    grid-column: 1 / -1; /* Chiếm toàn bộ hàng */
+}
+
+.kyc-form-inputs, .kyc-edit-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    grid-column: 1 / -1; /* Chiếm toàn bộ hàng */
+}
+
+.kyc-form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+
+/* === CÁC THÀNH PHẦN NHỎ === */
+
+/* Vùng upload ảnh */
+.kyc-edit-image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.kyc-image-upload-wrapper {
+    position: relative;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px dashed #d1d5db;
+    transition: border-color 0.2s;
+    height: 220px;
+}
+
+.kyc-image-upload-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.kyc-image-upload-wrapper:hover {
+    border-color: #4CAF50;
+}
+
+.kyc-admin-preview {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    display: block;
+}
+
+.kyc-image-upload-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(17, 24, 39, 0.6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.kyc-image-upload-wrapper:hover .kyc-image-upload-overlay {
+    opacity: 1;
+}
+
+.kyc-image-upload-wrapper{
+    position: relative;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px dashed #d1d5db;
+    transition: border-color 0.2s;
+    color: black !important;
+    text-align: center !important;
+    
+}
+
+.kyc-upload-icon {
+    width: 32px;
+    height: 32px;
+    fill: white;
+}
+
+/* Các trường input trong form */
+.detail-item-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.detail-item-modal .detail-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+}
+.detail-item-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
