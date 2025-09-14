@@ -101,10 +101,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Đảm bảo ảnh vừa với container */
-    z-index: 2; /* Nằm trên canvas */
-    transition: opacity 0.5s ease-in-out; /* Hiệu ứng mờ dần */
-    opacity: 1; /* Mặc định là nhìn thấy */
+    object-fit: cover;
+    transition: opacity 0.5s ease-in-out;
+    opacity: 1;
 }
 
 .model-container-inner canvas {
@@ -113,12 +112,10 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1; /* Nằm dưới ảnh placeholder */
     transition: opacity 0.5s ease-in-out;
-    opacity: 0; /* Mặc định là ẩn */
+    opacity: 0;
 }
 
-/* Khi đang loading */
 .model-container-inner.loading .placeholder-image {
     opacity: 1;
 }
@@ -126,10 +123,9 @@
     opacity: 0;
 }
 
-/* Khi đã loaded xong */
 .model-container-inner.loaded .placeholder-image {
     opacity: 0;
-    pointer-events: none; /* Vô hiệu hóa tương tác chuột với ảnh */
+    pointer-events: none;
 }
 .model-container-inner.loaded canvas {
     opacity: 1;
