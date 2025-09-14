@@ -6,7 +6,7 @@
     background-color: var(--background-dark-car);
     width: 100vw;
     height: 790px;
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
 .big-banner a {
@@ -25,6 +25,9 @@
     margin-top: 40px;
     width: 100%;
     gap: 20px;
+
+    animation: down-to-up 2s ease-in-out;
+    will-change: transform;
 }
 
 .content-title {
