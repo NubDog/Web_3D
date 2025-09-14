@@ -7,6 +7,7 @@ import './../components/Logo/logo.tsx'
 // import các components ở đây
 import Header from './../components/Header/header.tsx'
 import BigBanner from './../components/BigBanner/BigBanner.tsx'
+import placeholder_image_url from './../assets/Battfield 6.jpg';
 
 
 const HomePage = () => {
@@ -32,6 +33,7 @@ const HomePage = () => {
                 link_content="Tìm hiểu thêm"
                 link_sub_content="Thuê Hypercar"
                 model_url={Lamborghini_model_Millennio}
+                placeholder_image_url={placeholder_image_url}
             />
 
             <button className="suv-button-view" onClick={() => {
@@ -53,6 +55,7 @@ const HomePage = () => {
                 link_content="Tìm hiểu thêm"
                 link_sub_content="Thuê SUV"
                 model_url={Lamborghini_model_Urus}
+                placeholder_image_url={placeholder_image_url}
             />
 
             <button className="suv-button-view" onClick={() => {

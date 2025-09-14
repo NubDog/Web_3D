@@ -19,9 +19,10 @@ import { normalizeModel } from '../utils/babylonUtils';
 
 interface BabylonProps {
   modelUrl: string;
+  onModelLoaded?: () => void;
 }
 
-const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
+const BabylonScene: React.FC<BabylonProps> = ({ modelUrl, onModelLoaded }) => {
   const reactCanvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -153,6 +154,11 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
                   pbr.twoSidedLighting = true; // Ánh sáng chiếu cả hai mặt
               }
           });
+          
+          // Gọi callback khi model đã tải và xử lý xong
+          if (onModelLoaded) {
+            onModelLoaded();
+          }
         },
         (progress) => {
           // Progress callback
@@ -193,7 +199,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
         engine.dispose();
       };
     }
-  }, [modelUrl]);
+  }, [modelUrl, onModelLoaded]);
 
   return (
     <canvas 

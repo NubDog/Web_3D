@@ -9,7 +9,7 @@ interface danhMucPhuongTien {
 }
 
 interface Header {
-    id: string;
+    id?: string;
 }
 
 const Header = ({id}: Header) => {

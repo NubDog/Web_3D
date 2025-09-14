@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import '../../styles/BigBanner/BigBanner.css'
 import LinkA from '../LinkA/linkA.tsx'
 import BabylonScene from '../babylon.tsx'
@@ -9,15 +10,30 @@ interface BigbannerProps {
     link_content: string;
     link_sub_content: string;
     model_url: string;
+    placeholder_image_url: string;
     id?: string;
 }
 
-const BigBanner = ({main_title, sub_title, link_content, link_sub_content, model_url, id}: BigbannerProps) => {
+const BigBanner = ({main_title, sub_title, link_content, link_sub_content, model_url, placeholder_image_url, id}: BigbannerProps) => {
+    const [isModelLoading, setIsModelLoading] = useState(true);
+
+    const handleModelLoaded = () => {
+        setIsModelLoading(false);
+    };
+
     return (
         <div className="big-banner" id={id}>
             <div className="model-container">
-                <div className="model-container-inner">
-                    <BabylonScene modelUrl={model_url} />
+                <div className={`model-container-inner ${isModelLoading ? 'loading' : 'loaded'}`}>
+                    <img 
+                        src={placeholder_image_url} 
+                        alt="Loading 3D Model..." 
+                        className="placeholder-image"
+                    />
+                    <BabylonScene 
+                        modelUrl={model_url}
+                        onModelLoaded={handleModelLoaded}
+                    />
                 </div>
             </div>
             <div className="content-banner">
