@@ -15,12 +15,16 @@ import AdminLayout from "./components/Admin/adminLayout";
 
 // Import trang HomePage
 import HomePage from "./pages/HomePage";
+import EditComponents from "./components/EditComponents/EditComponents";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+
+        {/* Trang edit components */}
+        <Route path="/edit-components" element={<EditComponents />} />
 
         {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}
         <Route path="/admin" element={<AdminLayout />}>
