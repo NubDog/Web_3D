@@ -7,6 +7,15 @@
     width: 100vw;
     height: 790px;
     overflow: hidden !important;
+    opacity: 0;
+}
+
+.big-banner.visible {
+    opacity: 1;
+}
+
+.big-banner.hidden {
+    opacity: 0;
 }
 
 .big-banner a {
@@ -17,6 +26,12 @@
     width: 100%;
 }
 
+.big-banner.visible .content-banner {
+    animation: down-to-up 2s ease-in-out;
+    will-change: transform;
+    opacity: 1;
+}
+
 .content-banner {
     display: flex;
     flex-direction: column;
@@ -25,9 +40,6 @@
     margin-top: 40px;
     width: 100%;
     gap: 20px;
-
-    animation: down-to-up 2s ease-in-out;
-    will-change: transform;
 }
 
 .content-title {
@@ -118,15 +130,19 @@
 
 .model-container-inner.loading .placeholder-image {
     opacity: 1;
+    transition: opacity 1s ease-in-out;
 }
 .model-container-inner.loading canvas {
-    opacity: 0;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
 }
 
 .model-container-inner.loaded .placeholder-image {
     opacity: 0;
+    transition: opacity 1s ease-in-out;
     pointer-events: none;
 }
 .model-container-inner.loaded canvas {
     opacity: 1;
+    transition: opacity 1s ease-in-out;
 }

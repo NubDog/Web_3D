@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import './../styles/HomePage/HomePage.css';
 import './../components/BigBanner/BigBanner.tsx'
 import '../index.css'

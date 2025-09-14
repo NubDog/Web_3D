@@ -5,7 +5,7 @@
     /* height: 100vh; */
     overflow: hidden !important;
 
-    background-color: var(--background-gray);
+    background-color: var(--background-dark-car);
 }
 
 .ribbon {
@@ -14,7 +14,7 @@
     justify-content: center;
     height: 40px;
     width: 100%;
-    background-color: #1d1d1f;
+    background-color: var(--background-gray);
 }
 
 .ribbon a {
