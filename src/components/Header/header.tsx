@@ -8,7 +8,11 @@ interface danhMucPhuongTien {
     ten_danh_muc: string;
 }
 
-const Header = () => {
+interface Header {
+    id: string;
+}
+
+const Header = ({id}: Header) => {
     const [danhMucPhuongTien, setDanhMucPhuongTien] = useState<danhMucPhuongTien[]>([]);
     const [loading, setLoading] = useState(false);
 
@@ -32,7 +36,7 @@ const Header = () => {
     }, []);
 
     return (
-        <div className="header">
+        <div className="header" id={id}>
             <Logo />
             <ul className="header-menu">
                 <li className="header-menu_items"><a href="#">Cửa hàng</a></li>

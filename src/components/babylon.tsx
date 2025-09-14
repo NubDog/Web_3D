@@ -141,7 +141,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl }) => {
               if (mesh.material && mesh.material instanceof PBRMaterial) {
                   const pbr = mesh.material as PBRMaterial;
                   pbr.metallic = 0.7; // Tăng độ kim loại để phản chiếu mạnh hơn
-                  pbr.roughness = 0.1; // Giảm độ nhám để bề mặt bóng và phản chiếu rõ nét (0 = cực bóng, 1 = rất thô)
+                  pbr.roughness = 0.3; // Giảm độ nhám để bề mặt bóng và phản chiếu rõ nét (0 = cực bóng, 1 = rất thô)
 
                   // Thêm lớp sơn bóng (clear coat) để tạo chiều sâu
                   pbr.clearCoat.isEnabled = true;

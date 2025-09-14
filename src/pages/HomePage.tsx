@@ -16,7 +16,9 @@ const HomePage = () => {
 
     return (
         <div className="home-page">
-            <Header />
+            <Header 
+                id="header-home"
+            />
 
             <div className="ribbon">
                 <h2>Thanh toán hàng tháng thật dễ dàng. Bao gồm lựa chọn lãi suất 0%.</h2>
@@ -25,7 +27,7 @@ const HomePage = () => {
             
             <BigBanner 
                 id="hypercar-banner"
-                main_title="Hypercar" 
+                main_title="Hypercar"
                 sub_title="Giới thiệu dòng Hypercar" 
                 link_content="Tìm hiểu thêm"
                 link_sub_content="Thuê Hypercar"
@@ -39,7 +41,7 @@ const HomePage = () => {
             </button>
 
             <button className="suv-button-view" onClick={() => {
-                document.getElementById('hypercar-banner')?.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('header-home')?.scrollIntoView({ behavior: 'smooth' });
             }}>
                 <i className="icon-up fa-solid fa-angle-up"></i>
             </button>
