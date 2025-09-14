@@ -11,7 +11,9 @@ import placeholder_image_url from './../assets/Battfield 6.jpg';
 import SmallBanner from './../components/SmallBanner/SmallBanner.tsx'
 
 import helicopter_image from './../assets/Helicopters isometric.png';
-
+import flycam_image from './../assets/Mavic Pro Flycam.png';
+import motorcycle_image from './../assets/Ninja H2R.png';
+import vinfast_image from './../assets/Vinfast VF 9.png';
 
 const HomePage = () => {
     // Model từ URL bên ngoài
@@ -80,12 +82,32 @@ const HomePage = () => {
 
                 <SmallBanner
                     id="small-banner"
-                    title="HELICOPTERS"
-                    subtitle="Thoải mái ngắm thành phồ từ trên cao với những góc nhìn tuyệt vời."
-                    content="Thuê ngay trực thăng"
+                    title="Flycam"
+                    subtitle="Ghi lại những khoảnh khắc tuyệt vời nhất của bạn"
+                    content="Theo dõi để biết thêm chi tiết"
                     main_link="Tìm hiểu thêm"
-                    sub_link="Thuê trực thăng"
-                    image={helicopter_image}
+                    sub_link="Xem giá"
+                    image={flycam_image}
+                />
+
+                <SmallBanner
+                    id="small-banner"
+                    title="Motorcycle"
+                    subtitle="Cơn gió nhẹ nhàng lướt qua má bạn tựa như nụ hôn ngọt ngào của tình đầu"
+                    content="Thuê ngay xe máy để có trải nghiệm tuyệt vời nhất"
+                    main_link="Tìm hiểu thêm"
+                    sub_link="Xem giá"
+                    image={motorcycle_image}
+                />
+
+                <SmallBanner
+                    id="small-banner"
+                    title="Vinfast VF9"
+                    subtitle="Không gian rộng rãi đủ để chờ cả thế giới của bạn"
+                    content="Lên xe thôi nào!"
+                    main_link="Tìm hiểu thêm"
+                    sub_link="Xem giá"
+                    image={vinfast_image}
                 />
             </div>
 
