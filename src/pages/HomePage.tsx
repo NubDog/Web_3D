@@ -3,13 +3,14 @@ import './../styles/HomePage/HomePage.css';
 import './../components/BigBanner/BigBanner.tsx'
 import '../index.css'
 import './../components/Logo/logo.tsx'
+import './../components/Footer/Footer.tsx'
 
 // import các components ở đây
 import Header from './../components/Header/header.tsx'
 import BigBanner from './../components/BigBanner/BigBanner.tsx'
 import placeholder_image_url from './../assets/Battfield 6.jpg';
 import SmallBanner from './../components/SmallBanner/SmallBanner.tsx'
-
+import Footer from './../components/Footer/Footer.tsx'
 import helicopter_image from './../assets/Helicopters isometric.png';
 import flycam_image from './../assets/Mavic Pro Flycam.png';
 import motorcycle_image from './../assets/Ninja H2R.png';
@@ -112,7 +113,7 @@ const HomePage = () => {
             </div>
 
 
-
+            <Footer />
         </div>
     )
 }
