@@ -18,12 +18,15 @@ import HomePage from "./pages/HomePage";
 import EditComponents from "./components/EditComponents/EditComponents";
 import DanhMucPhuongTienList from "./components/Admin/Danh_muc_phuong_tien/Danhsachdanhmuc";
 import ChinhSachGiaList from "./components/Admin/Chinh_sach_gia/Danhsach";
+import Store from "./pages/Store";
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/store" element={<Store />} />
 
         {/* Trang edit components */}
         <Route path="/edit-components" element={<EditComponents />} />
