@@ -9,7 +9,7 @@ import {
 	deleteDanhmucphuongtien,
 	putDanhmucphuongtien,
 } from './Admin/Danh-muc-phuong-tien';
-import { getChinhSachGias } from './Admin/Chinh-sach-gia';
+import { addChinhSachGia, deleteChinhSachGia, getChinhSachGias, updateChinhSachGia } from './Admin/Chinh-sach-gia';
 import { handleImageUpload } from './Admin/upload-users-avatar';
 import { handleGetKycDocuments, handleAddKycDocument,handleUpdateCccdSet } from './Admin/admin-KYC';
 
@@ -205,8 +205,14 @@ export default {
 				if (method === 'POST') return Adddanhmucphuongtien(request, env);
 			}
 			// Chính sách giá
-			if (path === '/Admin/chinh-sach-gia') {
+			const chinhSachIdMatch = path.match(/^\/Admin\/chinh-sach-gia\/(\d+)$/);
+			if (chinhSachIdMatch) {
+				const id = chinhSachIdMatch[1];
+				if (method === 'PUT') return updateChinhSachGia(request, env, id);
+				if (method === 'DELETE') return deleteChinhSachGia(request, env, id);
+			} else if (path === '/Admin/chinh-sach-gia') {
 				if (method === 'GET') return getChinhSachGias(request, env);
+				if (method === 'POST') return addChinhSachGia(request, env);
 			}
 
 			

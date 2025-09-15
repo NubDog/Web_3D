@@ -16,6 +16,8 @@ import AdminLayout from "./components/Admin/adminLayout";
 // Import trang HomePage
 import HomePage from "./pages/HomePage";
 import EditComponents from "./components/EditComponents/EditComponents";
+import DanhMucPhuongTienList from "./components/Admin/Danh_muc_phuong_tien/Danhsachdanhmuc";
+import ChinhSachGiaList from "./components/Admin/Chinh_sach_gia/Danhsach";
 
 function App() {
   return (
@@ -38,6 +40,11 @@ function App() {
 
           <Route path="phuong-tien" element={<PhuongTienList />} />
           <Route path="phuong-tien/them/:id?" element={<PhuongTienModal />} />
+          <Route
+            path="danh-muc-phuong-tien"
+            element={<DanhMucPhuongTienList />}
+          />
+          <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
         </Route>
 
         {/* <Route path="/babylon" element={<BabylonTankViewer />} />
