@@ -35,7 +35,7 @@ const HomePage = () => {
             <BigBanner 
                 id="hypercar-banner"
                 main_title="Hypercar"
-                sub_title="Giới thiệu dòng Hypercar" 
+                sub_title="Đỉnh cao trong sự xa hoa" 
                 link_content="Tìm hiểu thêm"
                 link_sub_content="Thuê Hypercar"
                 model_url={Lamborghini_model_Millennio}
@@ -57,7 +57,7 @@ const HomePage = () => {
             <BigBanner
                 id="suv-banner"
                 main_title="SUV"
-                sub_title="Giới thiệu dòng SUV" 
+                sub_title="Dòng xe sinh ra là để dành cho gia đình" 
                 link_content="Tìm hiểu thêm"
                 link_sub_content="Thuê SUV"
                 model_url={Lamborghini_model_Urus}
