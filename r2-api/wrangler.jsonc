@@ -34,6 +34,12 @@
 			"bucket_name": "kyc-img",
 			"preview_bucket_name": "kyc-img"
 		},
+
+		{
+			"binding": "product",
+			"bucket_name": "product",
+			"preview_bucket_name": "product"
+		}
 		// {
 		// 	"bucket_name": "models-3d-dev",
 		// 	"binding": "models_3d_dev"

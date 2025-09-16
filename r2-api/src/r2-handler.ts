@@ -2,6 +2,7 @@ interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
 	rental_db: D1Database;
+	product: R2Bucket;
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -74,4 +75,20 @@ export async function handleListFiles(request: Request, env: Env): Promise<Respo
 export async function handleDeleteFile(request: Request, env: Env, key: string): Promise<Response> {
 	await env.r2.delete(key);
 	return jsonResponse({ success: true, message: `File ${key} deleted` });
+}
+
+export async function handleGetProductImage(request: Request, env: Env, key: string): Promise<Response> {
+    const object = await env.product.get(key);
+
+    if (object === null) {
+        return jsonResponse({ success: false, error: 'Product image not found' }, 404);
+    }
+
+    const headers = new Headers();
+    object.writeHttpMetadata(headers);
+    headers.set('etag', object.httpEtag);
+    headers.set('Cache-Control', 'public, max-age=31536000');
+    headers.set('Access-Control-Allow-Origin', '*');
+
+    return new Response(object.body, { headers });
 }

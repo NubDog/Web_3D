@@ -18,7 +18,8 @@ import vinfast_image from './../assets/Vinfast VF 9.png';
 
 const HomePage = () => {
     // Model từ URL bên ngoài
-    const Lamborghini_model_Millennio = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Lamborghini%20Terzo%20Millennio.glb";
+    // const Lamborghini_model_Millennio = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Lamborghini%20Terzo%20Millennio.glb";
+    const Lamborghini_model_Millennio = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/vespa.glb";
     const Lamborghini_model_Urus = "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Lamborghini%20Urus%20Performante.glb"; // dùng 4G thì nên đóng dòng này lại không là nó bú sạch dữ liệu đấy
 
     return (

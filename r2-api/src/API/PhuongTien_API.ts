@@ -14,7 +14,8 @@ const ALL_COLUMNS = [
     'chinh_sach_id',
     'so_khung',
     'ngay_tao',
-    'ngay_cap_nhat'
+    'ngay_cap_nhat',
+    'img'
 ];
 
 /**

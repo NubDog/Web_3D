@@ -15,7 +15,7 @@ import { handleGetKycDocuments, handleAddKycDocument,handleUpdateCccdSet } from 
 import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 
-import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile } from './r2-handler';
+import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
 
 interface Env {
 	ua: R2Bucket;
@@ -23,6 +23,7 @@ interface Env {
 	DB: D1Database;
 	rental_db: D1Database;
 	kyc: R2Bucket;
+	product: R2Bucket;
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -227,6 +228,11 @@ export default {
 				if (method === 'POST') return addChinhSachGia(request, env);
 			}
 
+			const productImageMatch = path.match(/^\/product-image\/(.+)/);
+			if (productImageMatch && method === 'GET') {
+				const key = decodeURIComponent(productImageMatch[1]);
+				return handleGetProductImage(request, env, key);
+			}
 			
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);

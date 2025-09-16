@@ -11,6 +11,7 @@ interface PhuongTien {
     gia_co_ban: number;
     chinh_sach_id: number;
     loai: string;
+    img?: string; // Sửa hinh_anh thành img
 }
 
 interface ChinhSachGia {
@@ -18,6 +19,8 @@ interface ChinhSachGia {
     gia_co_ban: number;
     ten_chinh_sach: string;
 }
+
+const product_image = "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Lamborghini%20Aventador%20SVJ.png"
 
 const Card = () => {
     const [phuongTien, setPhuongTien] = useState<PhuongTien[]>([]);
@@ -32,8 +35,8 @@ const Card = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch dữ liệu phương tiện
-                const fieldsPhuongTien = 'phuong_tien_id,ten_phuong_tien,trang_thai,chinh_sach_id,loai';
+                // Thêm 'img' vào danh sách fields
+                const fieldsPhuongTien = 'phuong_tien_id,ten_phuong_tien,trang_thai,chinh_sach_id,loai,img';
                 const response = await fetch(`${API_URL}?fields=${fieldsPhuongTien}`);
                 
                 // Fetch dữ liệu chính sách giá
@@ -61,7 +64,7 @@ const Card = () => {
                         };
                     });
 
-                    console.log('Dữ liệu đã join:', vehiclesWithPrice);
+                    // console.log('Dữ liệu đã join:', vehiclesWithPrice);
                     setPhuongTien(vehiclesWithPrice);
                     setChinhSachGia(resultChinhSachGia.data);
                 } else {
@@ -100,7 +103,14 @@ const Card = () => {
                     <div className="Card-content" key={pt.phuong_tien_id}>
                         <div className="Card-content-title-link">
                             <a href="#">
-                                <img src={Lamborghini_model_Sian} alt={pt.ten_phuong_tien} />
+                                <img 
+                                    src={pt.img || Lamborghini_model_Sian}
+                                    alt={pt.ten_phuong_tien}
+                                    onError={(e) => {
+                                        // Fallback nếu link ảnh lỗi
+                                        e.currentTarget.src = Lamborghini_model_Sian;
+                                    }}
+                                />
                             </a>
                         </div>
                         <div className="Card-content-title">
