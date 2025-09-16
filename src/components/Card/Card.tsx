@@ -91,14 +91,12 @@ const Card = () => {
         console.log('Lỗi rồi người ơi...: {error}');
     }
 
+    console.log(phuongTien);
+
     return (
         <div className="Card-container">
-            <div className="Card-title">
-                <span>Thế hệ mới nhất.</span>
-                Xem ngay có gì mới.
-            </div>
-
             <div className="Card-box">
+                <h2 className="Card-title">Thế hệ mới nhất.</h2>
                 {phuongTien.map((pt) => (
                     <div className="Card-content" key={pt.phuong_tien_id}>
                         <div className="Card-content-title-link">

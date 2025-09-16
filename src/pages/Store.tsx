@@ -9,6 +9,8 @@ import flycam from "./../assets/Mavic Pro Flycam.png";
 import motorbike from "./../assets/Ninja H2R.png";
 import suv from "./../assets/Lexus RX 350 Luxury.png";
 
+import Card from "../components/Card/Card"
+
 
 const platter = [
     duThuyen,
@@ -25,7 +27,6 @@ const Store = () => {
             <Header />
 
             <div className="Store-container">
-
                 <div className="Store-title">
                     <div className="Store-title-text">
                         <h2><span>Cửa Hàng. </span>Cách tốt nhất để</h2>
@@ -47,9 +48,9 @@ const Store = () => {
                         </div>
                     ))}
                 </div>
-
             </div>
 
+            <Card />
         </div>
     )
 }

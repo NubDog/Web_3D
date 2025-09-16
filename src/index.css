@@ -111,3 +111,7 @@ button {
     transform: scale(1.03);
   }
 }
+
+.col-1617 {
+  max-width: 1617px;
+}

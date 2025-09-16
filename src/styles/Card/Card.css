@@ -1,6 +1,9 @@
 .Card-container {
+    position: relative;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    width: 100%;
 }
 
 .Card-title {
@@ -19,9 +22,11 @@
 
 .Card-box {
     display: flex;
+    padding: 20px 0;
     gap: 20px;
     overflow-x: auto;
     scrollbar-width: none;
+    scroll-behavior: smooth;
     -ms-overflow-style: none;
 }
 
@@ -30,13 +35,13 @@
 }
 
 .Card-content {
-    position: relative;
     width: 400px;
     height: 500px;
     background-color: var(--white);
     border-radius: 28px;
     padding: 28px;
     transition: all 0.5s ease-in-out;
+    transform: scale(1);
     will-change: transform;
     flex-shrink: 0;
 }
