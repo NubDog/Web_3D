@@ -13,6 +13,7 @@ import { addChinhSachGia, deleteChinhSachGia, getChinhSachGias, updateChinhSachG
 import { handleImageUpload } from './Admin/upload-users-avatar';
 import { handleGetKycDocuments, handleAddKycDocument,handleUpdateCccdSet } from './Admin/admin-KYC';
 import { handleGetPhuongTien } from './API/PhuongTien_API';
+import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile } from './r2-handler';
 
@@ -69,19 +70,24 @@ export default {
                 return handleGetPhuongTien(request, env);
             }
 
+			// API for ChinhSachGia
+			if (path === '/api/chinh-sach-gia' && method === 'GET') {
+                return handleGetChinhSachGia(request, env);
+            }
+
 			if (path === '/test-r2' && request.method === 'GET') {
 				try {
 					const listResponse = await env.r2.list();
 					return Response.json({
 						success: true,
-						message: 'Kết nối R2 thành công 🎉',
+						message: 'Kết nối R2 thành công',
 						objects: listResponse.objects,
 					});
 				} catch (err: any) {
 					return Response.json(
 						{
 							success: false,
-							error: 'Kết nối R2 thất bại ❌: ' + err.message,
+							error: 'Kết nối R2 thất bại: ' + err.message,
 						},
 						{ status: 500 }
 					);
