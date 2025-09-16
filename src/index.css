@@ -20,6 +20,7 @@
 
   --white-blue: #F0F4F8;
   --white: #ffffff;
+  --black: #000000;
   --text-gray: #111827;
   --text-gray-light: #6e6e73;
   --text-blue: #06c;
@@ -102,3 +103,11 @@ button {
   }
 }
 
+@keyframes zoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.03);
+  }
+}

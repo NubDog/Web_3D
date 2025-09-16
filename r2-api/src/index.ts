@@ -12,6 +12,7 @@ import {
 import { addChinhSachGia, deleteChinhSachGia, getChinhSachGias, updateChinhSachGia } from './Admin/Chinh-sach-gia';
 import { handleImageUpload } from './Admin/upload-users-avatar';
 import { handleGetKycDocuments, handleAddKycDocument,handleUpdateCccdSet } from './Admin/admin-KYC';
+import { handleGetPhuongTien } from './API/PhuongTien_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile } from './r2-handler';
 
@@ -62,6 +63,11 @@ export default {
 				const key = decodeURIComponent(fileMatch[1]);
 				return handleGetFile(request, env, key);
 			}
+
+			// API for PhuongTien
+			if (path === '/api/phuong-tien' && method === 'GET') {
+                return handleGetPhuongTien(request, env);
+            }
 
 			if (path === '/test-r2' && request.method === 'GET') {
 				try {

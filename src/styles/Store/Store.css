@@ -70,6 +70,8 @@
 .Store-platter {
     display: flex;
     gap: 40px;
+
+    padding: 40px 0;
 }
 
 .Store-platter-item {
