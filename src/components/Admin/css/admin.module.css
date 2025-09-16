@@ -335,6 +335,12 @@ input:-webkit-autofill:active {
 .toastError {
     background-color: var(--danger-color);
 }
+
+.toastError p{
+    color: white;
+}
+
+
 .errorText {
     color: var(--danger-color);
 }

@@ -57,11 +57,11 @@ export async function getPhuongTienById(request: Request, env: Env, id: string):
       SELECT p.phuong_tien_id, p.ten_phuong_tien, p.bien_so, p.so_km, p.trang_thai,
              d.ten_danh_muc,p.*,	
              c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh
-      FROM PhuongTien p
-      LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
-      LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
-      WHERE p.phuong_tien_id = ?
-      `
+			FROM PhuongTien p
+			LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
+			LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
+			WHERE p.phuong_tien_id = ?
+			`
 		)
 			.bind(id)
 			.all();

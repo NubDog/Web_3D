@@ -313,12 +313,12 @@ const PhuongTienModal: React.FC = () => {
             <label>Trạng thái:</label>
             <select
               name="trang_thai"
-              defaultValue={phuongTien?.trang_thai || "Hoạt động"}
+              defaultValue={phuongTien?.trang_thai || "Sẵn sàng"}
               required
             >
-              <option value="Hoạt động">Hoạt động</option>
-              <option value="Bảo trì">Bảo trì</option>
-              <option value="Ngừng hoạt động">Ngừng hoạt động</option>
+              <option value="SAN_SANG">Sẵn sàng</option>
+              <option value="DA_DAT">Đã đặt</option>
+              <option value="BAO_TRI">Bảo trì</option>
             </select>
           </div>
 

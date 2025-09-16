@@ -184,14 +184,14 @@ const PhuongTienList: React.FC = () => {
                 <td className="py-3 px-6 text-left">
                   <span
                     className={`status py-1 px-3 rounded-full text-xs font-semibold ${
-                      item.trang_thai === "Hoạt động"
+                      item.trang_thai === "Sẵn sàng"
                         ? "bg-green-500 text-white"
                         : item.trang_thai === "Bảo trì"
                         ? "bg-yellow-500 text-white"
                         : "bg-red-500 text-white"
                     }`}
                   >
-                    {item.trang_thai}
+                    {item.trang_thai == "DA_DAT"? "Đã Đặt":  item.trang_thai == "SAN_SANG"? "Sẵn sàng" : "Bảo trì"}
                   </span>
                 </td>
                 <td className="py-3 px-6 text-left">

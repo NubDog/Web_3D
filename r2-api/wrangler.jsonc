@@ -39,6 +39,11 @@
 			"binding": "product",
 			"bucket_name": "product",
 			"preview_bucket_name": "product"
+		},
+		{
+			"binding": "ICC",
+			"bucket_name": "img-check-car",
+			"preview_bucket_name": "img-check-car"
 		}
 		// {
 		// 	"bucket_name": "models-3d-dev",
