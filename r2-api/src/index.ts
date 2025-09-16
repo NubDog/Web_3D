@@ -16,6 +16,9 @@ import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
+import { handleCreateRentalOrder,handleGetPendingOrders, handleApproveOrder, handleRejectOrder } from './Admin/don-thue';
+import { handleVehicleHandover,handleVehicleReturn  } from './Admin/giao-nhan';
+import { handleFinalizeOrder } from './Admin/quyet-toan';
 
 interface Env {
 	ua: R2Bucket;
@@ -24,6 +27,7 @@ interface Env {
 	rental_db: D1Database;
 	kyc: R2Bucket;
 	product: R2Bucket;
+	ICC: R2Bucket;
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -233,6 +237,44 @@ export default {
 				const key = decodeURIComponent(productImageMatch[1]);
 				return handleGetProductImage(request, env, key);
 			}
+
+			if (path === '/api/don-thue' && method === 'POST') {
+                return handleCreateRentalOrder(request, env);
+            }
+
+			if (path === '/api/don-thue/pending' && method === 'GET') {
+                return handleGetPendingOrders(request, env);
+            }
+            
+            // Duyệt đơn
+            const approveMatch = path.match(/^\/api\/don-thue\/(\d+)\/approve$/);
+            if (approveMatch && method === 'POST') {
+                return handleApproveOrder(request, env, approveMatch[1]);
+            }
+            
+            // Từ chối đơn
+            const rejectMatch = path.match(/^\/api\/don-thue\/(\d+)\/reject$/);
+            if (rejectMatch && method === 'POST') {
+                return handleRejectOrder(request, env, rejectMatch[1]);
+            }
+
+			// Route đề bàn giao xe
+            const handoverMatch = path.match(/^\/api\/don-thue\/(\d+)\/handover$/);
+            if (handoverMatch && method === 'POST') {
+                return handleVehicleHandover(request, env, handoverMatch[1]);
+            }
+
+			//Route để tiếp nhận trả xe
+			const returnMatch = path.match(/^\/api\/don-thue\/(\d+)\/return$/);
+            if (returnMatch && method === 'POST') {
+                return handleVehicleReturn(request, env, returnMatch[1]);
+            }
+
+			// Route để quyết toán đơn thuê
+            const finalizeMatch = path.match(/^\/api\/don-thue\/(\d+)\/finalize$/);
+            if (finalizeMatch && method === 'POST') {
+                return handleFinalizeOrder(request, env, finalizeMatch[1]);
+            }
 			
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
