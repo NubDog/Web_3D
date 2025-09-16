@@ -66,3 +66,19 @@
     font-weight: 600;
     color: var(--text-gray);
 }
+
+.Store-platter {
+    display: flex;
+    gap: 40px;
+}
+
+.Store-platter-item {
+    width: 136px;
+    height: 136px;
+}
+
+.Store-platter-item img {
+    object-fit: contain;
+    width: 100%;
+    height: 100%;
+}

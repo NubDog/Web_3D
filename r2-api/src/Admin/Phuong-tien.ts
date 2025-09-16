@@ -7,34 +7,35 @@ export async function getPhuongTiens(request: Request, env: Env): Promise<Respon
 	const url = new URL(request.url);
 	const path = url.pathname;
 
-	if (
-		// vì bên index đã kiểm tra path.startsWith('/phuong-tien') rồi nên không cần kiểm tra lại
-		// path === '/phuong-tien' &&
-		request.method === 'GET'
-	) {
+	if (request.method === 'GET') {
 		try {
-			const result = await env.DB.prepare(
-				`
-        SELECT 
-    p.phuong_tien_id,
-    p.ten_phuong_tien,
-    p.loai,
-    p.danh_muc_id,
-    p.trang_thai,
-    p.bien_so,
-    p.so_km,
-    p.chinh_sach_id,
-    p.so_khung,
-    d.ten_danh_muc,
-    c.ten_chinh_sach,
-    c.gia_co_ban,
-    c.tien_coc_mac_dinh
-FROM PhuongTien p
-LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
-LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id;
+			const { searchParams } = new URL(request.url);
+			const trang_thai = searchParams.get('trang_thai');
+			const limit = searchParams.get('limit');
+			const fields = searchParams.get('fields');
 
-        `
-			).all();
+			let query = `
+                SELECT 
+                    ${fields || `p.*, d.ten_danh_muc, c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh`}
+                FROM PhuongTien p
+                LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
+                LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
+            `;
+
+			const queryParams: (string | number)[] = [];
+
+			if (trang_thai) {
+				query += ` WHERE p.trang_thai = ?`;
+				queryParams.push(trang_thai);
+			}
+
+			if (limit) {
+				query += ` LIMIT ?`;
+				queryParams.push(parseInt(limit, 10));
+			}
+
+			const stmt = env.DB.prepare(query).bind(...queryParams);
+			const result = await stmt.all();
 
 			return Response.json({ success: true, data: result.results });
 		} catch (err: any) {
