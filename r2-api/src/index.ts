@@ -99,14 +99,14 @@ export default {
 					const { results } = await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table';").all();
 					return Response.json({
 						success: true,
-						message: 'Kết nối DB thành công 🎉',
+						message: 'Kết nối DB thành công',
 						tables: results,
 					});
 				} catch (err: any) {
 					return Response.json(
 						{
 							success: false,
-							error: 'Kết nối DB thất bại ❌: ' + err.message,
+							error: 'Kết nối DB thất bại: ' + err.message,
 						},
 						{ status: 500 }
 					);

@@ -15,37 +15,57 @@ interface PhuongTien {
 
 interface ChinhSachGia {
     chinh_sach_id: number;
+    gia_co_ban: number;
+    ten_chinh_sach: string;
 }
 
 const Card = () => {
     const [phuongTien, setPhuongTien] = useState<PhuongTien[]>([]);
+    const [ChinhSachGia, setChinhSachGia] = useState<ChinhSachGia[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [chinhSachGia, setChinhSachGia] = useState<ChinhSachGia[]>([]);
 
     const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/phuong-tien';
+    const API_URL_CHINH_SACH_GIA = 'https://r2-api.sharkeatrice.workers.dev/api/chinh-sach-gia';
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const fields = 'phuong_tien_id,ten_phuong_tien,trang_thai,chinh_sach_id,gia_co_ban,loai';
-                const response = await fetch(`${API_URL}?fields=${fields}`);
+                // Fetch dữ liệu phương tiện
+                const fieldsPhuongTien = 'phuong_tien_id,ten_phuong_tien,trang_thai,chinh_sach_id,loai';
+                const response = await fetch(`${API_URL}?fields=${fieldsPhuongTien}`);
+                
+                // Fetch dữ liệu chính sách giá
+                const fieldsChinhSach = 'chinh_sach_id,gia_co_ban,ten_chinh_sach';
+                const responseChinhSachGia = await fetch(`${API_URL_CHINH_SACH_GIA}?fields=${fieldsChinhSach}`);
 
-                if (!response.ok) {
+                if (!response.ok || !responseChinhSachGia.ok) {
                     throw new Error('Lỗi khi tải dữ liệu');
                 }
 
                 const result = await response.json();
-                // console.log(result); // log ra dữ liệu ở console
+                const resultChinhSachGia = await responseChinhSachGia.json();
 
-                // lọc ra các xe hoạt động
-                const activeVehecles = result.data.filter((pt: PhuongTien) => pt.trang_thai === 'Hoạt động');
+                if (result.success && resultChinhSachGia.success) {
+                    // Lọc ra các xe hoạt động
+                    const activeVehicles = result.data.filter((pt: PhuongTien) => pt.trang_thai === 'Hoạt động');
+                    
+                    // Join dữ liệu: thêm gia_co_ban vào mỗi phương tiện
+                    const vehiclesWithPrice = activeVehicles.map((pt: PhuongTien) => {
+                        const chinhSach = resultChinhSachGia.data.find((cs: ChinhSachGia) => cs.chinh_sach_id === pt.chinh_sach_id);
+                        return {
+                            ...pt,
+                            gia_co_ban: chinhSach ? chinhSach.gia_co_ban : 0,
+                            ten_chinh_sach: chinhSach ? chinhSach.ten_chinh_sach : 'Không có chính sách'
+                        };
+                    });
 
-                if (result.success) {
-                    setPhuongTien(activeVehecles);
+                    console.log('Dữ liệu đã join:', vehiclesWithPrice);
+                    setPhuongTien(vehiclesWithPrice);
+                    setChinhSachGia(resultChinhSachGia.data);
                 } else {
-                    throw new Error(result.error || 'Không thể lấy dữ liệu');
+                    throw new Error('Không thể lấy dữ liệu từ một trong hai API');
                 }
             } catch (err: any) {
                 setError(err.message);
@@ -87,7 +107,9 @@ const Card = () => {
                             <p className="Card-content-title-text">Thuê ngay</p>
                             <h3 className="Card-content-title-header">{pt.ten_phuong_tien}</h3>
                             <p className="Card-content-title-subtitle">{pt.loai}</p>
-                            <p className="Card-content-title-price">{pt.chinh_sach_id}</p>
+                            <p className="Card-content-title-price">
+                                {pt.gia_co_ban ? pt.gia_co_ban.toLocaleString('vi-VN') + ' VNĐ/ngày' : 'Liên hệ để biết giá'}
+                            </p>
                         </div>
                     </div>
                 ))}
