@@ -1,0 +1,63 @@
+
+.timeline-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  margin-bottom: 2rem;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #a0aec0;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.timeline-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.timeline-label {
+  font-size: 0.9rem;
+}
+
+.timeline-step.completed, .timeline-step.current {
+  color: #2c5282;
+  font-weight: 600;
+}
+.timeline-step.rejected {
+  color: #c53030;
+  font-weight: 600;
+}
+
+.icon-completed { color: #48bb78; }
+.icon-current { color: #3182ce; }
+.icon-pending { color: #e2e8f0; }
+.icon-rejected { color: #e53e3e; }
+
+.spin {
+  animation: spin 2s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Đường nối */
+.timeline-connector {
+  flex-grow: 1;
+  height: 4px;
+  background-color: #e2e8f0; 
+  margin: 0 -2px;
+  transform: translateY(-1rem); 
+  transition: background-color 0.3s ease;
+}
+.timeline-connector.completed {
+  background-color: #48bb78;
+}

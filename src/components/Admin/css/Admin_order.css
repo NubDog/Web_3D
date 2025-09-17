@@ -1,0 +1,119 @@
+.admin-container {
+    padding: 2rem;
+    background-color: #f4f7fa;
+    height: 100vh;
+}
+
+.admin-container h1 {
+    font-size: 2rem;
+    color: #1a253c;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+/* Thanh hành động (tìm kiếm, nút bấm) */
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.search-bar input {
+    padding: 0.75rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 6px;
+    width: 300px;
+    font-size: 1rem;
+    background-color: #f4f7fa;
+    color: #333 !important;
+}
+
+.action-bar button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.action-bar button:hover {
+    background-color: #0056b3;
+}
+
+/* Bảng dữ liệu */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden; /* Giúp bo góc cho bảng */
+}
+
+.admin-table th, .admin-table td {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-table thead tr {
+    background-color: #f8f9fa;
+}
+
+.admin-table th {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.admin-table tbody tr {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Phân trang */
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.pagination button {
+    padding: 0.5rem 1rem;
+    margin-left: 0.5rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.pagination span {
+    margin: 0 1rem;
+    font-weight: 500;
+}
+.admin-table .text1{
+    color: #333;
+}

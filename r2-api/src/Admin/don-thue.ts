@@ -205,3 +205,81 @@ export const handleRejectOrder = async (request: Request, env: Env, orderId: str
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
+
+//hàm gọi chi tiết đơn thuê
+export const handleGetOrderDetails = async (request: Request, env: Env, orderId: string) => {
+    try {
+        const stmt = env.DB.prepare(
+            `SELECT 
+                dt.*, 
+                nd.ho_ten, nd.email, 
+                pt.ten_phuong_tien, pt.bien_so,
+                cs.ten_chinh_sach
+             FROM DonThue AS dt
+             JOIN Nguoidung AS nd ON dt.khach_hang_id = nd.nguoi_dung_id
+             JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
+             JOIN ChinhSachGia AS cs ON dt.chinh_sach_id = cs.chinh_sach_id
+             WHERE dt.don_thue_id = ?`
+        );
+        const orderDetails = await stmt.bind(orderId).first();
+
+        if (!orderDetails) {
+            return jsonResponse({ success: false, error: "Không tìm thấy đơn thuê." }, 404);
+        }
+
+        return jsonResponse({ success: true, data: orderDetails });
+
+    } catch (e: any) {
+        console.error("API Error in handleGetOrderDetails:", e);
+        return jsonResponse({ success: false, error: e.message }, 500);
+    }
+};
+
+export const handleGetOrders = async (request: Request, env: Env) => {
+    try {
+        const url = new URL(request.url);
+        const status = url.searchParams.get('status'); // Lấy status từ query param
+
+        const baseQuery = `
+            SELECT 
+                dt.don_thue_id, dt.ngay_tao, dt.ngay_bat_dau, dt.ngay_ket_thuc, 
+                dt.tong_tien, dt.trang_thai, kh.ho_ten, pt.ten_phuong_tien
+            FROM DonThue AS dt
+            JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id
+            JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
+        `;
+
+        let finalQuery = baseQuery;
+        const params = [];
+
+        // Nếu có status được truyền vào thì thêm điều kiện WHERE
+        if (status) {
+            const statusMap: { [key: string]: string } = {
+                pending: 'CHO_DUYET',
+                approved: 'DA_DUYET',
+                active: 'DANG_THUE',
+                returned: 'DA_TRA',
+                completed: 'HOAN_TAT',
+                cancelled: 'TU_CHOI'
+            };
+            const dbStatus = statusMap[status];
+
+            if (!dbStatus) {
+                return jsonResponse({ success: false, error: "Trạng thái không hợp lệ." }, 400);
+            }
+            finalQuery += ` WHERE dt.trang_thai = ?`;
+            params.push(dbStatus);
+        }
+
+        finalQuery += ` ORDER BY dt.ngay_tao DESC`;
+
+        const stmt = env.DB.prepare(finalQuery).bind(...params);
+        const { results } = await stmt.all();
+        
+        return jsonResponse({ success: true, data: results });
+
+    } catch (e: any) {
+        console.error("API Error in handleGetOrders:", e);
+        return jsonResponse({ success: false, error: e.message }, 500);
+    }
+};

@@ -19,7 +19,8 @@ import EditComponents from "./components/EditComponents/EditComponents";
 import DanhMucPhuongTienList from "./components/Admin/Danh_muc_phuong_tien/Danhsachdanhmuc";
 import ChinhSachGiaList from "./components/Admin/Chinh_sach_gia/Danhsach";
 import Store from "./pages/Store";
-
+import OrderList from "./components/Admin/Admin_Order/OrderList";
+import OrderDetail from "./components/Admin/Admin_Order/OrderDetail";
 
 function App() {
   return (
@@ -48,6 +49,9 @@ function App() {
             element={<DanhMucPhuongTienList />}
           />
           <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
+
+            <Route path="orders/:status" element={<OrderList />} />
+            <Route path="order/:orderId" element={<OrderDetail />} />
         </Route>
 
         {/* <Route path="/babylon" element={<BabylonTankViewer />} />

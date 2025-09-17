@@ -86,8 +86,8 @@ export const handleVehicleReturn = async (request: Request, env: Env, orderId: s
         const ghi_chu_hu_hong_moi = formData.get('ghi_chu_hu_hong_moi') as string;
         const anh_files = formData.getAll('anh_minh_chung') as File[];
 
-        const orderStmt = env.DB.prepare(`SELECT trang_thai, phuong_tien_id FROM DonThue WHERE don_thue_id = ?`);
-        const currentOrder = await orderStmt.bind(don_thue_id).first<{ trang_thai: string, phuong_tien_id: number }>();
+        const orderStmt = env.DB.prepare(`SELECT * FROM DonThue WHERE don_thue_id = ?`);
+        const currentOrder = await orderStmt.bind(don_thue_id).first<{ trang_thai: string, phuong_tien_id: number, khach_hang_id:Number, nhan_vien_tao: number }>();
 
         if (!currentOrder) {
             return jsonResponse({ success: false, error: "Không tìm thấy đơn thuê." }, 404);
@@ -109,8 +109,8 @@ export const handleVehicleReturn = async (request: Request, env: Env, orderId: s
         const newVehicleStatus = ghi_chu_hu_hong_moi ? 'BAO_TRI' : 'SAN_SANG';
 
         const insertReturnRecordStmt = env.DB.prepare(
-            `INSERT INTO BienBanGiaoNhan (don_thue_id, loai_bien_ban, thoi_gian, so_km, muc_xang, ghi_chu_hu_hong, duong_dan_anh)
-             VALUES (?, 'TRA_XE', datetime('now','+7 hours'), ?, ?, ?, ?)`
+            `INSERT INTO BienBanGiaoNhan (don_thue_id, loai_bien_ban, thoi_gian, so_km, muc_xang, ghi_chu_hu_hong, duong_dan_anh, nhan_vien_ky, khach_hang_ky)
+             VALUES (?, 'TRA_XE', datetime('now','+7 hours'), ?, ?, ?, ?, ?,?)`
         );
         const updateOrderStmt = env.DB.prepare(
             `UPDATE DonThue SET trang_thai = 'DA_TRA' WHERE don_thue_id = ?`
@@ -120,16 +120,16 @@ export const handleVehicleReturn = async (request: Request, env: Env, orderId: s
         );
 
         await env.DB.batch([
-            insertReturnRecordStmt.bind(don_thue_id, so_km_tra, muc_xang_tra, ghi_chu_hu_hong_moi, JSON.stringify(imageUrls)),
+            insertReturnRecordStmt.bind(don_thue_id, so_km_tra, muc_xang_tra, ghi_chu_hu_hong_moi, JSON.stringify(imageUrls),currentOrder.nhan_vien_tao, currentOrder.khach_hang_id ),
             updateOrderStmt.bind(don_thue_id),
             updateVehicleStmt.bind(newVehicleStatus, so_km_tra, currentOrder.phuong_tien_id)
         ]);
         
         if (newVehicleStatus === 'BAO_TRI') {
             const createMaintenanceStmt = env.DB.prepare(
-                `INSERT INTO BaoTri (phuong_tien_id, don_thue_id_lien_quan, mo_ta, trang_thai) VALUES (?, ?, ?, 'MO')`
+                `INSERT INTO BaoTri (phuong_tien_id, don_thue_id_lien_quan, mo_ta, trang_thai, nhan_vien_tao) VALUES (?, ?, ?, 'MO',?)`
             );
-            await createMaintenanceStmt.bind(currentOrder.phuong_tien_id, don_thue_id, ghi_chu_hu_hong_moi).run();
+            await createMaintenanceStmt.bind(currentOrder.phuong_tien_id, don_thue_id, ghi_chu_hu_hong_moi, currentOrder.nhan_vien_tao).run();
         }
 
         return jsonResponse({ success: true, message: "Tiếp nhận xe trả thành công. Vui lòng tiến hành quyết toán." });

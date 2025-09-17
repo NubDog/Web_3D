@@ -16,7 +16,7 @@ import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
-import { handleCreateRentalOrder,handleGetPendingOrders, handleApproveOrder, handleRejectOrder } from './Admin/don-thue';
+import { handleCreateRentalOrder,handleGetPendingOrders, handleApproveOrder, handleRejectOrder, handleGetOrders, handleGetOrderDetails } from './Admin/don-thue';
 import { handleVehicleHandover,handleVehicleReturn  } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
 
@@ -275,7 +275,17 @@ export default {
             if (finalizeMatch && method === 'POST') {
                 return handleFinalizeOrder(request, env, finalizeMatch[1]);
             }
-			
+
+			// Route để lấy chi tiết đơn thuê
+			if (path === '/api/orders' && method === 'GET') {
+				return handleGetOrders(request, env);
+			}
+			const orderDetailMatch = path.match(/^\/api\/don-thue\/(\d+)$/);
+            if (orderDetailMatch && method === 'GET') {
+                const orderId = orderDetailMatch[1];
+                return handleGetOrderDetails(request, env, orderId);
+            }
+
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
 		} catch (e: any) {
