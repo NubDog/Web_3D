@@ -21,7 +21,7 @@ interface RentalRequestBody {
     dia_diem_tra: string;
 }
 
-//Tạo đơn
+//Tạo đơn (cho Người dùng)
 export const handleCreateRentalOrder = async (request: Request, env: Env) => {
     try {
         const body: RentalRequestBody = await request.json();

@@ -13,6 +13,7 @@ interface Env {
     ICC: R2Bucket; 
 }
 
+//bàn giao phương tiện (Nhân viên)
 export const handleVehicleHandover = async (request: Request, env: Env, orderId: string) => {
     try {
         const formData = await request.formData();
@@ -49,15 +50,6 @@ export const handleVehicleHandover = async (request: Request, env: Env, orderId:
             }
         }
 
-        console.log("--- DEBUG VALUES BEFORE BATCH ---");
-        console.log("don_thue_id:", don_thue_id);
-        console.log("so_km:", so_km);
-        console.log("muc_xang:", muc_xang);
-        console.log("ghi_chu_hu_hong:", ghi_chu_hu_hong);
-        console.log("imageUrls:", JSON.stringify(imageUrls));
-        console.log("currentOrder.phuong_tien_id:", currentOrder?.phuong_tien_id);
-        console.log("---------------------------------");
-
         const insertBienBanStmt = env.DB.prepare(
             `INSERT INTO BienBanGiaoNhan (don_thue_id, loai_bien_ban, thoi_gian, so_km, muc_xang, ghi_chu_hu_hong, duong_dan_anh, khach_hang_ky, nhan_vien_ky)
              VALUES (?, 'GIAO_XE', datetime('now','+7 hours'), ?, ?, ?, ?, ?, ?)`
@@ -83,6 +75,7 @@ export const handleVehicleHandover = async (request: Request, env: Env, orderId:
     }
 };
 
+// trả xe của Nhân viên
 export const handleVehicleReturn = async (request: Request, env: Env, orderId: string) => {
     try {
         const formData = await request.formData();
