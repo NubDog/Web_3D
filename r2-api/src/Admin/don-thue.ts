@@ -38,6 +38,16 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
             return jsonResponse({ success: false, error: "Ngày kết thúc phải sau ngày bắt đầu." }, 400);
         }
 
+
+        const CheckBlock = env.DB.prepare(
+            `SELECT trang_thai from NguoiDung where nguoi_dung_id = ?`
+        )
+        const getStatus = await CheckBlock.bind(khach_hang_id).first<{trang_thai:string}>()
+
+        if(getStatus?.trang_thai === 'inactive'){
+            return jsonResponse({ success: false, error: "Người dùng đã bị khóa." }, 410); 
+        }
+
         const vehicleStmt = env.DB.prepare(
             `SELECT pt.trang_thai, pt.chinh_sach_id, cs.gia_co_ban, cs.tien_coc_mac_dinh 
              FROM PhuongTien AS pt
@@ -86,7 +96,7 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
         
         return jsonResponse({
             success: true,
-            message: "Yêu cầu thuê xe đã được gửi thành công!",
+            message: `Yêu cầu thuê xe đã được gửi thành công!`,
             data: {
                 trang_thai: "CHO_DUYET",
                 tong_tien_du_kien: tong_tien,

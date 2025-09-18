@@ -127,7 +127,7 @@ export const handleVehicleReturn = async (request: Request, env: Env, orderId: s
         
         if (newVehicleStatus === 'BAO_TRI') {
             const createMaintenanceStmt = env.DB.prepare(
-                `INSERT INTO BaoTri (phuong_tien_id, don_thue_id_lien_quan, mo_ta, trang_thai, nhan_vien_tao) VALUES (?, ?, ?, 'MO',?)`
+                `INSERT INTO BaoTri (phuong_tien_id, don_thue_id_lien_quan, mo_ta, trang_thai, nhan_vien_tao, ngay_lich) VALUES (?, ?, ?, 'MO',?, datetime('now','+7 hour'))`
             );
             await createMaintenanceStmt.bind(currentOrder.phuong_tien_id, don_thue_id, ghi_chu_hu_hong_moi, currentOrder.nhan_vien_tao).run();
         }
