@@ -49,6 +49,9 @@ const Store = () => {
                     ))}
                 </div>
             </div>
+            <div className="Store-card">
+                
+            </div>
 
             <Card />
         </div>
