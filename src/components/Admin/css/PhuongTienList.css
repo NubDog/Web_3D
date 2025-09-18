@@ -331,3 +331,19 @@
 .toast-error {
   background-color: var(--danger-color);
 }
+.bg-green-500y {
+  background-color: #16a34a;
+  color: white;
+}
+.bg-yelow-500y {
+  background-color: #e7d93e;
+  color: #ffffff;
+}
+.bg-red-500y {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+.bg-grey-500y {
+  background-color: #4b5563;
+  color: #ffffff;
+}
