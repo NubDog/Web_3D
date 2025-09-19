@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
 import '../../styles/Card/Card.css';
-import Lamborghini_model_Sian from './../../assets/Lamborghini Sian FKP 37.png';
 
 import BaseCard from './BaseCard'
 
@@ -21,11 +20,6 @@ interface ChinhSachGia {
     chinh_sach_id: number;
     gia_co_ban: number;
     ten_chinh_sach: string;
-}
-
-interface CardProps {
-    card_title: string;
-    card_subtitle: string;
 }
 
 

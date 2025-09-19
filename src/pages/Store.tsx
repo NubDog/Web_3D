@@ -9,8 +9,8 @@ import flycam from "./../assets/Mavic Pro Flycam.png";
 import motorbike from "./../assets/Ninja H2R.png";
 import suv from "./../assets/Lexus RX 350 Luxury.png";
 
-import Card from "../components/Card/Card_Car"
-
+import CardCar from "../components/Card/Card_Car"
+import CardBike from "../components/Card/Card_bike";
 
 const platter = [
     duThuyen,
@@ -53,7 +53,8 @@ const Store = () => {
                 
             </div>
 
-            <Card />
+            <CardCar />
+            <CardBike />
 
 
         </div>
