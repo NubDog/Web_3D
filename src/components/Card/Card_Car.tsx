@@ -12,6 +12,7 @@ interface PhuongTien {
     trang_thai: string;
     gia_co_ban: number;
     chinh_sach_id: number;
+    danh_muc_id: number;
     loai: string;
     img?: string;
 }
@@ -43,7 +44,7 @@ const Card = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const fieldsPhuongTien = 'phuong_tien_id,ten_phuong_tien,trang_thai,chinh_sach_id,loai,img';
+                const fieldsPhuongTien = 'phuong_tien_id,ten_phuong_tien,trang_thai,chinh_sach_id,loai,img,danh_muc_id';
                 const response = await fetch(`${API_URL}?fields=${fieldsPhuongTien}`);
                 
                 // Fetch dữ liệu chính sách giá
@@ -58,13 +59,14 @@ const Card = () => {
                 const resultChinhSachGia = await responseChinhSachGia.json();
 
                 if (result.success && resultChinhSachGia.success) {
-                    // Lọc ra các xe hoạt động
-                    const activeVehicles = result.data.filter((pt: PhuongTien) => pt.trang_thai === 'SAN_SANG').slice(0, 10);
+                    // Lọc ra các xe hoạt động và thuộc danh mục id 2 (xe hơi)
+                    const activeVehicles = result.data.filter((pt: PhuongTien) => pt.trang_thai === 'SAN_SANG');
+                    const activeVehiclesCar = activeVehicles.filter((pt: PhuongTien) => pt.danh_muc_id == 2).slice(0, 10);
                     console.log(activeVehicles);
 
                     
                     // Join dữ liệu: thêm gia_co_ban vào mỗi phương tiện
-                    const vehiclesWithPrice = activeVehicles.map((pt: PhuongTien) => {
+                    const vehiclesWithPrice = activeVehiclesCar.map((pt: PhuongTien) => {
                         const chinhSach = resultChinhSachGia.data.find((cs: ChinhSachGia) => cs.chinh_sach_id === pt.chinh_sach_id);
                         return {
                             ...pt,
