@@ -27,6 +27,7 @@ const Card = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const cardBoxRef = useRef<HTMLDivElement>(null);
+    const [clickCount, setClickCount] = useState(0);
 
 
     const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/phuong-tien';
@@ -102,6 +103,18 @@ const Card = () => {
         }
     };
 
+    const handleScrollLeft = () => {
+        scrollLeft();
+        setClickCount(prevCount => prevCount - 1);
+    };
+
+    const handleScrollRight = () => {
+        scrollRight();
+        setClickCount(prevCount => prevCount + 1);
+    };
+
+    console.log('Số lần bấm nút cuộn:', clickCount);
+
     if (loading) {
         console.log('Đang tải danh sách xe người ơi...');
     }
@@ -114,8 +127,9 @@ const Card = () => {
         console.log('Lỗi rồi người ơi...: {error}');
     }
 
-    console.log(phuongTien);
-
+    // console.log(phuongTien);
+    
+    
     return (
         <div className="Card-container">
             <div className="Card-title-container col-1617">
@@ -124,10 +138,10 @@ const Card = () => {
             
             <div className="Card-box" ref={cardBoxRef}>
                 <div className="Card-scroll-buttons">
-                    <button onClick={scrollLeft} aria-label="Scroll Left">
+                    <button className={clickCount === 0 ? 'non-active' : 'active'} onClick={handleScrollLeft} aria-label="Scroll Left">
                         <i className="icon-scroll fa-solid fa-angle-left"></i>
                     </button>
-                    <button onClick={scrollRight} aria-label="Scroll Right">
+                    <button onClick={handleScrollRight} aria-label="Scroll Right">
                         <i className="icon-scroll fa-solid fa-angle-right"></i>
                     </button>
                 </div>

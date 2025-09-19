@@ -39,6 +39,7 @@
     scroll-behavior: smooth;
     -ms-overflow-style: none;
     width: 100%;
+    overflow-y: hidden;
 }
 
 .Card-box::before {
@@ -173,4 +174,8 @@
 
 .Card-scroll-buttons button:active {
     transform: scale(0.95);
+}
+
+.non-active {
+    animation: fade-in 0.8s ease-in-out forwards;
 }
