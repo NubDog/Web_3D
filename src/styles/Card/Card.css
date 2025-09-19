@@ -40,9 +40,16 @@
     -ms-overflow-style: none;
     width: 100%;
     overflow-y: hidden;
+    margin-right: calc((100% - 1617px) / 2);
 }
 
 .Card-box::before {
+    content: '';
+    flex-shrink: 0;
+    width: calc((100% - 1617px) / 2);
+}
+
+.Card-box::after {
     content: '';
     flex-shrink: 0;
     width: calc((100% - 1617px) / 2);

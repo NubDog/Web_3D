@@ -9,7 +9,7 @@ import flycam from "./../assets/Mavic Pro Flycam.png";
 import motorbike from "./../assets/Ninja H2R.png";
 import suv from "./../assets/Lexus RX 350 Luxury.png";
 
-import Card from "../components/Card/Card"
+import Card from "../components/Card/Card_Car"
 
 
 const platter = [
@@ -54,6 +54,8 @@ const Store = () => {
             </div>
 
             <Card />
+
+
         </div>
     )
 }
