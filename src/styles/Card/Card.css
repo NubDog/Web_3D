@@ -5,6 +5,7 @@
     justify-content: center;
     align-items: flex-start;
     width: 100%;
+    margin-top: 60px;
 }
 
 .Card-title-container {
@@ -19,14 +20,14 @@
 .Card-title {
     font-size: 28px;
     font-weight: 600;
-    color: var(--text-gray-light);
+    color: var(--background-black);
     margin-bottom: 20px;
     margin-top: 8px;
 }
 
 .Card-title span {
     font-size: 28px;
-    color: var(--text-gray);
+    color: var(--text-gray-light);
     margin-right: 8px;
 }
 

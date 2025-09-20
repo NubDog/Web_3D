@@ -1,0 +1,61 @@
+.MiniCard-content {
+    width: 333px;
+    height: 260px;
+
+    padding: 30px 30px 0 30px;
+}
+
+.MiniCard-content i {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.MiniCard-content p {
+    font-size: 24px;
+    color: var(--text-gray);
+    line-height: 1.2;
+}
+.MiniCard-box-blue i {
+    color: #007aff;
+}
+
+
+.MiniCard-box-blue p span {
+    color: #007aff;
+}
+
+.MiniCard-box-green i {
+    color: #008009;
+}
+
+.MiniCard-box-green p span {
+    color: #008009;
+}
+
+.MiniCard-box-purple i {
+    color: #ac39ff;
+}
+
+.MiniCard-box-purple p span {
+    color: #ac39ff;
+}
+
+.MiniCard-box-darkblue i {
+    color: #3f6eb8;
+}
+
+.MiniCard-box-darkblue p span {
+    color: #3f6eb8;
+}
+
+.MiniCard-box-gradiant i {
+    background-image: linear-gradient(to left top, #845ec2, #965dc0, #a75dbe, #b75cbb, #c55cb7, #d05cb3, #da5dae, #e35fa9, #ec62a3, #f3659d, #fa6a97, #ff6f91);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.MiniCard-box-gradiant p span {
+    background-image: linear-gradient(to left top, #845ec2, #965dc0, #a75dbe, #b75cbb, #c55cb7, #d05cb3, #da5dae, #e35fa9, #ec62a3, #f3659d, #fa6a97, #ff6f91);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

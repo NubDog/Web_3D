@@ -12,6 +12,9 @@ import suv from "./../assets/Lexus RX 350 Luxury.png";
 import CardCar from "../components/Card/Card_Car"
 import CardBike from "../components/Card/CardBike";
 import SupportCard from "../components/Card/SupportCard";
+import MiniCard from "../components/Card/MiniCard";
+
+
 const platter = [
     duThuyen,
     hypercar,
@@ -53,6 +56,7 @@ const Store = () => {
             <CardCar />
             <CardBike />
             <SupportCard />
+            <MiniCard />
 
         </div>
     )
