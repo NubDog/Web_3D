@@ -87,6 +87,7 @@ const CardBike = () => {
         <BaseCard 
             card_title="Xe máy."
             card_subtitle="Cân mọi thể loại địa hình."
+            Card_content_customMiddle="Card-content-customMiddle"
             data={data}
         />  
     )

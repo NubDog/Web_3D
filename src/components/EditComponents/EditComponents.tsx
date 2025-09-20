@@ -1,6 +1,6 @@
 import React from 'react';
 import Footer from '../Footer/Footer'
-import Card from '../Card/Card_Car'
+import Card from '../Card/CardHypercar'
 
 const EditComponents = () => {
     return (

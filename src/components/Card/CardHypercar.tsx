@@ -95,7 +95,8 @@ const Card = () => {
     return (
         <BaseCard 
             card_title="Siêu xe siêu sang."
-            card_subtitle="Khẳng định đẳng cấp."
+            card_subtitle=" Khẳng định đẳng cấp."
+            Card_content_customMiddle="Card-content-customMiddle"
             data={data}
         />
     );

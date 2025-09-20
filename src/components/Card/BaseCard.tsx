@@ -15,10 +15,11 @@ interface CardProps {
     card_title: string;
     card_subtitle: string;
     data: DataItem[];
+    Card_content_customMiddle:string;
 }
 
 
-const BaseCard = ({card_title, card_subtitle, data}: CardProps) => {
+const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: CardProps) => {
     const cardBoxRef = useRef<HTMLDivElement>(null);
     const [clickCount, setClickCount] = useState(0);
     const numberCard = data?.length ?? 0;
@@ -77,7 +78,7 @@ const BaseCard = ({card_title, card_subtitle, data}: CardProps) => {
                     </button>
                 </div>
                 {data.map((item) => (
-                    <div className="Card-content" key={item.id}>
+                    <div className={`Card-content ${Card_content_customMiddle ?? ''}`} key={item.id}>
                         <div className="Card-content-title-link">
                             <a href="#">
                                 <img 
