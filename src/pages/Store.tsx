@@ -14,7 +14,9 @@ import CardBike from "../components/Card/CardBike";
 import SupportCard from "../components/Card/SupportCard";
 import MiniCard from "../components/Card/MiniCard";
 import CardFlycam from "../components/Card/CardFlyCam";
+import SuvCard from "../components/Card/SuvCard";
 
+import Footer from "../components/Footer/Footer";
 
 const platter = [
     duThuyen,
@@ -59,6 +61,8 @@ const Store = () => {
             <SupportCard />
             <MiniCard />
             <CardFlycam />
+            <SuvCard />
+            <Footer />
         </div>
     )
 }
