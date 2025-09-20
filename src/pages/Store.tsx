@@ -10,8 +10,8 @@ import motorbike from "./../assets/Ninja H2R.png";
 import suv from "./../assets/Lexus RX 350 Luxury.png";
 
 import CardCar from "../components/Card/Card_Car"
-import CardBike from "../components/Card/Card_bike";
-
+import CardBike from "../components/Card/CardBike";
+import SupportCard from "../components/Card/SupportCard";
 const platter = [
     duThuyen,
     hypercar,
@@ -49,13 +49,10 @@ const Store = () => {
                     ))}
                 </div>
             </div>
-            <div className="Store-card">
-                
-            </div>
 
             <CardCar />
             <CardBike />
-
+            <SupportCard />
 
         </div>
     )

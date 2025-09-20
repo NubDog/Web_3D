@@ -87,15 +87,15 @@ const Card = () => {
     const data = phuongTien.map((pt) => ({
         id: pt.phuong_tien_id,
         img: pt.img,
-        product_namename: pt.ten_phuong_tien,
-        product_categoryc: pt.loai,
+        product_name: pt.ten_phuong_tien,
+        product_category: pt.loai,
         product_price: pt.gia_co_ban,
     }));
     
     return (
         <BaseCard 
-            card_title="Thế hệ mới nhất."
-            card_subtitle="Xem ngay có gì mới."
+            card_title="Siêu xe siêu sang."
+            card_subtitle="Khẳng định đẳng cấp."
             data={data}
         />
     );

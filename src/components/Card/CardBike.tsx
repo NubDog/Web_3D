@@ -78,8 +78,8 @@ const CardBike = () => {
     const data = phuongTien.map((pt) => ({
         id: pt.phuong_tien_id,
         img: pt.img,
-        product_namename: pt.ten_phuong_tien,
-        product_categoryc: pt.loai,
+        product_name: pt.ten_phuong_tien,
+        product_category: pt.loai,
         product_price: pt.gia_co_ban,
     }));
 

@@ -130,3 +130,11 @@ button {
   max-width: 1617px;
   width: 100%;
 }
+
+.text-font-14 {
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: var(--text-gray) !important;
+  text-transform: uppercase !important;
+}
+

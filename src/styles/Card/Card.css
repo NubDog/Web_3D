@@ -87,6 +87,8 @@
     left: 0;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    z-index: 0;
 }
 
 .Card-content-title-link a {
@@ -98,8 +100,8 @@
 }
 
 .Card-content-title-link a img {
-    width: 400px;
-    height: 500px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     margin-top: 40px;
 }

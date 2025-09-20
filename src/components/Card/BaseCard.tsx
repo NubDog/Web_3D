@@ -3,12 +3,12 @@ import { useState, useEffect, useRef } from 'react';
 import '../../styles/Card/Card.css';
 import Lamborghini_model_Sian from './../../assets/Lamborghini Sian FKP 37.png';
 
-interface DataItem {
+export interface DataItem {
     id: number;
     img?: string;
-    product_namename: string;
-    product_categoryc: string;
-    product_price?: number;
+    product_name: string;
+    product_category: string;
+    product_price?: number | null;
 }
 
 interface CardProps {
@@ -21,6 +21,7 @@ interface CardProps {
 const BaseCard = ({card_title, card_subtitle, data}: CardProps) => {
     const cardBoxRef = useRef<HTMLDivElement>(null);
     const [clickCount, setClickCount] = useState(0);
+    const numberCard = data?.length ?? 0;
 
     const scrollLeft = () => {
         if (cardBoxRef.current) {
@@ -56,7 +57,9 @@ const BaseCard = ({card_title, card_subtitle, data}: CardProps) => {
         setClickCount(prevCount => prevCount + 1);
     };
 
-    console.log('Số lần bấm nút cuộn:', clickCount);
+    // console.log('Số lần bấm nút cuộn:', clickCount);
+
+
     
     return (
         <div className="Card-container">
@@ -69,7 +72,7 @@ const BaseCard = ({card_title, card_subtitle, data}: CardProps) => {
                     <button className={clickCount === 0 ? 'non-active' : 'active'} onClick={handleScrollLeft} aria-label="Scroll Left">
                         <i className="icon-scroll fa-solid fa-angle-left"></i>
                     </button>
-                    <button className={clickCount === 6 ? 'non-active' : 'active'} onClick={handleScrollRight} aria-label="Scroll Right">
+                    <button className={numberCard < 4 || clickCount >= 6 ? 'non-active' : 'active'} onClick={handleScrollRight} aria-label="Scroll Right">
                         <i className="icon-scroll fa-solid fa-angle-right"></i>
                     </button>
                 </div>
@@ -79,7 +82,7 @@ const BaseCard = ({card_title, card_subtitle, data}: CardProps) => {
                             <a href="#">
                                 <img 
                                     src={item.img || Lamborghini_model_Sian}
-                                    alt={item.product_namename}
+                                    alt={item.product_name}
                                     onError={(e) => {
                                         e.currentTarget.src = Lamborghini_model_Sian;
                                     }}
@@ -87,11 +90,10 @@ const BaseCard = ({card_title, card_subtitle, data}: CardProps) => {
                             </a>
                         </div>
                         <div className="Card-content-title">
-                            <p className="Card-content-title-text">Thuê ngay</p>
-                            <h3 className="Card-content-title-header">{item.product_namename}</h3>
-                            <p className="Card-content-title-subtitle">{item.product_categoryc}</p>
+                            <h3 className="Card-content-title-header">{item.product_name}</h3>
+                            <p className="Card-content-title-subtitle">{item.product_category}</p>
                             <p className="Card-content-title-price">
-                                {item.product_price ? item.product_price.toLocaleString('vi-VN') + ' VNĐ/ngày' : 'Liên hệ để biết giá'}
+                                {item.product_price ? item.product_price.toLocaleString('vi-VN') + ' VNĐ/ngày' : null}
                             </p>
                         </div>
                     </div>
