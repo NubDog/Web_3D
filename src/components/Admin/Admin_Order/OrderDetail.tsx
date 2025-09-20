@@ -6,6 +6,12 @@ import { FaUserCircle, FaCar, FaFileInvoiceDollar, FaCalendarAlt } from 'react-i
 import OrderTimeline from '../Component-Admin/Component-OrderTimeline';
 import ReturnVehicleModal from '../Component-Admin/ReturnVehicleModal';
 
+import { useAuth } from '../../contexts-login-tam-thoi/AuthContext';
+import HandoverModal from '../Component-Admin/HandoverModal';
+import FinalizeModal from '../Component-Admin/Component-FinalizeModal';
+
+
+
 interface OrderDetail {
     don_thue_id: number;
     trang_thai: 'CHO_DUYET' | 'DA_DUYET' | 'DANG_THUE' | 'DA_TRA' | 'HOAN_TAT' | 'TU_CHOI';
@@ -20,16 +26,22 @@ interface OrderDetail {
     ten_phuong_tien: string;
     bien_so: string;
     ten_chinh_sach: string;
+    tien_coc_id: number | null;
+    trang_thai_coc: 'DANG_GIU' | 'CHO_THANH_TOAN' | string | null;
 }
 
 const OrderDetail: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
     const navigate = useNavigate();
     
+     const { user } = useAuth();
+
     const [order, setOrder] = useState<OrderDetail | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+    const [isHandoverModalOpen, setIsHandoverModalOpen] = useState(false);
+    const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchOrder = useCallback(async () => {
@@ -60,7 +72,7 @@ const OrderDetail: React.FC = () => {
             const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/approve`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nhan_vien_id: 1 }) 
+                body: JSON.stringify({ nhan_vien_id: 1}) 
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
@@ -97,16 +109,20 @@ const OrderDetail: React.FC = () => {
         }
     };
 
-    const handleHandover = async () => {
-        const so_km = prompt("Nhập số KM lúc giao xe:", "");
-        if (!so_km) return;
-
-        const formData = new FormData();
-        formData.append("so_km", so_km);
-        formData.append("muc_xang", "Đầy bình"); 
-        formData.append("ghi_chu_hu_hong", "Không có"); 
-        // formData.append("anh_minh_chung", file); 
+      const handleHandover = async (data: { so_km: string; muc_xang: string; ghi_chu_hu_hong: string; anh_minh_chung: FileList | null; }) => {
         
+        const formData = new FormData();
+        formData.append("so_km", data.so_km);
+        formData.append("muc_xang", data.muc_xang);
+        formData.append("ghi_chu_hu_hong", data.ghi_chu_hu_hong);
+        formData.append("nhan_vien_id", String(user?.id || 1));
+        
+        if (data.anh_minh_chung) {
+            for (let i = 0; i < data.anh_minh_chung.length; i++) {
+                formData.append('anh_minh_chung', data.anh_minh_chung[i]);
+            }
+        }
+
         setIsSubmitting(true);
         try {
             const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/handover`, {
@@ -116,8 +132,9 @@ const OrderDetail: React.FC = () => {
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
             
-            toast.success("Bàn giao xe thành công! Đơn hàng đã bắt đầu.");
-            fetchOrder(); 
+            toast.success("Bàn giao xe thành công!");
+            setIsHandoverModalOpen(false);
+            fetchOrder();
         } catch (err: any) {
             toast.error(`Lỗi: ${err.message}`);
         } finally {
@@ -125,12 +142,19 @@ const OrderDetail: React.FC = () => {
         }
     };
 
-     const handleReturn = async (data: { so_km_tra: string; muc_xang_tra: string; ghi_chu_hu_hong_moi: string }) => {
+     const handleReturn = async (data: { so_km_tra: string; muc_xang_tra: string; ghi_chu_hu_hong_moi: string; anh_minh_chung: FileList | null }) => {
+        // if (!user) return toast.error("Vui lòng đăng nhập.");
+
         const formData = new FormData();
         formData.append("so_km_tra", data.so_km_tra);
         formData.append("muc_xang_tra", data.muc_xang_tra);
-        if (data.ghi_chu_hu_hong_moi) {
-            formData.append("ghi_chu_hu_hong_moi", data.ghi_chu_hu_hong_moi);
+        formData.append("ghi_chu_hu_hong_moi", data.ghi_chu_hu_hong_moi);
+        formData.append("nhan_vien_id", String(user?.id || 1));
+
+        if (data.anh_minh_chung) {
+            for (let i = 0; i < data.anh_minh_chung.length; i++) {
+                formData.append('anh_minh_chung', data.anh_minh_chung[i]);
+            }
         }
         
         setIsSubmitting(true);
@@ -143,8 +167,8 @@ const OrderDetail: React.FC = () => {
             if (!result.success) throw new Error(result.error);
             
             toast.success("Đã tiếp nhận xe trả. Vui lòng quyết toán.");
-            setIsReturnModalOpen(false); // Đóng modal sau khi thành công
-            fetchOrder(); 
+            setIsReturnModalOpen(false); 
+            fetchOrder();
         } catch (err: any) {
             toast.error(`Lỗi: ${err.message}`);
         } finally {
@@ -152,16 +176,43 @@ const OrderDetail: React.FC = () => {
         }
     };
 
-    const handleFinalize = async () => {
-        const phi_hu_hong_str = prompt("Nhập phí hư hỏng (nếu có):", "0");
-        const phi_tre_str = prompt("Nhập phí trả trễ (nếu có):", "0");
-        if (phi_hu_hong_str === null || phi_tre_str === null) return;
+    const handleConfirmDeposit = async () => {
+    if (!order?.tien_coc_id) {
+        toast.error("Không tìm thấy thông tin tiền cọc để xác nhận.");
+        return;
+    }
+    // if (!user) return toast.error("Vui lòng đăng nhập.");
 
+    setIsSubmitting(true);
+    try {
+        const response = await fetch(`http://127.0.0.1:8787/api/deposits/${order.tien_coc_id}/confirm`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ nhan_vien_id: user?.id || 1})
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
+        
+        toast.success("Đã xác nhận nhận tiền cọc!");
+        
+        fetchOrder(); 
+
+    } catch (err: any) {
+        toast.error(`Lỗi: ${err.message}`);
+    } finally {
+        setIsSubmitting(false);
+    }
+};
+
+    const handleFinalize = async (data: { phi_hu_hong: number; phi_tre: number; chi_phi_khac: number; ghi_chu_quyet_toan: string; }) => {
+        // if (!user) {
+        //     toast.error("Vui lòng đăng nhập để thực hiện hành động này.");
+        //     return;
+        // }
+        
         const body = {
-            nhan_vien_id: 1, 
-            phi_hu_hong: parseInt(phi_hu_hong_str) || 0,
-            phi_tre: parseInt(phi_tre_str) || 0,
-            ghi_chu_quyet_toan: "Đã quyết toán xong.",
+            nhan_vien_id: user?.id || 1,
+            ...data
         };
 
         setIsSubmitting(true);
@@ -175,7 +226,8 @@ const OrderDetail: React.FC = () => {
             if (!result.success) throw new Error(result.error);
 
             toast.success("Quyết toán đơn hàng thành công!");
-            fetchOrder(); 
+            setIsFinalizeModalOpen(false); 
+            fetchOrder();
         } catch (err: any) {
             toast.error(`Lỗi: ${err.message}`);
         } finally {
@@ -200,10 +252,15 @@ const OrderDetail: React.FC = () => {
                 );
             case 'DA_DUYET':
                 return (
-                    <button className="button-primary" onClick={handleHandover} disabled={isSubmitting}>
-                        {isSubmitting ? 'Đang xử lý...' : '🚚 Bàn Giao Xe'}
+                    <button 
+                        className="button-primary" 
+                        onClick={() => setIsHandoverModalOpen(true)} 
+                        disabled={isSubmitting || order.trang_thai_coc !== 'DANG_GIU'}
+                        title={order.trang_thai_coc !== 'DANG_GIU' ? 'Cần xác nhận tiền cọc trước' : ''}
+                    >
+                        🚚 Bàn Giao Xe
                     </button>
-                );
+                    );
             case 'DANG_THUE':
                  return (
                    <button className="button-primary" onClick={() => setIsReturnModalOpen(true)} disabled={isSubmitting}>
@@ -212,7 +269,7 @@ const OrderDetail: React.FC = () => {
                  );
             case 'DA_TRA':
                  return (
-                    <button className="button-primary" onClick={handleFinalize} disabled={isSubmitting}>
+                    <button className="button-primary" onClick={() => setIsFinalizeModalOpen(true)} disabled={isSubmitting}>
                         {isSubmitting ? 'Đang xử lý...' : '💰 Quyết Toán Đơn'}
                     </button>
                  );
@@ -269,6 +326,29 @@ const OrderDetail: React.FC = () => {
                         <p><strong>Tên xe:</strong> {order.ten_phuong_tien}</p>
                         <p><strong>Biển số:</strong> {order.bien_so}</p>
                     </div>
+
+                    {order.trang_thai === 'DA_DUYET' && (
+                        <div className="info-card">
+                            <h2>Tình Trạng Thanh Toán</h2>
+                            <p>
+                                <strong>Tiền cọc:</strong> 
+                                <span className={`status-badge status-${order.trang_thai_coc}`}>
+                                    {order.trang_thai_coc === 'DANG_GIU' ? 'Đã Nhận Cọc' : 'Chưa Nhận Cọc'}
+                                </span>
+                            </p>
+                            {order.trang_thai_coc !== 'DANG_GIU' && (
+                                <button 
+                                    className="button-primary" 
+                                    style={{width: '100%', marginTop: '1rem'}}
+                                    onClick={handleConfirmDeposit}
+                                    disabled={isSubmitting}
+                                >
+                                    Xác nhận đã nhận cọc
+                                </button>
+                            )}
+                        </div>
+                    )}
+
                     <div className="info-card action-card">
                         <h2>Hành Động</h2>
                         <div className="order-actions">
@@ -282,7 +362,20 @@ const OrderDetail: React.FC = () => {
                 onClose={() => setIsReturnModalOpen(false)}
                 onSubmit={handleReturn}
                 isSubmitting={isSubmitting}
-            />
+                />
+                <HandoverModal 
+                isOpen={isHandoverModalOpen}
+                onClose={() => setIsHandoverModalOpen(false)}
+                onSubmit={handleHandover}
+                isSubmitting={isSubmitting}
+                />
+                 <FinalizeModal
+                isOpen={isFinalizeModalOpen}
+                onClose={() => setIsFinalizeModalOpen(false)}
+                onSubmit={handleFinalize}
+                isSubmitting={isSubmitting}
+                order={order}
+                />
             </div>
         </div>
     );

@@ -19,6 +19,7 @@ import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, han
 import { handleCreateRentalOrder,handleGetPendingOrders, handleApproveOrder, handleRejectOrder, handleGetOrders, handleGetOrderDetails } from './Admin/don-thue';
 import { handleVehicleHandover,handleVehicleReturn  } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
+import { handleConfirmDeposit } from './Admin/tien_coc';
 
 interface Env {
 	ua: R2Bucket;
@@ -285,6 +286,11 @@ export default {
                 const orderId = orderDetailMatch[1];
                 return handleGetOrderDetails(request, env, orderId);
             }
+
+			const depositConfirmMatch = path.match(/^\/api\/deposits\/(\d+)\/confirm$/);
+			if (depositConfirmMatch && method === 'POST') {
+				return handleConfirmDeposit(request, env, depositConfirmMatch[1]);
+			}
 
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
