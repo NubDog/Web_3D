@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-import './css/ReturnVehicleModal.css'; 
+import './css/handoverModal.css';
 
-interface ReturnData {
-  so_km_tra: string;
-  muc_xang_tra: string;
-  ghi_chu_hu_hong_moi: string;
+interface HandoverData {
+  so_km: string;
+  muc_xang: string;
+  ghi_chu_hu_hong: string;
   anh_minh_chung: FileList | null;
 }
 
-interface ReturnVehicleModalProps {
+interface HandoverModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: ReturnData) => void;
+  onSubmit: (data: HandoverData) => void;
   isSubmitting: boolean;
 }
 
-const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
+const HandoverModal: React.FC<HandoverModalProps> = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
   const [so_km, setSoKm] = useState('');
   const [muc_xang, setMucXang] = useState('Đầy bình');
   const [ghi_chu, setGhiChu] = useState('');
@@ -28,9 +28,9 @@ const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
-      so_km_tra: so_km,
-      muc_xang_tra: muc_xang,
-      ghi_chu_hu_hong_moi: ghi_chu,
+      so_km: so_km,
+      muc_xang: muc_xang,
+      ghi_chu_hu_hong: ghi_chu,
       anh_minh_chung: files,
     });
   };
@@ -40,12 +40,12 @@ const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose
       <div className="modal-content">
         <form onSubmit={handleSubmit}>
           <div className="modal-header">
-            <h2>Tiếp Nhận Xe Trả</h2>
+            <h2>Bàn Giao Xe</h2>
             <button type="button" onClick={onClose} className="close-button">&times;</button>
           </div>
           <div className="modal-body">
             <div className="form-group">
-              <label htmlFor="so_km">Số KM lúc trả</label>
+              <label htmlFor="so_km">Số KM lúc giao</label>
               <input id="so_km" type="number" value={so_km} onChange={(e) => setSoKm(e.target.value)} required />
             </div>
             <div className="form-group">
@@ -59,25 +59,18 @@ const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose
               </select>
             </div>
             <div className="form-group">
-              <label htmlFor="ghi_chu">Ghi chú hư hỏng mới (nếu có)</label>
+              <label htmlFor="ghi_chu">Ghi chú hư hỏng có sẵn</label>
               <textarea id="ghi_chu" rows={3} value={ghi_chu} onChange={(e) => setGhiChu(e.target.value)}></textarea>
             </div>
-
             <div className="form-group">
-              <label htmlFor="anh_moi">Ảnh minh chứng hư hỏng mới</label>
-              <input 
-                id="anh_moi" 
-                type="file" 
-                multiple 
-                onChange={(e) => setFiles(e.target.files)} 
-              />
+              <label htmlFor="anh_minh_chung">Ảnh minh chứng</label>
+              <input id="anh_minh_chung" type="file" multiple onChange={(e) => setFiles(e.target.files)} />
             </div>
-
           </div>
           <div className="modal-footer">
             <button type="button" className="button-secondary" onClick={onClose}>Hủy</button>
             <button type="submit" className="button-primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Đang xử lý...' : 'Xác nhận'}
+              {isSubmitting ? 'Đang xử lý...' : 'Xác nhận Bàn Giao'}
             </button>
           </div>
         </form>
@@ -86,4 +79,4 @@ const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose
   );
 };
 
-export default ReturnVehicleModal;
+export default HandoverModal;

@@ -159,7 +159,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
             "INSERT INTO HopDong (don_thue_id, so_hop_dong, ngay_ky, nhan_vien_ky, khach_hang_ky, trang_thai) VALUES (?, ?, datetime('now','+7 hours'), ?,?, 'CHO_KY')"
         );
         const createDepositStmt = env.DB.prepare(
-            "INSERT INTO TienCoc (don_thue_id, so_tien, trang_thai) VALUES (?, ?, 'DANG_GIU')"
+            "INSERT INTO TienCoc (don_thue_id, so_tien, trang_thai) VALUES (?, ?, 'CHO_THANH_TOAN')"
         );
         const createPaymentStmt = env.DB.prepare(
             "INSERT INTO ThanhToan (don_thue_id, so_tien, muc_dich, trang_thai) VALUES (?, ?, 'PHI_THUE', 'CHO_THANH_TOAN')"
@@ -222,14 +222,17 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
         const stmt = env.DB.prepare(
             `SELECT 
                 dt.*, 
-                nd.ho_ten, nd.email, 
-                pt.ten_phuong_tien, pt.bien_so,
-                cs.ten_chinh_sach
-             FROM DonThue AS dt
-             JOIN Nguoidung AS nd ON dt.khach_hang_id = nd.nguoi_dung_id
-             JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
-             JOIN ChinhSachGia AS cs ON dt.chinh_sach_id = cs.chinh_sach_id
-             WHERE dt.don_thue_id = ?`
+                kh.ho_ten, 
+                pt.ten_phuong_tien,
+                -- Lấy thêm thông tin từ bảng Tiền Cọc
+                tc.tien_coc_id,
+                tc.trang_thai AS trang_thai_coc
+            FROM DonThue AS dt
+            JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id
+            JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
+            -- Dùng LEFT JOIN vì có thể đơn hàng chưa có record tiền cọc
+            LEFT JOIN TienCoc AS tc ON dt.don_thue_id = tc.don_thue_id
+            WHERE dt.don_thue_id = ?`
         );
         const orderDetails = await stmt.bind(orderId).first();
 
