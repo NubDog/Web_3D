@@ -12,7 +12,7 @@ interface NguoiDung {
     email: string;
 }
 
-const SignIn_SignUp: React.FC = () => {
+const SignIn: React.FC = () => {
     const [nguoiDung, setNguoiDung] = useState<NguoiDung[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -165,4 +165,4 @@ const SignIn_SignUp: React.FC = () => {
   );
 };
 
-export default SignIn_SignUp;
+export default SignIn;

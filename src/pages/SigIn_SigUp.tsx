@@ -1,14 +1,17 @@
 import react from 'react';
-import SignIn_SignUp from '../components/SignIn_SignUp/SigIn_SignUp';
+import SignInComponent from '../components/SignIn_SignUp/SigIn';
+import SignUpComponent from '../components/SignIn_SignUp/SignUp';
+import './../styles/pages/SignIn_SingUp/SignIn_SingUp.css'
 import Header from './../components/Header/header';
 
-const SignIn_SigUp = () => {
+const SignInPage = () => {
     return (
         <div className='signin-signup-page'>
             <Header />
-            <SignIn_SignUp />
+            {/* <SignInComponent /> */}
+            <SignUpComponent />
         </div>
     )
 }
 
-export default SignIn_SigUp;
+export default SignInPage;

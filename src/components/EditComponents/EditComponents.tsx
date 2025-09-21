@@ -1,6 +1,6 @@
 import React from 'react';
 import Footer from '../Footer/Footer'
-import SignIn_SignUp from '../SignIn_SignUp/SigIn_SignUp'
+import SignIn_SignUp from '../SignIn_SignUp/SigIn'
 
 const EditComponents = () => {
     return (

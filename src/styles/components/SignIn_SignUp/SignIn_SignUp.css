@@ -1,11 +1,9 @@
-/* Container (tuỳ bạn đã có sẵn) */
 .signin-signup-container {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Form chính */
 .signin-signup-form {
   display: flex;
   flex-direction: column;
@@ -16,9 +14,9 @@
   border-radius: 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  box-shadow: 0 8px 24px rgba(29, 29, 31, 0.1);
 }
 
-/* Field (label + input wrapper) */
 .signin-signup-field {
   display: flex;
   flex-direction: column;
@@ -26,13 +24,11 @@
   margin-bottom: 12px;
 }
 
-/* Label */
 .signin-signup-label {
   color: #151717;
   font-weight: 600;
 }
 
-/* Ô nhập: wrapper có icon + input */
 .signin-signup-input-wrapper {
     border: 1.5px solid #ecedec;
     border-radius: 10px;
@@ -47,7 +43,6 @@
     color: var(--text-gray);
 }
 
-/* Input */
 .signin-signup-input {
     margin-left: 10px;
     border-radius: 10px;
@@ -63,7 +58,6 @@
     font-family: 'Be Vietnam Pro', sans-serif;
 }
 
-/* Focus ring */
 .signin-signup-input:focus {
   outline: none;
 }
@@ -72,7 +66,6 @@
   border: 1.5px solid #2d79f3;
 }
 
-/* Hàng ngang chung */
 .signin-signup-row {
   display: flex;
   flex-direction: row;
@@ -81,7 +74,6 @@
   justify-content: space-between;
 }
 
-/* Remember me (checkbox + text) */
 .signin-signup-remember {
   display: inline-flex;
   align-items: center;
@@ -101,7 +93,6 @@
     cursor: pointer;
 }
 
-/* Link dạng button (Forgot, Sign Up) */
 .signin-signup-link {
   background: transparent;
   border: none;
@@ -112,7 +103,6 @@
   padding: 0;
 }
 
-/* Nút submit */
 .signin-signup-button-submit {
   position: relative;
   display: inline-block;
@@ -199,7 +189,6 @@
   color: #fff;
 }
 
-/* Đoạn text dưới nút */
 .signin-signup-text {
   text-align: center;
   color: black;
@@ -207,7 +196,6 @@
   margin: 5px 0;
 }
 
-/* Dòng “Or With” */
 .signin-signup-text--divider {
   position: relative;
 }
@@ -223,7 +211,6 @@
   margin: 0 8px;
 }
 
-/* Nút social chung */
 .signin-signup-btn {
   margin-top: 10px;
   width: 100%;
@@ -244,7 +231,6 @@
   border: 1px solid #2d79f3;
 }
 
-/* Tuỳ biến theo provider nếu muốn */
 .signin-signup-btn--google svg {
   display: inline-block;
 }

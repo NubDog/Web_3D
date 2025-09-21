@@ -14,7 +14,7 @@ import { handleImageUpload } from './Admin/upload-users-avatar';
 import { handleGetKycDocuments, handleAddKycDocument, handleUpdateCccdSet } from './Admin/admin-KYC';
 import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
-import { handleGetNguoiDung } from './API/NguoiDung_API';
+import { handleGetNguoiDung, handleCreateNguoiDung } from './API/NguoiDung_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
 import {
@@ -90,8 +90,13 @@ export default {
 			}
 
 			// API for NguoiDung
-			if (path === '/api/nguoi-dung' && method === 'GET') {
-				return handleGetNguoiDung(request, env);
+			if (path === '/api/nguoi-dung') {
+				if (method === 'GET') {
+					return handleGetNguoiDung(request, env);
+				}
+				if (method === 'POST') {
+					return handleCreateNguoiDung(request, env);
+				}
 			}
 
 			if (path === '/test-r2' && request.method === 'GET') {
