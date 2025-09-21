@@ -64,7 +64,6 @@ const SignUp: React.FC = () => {
 
   return (
     <div className="signin-signup-container">
-      <Header />
       <form
         className="signin-signup-form"
         onSubmit={handleSubmit}

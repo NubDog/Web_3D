@@ -42,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({id}) => {
         <div className="header" id={id}>
             <Logo />
             <ul className="header-menu">
-                <li className="header-menu_items"><a href="#">Cửa hàng</a></li>
+                <li className="header-menu_items"><a href="/store">Cửa hàng</a></li>
                 
                 {danhMucPhuongTien.slice(0, 10).map((item, index) => (
                     <li key={index} className="header-menu_items"><a href="#">{item.ten_danh_muc}</a></li>
