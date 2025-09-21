@@ -9,7 +9,7 @@ import ReturnVehicleModal from '../Component-Admin/ReturnVehicleModal';
 import { useAuth } from '../../contexts-login-tam-thoi/AuthContext';
 import HandoverModal from '../Component-Admin/HandoverModal';
 import FinalizeModal from '../Component-Admin/Component-FinalizeModal';
-
+import CancelOrderModal from '../Component-Admin/CancelOrderModal';
 
 
 interface OrderDetail {
@@ -28,6 +28,9 @@ interface OrderDetail {
     ten_chinh_sach: string;
     tien_coc_id: number | null;
     trang_thai_coc: 'DANG_GIU' | 'CHO_THANH_TOAN' | string | null;
+    gia_thue: number; 
+    ty_le_giam: number;    
+    
 }
 
 const OrderDetail: React.FC = () => {
@@ -42,6 +45,7 @@ const OrderDetail: React.FC = () => {
     const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
     const [isHandoverModalOpen, setIsHandoverModalOpen] = useState(false);
     const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
+    const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const fetchOrder = useCallback(async () => {
@@ -102,6 +106,29 @@ const OrderDetail: React.FC = () => {
             
             toast.warn("Đã từ chối đơn hàng.");
             navigate('/admin/orders/pending');
+        } catch (err: any) {
+            toast.error(`Lỗi: ${err.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleCancel = async (reason: string) => {
+        // if (!user) return toast.error("Vui lòng đăng nhập.");
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/cancel`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nhan_vien_id: user?.id || 1, ly_do_huy: reason })
+            });
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error);
+            
+            toast.warn("Đã hủy đơn hàng thành công.");
+            setIsCancelModalOpen(false); 
+            fetchOrder(); 
         } catch (err: any) {
             toast.error(`Lỗi: ${err.message}`);
         } finally {
@@ -252,6 +279,7 @@ const OrderDetail: React.FC = () => {
                 );
             case 'DA_DUYET':
                 return (
+                    <>
                     <button 
                         className="button-primary" 
                         onClick={() => setIsHandoverModalOpen(true)} 
@@ -260,6 +288,15 @@ const OrderDetail: React.FC = () => {
                     >
                         🚚 Bàn Giao Xe
                     </button>
+                    <button 
+                            className="button-reject" 
+                            onClick={() => setIsCancelModalOpen(true)}
+                            disabled={isSubmitting || order.trang_thai_coc === 'DANG_GIU'}
+                            
+                        >
+                            ❌ Hủy Đơn
+                        </button>
+                    </>
                     );
             case 'DANG_THUE':
                  return (
@@ -286,6 +323,19 @@ const OrderDetail: React.FC = () => {
     if (error) return <div className="error-message">Lỗi: {error}</div>;
     if (!order) return <div>Không tìm thấy đơn hàng.</div>;
 
+    const ngayBatDau = new Date(order.ngay_bat_dau);
+    const ngayKetThuc = new Date(order.ngay_ket_thuc);
+    const soNgayThue = Math.ceil((ngayKetThuc.getTime() - ngayBatDau.getTime()) / (1000 * 60 * 60 * 24));
+
+    const tamTinh = order.gia_thue* soNgayThue;
+    const tienGiamGia = tamTinh * order.ty_le_giam;
+    const tongTienCuoiCung = tamTinh - tienGiamGia;
+
+    const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+    };
+
+
     return (
         <div className="order-detail-container">
             <header>
@@ -300,17 +350,30 @@ const OrderDetail: React.FC = () => {
                 {/* CỘT BÊN TRÁI: THÔNG TIN CHÍNH */}
                 <div className="main-content">
                     <div className="info-card">
-                        <h2><FaCalendarAlt /> Thông tin Chuyến đi</h2>
-                        <p><strong>Ngày bắt đầu:</strong> {new Date(order.ngay_bat_dau).toLocaleString('vi-VN')}</p>
-                        <p><strong>Ngày kết thúc:</strong> {new Date(order.ngay_ket_thuc).toLocaleString('vi-VN')}</p>
-                        <p><strong>Điểm nhận:</strong> {order.dia_diem_nhan}</p>
-                        <p><strong>Điểm trả:</strong> {order.dia_diem_tra}</p>
-                    </div>
-                     <div className="info-card">
                         <h2><FaFileInvoiceDollar /> Thông tin Tài chính</h2>
-                        <p><strong>Chính sách giá:</strong> {order.ten_chinh_sach}</p>
-                        <p><strong>Tổng tiền thuê:</strong> {new Intl.NumberFormat('vi-VN').format(order.tong_tien)} VND</p>
-                        <p><strong>Tiền cọc yêu cầu:</strong> {new Intl.NumberFormat('vi-VN').format(order.tien_coc_yeu_cau)} VND</p>
+                        <div className="financial-breakdown">
+                            <div className="fi-row">
+                                <span>Giá thuê:</span>
+                                <span>{formatCurrency(order.gia_thue)} x {soNgayThue} ngày</span>
+                            </div>
+                            <div className="fi-row subtotal">
+                                <span>Tạm tính:</span>
+                                <span>{formatCurrency(tamTinh)}</span>
+                            </div>
+                            <div className="fi-row discount">
+                                <span>Khuyến mãi ({order.ten_chinh_sach} -{order.ty_le_giam * 100}%):</span>
+                                <span>-{formatCurrency(tienGiamGia)}</span>
+                            </div>
+                            <hr className="fi-divider" />
+                            <div className="fi-row total">
+                                <span>Tổng tiền thuê:</span>
+                                <span>{formatCurrency(tongTienCuoiCung)}</span>
+                            </div>
+                            <div className="fi-row">
+                                <span>Tiền cọc yêu cầu:</span>
+                                <span>{formatCurrency(order.tien_coc_yeu_cau)}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -375,6 +438,12 @@ const OrderDetail: React.FC = () => {
                 onSubmit={handleFinalize}
                 isSubmitting={isSubmitting}
                 order={order}
+                />
+                 <CancelOrderModal
+                isOpen={isCancelModalOpen}
+                onClose={() => setIsCancelModalOpen(false)}
+                onSubmit={handleCancel}
+                isSubmitting={isSubmitting}
                 />
             </div>
         </div>

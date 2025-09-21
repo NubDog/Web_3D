@@ -24,7 +24,7 @@
     border-radius: 15px;
     font-weight: 600;
     font-size: 0.9rem;
-    color: #fff;
+    color: auto;
     text-transform: uppercase;
 }
 
@@ -168,4 +168,45 @@
 
 .errorText {
     color: var(--danger-color);
+}
+
+.financial-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.fi-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+}
+
+.fi-row span:first-child {
+    color: #555;
+}
+
+.fi-row span:last-child {
+    font-weight: 500;
+    color: #333;
+}
+
+.fi-row.subtotal span {
+    font-weight: 600;
+}
+
+.fi-row.discount span:last-child {
+    color: #28a745; /* Màu xanh cho giảm giá */
+}
+
+.fi-divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 0.5rem 0;
+}
+
+.fi-row.total span {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #007bff; /* Màu xanh dương cho tổng tiền */
 }

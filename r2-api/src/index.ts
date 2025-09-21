@@ -23,6 +23,7 @@ import {
 	handleRejectOrder,
 	handleGetOrders,
 	handleGetOrderDetails,
+	handleCancelOrder,
 } from './Admin/don-thue';
 import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
@@ -287,6 +288,12 @@ export default {
 			if (path === '/api/orders' && method === 'GET') {
 				return handleGetOrders(request, env);
 			}
+			// Hủy đơn
+			const cancelMatch = path.match(/^\/api\/don-thue\/(\d+)\/cancel$/);
+			if (cancelMatch && method === 'POST') {
+				return handleCancelOrder(request, env, cancelMatch[1]);
+			}
+
 			const orderDetailMatch = path.match(/^\/api\/don-thue\/(\d+)$/);
 			if (orderDetailMatch && method === 'GET') {
 				const orderId = orderDetailMatch[1];
@@ -297,10 +304,12 @@ export default {
 			if (depositConfirmMatch && method === 'POST') {
 				return handleConfirmDeposit(request, env, depositConfirmMatch[1]);
 			}
-			// Đang nhập
+			// Đăng nhập
 			if (path === '/login' && method === 'POST') {
 				return getLogin(request, env);
 			}
+
+
 
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
