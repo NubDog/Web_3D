@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef} from 'react';
 import './../../styles/SignIn_SignUp/SignIn_SignUp.css';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface NguoiDung {
     ten_dang_nhap: string;
@@ -14,6 +16,8 @@ const SignIn_SignUp: React.FC = () => {
     const [nguoiDung, setNguoiDung] = useState<NguoiDung[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -21,6 +25,23 @@ const SignIn_SignUp: React.FC = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log(email, password);
+
+        const user = nguoiDung.find(
+            (user) => user.email == email && user.mat_khau == password
+        );
+        if (user) {
+            console.log("Đăng nhập thành công");
+            const userToSave = {
+                ho_ten: user.ho_ten,
+                email: user.email,
+                vai_tro: user.vai_tro,
+            }
+
+            login(userToSave);
+            navigate('/');
+        } else {
+            console.log("Đăng nhập thất bại");
+        }
     }
 
     const API_URL = 'http://127.0.0.1:8787/api/nguoi-dung';
@@ -50,7 +71,6 @@ const SignIn_SignUp: React.FC = () => {
         };
         fetchData();
     }, []);
-
 
   return (
     <div className="signin-signup-container">

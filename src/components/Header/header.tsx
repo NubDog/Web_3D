@@ -3,7 +3,7 @@ import './../../styles/Header/Header.css'
 import './../../styles/Header/Responsive.css'
 import Logo from './../Logo/logo.tsx'
 import Button from '../Button/Button.tsx'
-
+import { useAuth } from '../../contexts/AuthContext';
 interface danhMucPhuongTien {
     ten_danh_muc: string;
 }
@@ -15,7 +15,7 @@ interface Header {
 const Header = ({id}: Header) => {
     const [danhMucPhuongTien, setDanhMucPhuongTien] = useState<danhMucPhuongTien[]>([]);
     const [loading, setLoading] = useState(false);
-
+    const { currentUser } = useAuth();
     const fetchDanhMucPhuongTien = async () => {
         setLoading(true);
         try {
@@ -50,7 +50,11 @@ const Header = ({id}: Header) => {
             </ul>
 
             <div className="user-login">
-                <Button conttent="Đăng nhập / đăng ký" />
+                {currentUser ? (
+                    <Button conttent={`Xin chào, ${currentUser.ho_ten}`} />
+                ) : (
+                    <Button conttent="Đăng nhập / đăng ký" />
+                )}
             </div>
         </div>
     )
