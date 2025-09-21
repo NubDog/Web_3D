@@ -347,3 +347,18 @@
   background-color: #4b5563;
   color: #ffffff;
 }
+.error-text {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  display: block;
+}
+
+.error-global {
+  background-color: #fee2e2;
+  border: 1px solid #f87171;
+  color: #b91c1c;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}

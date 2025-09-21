@@ -54,7 +54,7 @@ export async function getPhuongTienById(request: Request, env: Env, id: string):
 	try {
 		const result = await env.DB.prepare(
 			`
-      SELECT p.phuong_tien_id, p.ten_phuong_tien, p.bien_so, p.so_km, p.trang_thai,
+      SELECT p.*,p.phuong_tien_id, p.ten_phuong_tien, p.bien_so, p.so_km, p.trang_thai,
              d.ten_danh_muc,p.*,	
              c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh
 			FROM PhuongTien p
@@ -90,16 +90,17 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 			so_km: number;
 			chinh_sach_id: number;
 			so_khung: string;
+			gia_thue : number;
 		};
-		const { ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung } = body;
-		if (!ten_phuong_tien || !loai || !danh_muc_id || !trang_thai || !bien_so || !so_km || !chinh_sach_id || !so_khung) {
+		const { ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung,gia_thue } = body;
+		if (!ten_phuong_tien || !loai || !danh_muc_id || !trang_thai || !bien_so || !so_km || !chinh_sach_id || !so_khung || !gia_thue) {
 			return Response.json({ success: false, error: 'Thiếu thông tin phương tiện' }, { status: 400 });
 		}
 		const result = await env.DB.prepare(
-			`INSERT INTO PhuongTien (ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+			`INSERT INTO PhuongTien (ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung,gia_thue)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`
 		)
-			.bind(ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung)
+			.bind(ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung,gia_thue)
 			.run();
 		return Response.json({ success: true, message: 'Thêm phương tiện thành công', phuong_tien_id: result.meta.last_row_id });
 	} catch (err: any) {
@@ -122,6 +123,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 			so_km?: number;
 			chinh_sach_id?: number;
 			so_khung?: string;
+			gia_thue?:number;
 		};
 
 		// 1. Tìm bản ghi hiện có. Sử dụng .first() để an toàn hơn.
@@ -142,6 +144,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 			so_km: body.so_km ?? existingRecord.so_km,
 			chinh_sach_id: body.chinh_sach_id ?? existingRecord.chinh_sach_id,
 			so_khung: body.so_khung ?? existingRecord.so_khung,
+			gia_thue: body.gia_thue ?? existingRecord.gia_thue,
 		};
 
 		// 3. Đảm bảo không có giá trị 'undefined' nào được truyền vào D1.
@@ -151,7 +154,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		// 4. Cập nhật vào cơ sở dữ liệu.
 		await env.DB.prepare(
 			`UPDATE PhuongTien
-            SET ten_phuong_tien = ?, loai = ?, danh_muc_id = ?, trang_thai = ?, bien_so = ?, so_km = ?, chinh_sach_id = ?, so_khung = ?
+            SET ten_phuong_tien = ?, loai = ?, danh_muc_id = ?, trang_thai = ?, bien_so = ?, so_km = ?, chinh_sach_id = ?, so_khung = ?, gia_thue = ?
             WHERE phuong_tien_id = ?`
 		)
 			.bind(...safeValues, id) // Sử dụng spread operator (...) để truyền mảng giá trị vào `.bind()`.

@@ -18,6 +18,7 @@ export interface PhuongTien {
   so_khung: string;
   ngay_tao: string;
   ngay_cap_nhat: string;
+  gia_thue: number;
 }
 
 export interface ApiResponse {
@@ -168,6 +169,9 @@ const PhuongTienList: React.FC = () => {
               <th className="py-3 px-6 text-left">Chính sách</th>
               <th className="py-3 px-6 text-left">Số khung</th>
               <th className="py-3 px-6 text-left">Số Km đã đi</th>
+              <th className="py-3 px-6 text-left">Giá Thuê</th>
+              <th className="py-3 px-6 text-left">Ngày Tạo</th>
+              <th className="py-3 px-6 text-left">Ngày Cập Nhật</th>
               <th className="py-3 px-6 text-center">Chức năng</th>
             </tr>
           </thead>
@@ -210,6 +214,11 @@ const PhuongTienList: React.FC = () => {
                 <td className="py-3 px-6 text-left">{item.ten_chinh_sach}</td>
                 <td className="py-3 px-6 text-left">{item.so_khung}</td>
                 <td className="py-3 px-6 text-left">{item.so_km}</td>
+                <td className="py-3 px-6 text-left">
+                  {item.gia_thue.toLocaleString("vi-VN")} VND
+                </td>
+                <td className="py-3 px-6 text-left">{item.ngay_tao}</td>
+                <td className="py-3 px-6 text-left">{item.ngay_cap_nhat}</td>
                 <td className="py-3 px-6 text-center">
                   <div className="action-buttons flex item-center justify-center space-x-2">
                     {/* Nút Sửa bây giờ là một Link */}

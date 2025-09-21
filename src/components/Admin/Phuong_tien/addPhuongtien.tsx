@@ -18,6 +18,7 @@ export interface PhuongTien {
   so_khung: string;
   ngay_tao: string;
   ngay_cap_nhat: string;
+  gia_thue: number;
 }
 
 interface DanhMuc {
@@ -43,91 +44,49 @@ const PhuongTienModal: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const isEditing = !!id;
 
   const [danhMucList, setDanhMucList] = useState<DanhMuc[]>([]);
   const [chinhSachList, setChinhSachList] = useState<ChinhSachGia[]>([]);
 
-  // Helper: tạo các URL thử (có/không /api; absolute/relative)
   const buildCandidateUrls = (path: string) => {
     const base = API_BASE_URL.replace(/\/$/, "");
     return [
-      `${base}${path.startsWith("/") ? "" : "/"}${path}`, // http://127.0.0.1:8787/...
-      `${base}/api${path.startsWith("/") ? "" : "/"}${path}`, // http://127.0.0.1:8787/api/...
-      path.startsWith("/") ? path : `/${path}`, // relative /...
-      `/api${path.startsWith("/") ? "" : "/"}${path}`, // relative /api/...
+      `${base}${path.startsWith("/") ? "" : "/"}${path}`,
+      `${base}/api${path.startsWith("/") ? "" : "/"}${path}`,
+      path.startsWith("/") ? path : `/${path}`,
+      `/api${path.startsWith("/") ? "" : "/"}${path}`,
     ];
   };
 
-  // Fetch robust: thử nhiều URL, log chi tiết, trả về dữ liệu JSON hoặc ném lỗi mô tả
   const fetchWithFallback = async (path: string) => {
     const urls = buildCandidateUrls(path);
     let lastErr: any = null;
 
     for (const url of urls) {
       try {
-        console.log("[fetchWithFallback] Trying URL:", url);
         const resp = await fetch(url, { method: "GET" });
-        const status = resp.status;
-        const text = await resp.text(); // đọc text trước để tránh crash
-        // Log response brief
-        console.log(
-          `[fetchWithFallback] ${url} → status ${status}; body (start):`,
-          text.slice(0, 300)
-        );
-
-        // Try parse JSON
+        const text = await resp.text();
         let parsed: any = null;
         try {
           parsed = JSON.parse(text);
         } catch (e) {
           parsed = null;
         }
-
         if (resp.ok) {
-          if (parsed !== null) {
-            // Nếu dạng { success: true, data: ... }
-            if (Object.prototype.hasOwnProperty.call(parsed, "success")) {
-              if (parsed.success) {
-                return { url, data: parsed.data };
-              } else {
-                // server trả success:false
-                throw new Error(
-                  `API trả về success:false (${url}) - ${JSON.stringify(
-                    parsed
-                  )}`
-                );
-              }
+          if (parsed && typeof parsed === "object") {
+            if ("success" in parsed) {
+              if (parsed.success) return { url, data: parsed.data };
+              throw new Error(parsed.error || "API trả về success:false");
             }
-            // Nếu không có success, giả sử đó chính là object data
             return { url, data: parsed };
-          } else {
-            // 200 nhưng không JSON (HTML, text...) -> báo rõ
-            throw new Error(
-              `Response OK nhưng không phải JSON. body start: ${text.slice(
-                0,
-                300
-              )}`
-            );
           }
-        } else {
-          // not ok -> nhớ lỗi rồi thử url khác
-          lastErr = new Error(
-            `HTTP ${status} từ ${url}. bodyStart: ${text.slice(0, 200)}`
-          );
-          console.warn(
-            "[fetchWithFallback] not ok -> continue to next candidate",
-            lastErr
-          );
         }
       } catch (err: any) {
-        // network error (CORS, connection refused...) hoặc JSON parse error / thrown
         lastErr = err;
-        console.warn("[fetchWithFallback] error for URL", url, err);
-        // Nếu là lỗi network (TypeError: Failed to fetch) -> tiếp tục thử candidate khác
       }
     }
-
     throw new Error(
       `Không lấy được dữ liệu cho ${path}. Lỗi cuối cùng: ${
         lastErr?.message || "unknown"
@@ -143,55 +102,74 @@ const PhuongTienModal: React.FC = () => {
       }
       setLoading(true);
       setError(null);
-
       try {
-        // thử fetch detail
-        const { url, data } = await fetchWithFallback(
-          `/Admin/phuong-tien/${id}`
-        );
-        console.log("[loadDetail] success url:", url, "data:", data);
-        // nếu backend trả trực tiếp object (không bọc `data`) thì data = object
-        const payload = data && typeof data === "object" ? data : data;
-        setPhuongTien(payload as Partial<PhuongTien>);
+        const { data } = await fetchWithFallback(`/Admin/phuong-tien/${id}`);
+        setPhuongTien(data as Partial<PhuongTien>);
       } catch (err: any) {
-        console.error("[loadDetail] Lỗi khi lấy chi tiết:", err);
         setError(`Lỗi khi tải chi tiết phương tiện: ${err.message}`);
-        // Không return/văng component; cho phép user vẫn thấy form để edit thủ công
       } finally {
         setLoading(false);
       }
     };
-
     loadDetail();
   }, [id, isEditing]);
 
-  // Lấy danh mục và chính sách (cũng dùng fallback)
   useEffect(() => {
     const loadLists = async () => {
       try {
         const r1 = await fetchWithFallback("/Admin/danh-muc-phuong-tien");
         setDanhMucList(Array.isArray(r1.data) ? r1.data : []);
-      } catch (err: any) {
-        console.warn("Không lấy được danh mục:", err.message);
-        // không set error chính để không block UI
-      }
-
+      } catch {}
       try {
         const r2 = await fetchWithFallback("/Admin/chinh-sach-gia");
-        // nếu backend trả { success:true, data:[...] } thì r2.data là list
         setChinhSachList(Array.isArray(r2.data) ? r2.data : []);
-      } catch (err: any) {
-        console.warn("Không lấy được chính sách:", err.message);
-      }
+      } catch {}
     };
-
     loadLists();
   }, []);
 
-  // Handle form submit
+  const validateForm = (data: Partial<PhuongTien>) => {
+    const errors: Record<string, string> = {};
+    if (!data.ten_phuong_tien || data.ten_phuong_tien.trim().length < 3) {
+      errors.ten_phuong_tien = "Tên phương tiện phải có ít nhất 3 ký tự";
+    }
+    if (!data.bien_so || !/^[0-9A-Z-]{5,15}$/i.test(data.bien_so)) {
+      errors.bien_so = "Biển số không hợp lệ (5-15 ký tự, chỉ chữ/số/gạch)";
+    }
+    if (data.so_km !== undefined && data.so_km < 0) {
+      errors.so_km = "Số km không được âm";
+    }
+    if (!data.trang_thai) {
+      errors.trang_thai = "Vui lòng chọn trạng thái";
+    }
+    if (data.gia_co_ban !== undefined && data.gia_co_ban <= 0) {
+      errors.gia_co_ban = "Giá cơ bản phải lớn hơn 0";
+    }
+    if (data.tien_coc_mac_dinh !== undefined && data.tien_coc_mac_dinh < 0) {
+      errors.tien_coc_mac_dinh = "Tiền cọc không được âm";
+    }
+    if (!data.loai) {
+      errors.loai = "Vui lòng nhập loại phương tiện";
+    }
+    if (!data.danh_muc_id || data.danh_muc_id <= 0) {
+      errors.danh_muc_id = "Vui lòng chọn danh mục";
+    }
+    if (!data.chinh_sach_id || data.chinh_sach_id <= 0) {
+      errors.chinh_sach_id = "Vui lòng chọn chính sách giá";
+    }
+    if (!data.so_khung || data.so_khung.trim().length < 5) {
+      errors.so_khung = "Số khung phải có ít nhất 5 ký tự";
+    }
+    if (data.gia_thue !== undefined && data.gia_thue <= 0) {
+      errors.gia_thue = "Giá thuê phải lớn hơn 0";
+    }
+    return errors;
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+    setFormErrors({});
     const form = e.currentTarget;
     const formData = new FormData(form);
 
@@ -206,55 +184,37 @@ const PhuongTienModal: React.FC = () => {
       danh_muc_id: Number(formData.get("danh_muc_id")) || 0,
       chinh_sach_id: Number(formData.get("chinh_sach_id")) || 0,
       so_khung: (formData.get("so_khung") as string) || "",
+      gia_thue: Number(formData.get("gia_thue")) || 0,
     };
 
+    const errors = validateForm(payload);
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
     const path = isEditing ? `/Admin/phuong-tien/${id}` : `/Admin/phuong-tien`;
-    // build candidate URLs same order used for GET but for submit pick the first reachable
     const candidates = buildCandidateUrls(path);
 
     let lastErr: any = null;
     for (const url of candidates) {
       try {
-        console.log("[submit] trying url", url);
         const resp = await fetch(url, {
           method: isEditing ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
-        const text = await resp.text();
-        console.log(
-          `[submit] ${url} -> status ${resp.status}; body start:`,
-          text.slice(0, 300)
-        );
-        let parsed: any = null;
-        try {
-          parsed = JSON.parse(text);
-        } catch (e) {
-          parsed = null;
-        }
-
         if (resp.ok) {
-          if (parsed && parsed.success === false) {
-            throw new Error(parsed.error || "Server trả success:false");
-          }
-          // success
           navigate("/admin/phuong-tien");
           return;
         } else {
-          lastErr = new Error(`HTTP ${resp.status} - ${text.slice(0, 200)}`);
-          console.warn("[submit] not ok -> try next", lastErr);
+          lastErr = new Error(`HTTP ${resp.status}`);
         }
       } catch (err: any) {
         lastErr = err;
-        console.warn("[submit] error for url", url, err);
       }
     }
-
-    setError(
-      `Không thể lưu (đã thử nhiều URL). Lỗi cuối: ${
-        lastErr?.message || "unknown"
-      }`
-    );
+    setError(`Không thể lưu dữ liệu: ${lastErr?.message || "unknown"}`);
   };
 
   if (loading) {
@@ -269,14 +229,10 @@ const PhuongTienModal: React.FC = () => {
     <div className="phuong-tien-modal-container">
       <div className="form-container">
         <h2 className="text-xl font-bold mb-4" style={{ color: "#333" }}>
-          {isEditing ? `Sửa Phương tiện ` : "Thêm Phương tiện"}
+          {isEditing ? `Sửa Phương tiện` : "Thêm Phương tiện"}
         </h2>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-            {error}
-          </div>
-        )}
+        {error && <div className="error-global">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -285,8 +241,10 @@ const PhuongTienModal: React.FC = () => {
               type="text"
               name="ten_phuong_tien"
               defaultValue={phuongTien?.ten_phuong_tien || ""}
-              required
             />
+            {formErrors.ten_phuong_tien && (
+              <span className="error-text">{formErrors.ten_phuong_tien}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -295,8 +253,10 @@ const PhuongTienModal: React.FC = () => {
               type="text"
               name="bien_so"
               defaultValue={phuongTien?.bien_so || ""}
-              required
             />
+            {formErrors.bien_so && (
+              <span className="error-text">{formErrors.bien_so}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -305,21 +265,26 @@ const PhuongTienModal: React.FC = () => {
               type="number"
               name="so_km"
               defaultValue={phuongTien?.so_km ?? 0}
-              required
             />
+            {formErrors.so_km && (
+              <span className="error-text">{formErrors.so_km}</span>
+            )}
           </div>
 
           <div className="form-group">
             <label>Trạng thái:</label>
             <select
               name="trang_thai"
-              defaultValue={phuongTien?.trang_thai || "Sẵn sàng"}
-              required
+              defaultValue={phuongTien?.trang_thai || "SAN_SANG"}
             >
               <option value="SAN_SANG">Sẵn sàng</option>
               <option value="DA_DAT">Đã đặt</option>
               <option value="BAO_TRI">Bảo trì</option>
+              <option value="CHO_DUYET">Chờ duyệt</option>
             </select>
+            {formErrors.trang_thai && (
+              <span className="error-text">{formErrors.trang_thai}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -328,8 +293,10 @@ const PhuongTienModal: React.FC = () => {
               type="number"
               name="gia_co_ban"
               defaultValue={phuongTien?.gia_co_ban ?? 0}
-              required
             />
+            {formErrors.gia_co_ban && (
+              <span className="error-text">{formErrors.gia_co_ban}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -338,8 +305,10 @@ const PhuongTienModal: React.FC = () => {
               type="number"
               name="tien_coc_mac_dinh"
               defaultValue={phuongTien?.tien_coc_mac_dinh ?? 0}
-              required
             />
+            {formErrors.tien_coc_mac_dinh && (
+              <span className="error-text">{formErrors.tien_coc_mac_dinh}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -348,8 +317,10 @@ const PhuongTienModal: React.FC = () => {
               type="text"
               name="loai"
               defaultValue={phuongTien?.loai || ""}
-              required
             />
+            {formErrors.loai && (
+              <span className="error-text">{formErrors.loai}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -357,7 +328,6 @@ const PhuongTienModal: React.FC = () => {
             <select
               name="danh_muc_id"
               defaultValue={phuongTien?.danh_muc_id ?? ""}
-              required
             >
               <option value="">-- Chọn danh mục --</option>
               {danhMucList.map((dm) => (
@@ -366,6 +336,9 @@ const PhuongTienModal: React.FC = () => {
                 </option>
               ))}
             </select>
+            {formErrors.danh_muc_id && (
+              <span className="error-text">{formErrors.danh_muc_id}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -373,7 +346,6 @@ const PhuongTienModal: React.FC = () => {
             <select
               name="chinh_sach_id"
               defaultValue={phuongTien?.chinh_sach_id ?? ""}
-              required
             >
               <option value="">-- Chọn chính sách --</option>
               {chinhSachList.map((cs) => (
@@ -382,6 +354,9 @@ const PhuongTienModal: React.FC = () => {
                 </option>
               ))}
             </select>
+            {formErrors.chinh_sach_id && (
+              <span className="error-text">{formErrors.chinh_sach_id}</span>
+            )}
           </div>
 
           <div className="form-group">
@@ -390,8 +365,22 @@ const PhuongTienModal: React.FC = () => {
               type="text"
               name="so_khung"
               defaultValue={phuongTien?.so_khung || ""}
-              required
             />
+            {formErrors.so_khung && (
+              <span className="error-text">{formErrors.so_khung}</span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label>Giá Thuê:</label>
+            <input
+              type="number"
+              name="gia_thue"
+              defaultValue={phuongTien?.gia_thue ?? 0}
+            />
+            {formErrors.gia_thue && (
+              <span className="error-text">{formErrors.gia_thue}</span>
+            )}
           </div>
 
           <div className="form-actions">

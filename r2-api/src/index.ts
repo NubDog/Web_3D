@@ -11,15 +11,23 @@ import {
 } from './Admin/Danh-muc-phuong-tien';
 import { addChinhSachGia, deleteChinhSachGia, getChinhSachGias, updateChinhSachGia } from './Admin/Chinh-sach-gia';
 import { handleImageUpload } from './Admin/upload-users-avatar';
-import { handleGetKycDocuments, handleAddKycDocument,handleUpdateCccdSet } from './Admin/admin-KYC';
+import { handleGetKycDocuments, handleAddKycDocument, handleUpdateCccdSet } from './Admin/admin-KYC';
 import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
-import { handleCreateRentalOrder,handleGetPendingOrders, handleApproveOrder, handleRejectOrder, handleGetOrders, handleGetOrderDetails } from './Admin/don-thue';
-import { handleVehicleHandover,handleVehicleReturn  } from './Admin/giao-nhan';
+import {
+	handleCreateRentalOrder,
+	handleGetPendingOrders,
+	handleApproveOrder,
+	handleRejectOrder,
+	handleGetOrders,
+	handleGetOrderDetails,
+} from './Admin/don-thue';
+import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
+import { getLogin } from './Admin/Login';
 
 interface Env {
 	ua: R2Bucket;
@@ -51,8 +59,6 @@ export default {
 		const path = url.pathname;
 		const method = request.method;
 
-		 
-			
 		try {
 			if (path === '/upload' && method === 'POST') {
 				return handleUploadFile(request, env);
@@ -73,13 +79,13 @@ export default {
 
 			// API for PhuongTien
 			if (path === '/api/phuong-tien' && method === 'GET') {
-                return handleGetPhuongTien(request, env);
-            }
+				return handleGetPhuongTien(request, env);
+			}
 
 			// API for ChinhSachGia
 			if (path === '/api/chinh-sach-gia' && method === 'GET') {
-                return handleGetChinhSachGia(request, env);
-            }
+				return handleGetChinhSachGia(request, env);
+			}
 
 			if (path === '/test-r2' && request.method === 'GET') {
 				try {
@@ -121,20 +127,20 @@ export default {
 
 			//kyc
 			const kycListMatch = path.match(/^\/api\/customers\/(\d+)\/kyc$/);
-            if (kycListMatch && method === 'GET') {
-                const customerId = kycListMatch[1];
-                return handleGetKycDocuments(env, customerId);
-            }
-            
-            const kycCccdSetMatch = path.match(/^\/api\/kyc\/cccd\/(\d+)$/);
-            if (kycCccdSetMatch && method === 'PUT') {
-                const customerId = kycCccdSetMatch[1];
-                return handleUpdateCccdSet(request, env, customerId);
-            }
+			if (kycListMatch && method === 'GET') {
+				const customerId = kycListMatch[1];
+				return handleGetKycDocuments(env, customerId);
+			}
 
-            if (path === '/api/kyc' && method === 'POST') {
-                return handleAddKycDocument(request, env);
-            }
+			const kycCccdSetMatch = path.match(/^\/api\/kyc\/cccd\/(\d+)$/);
+			if (kycCccdSetMatch && method === 'PUT') {
+				const customerId = kycCccdSetMatch[1];
+				return handleUpdateCccdSet(request, env, customerId);
+			}
+
+			if (path === '/api/kyc' && method === 'POST') {
+				return handleAddKycDocument(request, env);
+			}
 
 			// Route cho người dùng
 			if (path === '/api/users/upload-avatar' && method === 'POST') {
@@ -240,56 +246,60 @@ export default {
 			}
 
 			if (path === '/api/don-thue' && method === 'POST') {
-                return handleCreateRentalOrder(request, env);
-            }
+				return handleCreateRentalOrder(request, env);
+			}
 
 			if (path === '/api/don-thue/pending' && method === 'GET') {
-                return handleGetPendingOrders(request, env);
-            }
-            
-            // Duyệt đơn
-            const approveMatch = path.match(/^\/api\/don-thue\/(\d+)\/approve$/);
-            if (approveMatch && method === 'POST') {
-                return handleApproveOrder(request, env, approveMatch[1]);
-            }
-            
-            // Từ chối đơn
-            const rejectMatch = path.match(/^\/api\/don-thue\/(\d+)\/reject$/);
-            if (rejectMatch && method === 'POST') {
-                return handleRejectOrder(request, env, rejectMatch[1]);
-            }
+				return handleGetPendingOrders(request, env);
+			}
+
+			// Duyệt đơn
+			const approveMatch = path.match(/^\/api\/don-thue\/(\d+)\/approve$/);
+			if (approveMatch && method === 'POST') {
+				return handleApproveOrder(request, env, approveMatch[1]);
+			}
+
+			// Từ chối đơn
+			const rejectMatch = path.match(/^\/api\/don-thue\/(\d+)\/reject$/);
+			if (rejectMatch && method === 'POST') {
+				return handleRejectOrder(request, env, rejectMatch[1]);
+			}
 
 			// Route đề bàn giao xe
-            const handoverMatch = path.match(/^\/api\/don-thue\/(\d+)\/handover$/);
-            if (handoverMatch && method === 'POST') {
-                return handleVehicleHandover(request, env, handoverMatch[1]);
-            }
+			const handoverMatch = path.match(/^\/api\/don-thue\/(\d+)\/handover$/);
+			if (handoverMatch && method === 'POST') {
+				return handleVehicleHandover(request, env, handoverMatch[1]);
+			}
 
 			//Route để tiếp nhận trả xe
 			const returnMatch = path.match(/^\/api\/don-thue\/(\d+)\/return$/);
-            if (returnMatch && method === 'POST') {
-                return handleVehicleReturn(request, env, returnMatch[1]);
-            }
+			if (returnMatch && method === 'POST') {
+				return handleVehicleReturn(request, env, returnMatch[1]);
+			}
 
 			// Route để quyết toán đơn thuê
-            const finalizeMatch = path.match(/^\/api\/don-thue\/(\d+)\/finalize$/);
-            if (finalizeMatch && method === 'POST') {
-                return handleFinalizeOrder(request, env, finalizeMatch[1]);
-            }
+			const finalizeMatch = path.match(/^\/api\/don-thue\/(\d+)\/finalize$/);
+			if (finalizeMatch && method === 'POST') {
+				return handleFinalizeOrder(request, env, finalizeMatch[1]);
+			}
 
 			// Route để lấy chi tiết đơn thuê
 			if (path === '/api/orders' && method === 'GET') {
 				return handleGetOrders(request, env);
 			}
 			const orderDetailMatch = path.match(/^\/api\/don-thue\/(\d+)$/);
-            if (orderDetailMatch && method === 'GET') {
-                const orderId = orderDetailMatch[1];
-                return handleGetOrderDetails(request, env, orderId);
-            }
+			if (orderDetailMatch && method === 'GET') {
+				const orderId = orderDetailMatch[1];
+				return handleGetOrderDetails(request, env, orderId);
+			}
 
 			const depositConfirmMatch = path.match(/^\/api\/deposits\/(\d+)\/confirm$/);
 			if (depositConfirmMatch && method === 'POST') {
 				return handleConfirmDeposit(request, env, depositConfirmMatch[1]);
+			}
+			// Đang nhập
+			if (path === '/login' && method === 'POST') {
+				return getLogin(request, env);
 			}
 
 			// Route mặc định nếu không khớp
