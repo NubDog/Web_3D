@@ -133,7 +133,7 @@ const SignIn: React.FC = () => {
 
         <p className="signin-signup-text">
           Không có tài khoản?{' '}
-          <button type="button" className="signin-signup-link">Đăng ký</button>
+          <button type="button" className="signin-signup-link" onClick={() => navigate('/signup')}>Đăng ký</button>
         </p>
 
         <p className="signin-signup-text signin-signup-text--divider">Hoặc với</p>

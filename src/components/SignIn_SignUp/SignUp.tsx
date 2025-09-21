@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './../../styles/components/SignIn_SignUp/SignIn_SignUp.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import Header from '../Header/header';
 
 const SignUp: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -63,6 +64,7 @@ const SignUp: React.FC = () => {
 
   return (
     <div className="signin-signup-container">
+      <Header />
       <form
         className="signin-signup-form"
         onSubmit={handleSubmit}

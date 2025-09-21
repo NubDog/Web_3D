@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './../../styles/components/Header/Header.css'
 import './../../styles/components/Header/Responsive.css'
 import Logo from './../Logo/logo.tsx'
 import Button from '../Button/Button.tsx'
+import Button_logout from '../Button/Button_logout.tsx'
 import { useAuth } from '../../contexts/AuthContext';
 interface danhMucPhuongTien {
     ten_danh_muc: string;
 }
 
-interface Header {
+interface HeaderProps {
     id?: string;
 }
 
-const Header = ({id}: Header) => {
+const Header: React.FC<HeaderProps> = ({id}) => {
+    const navigate = useNavigate();
     const [danhMucPhuongTien, setDanhMucPhuongTien] = useState<danhMucPhuongTien[]>([]);
     const [loading, setLoading] = useState(false);
     const { currentUser } = useAuth();
@@ -51,9 +54,14 @@ const Header = ({id}: Header) => {
 
             <div className="user-login">
                 {currentUser ? (
-                    <Button conttent={`Xin chào, ${currentUser.ho_ten}`} />
+                    <>
+                        <Button_logout />
+                    </>
                 ) : (
-                    <Button conttent="Đăng nhập / đăng ký" />
+                    <Button 
+                        conttent="Đăng nhập / đăng ký" 
+                        onClick={() => navigate('/signin')}
+                    />
                 )}
             </div>
         </div>

@@ -8,7 +8,7 @@ const SignInPage = () => {
     return (
         <div className='signin-signup-page'>
             <Header />
-            {/* <SignInComponent /> */}
+            <SignInComponent />
             <SignUpComponent />
         </div>
     )
