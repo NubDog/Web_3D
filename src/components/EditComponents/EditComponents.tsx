@@ -1,11 +1,11 @@
 import React from 'react';
 import Footer from '../Footer/Footer'
-import Card from '../Card/CardHypercar'
+import SignIn_SignUp from '../SignIn_SignUp/SigIn_SignUp'
 
 const EditComponents = () => {
     return (
         <div className="edit-components">
-            <Card />
+            <SignIn_SignUp />
         </div>
     )
 }
