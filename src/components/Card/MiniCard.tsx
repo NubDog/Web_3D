@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import './../../styles/Card/MiniCard.css';
-import './../../styles/Card/Card.css';
+import './../../styles/components/Card/MiniCard.css';
+import './../../styles/components/Card/Card.css';
 
 const MiniCard = () => {
     const cardBoxRef = useRef<HTMLDivElement>(null);

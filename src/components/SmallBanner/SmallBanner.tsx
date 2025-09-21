@@ -1,5 +1,5 @@
 import { useState} from 'react';
-import '../../styles/SmallBanner/SmallBanner.css';
+import '../../styles/components/SmallBanner/SmallBanner.css';
 import LinkA from '../LinkA/linkA.tsx';
 
 interface SmallBannerProps {

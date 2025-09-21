@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-import '../../styles/Card/Card.css';
+import './../../styles/components/Card/Card.css';
 import Lamborghini_model_Sian from './../../assets/Lamborghini Sian FKP 37.png';
 
 export interface DataItem {

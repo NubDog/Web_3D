@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import './../../styles/Header/Header.css'
-import './../../styles/Header/Responsive.css'
+import './../../styles/components/Header/Header.css'
+import './../../styles/components/Header/Responsive.css'
 import Logo from './../Logo/logo.tsx'
 import Button from '../Button/Button.tsx'
 import { useAuth } from '../../contexts/AuthContext';

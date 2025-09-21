@@ -2,7 +2,7 @@ import React from 'react';
 import BaseCard from './BaseCard';
 import expert_img from './../../assets/Expert.jpg';
 import expert_img_2 from './../../assets/store-card-50-genius-202108.png';
-import './../../styles/Card/Card.css';
+import './../../styles/components/Card/Card.css';
 import type { DataItem } from './BaseCard.tsx';
 
 const supportData: DataItem[] = [

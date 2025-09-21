@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState } from 'react';
-import './../styles/HomePage/HomePage.css';
+import './../styles/pages/HomePage/HomePage.css';
 import './../components/BigBanner/BigBanner.tsx'
 import '../index.css'
 import './../components/Logo/logo.tsx'

@@ -21,6 +21,7 @@ import Store from "./pages/Store";
 import OrderList from "./components/Admin/Admin_Order/OrderList";
 import OrderDetail from "./components/Admin/Admin_Order/OrderDetail";
 import { AuthProvider } from "./components/contexts-login-tam-thoi/AuthContext";
+import SignIn_SigUp from "./pages/SigIn_SigUp";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/store" element={<Store />} />
+          <Route path="/signin-signup" element={<SignIn_SigUp />} />
 
           {/* Trang edit components */}
           <Route path="/edit-components" element={<EditComponents />} />
