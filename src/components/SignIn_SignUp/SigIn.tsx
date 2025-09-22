@@ -40,7 +40,7 @@ const SignIn: React.FC = () => {
             login(userToSave);
             navigate('/');
         } else {
-            console.log("Đăng nhập thất bại");
+            console.log("Đăng nhập thất bại", error);
         }
     }
 
@@ -59,7 +59,7 @@ const SignIn: React.FC = () => {
                 const result = await response.json();
 
                 if (result.success) {
-                    const activeUsers = result.data.filter((user: NguoiDung) => user.trang_thai === 'hoat_dong');
+                    const activeUsers = result.data.filter((user: NguoiDung) => user.trang_thai === 'active');
 
                     setNguoiDung(activeUsers);
                 }

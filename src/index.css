@@ -131,6 +131,11 @@ button {
   width: 100%;
 }
 
+.col-980 {
+  max-width: 980px;
+  width: 100%;
+}
+
 .text-font-14 {
   font-size: 14px !important;
   font-weight: 400 !important;
