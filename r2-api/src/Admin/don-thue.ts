@@ -49,12 +49,12 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
         }
 
         const vehicleStmt = env.DB.prepare(
-            `SELECT pt.trang_thai, pt.chinh_sach_id, cs.gia_co_ban, cs.tien_coc_mac_dinh 
+            `SELECT pt.trang_thai, pt.chinh_sach_id, pt.gia_thue, cs.tien_coc_mac_dinh 
              FROM PhuongTien AS pt
              JOIN ChinhSachGia AS cs ON pt.chinh_sach_id = cs.chinh_sach_id
              WHERE pt.phuong_tien_id = ?`
         );
-        const vehicleInfo = await vehicleStmt.bind(phuong_tien_id).first<{ trang_thai: string, chinh_sach_id: number, gia_co_ban: number, tien_coc_mac_dinh: number }>();
+        const vehicleInfo = await vehicleStmt.bind(phuong_tien_id).first<{ trang_thai: string, chinh_sach_id: number, gia_thue: number, tien_coc_mac_dinh: number }>();
 
         if (!vehicleInfo) {
             return jsonResponse({ success: false, error: "Không tìm thấy phương tiện." }, 404);
@@ -78,7 +78,7 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
         }
 
         const rentalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        const tong_tien = rentalDays * vehicleInfo.gia_co_ban;
+        const tong_tien = rentalDays * vehicleInfo.gia_thue;
         const tien_coc_yeu_cau = vehicleInfo.tien_coc_mac_dinh;
 
         const insertOrderStmt = env.DB.prepare(
@@ -265,11 +265,13 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
                 dt.*, 
                 kh.ho_ten, kh.email, 
                 pt.ten_phuong_tien, pt.bien_so, pt.gia_thue,
-                cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh
+                cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh,
+                tc.trang_thai AS trang_thai_coc
              FROM DonThue AS dt
              JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id
              JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
              JOIN ChinhSachGia AS cs ON dt.chinh_sach_id = cs.chinh_sach_id
+             LEFT JOIN TienCoc AS tc ON dt.don_thue_id = tc.don_thue_id
              WHERE dt.don_thue_id = ?`
         );
         const orderDetails = await stmt.bind(orderId).first();

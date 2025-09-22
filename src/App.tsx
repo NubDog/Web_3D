@@ -21,13 +21,15 @@ import Store from "./pages/Store";
 import OrderList from "./components/Admin/Admin_Order/OrderList";
 import OrderDetail from "./components/Admin/Admin_Order/OrderDetail";
 import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider2 } from "./components/contexts-login-tam-thoi/AuthContext"
 import SignInPage from "./pages/SigIn_SigUp";
 import SignUp from "./components/SignIn_SignUp/SignUp";
-
+import ViolationList from "./components/Admin/admin-vipham/ViolationList";
 
 function App() {
   return (
     <AuthProvider>
+      <AuthProvider2>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -58,6 +60,8 @@ function App() {
 
               <Route path="orders/:status" element={<OrderList />} />
               <Route path="order/:orderId" element={<OrderDetail />} />
+            <Route path="violations" element={<ViolationList />} />
+
           </Route>
 
           {/* <Route path="/babylon" element={<BabylonTankViewer />} />
@@ -65,6 +69,7 @@ function App() {
           */}
         </Routes>
       </BrowserRouter>
+      </AuthProvider2>
     </AuthProvider>
   );
 }

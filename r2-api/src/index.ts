@@ -311,9 +311,12 @@ export default {
 				return handleGetOrderDetails(request, env, orderId);
 			}
 
-			const depositConfirmMatch = path.match(/^\/api\/deposits\/(\d+)\/confirm$/);
-			if (depositConfirmMatch && method === 'POST') {
-				return handleConfirmDeposit(request, env, depositConfirmMatch[1]);
+			const confirmDepositMatch = path.match(/^\/api\/don-thue\/(\d+)\/confirm-deposit$/);
+			if (confirmDepositMatch && method === 'POST') {
+				// Chúng ta sẽ dùng lại hàm handleConfirmDeposit, 
+				// nhưng lần này tham số truyền vào là orderId
+				const orderId = confirmDepositMatch[1];
+				return handleConfirmDeposit(request, env, orderId);
 			}
 			// Đăng nhập
 			if (path === '/login' && method === 'POST') {

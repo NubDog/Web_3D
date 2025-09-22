@@ -40,7 +40,7 @@ const SignIn: React.FC = () => {
             login(userToSave);
             navigate('/');
         } else {
-            console.log("Đăng nhập thất bại", error);
+            console.log("Đăng nhập thất bại");
         }
     }
 

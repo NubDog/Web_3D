@@ -204,18 +204,13 @@ const OrderDetail: React.FC = () => {
     };
 
     const handleConfirmDeposit = async () => {
-    if (!order?.tien_coc_id) {
-        toast.error("Không tìm thấy thông tin tiền cọc để xác nhận.");
-        return;
-    }
-    // if (!user) return toast.error("Vui lòng đăng nhập.");
-
     setIsSubmitting(true);
     try {
-        const response = await fetch(`http://127.0.0.1:8787/api/deposits/${order.tien_coc_id}/confirm`, {
+  
+        const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/confirm-deposit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nhan_vien_id: user?.id || 1})
+            body: JSON.stringify({ nhan_vien_id: user?.id || 1 })
         });
         const result = await response.json();
         if (!result.success) throw new Error(result.error);
