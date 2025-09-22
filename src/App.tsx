@@ -23,6 +23,8 @@ import OrderDetail from "./components/Admin/Admin_Order/OrderDetail";
 import { AuthProvider } from "./contexts/AuthContext";
 import SignInPage from "./pages/SigIn_SigUp";
 import SignUp from "./components/SignIn_SignUp/SignUp";
+import Car from "./pages/Car";
+import CheckOutPage from "./pages/CheckOut";
 
 
 function App() {
@@ -34,6 +36,8 @@ function App() {
           <Route path="/store" element={<Store />} />
           <Route path="/signin" element={<SignInPage/>} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/car" element={<Car />} />
+          <Route path="/checkout" element={<CheckOutPage />} />
 
           {/* Trang edit components */}
           <Route path="/edit-components" element={<EditComponents />} />
