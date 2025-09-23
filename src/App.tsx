@@ -36,6 +36,8 @@ function App() {
           <Route path="/store" element={<Store />} />
           <Route path="/signin" element={<SignInPage/>} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/car" element={<Car />} />
+          <Route path="/checkout" element={<CheckOutPage />} />
 
           {/* Trang edit components */}
           <Route path="/edit-components" element={<EditComponents />} />

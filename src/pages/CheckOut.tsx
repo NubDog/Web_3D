@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Header from './../components/Header/header';
 import Footer from './../components/Footer/Footer';
 import CheckOut from './../components/CheckOut/CheckOut';
@@ -10,6 +11,14 @@ type CheckoutStep = 'checkout' | 'shipping' | 'payment';
 
 const CheckOutPage = () => {
     const [step, setStep] = useState<CheckoutStep>('checkout');
+    const location = useLocation();
+    const {product} = location.state || {};
+
+    if (!product) {
+        return (
+            <div>Hello World</div>
+        )
+    }
 
     const handleNext = () => {
         if (step === 'checkout') {
@@ -33,7 +42,7 @@ const CheckOutPage = () => {
             <Header />
             <div className='cheackOut-header col-980'>
                 <h3>Thanh Toán</h3>
-                <p>Tổng giá trị đơn thuê: 999999$</p>   
+                <p>Tổng giá trị đơn thuê: {product.product_price} VNĐ</p>   
             </div>
 
             {step === 'checkout' && <CheckOut onNext={handleNext} />}

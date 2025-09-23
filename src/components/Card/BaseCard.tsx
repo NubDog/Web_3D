@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 import './../../styles/components/Card/Card.css';
 import Lamborghini_model_Sian from './../../assets/Lamborghini Sian FKP 37.png';
@@ -80,7 +81,7 @@ const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: 
                 {data.map((item) => (
                     <div className={`Card-content ${Card_content_customMiddle ?? ''}`} key={item.id}>
                         <div className="Card-content-title-link">
-                            <a href="#">
+                            <Link to="/checkout" state={{ product: item }}>
                                 <img 
                                     src={item.img || Lamborghini_model_Sian}
                                     alt={item.product_name}
@@ -88,7 +89,8 @@ const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: 
                                         e.currentTarget.src = Lamborghini_model_Sian;
                                     }}
                                 />
-                            </a>
+                            </Link>
+                            <Link to="/CheckOut" state={{ product: item}}></Link>
                         </div>
                         <div className="Card-content-title">
                             <h3 className="Card-content-title-header">{item.product_name}</h3>

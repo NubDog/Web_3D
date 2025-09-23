@@ -3,12 +3,35 @@ import './../../styles/components/CheckOut/CheckOut.css';
 import Input from './../../components/Input/input';
 import imghold from './../../assets/Lamborghini Sian FKP 37.png';
 import Sub_Button from './../../components/Button/Sub-Button/Sub-Button';
+import { useLocation, Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
 interface CheckOutProps {
     onNext: () => void;
 }
 
 const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
+    const location = useLocation();
+    const [valueInput1, setValueInput1] = useState('');
+    const [valueInput2, setValueInput2] = useState('');
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValueInput1(e.target.value);
+    }
+
+    const handleChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setValueInput2(e.target.value);
+    }
+
+    const { product } = location.state || {};
+
+    if (!product) {
+        return (
+            <div>Hello World</div>
+        )
+    }
+
     return (
         <div className='cheackOut-container'>
             <div className='cheackOut-content col-980'>
@@ -18,8 +41,20 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                     </div>
                     <div className='cheackOut-body-input'>
                         <p>Giao hàng đến: </p>
-                        <span><Input /></span>
-                        <span><Input /></span>
+                        <span>
+                            <Input
+                            placeholder='Địa chỉ'
+                            value={valueInput1}
+                            onChange={handleChange}
+                            />
+                        </span>
+                        <span>
+                            <Input
+                            placeholder='Quận/Huyện'
+                            value={valueInput2}
+                            onChange={handleChange2}
+                            />
+                        </span>
                     </div>
                 </div>
 
@@ -32,8 +67,8 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                         />
 
                         <div className="checkOut-product-infor">
-                            <p>Lamborghini Sian FKP 37</p>
-                            <p>Siêu xe</p>
+                            <p>{ product?.product_name }</p>
+                            <p>{ product?.product_category }</p>
                             <p>Xem chi tiết</p>
                         </div>
                     </div>
@@ -58,7 +93,9 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                     </div>
 
                     <div className="checkOut-button">
-                        <Sub_Button content='Tiếp Tục Đến Địa Chỉ Giao Hàng' onClick={onNext} />
+                        <Link to="/CheckOutShiping" state={{ productValue1: valueInput1, productValue2: valueInput2}}>
+                            <Sub_Button content='Tiếp Tục Đến Địa Chỉ Giao Hàng' onClick={onNext} />
+                        </Link>
                     </div>
 
                     <div className="checkOut-product-question">
