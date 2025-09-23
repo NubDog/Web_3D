@@ -14,6 +14,7 @@ import { handleImageUpload } from './Admin/upload-users-avatar';
 import { handleGetKycDocuments, handleAddKycDocument, handleUpdateCccdSet } from './Admin/admin-KYC';
 import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
+import { handleGetNguoiDung, handleCreateNguoiDung } from './API/NguoiDung_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
 import {
@@ -23,6 +24,7 @@ import {
 	handleRejectOrder,
 	handleGetOrders,
 	handleGetOrderDetails,
+	handleCancelOrder,
 } from './Admin/don-thue';
 import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
@@ -85,6 +87,16 @@ export default {
 			// API for ChinhSachGia
 			if (path === '/api/chinh-sach-gia' && method === 'GET') {
 				return handleGetChinhSachGia(request, env);
+			}
+
+			// API for NguoiDung
+			if (path === '/api/nguoi-dung') {
+				if (method === 'GET') {
+					return handleGetNguoiDung(request, env);
+				}
+				if (method === 'POST') {
+					return handleCreateNguoiDung(request, env);
+				}
 			}
 
 			if (path === '/test-r2' && request.method === 'GET') {
@@ -287,20 +299,31 @@ export default {
 			if (path === '/api/orders' && method === 'GET') {
 				return handleGetOrders(request, env);
 			}
+			// Hủy đơn
+			const cancelMatch = path.match(/^\/api\/don-thue\/(\d+)\/cancel$/);
+			if (cancelMatch && method === 'POST') {
+				return handleCancelOrder(request, env, cancelMatch[1]);
+			}
+
 			const orderDetailMatch = path.match(/^\/api\/don-thue\/(\d+)$/);
 			if (orderDetailMatch && method === 'GET') {
 				const orderId = orderDetailMatch[1];
 				return handleGetOrderDetails(request, env, orderId);
 			}
 
-			const depositConfirmMatch = path.match(/^\/api\/deposits\/(\d+)\/confirm$/);
-			if (depositConfirmMatch && method === 'POST') {
-				return handleConfirmDeposit(request, env, depositConfirmMatch[1]);
+			const confirmDepositMatch = path.match(/^\/api\/don-thue\/(\d+)\/confirm-deposit$/);
+			if (confirmDepositMatch && method === 'POST') {
+				// Chúng ta sẽ dùng lại hàm handleConfirmDeposit, 
+				// nhưng lần này tham số truyền vào là orderId
+				const orderId = confirmDepositMatch[1];
+				return handleConfirmDeposit(request, env, orderId);
 			}
-			// Đang nhập
+			// Đăng nhập
 			if (path === '/login' && method === 'POST') {
 				return getLogin(request, env);
 			}
+
+
 
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);

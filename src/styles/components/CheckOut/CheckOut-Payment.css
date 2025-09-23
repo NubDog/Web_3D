@@ -1,0 +1,51 @@
+.checkOut-payment {
+    margin-top: 85px;
+    margin-bottom: 40px;
+}
+
+.checkOut-payment h1 {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-gray);
+}
+
+.checkOut-payment-option {
+    margin-top: 40px;
+}
+
+.checkOut-payment-option h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin-bottom: 20px;
+}
+
+.checkOut-payment-option-card-group, .checkOut-payment-option-cash-card {
+    min-width: 300px;
+    width: fit-content;
+    margin-bottom: 40px;
+}
+
+.checkOut-payment-option-cash-group {
+    margin-bottom: 40px;
+}
+
+.checkOut-payment-option-card {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    padding: 10px;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    transition: all 1s ease-in-out;
+    will-change: transform;
+}
+
+.checkOut-payment-option-card:focus {
+    border: 2px solid var(--text-blue);
+}
+
+.checkOut-payment-option-card-button, .checkOut-payment-option-cash-card {
+    padding: 10px;
+    margin-top: 20px;
+}

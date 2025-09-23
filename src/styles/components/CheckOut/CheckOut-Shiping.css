@@ -1,0 +1,39 @@
+.checkOut-shiping {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.checkOut-shiping h1 {
+    margin-top: 85px;
+    margin-bottom: 40px;
+    font-size: 32px;
+    color: var(--text-gray);
+    font-weight: 600;
+}
+
+.checkOut-shiping h2 {
+    font-size: 20px;
+    color: var(--text-gray);
+    font-weight: 600;
+}
+
+.checkOut-shiping-form {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 40px;
+    margin-top: 40px;
+    width: 480px;
+    margin-bottom: 40px;
+}
+
+.checkOut-shiping-form input {
+    width: 100%;
+}
+
+.checkOut-shiping-form h3 {
+    font-size: 24px;
+    color: var(--text-gray);
+    font-weight: 600;
+}

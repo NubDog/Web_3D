@@ -20,48 +20,56 @@ import ChinhSachGiaList from "./components/Admin/Chinh_sach_gia/Danhsach";
 import Store from "./pages/Store";
 import OrderList from "./components/Admin/Admin_Order/OrderList";
 import OrderDetail from "./components/Admin/Admin_Order/OrderDetail";
-import { AuthProvider } from "./components/contexts-login-tam-thoi/AuthContext";
-import Login from "./components/Login-register/Login";
+import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider2 } from "./components/contexts-login-tam-thoi/AuthContext";
+import SignInPage from "./pages/SigIn_SigUp";
+import SignUp from "./components/SignIn_SignUp/SignUp";
+import ViolationList from "./components/Admin/admin-vipham/ViolationList";
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/store" element={<Store />} />
-          <Route path="/login" element={<Login />} />
+      <AuthProvider2>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/store" element={<Store />} />
+            <Route path="/signin" element={<SignInPage />} />
+            <Route path="/signup" element={<SignUp />} />
+            {/* Trang edit components */}
+            <Route path="/edit-components" element={<EditComponents />} />
+            {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="users" />} />
+              <Route path="admin_dashboard" element={<Admin_dashboard />} />
+              <Route path="users" element={<UserAdmin />} />
+              <Route
+                path="users/:userId/customer-detail"
+                element={<CustomerDetail />}
+              />
 
-          {/* Trang edit components */}
-          <Route path="/edit-components" element={<EditComponents />} />
+              <Route path="phuong-tien" element={<PhuongTienList />} />
+              <Route
+                path="phuong-tien/them/:id?"
+                element={<PhuongTienModal />}
+              />
+              <Route
+                path="danh-muc-phuong-tien"
+                element={<DanhMucPhuongTienList />}
+              />
+              <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
 
-          {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Navigate to="users" />} />
-            <Route path="admin_dashboard" element={<Admin_dashboard />} />
-            <Route path="users" element={<UserAdmin />} />
-            <Route
-              path="users/:userId/customer-detail"
-              element={<CustomerDetail />}
-            />
-
-            <Route path="phuong-tien" element={<PhuongTienList />} />
-            <Route path="phuong-tien/them/:id?" element={<PhuongTienModal />} />
-            <Route
-              path="danh-muc-phuong-tien"
-              element={<DanhMucPhuongTienList />}
-            />
-            <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
-
-            <Route path="orders/:status" element={<OrderList />} />
-            <Route path="order/:orderId" element={<OrderDetail />} />
-          </Route>
-
-          {/* <Route path="/babylon" element={<BabylonTankViewer />} />
-          <Route path="/test-sql" element={<TestConectSql />} /> 
-          */}
-        </Routes>
-      </BrowserRouter>
+              <Route path="orders/:status" element={<OrderList />} />
+              <Route path="order/:orderId" element={<OrderDetail />} />
+              <Route path="violations" element={<ViolationList />} />
+            </Route>
+            //{" "}
+            {/* <Route path="/babylon" element={<BabylonTankViewer />} />
+          // <Route path="/test-sql" element={<TestConectSql />} /> 
+          // */}
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider2>
     </AuthProvider>
   );
 }

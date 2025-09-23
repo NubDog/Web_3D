@@ -1,6 +1,6 @@
 import {useState, useEffect, useRef} from 'react';
 
-import '../../styles/Card/Card.css';
+import './../../styles/components/Card/Card.css';
 import BaseCard from './BaseCard';
 
 interface PhuongTien {

@@ -49,12 +49,12 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
         }
 
         const vehicleStmt = env.DB.prepare(
-            `SELECT pt.trang_thai, pt.chinh_sach_id, cs.gia_co_ban, cs.tien_coc_mac_dinh 
+            `SELECT pt.trang_thai, pt.chinh_sach_id, pt.gia_thue, cs.tien_coc_mac_dinh 
              FROM PhuongTien AS pt
              JOIN ChinhSachGia AS cs ON pt.chinh_sach_id = cs.chinh_sach_id
              WHERE pt.phuong_tien_id = ?`
         );
-        const vehicleInfo = await vehicleStmt.bind(phuong_tien_id).first<{ trang_thai: string, chinh_sach_id: number, gia_co_ban: number, tien_coc_mac_dinh: number }>();
+        const vehicleInfo = await vehicleStmt.bind(phuong_tien_id).first<{ trang_thai: string, chinh_sach_id: number, gia_thue: number, tien_coc_mac_dinh: number }>();
 
         if (!vehicleInfo) {
             return jsonResponse({ success: false, error: "Không tìm thấy phương tiện." }, 404);
@@ -78,7 +78,7 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
         }
 
         const rentalDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-        const tong_tien = rentalDays * vehicleInfo.gia_co_ban;
+        const tong_tien = rentalDays * vehicleInfo.gia_thue;
         const tien_coc_yeu_cau = vehicleInfo.tien_coc_mac_dinh;
 
         const insertOrderStmt = env.DB.prepare(
@@ -180,7 +180,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
     }
 };
 
-//Từ chối đơn
+//Từ chối đơn (nhân viên / admin hủy trực tiếp)
 export const handleRejectOrder = async (request: Request, env: Env, orderId: string) => {
     try {
         const { nhan_vien_id, ly_do } = await request.json<{ nhan_vien_id: number, ly_do?: string }>();
@@ -216,25 +216,66 @@ export const handleRejectOrder = async (request: Request, env: Env, orderId: str
     }
 };
 
+// hủy đơn (sau khi duyệt đơn) - nv sẽ hủy đơn thay cho khách hàng
+export const handleCancelOrder = async (request: Request, env: Env, orderId: string) => {
+    try {
+        const { nhan_vien_id, ly_do_huy } = await request.json<{ nhan_vien_id: number, ly_do_huy: string }>();
+
+        if (!nhan_vien_id || !ly_do_huy) {
+            return jsonResponse({ success: false, error: "Thiếu ID nhân viên hoặc lý do hủy." }, 400);
+        }
+
+        const orderStmt = env.DB.prepare(
+            `SELECT trang_thai, phuong_tien_id FROM DonThue WHERE don_thue_id = ?`
+        );
+        const orderInfo = await orderStmt.bind(orderId).first<{ trang_thai: string, phuong_tien_id: number }>();
+
+        if (!orderInfo) {
+            return jsonResponse({ success: false, error: "Không tìm thấy đơn thuê." }, 404);
+        }
+
+        if (orderInfo.trang_thai !== 'DA_DUYET') {
+            return jsonResponse({ success: false, error: `Không thể hủy đơn hàng ở trạng thái "${orderInfo.trang_thai}".` }, 409);
+        }
+
+        const cancelOrderStmt = env.DB.prepare(
+            `UPDATE DonThue SET trang_thai = 'TU_CHOI', ghi_chu = ? WHERE don_thue_id = ?`
+        );
+        
+        const releaseVehicleStmt = env.DB.prepare(
+            `UPDATE PhuongTien SET trang_thai = 'SAN_SANG' WHERE phuong_tien_id = ?`
+        );
+
+        await env.DB.batch([
+            cancelOrderStmt.bind(`Đơn đã bị hủy bởi nhân viên. Lý do: ${ly_do_huy}`, orderId),
+            releaseVehicleStmt.bind(orderInfo.phuong_tien_id)
+        ]);
+
+        return jsonResponse({ success: true, message: "Hủy đơn hàng thành công." });
+    } catch (e: any) {
+        return jsonResponse({ success: false, error: e.message }, 500);
+    }
+};
+
 //hàm gọi chi tiết đơn thuê
 export const handleGetOrderDetails = async (request: Request, env: Env, orderId: string) => {
     try {
-        const stmt = env.DB.prepare(
+         const stmt = env.DB.prepare(
             `SELECT 
                 dt.*, 
-                kh.ho_ten, 
-                pt.ten_phuong_tien,
-                -- Lấy thêm thông tin từ bảng Tiền Cọc
-                tc.tien_coc_id,
+                kh.ho_ten, kh.email, 
+                pt.ten_phuong_tien, pt.bien_so, pt.gia_thue,
+                cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh,
                 tc.trang_thai AS trang_thai_coc
-            FROM DonThue AS dt
-            JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id
-            JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
-            -- Dùng LEFT JOIN vì có thể đơn hàng chưa có record tiền cọc
-            LEFT JOIN TienCoc AS tc ON dt.don_thue_id = tc.don_thue_id
-            WHERE dt.don_thue_id = ?`
+             FROM DonThue AS dt
+             JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id
+             JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
+             JOIN ChinhSachGia AS cs ON dt.chinh_sach_id = cs.chinh_sach_id
+             LEFT JOIN TienCoc AS tc ON dt.don_thue_id = tc.don_thue_id
+             WHERE dt.don_thue_id = ?`
         );
         const orderDetails = await stmt.bind(orderId).first();
+
 
         if (!orderDetails) {
             return jsonResponse({ success: false, error: "Không tìm thấy đơn thuê." }, 404);
@@ -251,7 +292,7 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
 export const handleGetOrders = async (request: Request, env: Env) => {
     try {
         const url = new URL(request.url);
-        const status = url.searchParams.get('status'); // Lấy status từ query param
+        const status = url.searchParams.get('status'); 
 
         const baseQuery = `
             SELECT 
@@ -265,7 +306,6 @@ export const handleGetOrders = async (request: Request, env: Env) => {
         let finalQuery = baseQuery;
         const params = [];
 
-        // Nếu có status được truyền vào thì thêm điều kiện WHERE
         if (status) {
             const statusMap: { [key: string]: string } = {
                 pending: 'CHO_DUYET',

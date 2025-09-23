@@ -14,7 +14,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider2 = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
    const login = async (identifier: string, mat_khau: string): Promise<User> => {

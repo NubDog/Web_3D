@@ -1,0 +1,219 @@
+.cheackOut-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--background-white);
+    margin-top: 66px;
+}
+
+.cheackOut-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cheackOut-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 0 12px 0;
+    border-bottom: 1px solid var(--text-gray);
+}
+
+.cheackOut-header h3 {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-gray);
+}
+
+.cheackOut-header p {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-blue);
+}
+
+.cheackOut-header p:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.cheackOut-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    justify-content: center;
+    margin-top: 64px;
+    width: 100%;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--text-gray);
+}
+
+.cheackOut-body-headline h2 {
+    font-size: 40px;
+    font-weight: 500;
+    color: var(--text-gray);
+}
+
+.cheackOut-body-input {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.checkOut-shipmentgroup {
+    width: 100%;
+    margin-top: 40px
+}
+
+.checkOut-shipmentgroup p {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-gray);
+}
+
+.checkOut-product {
+    display: flex;
+    gap: 24px;
+    margin: 22px 0;
+}
+
+.checkOut-product img {
+    width: 240px;
+    height: 135px;
+}
+
+.checkOut-product-infor {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+}
+
+.checkOut-product-infor p {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.checkOut-product-infor p:last-child {
+    color: var(--text-blue);
+    cursor: pointer;
+}
+
+.checkOut-product-shipment {
+    margin-top: 44px;
+    padding-bottom: 44px;
+    border-bottom: 1px solid var(--text-gray);
+}
+
+.checkOut-product-shipment p {
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.checkOut-product-shipment-option {
+    margin-top: 22px;
+}
+
+.checkOut-product-shipment-option-time {
+    display: flex;
+    gap: 40px;
+}
+
+.checkOut-product-shipment-option-time > p {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 500;
+    width: 490px;
+    height: 83px;
+    padding: 16px;
+    text-align: center;
+    border: 2px solid var(--text-blue);
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.checkOut-product-shipment-message {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.checkOut-product-shipment-message p {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.checkOut-product-shipment-message a {
+    color: var(--text-blue);
+    font-weight: 300;
+    cursor: pointer;
+}
+
+.checkOut-product-shipment-message ul {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    list-style: disc;
+    margin-left: 30px;
+}
+
+.checkOut-product-shipment-message ul li {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--text-gray);
+    line-height: 1.4;
+    width: 272px;
+}
+
+.checkOut-button {
+    width: 490px;
+    padding: 80px 0;
+}
+
+.checkOut-product-support {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 67px;
+    border-top: 1px solid var(--text-gray);
+    border-bottom: 1px solid var(--text-gray);
+}
+
+.checkOut-product-support p {
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.checkOut-product-support p span a {
+    color: var(--text-blue);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.checkOut-product-question {
+    display: flex;
+    justify-content: space-between;
+    padding: 32px 0;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--text-gray);
+}
+
+.checkout-back-button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    color: var(--text-gray);
+    cursor: pointer;
+    margin-bottom: 20px;
+    width: fit-content;
+}
+
+.checkout-back-button:hover {
+    color: var(--text-blue);
+}

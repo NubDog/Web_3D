@@ -1,5 +1,5 @@
 import React from 'react';
-import './../styles/Store/Store.css';
+import './../styles/pages/Store/Store.css';
 import Header from './../components/Header/header'
 import chat from './../assets/Store chat.jpg'
 import duThuyen from "./../assets/Du Thuyền.png";

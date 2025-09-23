@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import '../../styles/BigBanner/BigBanner.css'
+import '../../styles/components/BigBanner/BigBanner.css'
 import LinkA from '../LinkA/linkA.tsx'
 import BabylonScene from '../babylon.tsx'
 import useIntersectionObserver from '../../hooks/useIntersectionObserver';

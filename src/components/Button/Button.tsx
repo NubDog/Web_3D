@@ -1,9 +1,9 @@
 import React from 'react';
 import './Button.css';
 
-const Button = ({ conttent }: { conttent: string }) => {
+const Button = ({ conttent, onClick }: { conttent: string, onClick?: () => void }) => {
     return (
-        <button className="main-button">
+        <button className="main-button" onClick={onClick}>
             {conttent}
             <div className="arrow-wrapper">
                 <div className="arrow"></div>   

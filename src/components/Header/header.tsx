@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import './../../styles/Header/Header.css'
-import './../../styles/Header/Responsive.css'
+import { useNavigate } from 'react-router-dom';
+import './../../styles/components/Header/Header.css'
+import './../../styles/components/Header/Responsive.css'
 import Logo from './../Logo/logo.tsx'
 import Button from '../Button/Button.tsx'
-
+import Button_logout from '../Button/Button_logout.tsx'
+import { useAuth } from '../../contexts/AuthContext';
 interface danhMucPhuongTien {
     ten_danh_muc: string;
 }
 
-interface Header {
+interface HeaderProps {
     id?: string;
 }
 
-const Header = ({id}: Header) => {
+const Header: React.FC<HeaderProps> = ({id}) => {
+    const navigate = useNavigate();
     const [danhMucPhuongTien, setDanhMucPhuongTien] = useState<danhMucPhuongTien[]>([]);
     const [loading, setLoading] = useState(false);
-
+    const { currentUser } = useAuth();
     const fetchDanhMucPhuongTien = async () => {
         setLoading(true);
         try {
@@ -39,7 +42,7 @@ const Header = ({id}: Header) => {
         <div className="header" id={id}>
             <Logo />
             <ul className="header-menu">
-                <li className="header-menu_items"><a href="#">Cửa hàng</a></li>
+                <li className="header-menu_items"><a href="/store">Cửa hàng</a></li>
                 
                 {danhMucPhuongTien.slice(0, 10).map((item, index) => (
                     <li key={index} className="header-menu_items"><a href="#">{item.ten_danh_muc}</a></li>
@@ -50,7 +53,16 @@ const Header = ({id}: Header) => {
             </ul>
 
             <div className="user-login">
-                <Button conttent="Đăng nhập / đăng ký" />
+                {currentUser ? (
+                    <>
+                        <Button_logout />
+                    </>
+                ) : (
+                    <Button 
+                        conttent="Đăng nhập / đăng ký" 
+                        onClick={() => navigate('/signin')}
+                    />
+                )}
             </div>
         </div>
     )

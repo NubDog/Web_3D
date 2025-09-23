@@ -137,7 +137,7 @@ const PhuongTienModal: React.FC = () => {
     if (!data.so_khung || data.so_khung.trim().length < 5) {
       errors.so_khung = "Số khung phải có ít nhất 5 ký tự";
     }
-    if (data.gia_thue !== undefined && data.gia_thue <= 100000) {
+    if (data.gia_thue !== undefined && data.gia_thue < 100000) {
       errors.gia_thue = "Giá thuê phải lớn hơn 100k";
     }
     return errors;

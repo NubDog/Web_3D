@@ -9,6 +9,7 @@ import {
   FaChevronDown,
   FaBars,
   FaClipboardList,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 
 interface SidebarProps {
@@ -152,6 +153,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
             </li>
           </ul>
           )}
+        </li>
+        <li>
+          <NavLink to="/admin/violations" className="nav-link">
+            <FaExclamationTriangle className="nav-icon" />
+            {isOpen && <span>Vi phạm</span>}
+          </NavLink>
         </li>
     </div>
   );
