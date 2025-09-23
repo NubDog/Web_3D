@@ -1,0 +1,224 @@
+.checkOut-final {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.checkOut-final-content {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.checkOut-final-icon {
+    margin-bottom: 1.5rem;
+}
+
+.checkOut-final-icon i {
+    font-size: 4rem;
+    color: #28a745;
+    animation: checkSuccess 0.6s ease-in-out;
+}
+
+@keyframes checkSuccess {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.checkOut-final h1 {
+    color: #333;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.checkOut-final-message {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.checkOut-final-info {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.checkOut-final-info h3 {
+    color: #333;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.checkOut-final-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #495057;
+    flex: 1;
+}
+
+.detail-value {
+    color: #333;
+    flex: 2;
+    text-align: right;
+    font-weight: 500;
+}
+
+.checkOut-final-next-steps {
+    background: #e3f2fd;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.checkOut-final-next-steps h3 {
+    color: #1976d2;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+.checkOut-final-next-steps ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.checkOut-final-next-steps li {
+    padding: 0.5rem 0;
+    color: #333;
+    position: relative;
+    padding-left: 1.5rem;
+    line-height: 1.5;
+}
+
+.checkOut-final-next-steps li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+    color: #28a745;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.checkOut-final-contact {
+    background: #fff3cd;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #ffc107;
+}
+
+.checkOut-final-contact p {
+    margin: 0;
+    color: #856404;
+    text-align: center;
+    font-size: 1.1rem;
+}
+
+.checkOut-final-contact strong {
+    color: #dc3545;
+    font-size: 1.2rem;
+}
+
+.checkOut-final-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .checkOut-final {
+        padding: 1rem;
+        margin: 0 1rem;
+    }
+    
+    .checkOut-final h1 {
+        font-size: 2rem;
+    }
+    
+    .checkOut-final-icon i {
+        font-size: 3rem;
+    }
+    
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.3rem;
+    }
+    
+    .detail-value {
+        text-align: left;
+    }
+    
+    .checkOut-final-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .checkOut-final-content {
+        padding: 1rem 0;
+    }
+    
+    .checkOut-final-info,
+    .checkOut-final-next-steps,
+    .checkOut-final-contact {
+        padding: 1rem;
+    }
+    
+    .checkOut-final h1 {
+        font-size: 1.8rem;
+    }
+    
+    .checkOut-final-message {
+        font-size: 1rem;
+    }
+}

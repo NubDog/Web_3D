@@ -25,6 +25,7 @@ import { AuthProvider2 } from "./components/contexts-login-tam-thoi/AuthContext"
 import SignInPage from "./pages/SigIn_SigUp";
 import SignUp from "./components/SignIn_SignUp/SignUp";
 import ViolationList from "./components/Admin/admin-vipham/ViolationList";
+import CheckOut from "./pages/CheckOut";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/store" element={<Store />} />
             <Route path="/signin" element={<SignInPage />} />
+            <Route path="/checkout" element={<CheckOut />} />
             {/* <Route path="/signup" element={<SignUp />} /> */}
             {/* Trang edit components */}
             <Route path="/edit-components" element={<EditComponents />} />
