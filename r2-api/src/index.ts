@@ -14,7 +14,7 @@ import { handleImageUpload } from './Admin/upload-users-avatar';
 import { handleGetKycDocuments, handleAddKycDocument, handleUpdateCccdSet } from './Admin/admin-KYC';
 import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
-import { handleGetNguoiDung, handleCreateNguoiDung } from './API/NguoiDung_API';
+import { handleGetNguoiDung, handleCreateNguoiDung,handleLogin} from './API/NguoiDung_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
 import {
@@ -30,6 +30,8 @@ import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
+import { handleCreateViolation, handleGetViolations } from './Admin/vi-pham';
+
 
 interface Env {
 	ua: R2Bucket;
@@ -39,6 +41,7 @@ interface Env {
 	kyc: R2Bucket;
 	product: R2Bucket;
 	ICC: R2Bucket;
+	RESEND_API_KEY: string;
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -313,14 +316,25 @@ export default {
 
 			const confirmDepositMatch = path.match(/^\/api\/don-thue\/(\d+)\/confirm-deposit$/);
 			if (confirmDepositMatch && method === 'POST') {
-				// Chúng ta sẽ dùng lại hàm handleConfirmDeposit, 
-				// nhưng lần này tham số truyền vào là orderId
 				const orderId = confirmDepositMatch[1];
 				return handleConfirmDeposit(request, env, orderId);
+			}
+			
+			if (path === '/api/violations' && method === 'POST') {
+				// Gọi đến hàm xử lý logic tạo vi phạm mới
+				// (Hàm này chúng ta sẽ viết sau khi đã thêm route)
+				return handleCreateViolation(request, env); 
+			}
+
+			if (path === '/api/violations' && method === 'GET') {
+				return handleGetViolations(request, env);
 			}
 			// Đăng nhập
 			if (path === '/login' && method === 'POST') {
 				return getLogin(request, env);
+			}
+			if (path === '/api/login' && method === 'POST') {
+				return handleLogin(request, env);
 			}
 
 

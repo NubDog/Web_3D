@@ -45,6 +45,8 @@ const ViolationList: React.FC = () => {
 
     const handleAddViolation = async (data: any) => {
         setIsSubmitting(true);
+         console.log("Dữ liệu gửi lên server:", data);
+
         try {
             const response = await fetch('http://127.0.0.1:8787/api/violations', {
                 method: 'POST',

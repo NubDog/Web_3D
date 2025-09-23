@@ -1,82 +1,85 @@
 import React, { useState } from 'react';
-import './css/ReturnVehicleModal.css'; 
-
-interface ViolationData {
-  don_thue_id: number;
-  loai_vi_pham: string;
-  so_tien_phat: number;
-  thoi_gian_xay_ra: string;
-  ghi_chu: string;
+import './css/vipham.css'
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (data: any) => void;
+    isSubmitting: boolean;
 }
 
-interface ViolationFormModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: ViolationData) => void;
-  isSubmitting: boolean;
-}
-
-const ViolationFormModal: React.FC<ViolationFormModalProps> = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
-  const [donThueId, setDonThueId] = useState<number>(0);
-  const [loaiViPham, setLoaiViPham] = useState('');
-  const [soTienPhat, setSoTienPhat] = useState<number>(0);
-  const [thoiGian, setThoiGian] = useState('');
-  const [ghiChu, setGhiChu] = useState('');
-
-  if (!isOpen) return null;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const isoDateTime = thoiGian ? new Date(thoiGian).toISOString() : '';
-    onSubmit({
-      don_thue_id: donThueId,
-      loai_vi_pham: loaiViPham,
-      so_tien_phat: soTienPhat,
-      thoi_gian_xay_ra: isoDateTime,
-      ghi_chu: ghiChu,
+const ViolationFormModal: React.FC<ModalProps> = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
+    const [formData, setFormData] = useState({
+        don_thue_id: '',
+        loai_vi_pham: '',
+        thoi_gian_xay_ra: '',
+        so_tien_phat: 0,
+        ghi_chu: ''
     });
-  };
 
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <form onSubmit={handleSubmit}>
-          <div className="modal-header">
-            <h2>Ghi Nhận Vi Phạm Mới</h2>
-            <button type="button" onClick={onClose} className="close-button">&times;</button>
-          </div>
-          <div className="modal-body">
-            <div className="form-group">
-              <label htmlFor="don_thue_id">ID Đơn Thuê liên quan</label>
-              <input id="don_thue_id" type="number" onChange={(e) => setDonThueId(Number(e.target.value))} required />
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        const submissionData = {
+            ...formData,
+            don_thue_id: parseInt(formData.don_thue_id) || null,
+            so_tien_phat: parseFloat(String(formData.so_tien_phat)) || 0,
+            thoi_gian_xay_ra: formData.thoi_gian_xay_ra
+                ? new Date(formData.thoi_gian_xay_ra).toISOString()
+                : null 
+        };
+        
+        onSubmit(submissionData);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal-content">
+                <h2>Ghi Nhận Vi Phạm Mới</h2>
+                <form onSubmit={handleSubmit}>
+                    {/* Các ô nhập liệu cho form */}
+                    <div className="form-group">
+                        <label>ID Đơn thuê</label>
+                        <input type="number" name="don_thue_id" value={formData.don_thue_id} onChange={handleChange} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Loại vi phạm</label>
+                        <input type="text" name="loai_vi_pham" value={formData.loai_vi_pham} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Thời gian xảy ra</label>
+                        <input
+                            type="datetime-local" 
+                            name="thoi_gian_xay_ra"
+                            value={formData.thoi_gian_xay_ra}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Số tiền phạt</label>
+                        <input type="number" name="so_tien_phat" value={formData.so_tien_phat} onChange={handleChange} />
+                    </div>
+                    <div className="form-group">
+                        <label>Ghi chú</label>
+                        <textarea name="ghi_chu" value={formData.ghi_chu} onChange={handleChange}></textarea>
+                    </div>
+
+                    <div className="modal-actions">
+                        <button type="button" onClick={onClose} disabled={isSubmitting}>Hủy</button>
+                        <button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? 'Đang lưu...' : 'Lưu Vi Phạm'}
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div className="form-group">
-              <label htmlFor="loai_vi_pham">Loại vi phạm</label>
-              <input id="loai_vi_pham" type="text" value={loaiViPham} onChange={(e) => setLoaiViPham(e.target.value)} required placeholder="Ví dụ: Vượt đèn đỏ, Phạt nguội..." />
-            </div>
-             <div className="form-group">
-              <label htmlFor="thoi_gian_xay_ra">Thời gian xảy ra</label>
-              <input id="thoi_gian_xay_ra" type="datetime-local" value={thoiGian} onChange={(e) => setThoiGian(e.target.value)} required />
-            </div>
-            <div className="form-group">
-              <label htmlFor="so_tien_phat">Số tiền phạt (VND)</label>
-              <input id="so_tien_phat" type="number" min="0" value={soTienPhat} onChange={(e) => setSoTienPhat(Number(e.target.value))} />
-            </div>
-            <div className="form-group">
-              <label htmlFor="ghi_chu">Ghi chú</label>
-              <textarea id="ghi_chu" rows={3} value={ghiChu} onChange={(e) => setGhiChu(e.target.value)}></textarea>
-            </div>
-          </div>
-          <div className="modal-footer">
-            <button type="button" className="button-secondary" onClick={onClose}>Hủy</button>
-            <button type="submit" className="button-primary" disabled={isSubmitting}>
-              {isSubmitting ? 'Đang lưu...' : 'Lưu Vi Phạm'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default ViolationFormModal;

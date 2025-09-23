@@ -35,7 +35,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/store" element={<Store />} />
             <Route path="/signin" element={<SignInPage />} />
-            <Route path="/signup" element={<SignUp />} />
+            {/* <Route path="/signup" element={<SignUp />} /> */}
             {/* Trang edit components */}
             <Route path="/edit-components" element={<EditComponents />} />
             {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}

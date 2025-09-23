@@ -206,7 +206,6 @@ const UserAdmin: React.FC = () => {
     const provinceName = e.target.value;
     const selectedProvince = locations.find(p => p.Name === provinceName);
     
-    // If currentUser exists, update it
     if (currentUser) {
         setCurrentUser(prev => ({
             ...prev,
@@ -240,7 +239,6 @@ const UserAdmin: React.FC = () => {
             setCurrentCustomer(result.data);
         } catch (error: any) {
             showToast(error.message, true);
-            // Có lỗi thì đóng luôn modal
             setTimeout(() => setIsCustomerModalOpen(false), 2000);
         } finally {
             setIsCustomerLoading(false);

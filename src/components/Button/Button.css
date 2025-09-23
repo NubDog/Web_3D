@@ -14,6 +14,7 @@
   align-items: center;
   gap: 0.6em;
   font-weight: bold;
+
 }
 
 .main-button .arrow-wrapper {
@@ -73,6 +74,7 @@
   box-shadow: none;
   background-color: transparent;
   border: 1px solid transparent;
+  padding-top: 8px;
 }
 
 /* plus sign */

@@ -18,7 +18,14 @@ const Header: React.FC<HeaderProps> = ({id}) => {
     const navigate = useNavigate();
     const [danhMucPhuongTien, setDanhMucPhuongTien] = useState<danhMucPhuongTien[]>([]);
     const [loading, setLoading] = useState(false);
-    const { currentUser } = useAuth();
+    const { currentUser, logout  } = useAuth();
+    
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+     const adminRoles = ['admin', 'NhanVien'];
+    const isUserAdmin = currentUser && adminRoles.includes(currentUser.vai_tro);
+
+
     const fetchDanhMucPhuongTien = async () => {
         setLoading(true);
         try {
@@ -53,10 +60,23 @@ const Header: React.FC<HeaderProps> = ({id}) => {
             </ul>
 
             <div className="user-login">
-                {currentUser ? (
-                    <>
+                 {currentUser ? (
+                    <div className="user-info">
+                        <div className="welcome-container">
+                            <span className="welcome-message">
+                                Chào, {currentUser.ho_ten}
+                            </span>
+                            {isUserAdmin && (
+                                <div className="user-dropdown">
+                                    <button onClick={() => navigate('/admin')}>
+                                        <i className="fa-solid fa-shield-halved"></i>
+                                        Trang Quản trị
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                         <Button_logout />
-                    </>
+                    </div>
                 ) : (
                     <Button 
                         conttent="Đăng nhập / đăng ký" 

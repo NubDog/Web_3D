@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef, type FormEvent} from 'react';
 import './../../styles/components/SignIn_SignUp/SignIn_SignUp.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -12,65 +12,80 @@ interface NguoiDung {
     email: string;
 }
 
-const SignIn: React.FC = () => {
+const SignIn: React.FC<{ onSwitchToSignUp: () => void }> = ({ onSwitchToSignUp }) => {
     const [nguoiDung, setNguoiDung] = useState<NguoiDung[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { login } = useAuth();
     const navigate = useNavigate();
+    const [formData, setFormData] = useState({ ten_dang_nhap: '', mat_khau: '' });
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+};
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        console.log(email, password);
+        setLoading(true);
+        setError(null);
 
-        const user = nguoiDung.find(
-            (user) => user.email == email && user.mat_khau == password
-        );
-        if (user) {
-            console.log("Đăng nhập thành công");
-            const userToSave = {
-                ho_ten: user.ho_ten,
-                email: user.email,
-                vai_tro: user.vai_tro,
+        try {
+            const { ten_dang_nhap, mat_khau } = formData;
+            const isEmail = ten_dang_nhap.includes('@');
+
+            const payload = {
+                [isEmail ? 'email' : 'ten_dang_nhap']: ten_dang_nhap,
+                mat_khau: mat_khau
+            };
+
+            const response = await fetch('http://127.0.0.1:8787/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            
+            const result = await response.json();
+            if (!result.success) {
+                throw new Error(result.error);
             }
 
-            login(userToSave);
+            login(result.data);
             navigate('/');
-        } else {
-            console.log("Đăng nhập thất bại");
-        }
-    }
 
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
     const API_URL = 'http://127.0.0.1:8787/api/nguoi-dung';
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const fieldsNguoiDung = 'ten_dang_nhap,mat_khau,vai_tro,trang_thai,ho_ten,email';
-                const response = await fetch (`${API_URL}?fields=${fieldsNguoiDung}`);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const fieldsNguoiDung = 'ten_dang_nhap,mat_khau,vai_tro,trang_thai,ho_ten,email';
+    //             const response = await fetch (`${API_URL}?fields=${fieldsNguoiDung}`);
 
-                if (!response.ok) {
-                    throw new Error('Lỗi khi tải dữ liệu');
-                }
+    //             if (!response.ok) {
+    //                 throw new Error('Lỗi khi tải dữ liệu');
+    //             }
 
-                const result = await response.json();
+    //             const result = await response.json();
 
-                if (result.success) {
-                    const activeUsers = result.data.filter((user: NguoiDung) => user.trang_thai === 'active');
+    //             if (result.success) {
+    //                 const activeUsers = result.data.filter((user: NguoiDung) => user.trang_thai === 'active');
 
-                    setNguoiDung(activeUsers);
-                }
-            } catch (err: any) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
+    //                 setNguoiDung(activeUsers);
+    //             }
+    //         } catch (err: any) {
+    //             setError(err.message);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
+    //     fetchData();
+    // }, []);
+
+    
 
   return (
     <div className="signin-signup-container">
@@ -79,36 +94,39 @@ const SignIn: React.FC = () => {
         onSubmit={handleSubmit}
       >
         <div className="signin-signup-field">
-          <label htmlFor="email" className="signin-signup-label">Email</label>
+          <label htmlFor="identifier" className="signin-signup-label">Tên đăng nhập hoặc Email</label>
           <div className="signin-signup-input-wrapper">
-            <i className="fa-regular fa-envelope" aria-hidden="true"></i>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="signin-signup-input"
-              placeholder="Email"
-              autoComplete="email"
-            />
+              <i className="fa-regular fa-user" aria-hidden="true"></i>
+              <input
+                  id="identifier"
+                  name="ten_dang_nhap" // Giữ nguyên name này
+                  type="text"
+                  value={formData.ten_dang_nhap}
+                  onChange={handleChange}
+                  className="signin-signup-input"
+                  // SỬA LẠI PLACEHOLDER
+                  placeholder="Nhập tên đăng nhập hoặc email"
+                  autoComplete="username"
+                  required
+              />
           </div>
         </div>
 
         <div className="signin-signup-field">
-          <label htmlFor="password" className="signin-signup-label">Mật khẩu</label>
-          <div className="signin-signup-input-wrapper">
-            <i className="fa-solid fa-lock" aria-hidden="true"></i>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="signin-signup-input"
-              placeholder="Mật khẩu"
-              autoComplete="current-password"
-            />
+          <label htmlFor="mat_khau" className="signin-signup-label">Mật khẩu</label>
+                    <div className="signin-signup-input-wrapper">
+                        <i className="fa-solid fa-lock" aria-hidden="true"></i>
+                        <input
+                            id="mat_khau"
+                            name="mat_khau" 
+                            type="password"
+                            value={formData.mat_khau} 
+                            onChange={handleChange} 
+                            className="signin-signup-input"
+                            placeholder="Mật khẩu"
+                            autoComplete="current-password"
+                            required
+                        />
             <i className="fa-solid fa-eye" aria-hidden="true"></i>
           </div>
         </div>
@@ -123,7 +141,9 @@ const SignIn: React.FC = () => {
             Quên mật khẩu?
           </button>
         </div>
-
+        
+       {error && <p className="error-message">{error}</p>}
+       
         <button className="signin-signup-button-submit">
             <span className="signin-signup-button-submit-circle" aria-hidden="true">
             <span className="signin-signup-button-submit-icon arrow"></span>
@@ -133,7 +153,7 @@ const SignIn: React.FC = () => {
 
         <p className="signin-signup-text">
           Không có tài khoản?{' '}
-          <button type="button" className="signin-signup-link" onClick={() => navigate('/signup')}>Đăng ký</button>
+          <button type="button" className="signin-signup-link" onClick={onSwitchToSignUp} >Đăng ký</button>
         </p>
 
         <p className="signin-signup-text signin-signup-text--divider">Hoặc với</p>
