@@ -29,3 +29,6 @@ export async function getBaotriid(request: Request, env: Env, id: string): Promi
 		return Response.json({ success: false, error: 'Query thất bại ❌: ' + err.message }, { status: 500 });
 	}
 }
+export async function addbaotri(request: Request,env :Env){
+	
+}

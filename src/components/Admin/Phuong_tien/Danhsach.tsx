@@ -164,7 +164,6 @@ const PhuongTienList: React.FC = () => {
               <th className="py-3 px-6 text-left">Tên Phương tiện</th>
               <th className="py-3 px-6 text-left">Biển số</th>
               <th className="py-3 px-6 text-left">Trạng thái</th>
-              <th className="py-3 px-6 text-left">Giá cơ bản</th>
               <th className="py-3 px-6 text-left">Danh mục</th>
               <th className="py-3 px-6 text-left">Chính sách</th>
               <th className="py-3 px-6 text-left">Số khung</th>
@@ -207,9 +206,7 @@ const PhuongTienList: React.FC = () => {
                       : "Chờ Duyệt"}
                   </span>
                 </td>
-                <td className="py-3 px-6 text-left">
-                  {item.gia_co_ban.toLocaleString("vi-VN")} VNĐ
-                </td>
+
                 <td className="py-3 px-6 text-left">{item.ten_danh_muc}</td>
                 <td className="py-3 px-6 text-left">{item.ten_chinh_sach}</td>
                 <td className="py-3 px-6 text-left">{item.so_khung}</td>

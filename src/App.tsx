@@ -21,7 +21,7 @@ import Store from "./pages/Store";
 import OrderList from "./components/Admin/Admin_Order/OrderList";
 import OrderDetail from "./components/Admin/Admin_Order/OrderDetail";
 import { AuthProvider } from "./components/contexts-login-tam-thoi/AuthContext";
-
+import Login from "./components/Login-register/Login";
 
 function App() {
   return (
@@ -30,6 +30,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/store" element={<Store />} />
+          <Route path="/login" element={<Login />} />
 
           {/* Trang edit components */}
           <Route path="/edit-components" element={<EditComponents />} />
@@ -52,8 +53,8 @@ function App() {
             />
             <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
 
-              <Route path="orders/:status" element={<OrderList />} />
-              <Route path="order/:orderId" element={<OrderDetail />} />
+            <Route path="orders/:status" element={<OrderList />} />
+            <Route path="order/:orderId" element={<OrderDetail />} />
           </Route>
 
           {/* <Route path="/babylon" element={<BabylonTankViewer />} />

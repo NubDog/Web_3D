@@ -10,8 +10,6 @@ export interface PhuongTien {
   trang_thai: string;
   ten_danh_muc?: string;
   ten_chinh_sach?: string;
-  gia_co_ban: number;
-  tien_coc_mac_dinh: number;
   loai: string;
   danh_muc_id: number;
   chinh_sach_id: number;
@@ -24,13 +22,6 @@ export interface PhuongTien {
 interface DanhMuc {
   danh_muc_id: number;
   ten_danh_muc: string;
-}
-
-interface ChinhSachGia {
-  chinh_sach_id: number;
-  ten_chinh_sach: string;
-  gia_co_ban?: number;
-  tien_coc_mac_dinh?: number;
 }
 
 const API_BASE_URL = "http://127.0.0.1:8787";
@@ -48,7 +39,6 @@ const PhuongTienModal: React.FC = () => {
   const isEditing = !!id;
 
   const [danhMucList, setDanhMucList] = useState<DanhMuc[]>([]);
-  const [chinhSachList, setChinhSachList] = useState<ChinhSachGia[]>([]);
 
   const buildCandidateUrls = (path: string) => {
     const base = API_BASE_URL.replace(/\/$/, "");
@@ -71,7 +61,7 @@ const PhuongTienModal: React.FC = () => {
         let parsed: any = null;
         try {
           parsed = JSON.parse(text);
-        } catch (e) {
+        } catch {
           parsed = null;
         }
         if (resp.ok) {
@@ -120,10 +110,6 @@ const PhuongTienModal: React.FC = () => {
         const r1 = await fetchWithFallback("/Admin/danh-muc-phuong-tien");
         setDanhMucList(Array.isArray(r1.data) ? r1.data : []);
       } catch {}
-      try {
-        const r2 = await fetchWithFallback("/Admin/chinh-sach-gia");
-        setChinhSachList(Array.isArray(r2.data) ? r2.data : []);
-      } catch {}
     };
     loadLists();
   }, []);
@@ -136,17 +122,11 @@ const PhuongTienModal: React.FC = () => {
     if (!data.bien_so || !/^[0-9A-Z-]{5,15}$/i.test(data.bien_so)) {
       errors.bien_so = "Biển số không hợp lệ (5-15 ký tự, chỉ chữ/số/gạch)";
     }
-    if (data.so_km !== undefined && data.so_km < 0) {
-      errors.so_km = "Số km không được âm";
+    if (data.so_km !== undefined && data.so_km <= 0) {
+      errors.so_km = "Số km không được âm và phải lớn hơn 0";
     }
     if (!data.trang_thai) {
       errors.trang_thai = "Vui lòng chọn trạng thái";
-    }
-    if (data.gia_co_ban !== undefined && data.gia_co_ban <= 0) {
-      errors.gia_co_ban = "Giá cơ bản phải lớn hơn 0";
-    }
-    if (data.tien_coc_mac_dinh !== undefined && data.tien_coc_mac_dinh < 0) {
-      errors.tien_coc_mac_dinh = "Tiền cọc không được âm";
     }
     if (!data.loai) {
       errors.loai = "Vui lòng nhập loại phương tiện";
@@ -154,14 +134,11 @@ const PhuongTienModal: React.FC = () => {
     if (!data.danh_muc_id || data.danh_muc_id <= 0) {
       errors.danh_muc_id = "Vui lòng chọn danh mục";
     }
-    if (!data.chinh_sach_id || data.chinh_sach_id <= 0) {
-      errors.chinh_sach_id = "Vui lòng chọn chính sách giá";
-    }
     if (!data.so_khung || data.so_khung.trim().length < 5) {
       errors.so_khung = "Số khung phải có ít nhất 5 ký tự";
     }
-    if (data.gia_thue !== undefined && data.gia_thue <= 0) {
-      errors.gia_thue = "Giá thuê phải lớn hơn 0";
+    if (data.gia_thue !== undefined && data.gia_thue <= 100000) {
+      errors.gia_thue = "Giá thuê phải lớn hơn 100k";
     }
     return errors;
   };
@@ -173,18 +150,28 @@ const PhuongTienModal: React.FC = () => {
     const form = e.currentTarget;
     const formData = new FormData(form);
 
+    const gia_thue = Number(formData.get("gia_thue")) || 0;
+
+    // ✅ Tự động tính chinh_sach_id dựa vào giá thuê
+    let chinh_sach_id = 0;
+    if (gia_thue > 0 && gia_thue <= 1000000) {
+      chinh_sach_id = 1;
+    } else if (gia_thue > 1000000 && gia_thue <= 10000000) {
+      chinh_sach_id = 2;
+    } else if (gia_thue > 10000000) {
+      chinh_sach_id = 3;
+    }
+
     const payload: Partial<PhuongTien> = {
       ten_phuong_tien: (formData.get("ten_phuong_tien") as string) || "",
       bien_so: (formData.get("bien_so") as string) || "",
       so_km: Number(formData.get("so_km")) || 0,
       trang_thai: (formData.get("trang_thai") as string) || "",
-      gia_co_ban: Number(formData.get("gia_co_ban")) || 0,
-      tien_coc_mac_dinh: Number(formData.get("tien_coc_mac_dinh")) || 0,
       loai: (formData.get("loai") as string) || "",
       danh_muc_id: Number(formData.get("danh_muc_id")) || 0,
-      chinh_sach_id: Number(formData.get("chinh_sach_id")) || 0,
       so_khung: (formData.get("so_khung") as string) || "",
-      gia_thue: Number(formData.get("gia_thue")) || 0,
+      gia_thue,
+      chinh_sach_id, // ✅ gán tự động
     };
 
     const errors = validateForm(payload);
@@ -288,30 +275,6 @@ const PhuongTienModal: React.FC = () => {
           </div>
 
           <div className="form-group">
-            <label>Giá cơ bản:</label>
-            <input
-              type="number"
-              name="gia_co_ban"
-              defaultValue={phuongTien?.gia_co_ban ?? 0}
-            />
-            {formErrors.gia_co_ban && (
-              <span className="error-text">{formErrors.gia_co_ban}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Tiền cọc:</label>
-            <input
-              type="number"
-              name="tien_coc_mac_dinh"
-              defaultValue={phuongTien?.tien_coc_mac_dinh ?? 0}
-            />
-            {formErrors.tien_coc_mac_dinh && (
-              <span className="error-text">{formErrors.tien_coc_mac_dinh}</span>
-            )}
-          </div>
-
-          <div className="form-group">
             <label>Loại:</label>
             <input
               type="text"
@@ -338,24 +301,6 @@ const PhuongTienModal: React.FC = () => {
             </select>
             {formErrors.danh_muc_id && (
               <span className="error-text">{formErrors.danh_muc_id}</span>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label>Chính sách giá:</label>
-            <select
-              name="chinh_sach_id"
-              defaultValue={phuongTien?.chinh_sach_id ?? ""}
-            >
-              <option value="">-- Chọn chính sách --</option>
-              {chinhSachList.map((cs) => (
-                <option key={cs.chinh_sach_id} value={cs.chinh_sach_id}>
-                  {cs.ten_chinh_sach}
-                </option>
-              ))}
-            </select>
-            {formErrors.chinh_sach_id && (
-              <span className="error-text">{formErrors.chinh_sach_id}</span>
             )}
           </div>
 
