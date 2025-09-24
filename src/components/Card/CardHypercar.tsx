@@ -91,6 +91,8 @@ const Card = () => {
         product_category: pt.loai,
         product_price: pt.gia_co_ban,
     }));
+
+    console.log("Du lieu cardhypercar", data);
     
     return (
         <BaseCard 

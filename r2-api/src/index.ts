@@ -16,6 +16,7 @@ import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung,handleLogin} from './API/NguoiDung_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
+import { handleGetKycDocumentsByNguoiDungId } from './API/KYC_User';
 
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
@@ -148,6 +149,12 @@ export default {
 			if (kycListMatch && method === 'GET') {
 				const customerId = kycListMatch[1];
 				return handleGetKycDocuments(env, customerId);
+			}
+
+			const kycUserMatch = path.match(/^\/api\/kyc\/user\/(\d+)$/);
+			if (kycUserMatch && method === 'GET') {
+				const nguoiDungId = kycUserMatch[1];
+				return handleGetKycDocumentsByNguoiDungId(request, env, nguoiDungId);
 			}
 
 			const kycCccdSetMatch = path.match(/^\/api\/kyc\/cccd\/(\d+)$/);
