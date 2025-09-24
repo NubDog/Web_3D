@@ -67,21 +67,22 @@ const Header: React.FC<HeaderProps> = ({id}) => {
                             <span className="welcome-message">
                                 Chào, {currentUser.ho_ten}
                             </span>
-                            {isUserAdmin && (
+                            {isUserAdmin ? (
                                 <div className="user-dropdown">
                                     <button onClick={() => navigate('/admin')}>
-                                        <i className="fa-solid fa-shield-halved"></i>
-                                        Trang Quản trị
+                                    <i className="fa-solid fa-shield-halved"></i>
+                                    Trang Quản trị
                                     </button>
                                 </div>
-                            )} else {
+                                ) : (
                                 <div className="user-dropdown">
                                     <button onClick={() => navigate('/account_home')}>
-                                        <i className="fa-solid fa-user"></i>
-                                        Thông tin tài khoản
+                                    <i className="fa-solid fa-user"></i>
+                                    Thông tin tài khoản
                                     </button>
                                 </div>
-                            }
+                                )}
+
                             
                         </div>
                         <Button_logout />
