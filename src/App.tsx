@@ -26,6 +26,8 @@ import SignInPage from "./pages/SigIn_SigUp";
 import SignUp from "./components/SignIn_SignUp/SignUp";
 import ViolationList from "./components/Admin/admin-vipham/ViolationList";
 import CheckOut from "./pages/CheckOut";
+import ProductDetailPage from './pages/ProductDetailPage';
+import AccountHome from './pages/AccountHome';
 
 function App() {
   return (
@@ -36,7 +38,9 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/store" element={<Store />} />
             <Route path="/signin" element={<SignInPage />} />
+            <Route path="/account_home" element={<AccountHome />} />
             <Route path="/checkout" element={<CheckOut />} />
+            <Route path="/product_detail" element={<ProductDetailPage />} />
             {/* <Route path="/signup" element={<SignUp />} /> */}
             {/* Trang edit components */}
             <Route path="/edit-components" element={<EditComponents />} />

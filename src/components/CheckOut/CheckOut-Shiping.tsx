@@ -47,6 +47,15 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack }) => 
         setEmail(e.target.value);
     }
 
+    const handleNextClick = () => {
+        if (!ho || !ten || !quanHuyen || !diaChiChiTiet || !ngayMuon || !ngayTra || !soDienThoai || !email) {
+            alert('Vui lòng điền đầy đủ thông tin.');
+            return;
+        }
+
+        onNext({ ho, ten, quanHuyen, diaChiChiTiet, ngayMuon, ngayTra, soDienThoai, email });
+    };
+
     return (
         <div className='checkOut-shiping col-980'>
             <div className='checkout-back-button' onClick={onBack}>
@@ -82,14 +91,16 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack }) => 
                     type='text'
                 />
 
+                <p>Ngày mượn</p>
                 <Input 
-                    placeholder='Ngày mượn'
+                    placeholder=''
                     value={ngayMuon}
                     onChange={handleChange5}
                     type='date'
                 />
+                <p>Ngày trả</p>
                 <Input 
-                    placeholder='Ngày trả'
+                    placeholder=''
                     value={ngayTra}
                     onChange={handleChange6}
                     type='date'
@@ -108,7 +119,7 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack }) => 
                     onChange={handleChange8}
                     type='text'
                 />
-                <Sub_Button content='Tiếp tục đến phần thanh toán' onClick={() => onNext({ ho, ten, quanHuyen, diaChiChiTiet, ngayMuon, ngayTra, soDienThoai, email })} />
+                <Sub_Button content='Tiếp tục đến phần thanh toán' onClick={handleNextClick} />
             </form>
 
         </div>

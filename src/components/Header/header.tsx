@@ -74,7 +74,15 @@ const Header: React.FC<HeaderProps> = ({id}) => {
                                         Trang Quản trị
                                     </button>
                                 </div>
-                            )}
+                            )} else {
+                                <div className="user-dropdown">
+                                    <button onClick={() => navigate('/account_home')}>
+                                        <i className="fa-solid fa-user"></i>
+                                        Thông tin tài khoản
+                                    </button>
+                                </div>
+                            }
+                            
                         </div>
                         <Button_logout />
                     </div>

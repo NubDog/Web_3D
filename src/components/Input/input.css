@@ -4,7 +4,8 @@
   width: 100%;
 }
 
-.input-container input[type="text"] {
+.input-container input[type="text"],
+.input-container input[type="date"] {
   font-size: 20px;
   width: 100%;
   border: none;
@@ -24,7 +25,9 @@
 }
 
 .input-container input[type="text"]:focus ~ .label,
-.input-container input[type="text"]:valid ~ .label {
+.input-container input[type="text"]:valid ~ .label,
+.input-container input[type="date"]:focus ~ .label,
+.input-container input[type="date"]:valid ~ .label {
   top: -20px;
   font-size: 16px;
   color: #333;
@@ -42,10 +45,30 @@
 }
 
 .input-container input[type="text"]:focus ~ .underline,
-.input-container input[type="text"]:valid ~ .underline {
+.input-container input[type="text"]:valid ~ .underline,
+.input-container input[type="date"]:focus ~ .underline,
+.input-container input[type="date"]:valid ~ .underline {
   transform: scaleX(1);
 }
-
 #input {
-  color: var(--text-gray);
+  color: #333;
+}
+
+.input-container input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+.input-container input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Ẩn placeholder 'mm/dd/yyyy' của ô input date */
+.input-container input[type="date"] {
+    color: transparent;
+}
+
+/* Khi đã chọn ngày (input hợp lệ), thì hiện ngày đã chọn lên */
+.input-container input[type="date"]:valid {
+    color: #333;
 }

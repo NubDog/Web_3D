@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect, type ReactNode }
 
 // Định nghĩa kiểu dữ liệu cho người dùng
 interface User {
+    nguoi_dung_id: number;
     ho_ten: string;
     email: string;
     vai_tro: string;

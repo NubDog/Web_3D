@@ -15,6 +15,7 @@ import { handleGetKycDocuments, handleAddKycDocument, handleUpdateCccdSet } from
 import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung,handleLogin} from './API/NguoiDung_API';
+import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
 import {
@@ -337,7 +338,21 @@ export default {
 				return handleLogin(request, env);
 			}
 
+			// API for User Profile
+			if (path === '/api/user-profile' && method === 'GET') {
+				return handleGetUserProfile(request, env);
+			}
 
+			// API for Update User Profile
+			const userProfileMatch = path.match(/^\/api\/user-profile\/(\d+)$/);
+			if (userProfileMatch && method === 'PUT') {
+				return handleUpdateUserProfile(request, env);
+			}
+
+			// API for Change Password
+			if (path === '/api/user-profile/change-password' && method === 'PUT') {
+				return handleChangePassword(request, env);
+			}
 
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);

@@ -81,7 +81,7 @@ const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: 
                 {data.map((item) => (
                     <div className={`Card-content ${Card_content_customMiddle ?? ''}`} key={item.id}>
                         <div className="Card-content-title-link">
-                            <Link to="/checkout" state={{ product: item }}>
+                            <Link to="/product_detail" state={{ product: item }}>
                                 <img 
                                     src={item.img || Lamborghini_model_Sian}
                                     alt={item.product_name}
@@ -90,7 +90,7 @@ const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: 
                                     }}
                                 />
                             </Link>
-                            <Link to="/CheckOut" state={{ product: item}}></Link>
+                            <Link to="/product_detail" state={{ product: item}}></Link>
                         </div>
                         <div className="Card-content-title">
                             <h3 className="Card-content-title-header">{item.product_name}</h3>
