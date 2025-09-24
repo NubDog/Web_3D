@@ -210,3 +210,19 @@
     font-weight: 700;
     color: #007bff; /* Màu xanh dương cho tổng tiền */
 }
+
+.record-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 1rem;
+}
+
+.record-buttons .button-secondary {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.record-buttons .button-secondary:hover {
+    background-color: #e0e0e0;
+}

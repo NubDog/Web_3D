@@ -10,7 +10,7 @@ import { useAuth } from '../../contexts-login-tam-thoi/AuthContext';
 import HandoverModal from '../Component-Admin/HandoverModal';
 import FinalizeModal from '../Component-Admin/Component-FinalizeModal';
 import CancelOrderModal from '../Component-Admin/CancelOrderModal';
-
+import VehicleRecordModal from '../Component-Admin/VehicleRecordModal';
 
 interface OrderDetail {
     don_thue_id: number;
@@ -31,6 +31,23 @@ interface OrderDetail {
     gia_thue: number; 
     ty_le_giam: number;    
     
+    giao_so_km: number | null;
+    giao_muc_xang: string | null;
+    giao_ghi_chu: string | null;
+    giao_anh: string | null; 
+
+    tra_so_km: number | null;
+    tra_muc_xang: string | null;
+    tra_ghi_chu: string | null;
+    tra_anh: string | null; 
+}
+
+interface RecordData {
+    title: string;
+    km: number | null;
+    fuel: string | null;
+    notes: string | null;
+    imageUrls: string[];
 }
 
 const OrderDetail: React.FC = () => {
@@ -47,6 +64,9 @@ const OrderDetail: React.FC = () => {
     const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
     const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
+    const [recordModalData, setRecordModalData] = useState<RecordData | null>(null);
 
     const fetchOrder = useCallback(async () => {
         if (!orderId) return;
@@ -257,6 +277,32 @@ const OrderDetail: React.FC = () => {
         }
     };
 
+    const showRecordDetails = (type: 'giao' | 'tra') => {
+        if (!order) return;
+
+        if (type === 'giao' && order.giao_so_km) {
+            setRecordModalData({
+                title: "Chi Tiết Bàn Giao Xe",
+                km: order.giao_so_km,
+                fuel: order.giao_muc_xang,
+                notes: order.giao_ghi_chu,
+                imageUrls: order.giao_anh ? JSON.parse(order.giao_anh) : []
+            });
+            setIsRecordModalOpen(true);
+        }
+
+        if (type === 'tra' && order.tra_so_km) {
+            setRecordModalData({
+                title: "Chi Tiết Trả Xe",
+                km: order.tra_so_km,
+                fuel: order.tra_muc_xang,
+                notes: order.tra_ghi_chu,
+                imageUrls: order.tra_anh ? JSON.parse(order.tra_anh) : []
+            });
+            setIsRecordModalOpen(true);
+        }
+    };
+
      const renderActionButtons = () => {
         if (!order) return null;
 
@@ -370,6 +416,25 @@ const OrderDetail: React.FC = () => {
                             </div>
                         </div>
                     </div>
+
+                     {(order.giao_so_km || order.tra_so_km) && (
+                        <div className="info-card">
+                            <h2>Biên Bản Giao Nhận</h2>
+                            <div className="record-buttons">
+                                {order.giao_so_km && (
+                                    <button className="button-secondary" onClick={() => showRecordDetails('giao')}>
+                                        Xem chi tiết bàn giao
+                                    </button>
+                                )}
+                                {order.tra_so_km && (
+                                    <button className="button-secondary" onClick={() => showRecordDetails('tra')}>
+                                        Xem chi tiết trả xe
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                 </div>
 
                 {/* CỘT BÊN PHẢI: THÔNG TIN PHỤ & HÀNH ĐỘNG */}
@@ -439,6 +504,11 @@ const OrderDetail: React.FC = () => {
                 onClose={() => setIsCancelModalOpen(false)}
                 onSubmit={handleCancel}
                 isSubmitting={isSubmitting}
+                />
+                <VehicleRecordModal
+                    isOpen={isRecordModalOpen}
+                    onClose={() => setIsRecordModalOpen(false)}
+                    data={recordModalData}
                 />
             </div>
         </div>

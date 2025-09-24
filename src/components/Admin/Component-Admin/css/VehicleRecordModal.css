@@ -1,0 +1,30 @@
+.record-modal .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.record-details p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.image-gallery img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    transition: transform 0.2s;
+}
+
+.image-gallery img:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+}

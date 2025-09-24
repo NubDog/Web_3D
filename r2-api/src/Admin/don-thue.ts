@@ -266,13 +266,31 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
                 kh.ho_ten, kh.email, 
                 pt.ten_phuong_tien, pt.bien_so, pt.gia_thue,
                 cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh,
-                tc.trang_thai AS trang_thai_coc
-             FROM DonThue AS dt
-             JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id
-             JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
-             JOIN ChinhSachGia AS cs ON dt.chinh_sach_id = cs.chinh_sach_id
-             LEFT JOIN TienCoc AS tc ON dt.don_thue_id = tc.don_thue_id
-             WHERE dt.don_thue_id = ?`
+                tc.trang_thai AS trang_thai_coc,
+
+                bbgn_giao.so_km AS giao_so_km,
+                bbgn_giao.muc_xang AS giao_muc_xang,
+                bbgn_giao.ghi_chu_hu_hong AS giao_ghi_chu,
+                bbgn_giao.duong_dan_anh AS giao_anh,
+
+                bbgn_tra.so_km AS tra_so_km,
+                bbgn_tra.muc_xang AS tra_muc_xang,
+                bbgn_tra.ghi_chu_hu_hong AS tra_ghi_chu,
+                bbgn_tra.duong_dan_anh AS tra_anh
+
+              FROM DonThue AS dt
+            JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id
+            JOIN PhuongTien AS pt ON dt.phuong_tien_id = pt.phuong_tien_id
+            JOIN ChinhSachGia AS cs ON dt.chinh_sach_id = cs.chinh_sach_id
+            LEFT JOIN TienCoc AS tc ON dt.don_thue_id = tc.don_thue_id
+            
+            -- JOIN lấy thông tin bàn giao
+            LEFT JOIN BienBanGiaoNhan AS bbgn_giao ON dt.don_thue_id = bbgn_giao.don_thue_id AND bbgn_giao.loai_bien_ban = 'GIAO_XE'
+            
+            -- JOIN lấy thông tin trả xe
+            LEFT JOIN BienBanGiaoNhan AS bbgn_tra ON dt.don_thue_id = bbgn_tra.don_thue_id AND bbgn_tra.loai_bien_ban = 'TRA_XE'
+
+            WHERE dt.don_thue_id = ?`
         );
         const orderDetails = await stmt.bind(orderId).first();
 
