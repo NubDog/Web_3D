@@ -117,3 +117,39 @@
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
 }
+
+/* CSS cho ô tải file bằng chứng */
+.file-uploader {
+    border: 2px dashed #ced4da;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-uploader:hover {
+    border-color: #86b7fe;
+    background-color: #f8f9fa;
+}
+
+.file-uploader input[type="file"] {
+    display: none;
+}
+
+.file-uploader .file-upload-label {
+    cursor: pointer;
+    display: block;
+}
+
+.file-uploader .file-preview {
+    max-width: 100%;
+    max-height: 150px;
+    border-radius: 6px;
+    object-fit: cover;
+}
+
+.file-uploader span {
+    color: #495057;
+    font-weight: 500;
+}

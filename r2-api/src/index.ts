@@ -17,6 +17,7 @@ import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung,handleLogin} from './API/NguoiDung_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 
+
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
 import {
 	handleCreateRentalOrder,
@@ -31,7 +32,7 @@ import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
-import { handleCreateViolation, handleGetViolations } from './Admin/vi-pham';
+import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation } from './Admin/vi-pham';
 
 
 interface Env {
@@ -43,6 +44,7 @@ interface Env {
 	product: R2Bucket;
 	ICC: R2Bucket;
 	RESEND_API_KEY: string;
+	VIO: R2Bucket
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -321,24 +323,33 @@ export default {
 				return handleConfirmDeposit(request, env, orderId);
 			}
 			
+			//vi pham
 			if (path === '/api/violations' && method === 'POST') {
-				// Gọi đến hàm xử lý logic tạo vi phạm mới
-				// (Hàm này chúng ta sẽ viết sau khi đã thêm route)
 				return handleCreateViolation(request, env); 
 			}
 
 			if (path === '/api/violations' && method === 'GET') {
 				return handleGetViolations(request, env);
 			}
-			// Đăng nhập
-			if (path === '/login' && method === 'POST') {
-				return getLogin(request, env);
-			}
-			if (path === '/api/login' && method === 'POST') {
-				return handleLogin(request, env);
+
+			// const violationUpdateMatch = path.match(/^\/api\/violations\/(\d+)$/);
+			// if (violationUpdateMatch && method === 'PUT') {
+			// 	const violationId = violationUpdateMatch[1];
+			// 	return handleUpdateViolation(request, env, violationId);
+			// }
+
+			const violationMatch = path.match(/^\/api\/violations\/(\d+)$/);
+
+			if (violationMatch && method === 'PUT') {
+				const violationId = violationMatch[1];
+				return handleUpdateViolation(request, env, violationId);
 			}
 
-			// API for User Profile
+			if (violationMatch && method === 'DELETE') {
+				const violationId = violationMatch[1];
+				return handleDeleteViolation(request, env, violationId);
+			}
+
 			if (path === '/api/user-profile' && method === 'GET') {
 				return handleGetUserProfile(request, env);
 			}
@@ -353,6 +364,16 @@ export default {
 			if (path === '/api/user-profile/change-password' && method === 'PUT') {
 				return handleChangePassword(request, env);
 			}
+
+			// Đăng nhập
+			if (path === '/login' && method === 'POST') {
+				return getLogin(request, env);
+			}
+			if (path === '/api/login' && method === 'POST') {
+				return handleLogin(request, env);
+			}
+
+
 
 			// Route mặc định nếu không khớp
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);

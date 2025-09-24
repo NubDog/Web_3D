@@ -58,11 +58,15 @@
     overflow: hidden;
 }
 
-.admin-table th, .admin-table td {
-    padding: 1rem 1.5rem;
+.admin-table td {
+    padding: 16px 20px;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-    color: #333;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 400;
+    
+    vertical-align: middle; 
 }
 
 .admin-table thead tr {
@@ -106,4 +110,49 @@
 .btn-delete {
     background-color: #dc3545;
     color: white;
+}
+
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+    background-color: var(--content-bg);
+    padding: 6px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.filter-buttons button {
+    background-color: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.filter-buttons button.active,
+.filter-buttons button:hover {
+    background-color: gray;
+    color: white;
+}
+
+.admin-table td .text1{
+    color: rgb(255, 0, 230);
+    cursor: pointer;
+}
+
+.admin-table td .text1:hover {
+    color: rgb(67, 67, 255);
+    cursor: pointer;
+    text-decoration: underline;
 }

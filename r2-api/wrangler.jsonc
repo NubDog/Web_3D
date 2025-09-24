@@ -44,7 +44,12 @@
 			"binding": "ICC",
 			"bucket_name": "img-check-car",
 			"preview_bucket_name": "img-check-car"
-		}
+		},
+		{
+			"binding": "VIO",
+			"bucket_name": "violation-img",
+			"preview_bucket_name": "violation-img"
+		},
 		// {
 		// 	"bucket_name": "models-3d-dev",
 		// 	"binding": "models_3d_dev"
