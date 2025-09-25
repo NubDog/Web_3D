@@ -186,15 +186,15 @@ const AccountHome = () => {
                 <div className="AccountHome-profile">
                     <div className="AccountHome-header">
                         <h1>Thông tin tài khoản</h1>
-                        <div className="AccountHome-header-buttons">
+                        <div style={{ display: 'flex', gap: '1rem' }}>
                             {!isEditing && (
-                                <Button 
-                                    conttent="Chỉnh sửa" 
+                                <Button
+                                    conttent="Chỉnh sửa"
                                     onClick={() => setIsEditing(true)}
                                 />
                             )}
                             <Link to="/account_home/account_home_kyc">
-                                <Button conttent="Xem KYC" />
+                                <Button conttent="Thông tin KYC" />
                             </Link>
                         </div>
                     </div>

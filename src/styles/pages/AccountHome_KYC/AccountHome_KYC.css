@@ -1,9 +1,742 @@
+/* AccountHome_KYC.css */
+
 .account-home-kyc-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: var(--background-white);
-    margin-top: 65px;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-gray);
+}
+
+/* Content wrapper */
+.account-home-kyc-content {
+    padding: 60px 120px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* KYC container */
+.account-home-kyc-profile {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.06);
+    padding: 40px;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.account-home-kyc-profile:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 32px 64px rgba(0, 0, 0, 0.15),
+        0 16px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.account-home-kyc-header {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.account-home-kyc-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--text-gray);
+    margin: 0;
+}
+
+/* Messages */
+.account-home-kyc-error {
+    background-color: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    color: #d70015;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.account-home-kyc-success {
+    background-color: rgba(40, 205, 65, 0.1);
+    border: 1px solid rgba(40, 205, 65, 0.2);
+    color: #1f8b24;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.account-home-kyc-no-data {
+    text-align: center;
+    padding: 60px 40px;
+    color: var(--text-gray-light);
+}
+
+.account-home-kyc-no-data h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--text-gray);
+}
+
+.account-home-kyc-no-data p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0 0 32px 0;
+}
+
+/* KYC Documents */
+.account-home-kyc-documents {
+    display: grid;
+    gap: 32px;
+}
+
+.account-home-kyc-document {
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    padding: 32px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.account-home-kyc-document:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.account-home-kyc-document-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.account-home-kyc-document-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin: 0;
+}
+
+.account-home-kyc-status {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.account-home-kyc-status.verified {
+    background-color: rgba(40, 205, 65, 0.1);
+    color: #1f8b24;
+    border: 1px solid rgba(40, 205, 65, 0.2);
+}
+
+.account-home-kyc-status.pending {
+    background-color: rgba(255, 149, 0, 0.1);
+    color: #cc7a00;
+    border: 1px solid rgba(255, 149, 0, 0.2);
+}
+
+.account-home-kyc-status.rejected {
+    background-color: rgba(255, 59, 48, 0.1);
+    color: #d70015;
+    border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+/* Form */
+.account-home-kyc-form {
+    width: 100%;
+}
+
+.account-home-kyc-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* Form fields */
+.account-home-kyc-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-home-kyc-field label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin-bottom: 8px;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.account-home-kyc-field input {
+    padding: 16px 20px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    font-size: 16px;
+    color: var(--text-gray);
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+.account-home-kyc-field input:focus {
+    outline: none;
+    border-color: #007aff;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+}
+
+.account-home-kyc-field input:disabled {
+    background-color: #f5f5f7;
+    color: var(--text-gray-light);
+    cursor: not-allowed;
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Image display */
+.account-home-kyc-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-top: 32px;
+}
+
+.account-home-kyc-image-container {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f5f5f7;
+    aspect-ratio: 16/10;
+}
+
+.account-home-kyc-image {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.account-home-kyc-image:hover {
+    transform: scale(1.02);
+}
+
+.account-home-kyc-image-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: white;
+    padding: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Form actions */
+.account-home-kyc-form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    padding-top: 24px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.account-home-kyc-cancel-btn {
+    background: none;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    color: var(--text-gray);
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.account-home-kyc-cancel-btn:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.3);
+}
+
+.account-home-kyc-cancel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Button component integration */
+.account-home-kyc-header .main-button,
+.account-home-kyc-form-actions .main-button {
+    background: linear-gradient(135deg, #007aff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-width: 140px;
+}
+
+.account-home-kyc-header .main-button:hover,
+.account-home-kyc-form-actions .main-button:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+}
+
+.account-home-kyc-form-actions .main-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Loading state */
+.account-home-kyc-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+}
+
+.account-home-kyc-loading h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-gray-light);
+    margin: 0;
+}
+
+/* Not logged in state */
+.account-home-kyc-not-logged-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+}
+
+.account-home-kyc-login-prompt {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.06);
+    padding: 60px 40px;
+    max-width: 480px;
+}
+
+.account-home-kyc-login-prompt h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-gray);
+    margin: 0 0 16px 0;
+}
+
+.account-home-kyc-login-prompt p {
+    font-size: 16px;
+    color: var(--text-gray-light);
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+}
+
+.account-home-kyc-login-prompt .main-button {
+    background: linear-gradient(135deg, #007aff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-width: 160px;
+}
+
+.account-home-kyc-login-prompt .main-button:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .account-home-kyc-content {
+        padding: 40px 80px;
+    }
+    
+    .account-home-kyc-form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .account-home-kyc-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .account-home-kyc-form-actions {
+        justify-content: stretch;
+    }
+    
+    .account-home-kyc-cancel-btn,
+    .account-home-kyc-form-actions .main-button {
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .account-home-kyc-content {
+        padding: 40px 40px;
+    }
+    
+    .account-home-kyc-profile {
+        padding: 32px 24px;
+    }
+    
+    .account-home-kyc-header h1 {
+        font-size: 24px;
+    }
+    
+    .account-home-kyc-images {
+        grid-template-columns: 1fr;
+    }
+    
+    .account-home-kyc-form-actions {
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-home-kyc-content {
+        padding: 20px;
+    }
+    
+    .account-home-kyc-profile {
+        padding: 24px 16px;
+        border-radius: 16px;
+    }
+    
+    .account-home-kyc-form-grid {
+        gap: 16px;
+        grid-template-columns: 1fr;
+    }
+    
+    .account-home-kyc-field input {
+        padding: 14px 16px;
+    }
+    
+    .account-home-kyc-login-prompt {
+        padding: 40px 24px;
+        margin: 0 20px;
+    }
+}
+
+/* Smooth transitions for content loading */
+.account-home-kyc-profile {
+    animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.account-home-kyc-login-prompt {
+    animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Focus states for accessibility */
+.account-home-kyc-cancel-btn:focus,
+.main-button:focus {
+    outline: 2px solid #007aff;
+    outline-offset: 2px;
+}
+
+/* Upload Section */
+.account-home-kyc-upload-section {
+    margin-top: 32px;
+}
+
+.account-home-kyc-upload-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.account-home-kyc-upload-header h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    color: var(--text-gray);
+}
+
+.account-home-kyc-upload-header p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    color: var(--text-gray-light);
+}
+
+.account-home-kyc-upload-form {
+    width: 100%;
+}
+
+/* Upload Images Section */
+.account-home-kyc-upload-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 32px;
+    margin-bottom: 40px;
+}
+
+.account-home-kyc-upload-image-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-home-kyc-upload-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin-bottom: 12px;
+    letter-spacing: 0.2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.account-home-kyc-upload-area {
+    position: relative;
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.account-home-kyc-upload-area:hover {
+    border-color: #007aff;
+    background: rgba(0, 122, 255, 0.02);
+}
+
+.account-home-kyc-file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.account-home-kyc-upload-placeholder {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    position: relative;
+}
+
+.account-home-kyc-upload-prompt {
+    text-align: center;
+    color: var(--text-gray-light);
+}
+
+.account-home-kyc-upload-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.account-home-kyc-upload-prompt p {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: var(--text-gray);
+}
+
+.account-home-kyc-upload-prompt span {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* File Preview */
+.account-home-kyc-file-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.account-home-kyc-preview-image {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.account-home-kyc-file-info {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-gray);
+    text-align: center;
+    padding: 8px 16px;
+    background: rgba(0, 122, 255, 0.1);
+    border-radius: 20px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Upload Actions */
+.account-home-kyc-upload-actions {
+    display: flex;
+    justify-content: center;
+    padding-top: 32px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.account-home-kyc-upload-actions .main-button {
+    background: linear-gradient(135deg, #007aff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-width: 200px;
+}
+
+.account-home-kyc-upload-actions .main-button:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+}
+
+.account-home-kyc-upload-actions .main-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive Upload Design */
+@media (max-width: 768px) {
+    .account-home-kyc-upload-images {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .account-home-kyc-upload-placeholder {
+        min-height: 160px;
+        padding: 24px 16px;
+    }
+    
+    .account-home-kyc-upload-icon {
+        font-size: 36px;
+        margin-bottom: 12px;
+    }
+    
+    .account-home-kyc-preview-image {
+        max-height: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-home-kyc-upload-header {
+        margin-bottom: 32px;
+    }
+    
+    .account-home-kyc-upload-header h3 {
+        font-size: 20px;
+    }
+    
+    .account-home-kyc-upload-actions .main-button {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/* Upload Animation */
+.account-home-kyc-upload-area.dragover {
+    border-color: #007aff;
+    background: rgba(0, 122, 255, 0.05);
+    transform: scale(1.02);
+}
+
+/* Focus states for upload */
+.account-home-kyc-file-input:focus + .account-home-kyc-upload-placeholder {
+    outline: 2px solid #007aff;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .account-home-kyc-field input {
+        border-width: 2px;
+    }
+    
+    .account-home-kyc-error {
+        border-width: 2px;
+    }
+    
+    .account-home-kyc-success {
+        border-width: 2px;
+    }
+    
+    .account-home-kyc-upload-area {
+        border-width: 3px;
+    }
 }

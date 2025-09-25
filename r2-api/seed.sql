@@ -1,48 +1,12 @@
-INSERT INTO NguoiDung 
-(ten_dang_nhap, mat_khau, vai_tro, trang_thai, ho_ten, email, so_dien_thoai, ngay_tao, ngay_cap_nhat) 
+INSERT INTO PhuongTien 
+(ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, ngay_tao, ngay_cap_nhat, img, gia_thue, model)
 VALUES
-('khach01', '123456', 'KhachHang', 'active', 'Nguyen Van A', 'khach01@example.com', '0900000001', datetime('now'), datetime('now')),
-('khach02', '123456', 'KhachHang', 'active', 'Tran Thi B', 'khach02@example.com', '0900000002', datetime('now'), datetime('now')),
-('khach03', '123456', 'KhachHang', 'active', 'Le Van C', 'khach03@example.com', '0900000003', datetime('now'), datetime('now')),
-('khach04', '123456', 'KhachHang', 'active', 'Pham Thi D', 'khach04@example.com', '0900000004', datetime('now'), datetime('now')),
-('khach05', '123456', 'KhachHang', 'active', 'Hoang Van E', 'khach05@example.com', '0900000005', datetime('now'), datetime('now')),
-('khach06', '123456', 'KhachHang', 'active', 'Do Thi F', 'khach06@example.com', '0900000006', datetime('now'), datetime('now')),
-('khach07', '123456', 'KhachHang', 'active', 'Nguyen Van G', 'khach07@example.com', '0900000007', datetime('now'), datetime('now')),
-('khach08', '123456', 'KhachHang', 'active', 'Tran Thi H', 'khach08@example.com', '0900000008', datetime('now'), datetime('now')),
-('khach09', '123456', 'KhachHang', 'active', 'Le Van I', 'khach09@example.com', '0900000009', datetime('now'), datetime('now')),
-('khach10', '123456', 'KhachHang', 'active', 'Pham Thi J', 'khach10@example.com', '0900000010', datetime('now'), datetime('now')),
-('khach11', '123456', 'KhachHang', 'active', 'Hoang Van K', 'khach11@example.com', '0900000011', datetime('now'), datetime('now')),
-('khach12', '123456', 'KhachHang', 'active', 'Do Thi L', 'khach12@example.com', '0900000012', datetime('now'), datetime('now')),
-('khach13', '123456', 'KhachHang', 'active', 'Nguyen Van M', 'khach13@example.com', '0900000013', datetime('now'), datetime('now')),
-('khach14', '123456', 'KhachHang', 'active', 'Tran Thi N', 'khach14@example.com', '0900000014', datetime('now'), datetime('now')),
-('khach15', '123456', 'KhachHang', 'active', 'Le Van O', 'khach15@example.com', '0900000015', datetime('now'), datetime('now')),
-('khach16', '123456', 'KhachHang', 'active', 'Pham Thi P', 'khach16@example.com', '0900000016', datetime('now'), datetime('now')),
-('khach17', '123456', 'KhachHang', 'active', 'Hoang Van Q', 'khach17@example.com', '0900000017', datetime('now'), datetime('now')),
-('khach18', '123456', 'KhachHang', 'active', 'Do Thi R', 'khach18@example.com', '0900000018', datetime('now'), datetime('now')),
-('khach19', '123456', 'KhachHang', 'active', 'Nguyen Van S', 'khach19@example.com', '0900000019', datetime('now'), datetime('now')),
-('khach20', '123456', 'KhachHang', 'active', 'Tran Thi T', 'khach20@example.com', '0900000020', datetime('now'), datetime('now'));
-
-
-INSERT INTO KhachHang
-(nguoi_dung_id, ho_ten, ngay_sinh, dia_chi, thanh_pho, tinh, ma_buu_chinh, quoc_gia, ngay_tao, ngay_cap_nhat)
-VALUES
-(1, 'Nguyen Van A', '1990-05-12', '123 Le Loi', 'Da Nang', 'Da Nang', '550000', 'VN', datetime('now'), datetime('now')),
-(2, 'Tran Thi B', '1985-09-20', '45 Nguyen Trai', 'Ha Noi', 'Ha Noi', '100000', 'VN', datetime('now'), datetime('now')),
-(3, 'Le Van C', '1992-03-15', '67 Le Duan', 'Ho Chi Minh', 'HCM', '700000', 'VN', datetime('now'), datetime('now')),
-(4, 'Pham Thi D', '1995-07-07', '89 Tran Phu', 'Hai Phong', 'Hai Phong', '180000', 'VN', datetime('now'), datetime('now')),
-(5, 'Hoang Van E', '1998-12-25', '12 Quang Trung', 'Da Nang', 'Da Nang', '550000', 'VN', datetime('now'), datetime('now')),
-(6, 'Do Thi F', '1993-01-18', '34 Phan Chu Trinh', 'Hue', 'Thua Thien Hue', '490000', 'VN', datetime('now'), datetime('now')),
-(7, 'Nguyen Van G', '1980-04-05', '56 Tran Hung Dao', 'Da Nang', 'Da Nang', '550000', 'VN', datetime('now'), datetime('now')),
-(8, 'Tran Thi H', '1989-06-30', '78 Bach Dang', 'Ha Noi', 'Ha Noi', '100000', 'VN', datetime('now'), datetime('now')),
-(9, 'Le Van I', '1991-11-11', '90 Ly Thuong Kiet', 'Ho Chi Minh', 'HCM', '700000', 'VN', datetime('now'), datetime('now')),
-(10, 'Pham Thi J', '1994-08-22', '22 Nguyen Van Linh', 'Da Nang', 'Da Nang', '550000', 'VN', datetime('now'), datetime('now')),
-(11, 'Hoang Van K', '1996-02-10', '11 Dien Bien Phu', 'Can Tho', 'Can Tho', '900000', 'VN', datetime('now'), datetime('now')),
-(12, 'Do Thi L', '1997-07-17', '33 Nguyen Hue', 'Quy Nhon', 'Binh Dinh', '820000', 'VN', datetime('now'), datetime('now')),
-(13, 'Nguyen Van M', '1982-10-01', '44 Hung Vuong', 'Da Nang', 'Da Nang', '550000', 'VN', datetime('now'), datetime('now')),
-(14, 'Tran Thi N', '1987-03-28', '55 Tran Cao Van', 'Hoi An', 'Quang Nam', '560000', 'VN', datetime('now'), datetime('now')),
-(15, 'Le Van O', '1990-09-09', '66 Ly Nam De', 'Ha Noi', 'Ha Noi', '100000', 'VN', datetime('now'), datetime('now')),
-(16, 'Pham Thi P', '1992-12-12', '77 Nguyen Dinh Chieu', 'Ho Chi Minh', 'HCM', '700000', 'VN', datetime('now'), datetime('now')),
-(17, 'Hoang Van Q', '1995-05-05', '88 Le Hong Phong', 'Nha Trang', 'Khanh Hoa', '650000', 'VN', datetime('now'), datetime('now')),
-(18, 'Do Thi R', '1998-01-30', '99 Hai Ba Trung', 'Vinh', 'Nghe An', '460000', 'VN', datetime('now'), datetime('now')),
-(19, 'Nguyen Van S', '1983-06-06', '101 Tran Hung Dao', 'Da Nang', 'Da Nang', '550000', 'VN', datetime('now'), datetime('now')),
-(20, 'Tran Thi T', '1986-11-25', '202 Phan Boi Chau', 'Buon Ma Thuot', 'Dak Lak', '630000', 'VN', datetime('now'), datetime('now'));
+('2022 Suzuki Ertiga', 'SUV bình dân từ Nhật Bản', 3, 'SAN_SANG', '77Q-87509', 23909, 7, 'SKHUNG477190', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/2022%20Suzuki%20Ertiga.png', 3000000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/2022%20Suzuki%20Ertiga.glb'),
+('2023 Ferrari Purosangue', 'SUV siêu sang từ Ý', 3, 'SAN_SANG', '55D-53147', 72595, 2, 'SKHUNG511111', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/2023%20Ferrari%20Purosangue.png', 4000000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/2023%20Ferrari%20Purosangue.glb'),
+('2023 Lexus GX 550 Overtrail', 'SUV siêu sang từ Ý', 3, 'SAN_SANG', '76L-96792', 65424, 5, 'SKHUNG376506', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/2023%20Lexus%20GX%20550%20Overtrail.png', 2000000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/2023%20Lexus%20GX%20550%20Overtrail.glb'),
+('2023 Toyota RAV4 Hybrid', 'SUV bọc tôn', 3, 'SAN_SANG', '74P-93641', 38928, 2, 'SKHUNG803471', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/2023%20Toyota%20RAV4%20Hybrid.png', 2500000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/2023%20Toyota%20RAV4%20Hybrid.glb'),
+('Mazda CX-5', 'SUV dễ bị đánh ghen', 3, 'SAN_SANG', '74U-93014', 59051, 7, 'SKHUNG847555', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Mazda%20CX-5.png', 2500000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Mazda%20CX-5.glb'),
+('Mersedes- Benz Maybach GLS 600', 'SUV dành riêng cho CEO', 3, 'SAN_SANG', '16C-23483', 55731, 2, 'SKHUNG781702', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Mercedes%20Benz%20Maybach%20GLS%20600.png', 2000000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Mersedes-%20Benz%20Maybach%20GLS%20600.glb'),
+('Mitsubishi Concept SUV', 'SUV dành riêng cho CEO', 3, 'SAN_SANG', '71N-37781', 69091, 1, 'SKHUNG827645', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Mitsubishi%20Concept%20SUV.png', 3500000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Mitsubishi%20Concept%20SUV.glb'),
+('Peugeot 3008', 'SUV dành riêng cho CEO', 3, 'SAN_SANG', '85F-41500', 78842, 5, 'SKHUNG934003', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Peugeot%203008.png', 2500000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Peugeot%203008.glb'),
+('Urus Absolut', 'SUV siêu sang', 3, 'SAN_SANG', '25H-71027', 68395, 3, 'SKHUNG962035', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Urus%20Absolut.png', 2500000, 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Urus%20Absolut.glb');
