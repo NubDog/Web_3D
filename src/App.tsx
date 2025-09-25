@@ -27,6 +27,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import AccountHome from "./pages/AccountHome";
 import AccountHome_KYC from "./pages/AccountHome_KYC";
 import BaoTriList from "./components/Admin/Bao_tri/Baotri";
+import StoreBike from "./pages/StoreBike";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/store" element={<Store />} />
+            <Route path="/store/store-bike" element={<StoreBike />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/account_home" element={<AccountHome />} />
             <Route

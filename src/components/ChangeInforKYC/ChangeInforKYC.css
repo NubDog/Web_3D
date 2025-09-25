@@ -1,0 +1,345 @@
+/* ChangeInforKYC styles */
+
+.change-infor-kyc-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.change-infor-kyc-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease-out;
+}
+
+.change-infor-kyc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.change-infor-kyc-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-gray);
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-gray-light);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: #f0f0f0;
+    color: var(--text-gray);
+}
+
+.change-infor-kyc-error {
+    margin: 16px 32px;
+    padding: 12px 16px;
+    background-color: #fee;
+    border: 1px solid #fcc;
+    border-radius: 8px;
+    color: #c33;
+    font-size: 14px;
+}
+
+.change-infor-kyc-form {
+    padding: 24px 32px 32px;
+}
+
+/* Image Upload Styles */
+.image-upload-section {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.image-upload-section h3 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-gray);
+}
+
+.upload-note {
+    margin: 0 0 20px 0;
+    font-size: 13px;
+    color: var(--text-gray-light);
+    line-height: 1.4;
+}
+
+.image-upload-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 640px) {
+    .image-upload-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.image-upload-item {
+    width: 100%;
+}
+
+.image-upload-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-gray);
+}
+
+.image-upload-area {
+    position: relative;
+    border: 2px dashed #d1d5db;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.image-upload-area:hover {
+    border-color: #9ca3af;
+}
+
+.image-file-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.image-upload-placeholder {
+    min-height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.upload-prompt {
+    text-align: center;
+    color: var(--text-gray-light);
+}
+
+.upload-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.upload-prompt p {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-gray);
+}
+
+.upload-prompt span {
+    font-size: 12px;
+    color: var(--text-gray-light);
+}
+
+.image-preview {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 160px;
+}
+
+.preview-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    z-index: 3;
+    transition: all 0.2s ease;
+}
+
+.remove-image-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
+}
+
+.image-file-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: white;
+    padding: 12px 8px 8px;
+    font-size: 12px;
+    text-align: center;
+    border-radius: 0 0 8px 8px;
+    word-break: break-all;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+@media (min-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.form-field {
+    width: 100%;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.cancel-button {
+    background: none;
+    border: 1px solid #d1d5db;
+    color: var(--text-gray);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.cancel-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+    .change-infor-kyc-container {
+        width: 95%;
+        margin: 20px auto;
+    }
+    
+    .change-infor-kyc-header {
+        padding: 20px 24px 12px;
+    }
+    
+    .change-infor-kyc-form {
+        padding: 20px 24px 24px;
+    }
+    
+    .image-upload-section {
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+    }
+    
+    .image-upload-section h3 {
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+    
+    .image-upload-placeholder {
+        min-height: 140px;
+        padding: 16px;
+    }
+    
+    .preview-image {
+        height: 140px;
+    }
+    
+    .upload-icon {
+        font-size: 28px;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+        gap: 12px;
+    }
+    
+    .cancel-button {
+        padding: 14px 24px;
+    }
+}

@@ -17,6 +17,13 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({id}) => {
     const navigate = useNavigate();
+    const StoreBike = () => {navigate('/store/store-bike')};
+
+    const StoreLink = [
+        {
+            StoreBike
+        }
+    ]
     const [danhMucPhuongTien, setDanhMucPhuongTien] = useState<danhMucPhuongTien[]>([]);
     const [loading, setLoading] = useState(false);
     const { currentUser, logout  } = useAuth();
@@ -53,7 +60,7 @@ const Header: React.FC<HeaderProps> = ({id}) => {
                 <li className="header-menu_items"><a href="/store">Cửa hàng</a></li>
                 
                 {danhMucPhuongTien.slice(0, 10).map((item, index) => (
-                    <li key={index} className="header-menu_items"><a href="#">{item.ten_danh_muc}</a></li>
+                    <li key={index} className="header-menu_items"><a href={StoreLink.map((link) => link.StoreBike)}>{item.ten_danh_muc}</a></li>
                 ))}
 
                 <li className="header-menu_items"><a href="#">Hỗ trợ</a></li>

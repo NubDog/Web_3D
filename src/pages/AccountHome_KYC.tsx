@@ -4,6 +4,7 @@ import Header from '../components/Header/header';
 import Footer from '../components/Footer/Footer';
 import Button from '../components/Button/Button';
 import { useAuth } from '../contexts/AuthContext';
+import ChangeInforKYC from '../components/ChangeInforKYC/ChangeInforKYC';
 import './../styles/pages/AccountHome_KYC/AccountHome_KYC.css';
 
 interface KYCDocument {
@@ -30,6 +31,7 @@ const AccountHome_KYC = () => {
     const [isSaving, setSaving] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [showUpdateForm, setShowUpdateForm] = useState(false);
 
     // Form state for editing
     const [formData, setFormData] = useState({
@@ -362,6 +364,12 @@ const AccountHome_KYC = () => {
                             <Link to="/account_home">
                                 <Button conttent="Quay lại" />
                             </Link>
+                            {kycDocuments.length > 0 && (
+                                <Button 
+                                    conttent="Cập nhật thông tin KYC" 
+                                    onClick={() => setShowUpdateForm(!showUpdateForm)}
+                                />
+                            )}
                         </div>
                     </div>
 
@@ -517,7 +525,34 @@ const AccountHome_KYC = () => {
                         </div>
                     ) : (
                         <div className="account-home-kyc-documents">
-                            {kycDocuments.map((document) => (
+                            {/* Form cập nhật thông tin KYC */}
+                            {showUpdateForm && (
+                                <ChangeInforKYC 
+                                    kycDocuments={kycDocuments}
+                                    onClose={() => setShowUpdateForm(false)}
+                                    onSuccess={() => {
+                                        // Refresh KYC data after successful update
+                                        const fetchKycDocuments = async () => {
+                                            if (!currentUser?.nguoi_dung_id) return;
+                                            try {
+                                                const response = await fetch(`${API_URL}/kyc/user/${currentUser.nguoi_dung_id}`);
+                                                const result = await response.json();
+                                                if (result.success) {
+                                                    setKycDocuments(result.data || []);
+                                                    setSuccessMessage('Cập nhật thông tin KYC thành công!');
+                                                }
+                                            } catch (err) {
+                                                setError('Lỗi kết nối đến server');
+                                            }
+                                        };
+                                        fetchKycDocuments();
+                                        setShowUpdateForm(false);
+                                    }}
+                                />
+                            )}
+                            
+                            {/* Hiển thị tối đa 2 ảnh KYC */}
+                            {kycDocuments.slice(0, 2).map((document) => (
                                 <div key={document.tai_lieu_id} className="account-home-kyc-document">
                                     <div className="account-home-kyc-document-header">
                                         <h3 className="account-home-kyc-document-title">
