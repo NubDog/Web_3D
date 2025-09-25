@@ -3,13 +3,37 @@ interface Env {
 	DB: D1Database;
 }
 // hiện tất cả phương tiện
+function withCors(response: Response) {
+	return new Response(response.body, {
+		status: response.status,
+		headers: {
+			...Object.fromEntries(response.headers),
+			'Access-Control-Allow-Origin': '*', // hoặc http://localhost:5173
+			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+		},
+	});
+}
+
 export async function getPhuongTiens(request: Request, env: Env): Promise<Response> {
+	if (request.method === 'OPTIONS') {
+		return new Response(null, {
+			status: 204,
+			headers: {
+				'Access-Control-Allow-Origin': '*',
+				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+				'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+			},
+		});
+	}
+
+	// phần code logic của bạn ở đây
 	const url = new URL(request.url);
 	const path = url.pathname;
 
 	if (request.method === 'GET') {
 		try {
-			const { searchParams } = new URL(request.url);
+			const { searchParams } = url;
 			const trang_thai = searchParams.get('trang_thai');
 			const limit = searchParams.get('limit');
 			const fields = searchParams.get('fields');
@@ -37,14 +61,15 @@ export async function getPhuongTiens(request: Request, env: Env): Promise<Respon
 			const stmt = env.DB.prepare(query).bind(...queryParams);
 			const result = await stmt.all();
 
-			return Response.json({ success: true, data: result.results });
+			return withCors(Response.json({ success: true, data: result.results }));
 		} catch (err: any) {
-			return Response.json({ success: false, error: 'Query thất bại ❌: ' + err.message }, { status: 500 });
+			return withCors(Response.json({ success: false, error: 'Query thất bại ❌: ' + err.message }, { status: 500 }));
 		}
 	}
 
-	return Response.json({ success: false, error: 'Method not allowed' }, { status: 405 });
+	return withCors(Response.json({ success: false, error: 'Method not allowed' }, { status: 405 }));
 }
+
 // Hiện chi tiết phương tiện theo ID
 export async function getPhuongTienById(request: Request, env: Env, id: string): Promise<Response> {
 	if (request.method !== 'GET') {
@@ -90,9 +115,9 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 			so_km: number;
 			chinh_sach_id: number;
 			so_khung: string;
-			gia_thue : number;
+			gia_thue: number;
 		};
-		const { ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung,gia_thue } = body;
+		const { ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue } = body;
 		if (!ten_phuong_tien || !loai || !danh_muc_id || !trang_thai || !bien_so || !so_km || !chinh_sach_id || !so_khung || !gia_thue) {
 			return Response.json({ success: false, error: 'Thiếu thông tin phương tiện' }, { status: 400 });
 		}
@@ -100,7 +125,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 			`INSERT INTO PhuongTien (ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung,gia_thue)
 				VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)`
 		)
-			.bind(ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung,gia_thue)
+			.bind(ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue)
 			.run();
 		return Response.json({ success: true, message: 'Thêm phương tiện thành công', phuong_tien_id: result.meta.last_row_id });
 	} catch (err: any) {
@@ -123,7 +148,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 			so_km?: number;
 			chinh_sach_id?: number;
 			so_khung?: string;
-			gia_thue?:number;
+			gia_thue?: number;
 		};
 
 		// 1. Tìm bản ghi hiện có. Sử dụng .first() để an toàn hơn.

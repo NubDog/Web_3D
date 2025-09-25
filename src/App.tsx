@@ -9,10 +9,7 @@ import UserAdmin from "./components/Admin/admin-users/admin-users";
 import PhuongTienList from "./components/Admin/Phuong_tien/Danhsach";
 import CustomerDetail from "./components/Admin/admin-users/custom/CustomerDetail";
 import PhuongTienModal from "./components/Admin/Phuong_tien/addPhuongtien";
-
 import AdminLayout from "./components/Admin/adminLayout";
-
-// Import trang HomePage
 import HomePage from "./pages/HomePage";
 import EditComponents from "./components/EditComponents/EditComponents";
 import DanhMucPhuongTienList from "./components/Admin/Danh_muc_phuong_tien/Danhsachdanhmuc";
@@ -26,9 +23,10 @@ import SignInPage from "./pages/SigIn_SigUp";
 import SignUp from "./components/SignIn_SignUp/SignUp";
 import ViolationList from "./components/Admin/admin-vipham/ViolationList";
 import CheckOut from "./pages/CheckOut";
-import ProductDetailPage from './pages/ProductDetailPage';
-import AccountHome from './pages/AccountHome';
-import AccountHome_KYC from './pages/AccountHome_KYC';
+import ProductDetailPage from "./pages/ProductDetailPage";
+import AccountHome from "./pages/AccountHome";
+import AccountHome_KYC from "./pages/AccountHome_KYC";
+import BaoTriList from "./components/Admin/Bao_tri/Baotri";
 
 function App() {
   return (
@@ -40,7 +38,10 @@ function App() {
             <Route path="/store" element={<Store />} />
             <Route path="/signin" element={<SignInPage />} />
             <Route path="/account_home" element={<AccountHome />} />
-            <Route path="/account_home/account_home_kyc" element={<AccountHome_KYC />} />
+            <Route
+              path="/account_home/account_home_kyc"
+              element={<AccountHome_KYC />}
+            />
             <Route path="/checkout" element={<CheckOut />} />
             <Route path="/product_detail" element={<ProductDetailPage />} />
             {/* <Route path="/signup" element={<SignUp />} /> */}
@@ -70,6 +71,7 @@ function App() {
               <Route path="orders/:status" element={<OrderList />} />
               <Route path="order/:orderId" element={<OrderDetail />} />
               <Route path="violations" element={<ViolationList />} />
+              <Route path="bao_tri" element={<BaoTriList />} />
             </Route>
             //{" "}
             {/* <Route path="/babylon" element={<BabylonTankViewer />} />

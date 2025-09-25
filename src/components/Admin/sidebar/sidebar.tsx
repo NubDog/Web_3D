@@ -87,79 +87,82 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
               </li>
             </ul>
           )}
-
-        
-
         </li>
       </ul>
 
       <li className="dropdown-item">
-          <div
-            className="nav-link dropdown-toggle"
-            onClick={() => handleDropdownToggle("orders")}
-          >
-            <div className="nav-link-main">
-              <FaClipboardList className="nav-icon" />
-              {isOpen && <span>Đơn Thuê</span>}
-            </div>
-            {isOpen && (
-              <FaChevronDown
-                className={`dropdown-arrow ${
-                  openDropdown === "orders" ? "open" : ""
-                }`}
-              />
-            )}
+        <div
+          className="nav-link dropdown-toggle"
+          onClick={() => handleDropdownToggle("orders")}
+        >
+          <div className="nav-link-main">
+            <FaClipboardList className="nav-icon" />
+            {isOpen && <span>Đơn Thuê</span>}
           </div>
           {isOpen && (
-            <ul
-              className={`dropdown-menu ${
+            <FaChevronDown
+              className={`dropdown-arrow ${
                 openDropdown === "orders" ? "open" : ""
               }`}
-            >
-              <li>
-                <NavLink to="/admin/orders/all" className="nav-link">
-                  - Tất cả đơn
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/admin/orders/pending" className="nav-link">
-                  - Đơn chờ duyệt
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/admin/orders/approved" className="nav-link">
-                  - Đã duyệt
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/admin/orders/active" className="nav-link">
-                  - Đang thuê
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/admin/orders/returned" className="nav-link">
-                  - Đã trả
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/admin/orders/completed" className="nav-link">
-                  - Đã hoàn tất
-                </NavLink>
-              </li>
-              <li>
+            />
+          )}
+        </div>
+        {isOpen && (
+          <ul
+            className={`dropdown-menu ${
+              openDropdown === "orders" ? "open" : ""
+            }`}
+          >
+            <li>
+              <NavLink to="/admin/orders/all" className="nav-link">
+                - Tất cả đơn
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/orders/pending" className="nav-link">
+                - Đơn chờ duyệt
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/orders/approved" className="nav-link">
+                - Đã duyệt
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/orders/active" className="nav-link">
+                - Đang thuê
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/orders/returned" className="nav-link">
+                - Đã trả
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/admin/orders/completed" className="nav-link">
+                - Đã hoàn tất
+              </NavLink>
+            </li>
+            <li>
               <NavLink to="/admin/orders/cancelled" className="nav-link">
                 - Đã hủy
               </NavLink>
             </li>
           </ul>
-          )}
-        </li>
-        <li>
-          <NavLink to="/admin/violations" className="nav-link">
-            <FaExclamationTriangle className="nav-icon" />
-            {isOpen && <span>Vi phạm</span>}
-          </NavLink>
-        </li>
+        )}
+      </li>
+      <li>
+        <NavLink to="/admin/violations" className="nav-link">
+          <FaExclamationTriangle className="nav-icon" />
+          {isOpen && <span>Vi phạm</span>}
+        </NavLink>
+      </li>
+      <li>
+        <NavLink to="/admin/bao_tri" className="nav-link">
+          <FaTachometerAlt className="nav-icon" />
+          {isOpen && <span>Bảo Trì</span>}
+        </NavLink>
+      </li>
     </div>
   );
 };

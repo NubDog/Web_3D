@@ -1,5 +1,4 @@
 import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser, handleToggleUserStatus } from './Admin/admin-users';
-// import { Env } from './type';
 import * as PhuongTien from './Admin/Phuong-tien';
 import { handleGetCustomers, handleGetCustomerById, handleUpdateCustomer, handleGetCustomerByUserId } from './Admin/admin-customers';
 import {
@@ -14,11 +13,9 @@ import { handleImageUpload } from './Admin/upload-users-avatar';
 import { handleGetKycDocuments, handleAddKycDocument, handleUpdateCccdSet } from './Admin/admin-KYC';
 import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
-import { handleGetNguoiDung, handleCreateNguoiDung,handleLogin} from './API/NguoiDung_API';
+import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/NguoiDung_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 import { handleGetKycDocumentsByNguoiDungId } from './API/KYC_User';
-
-
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
 import {
 	handleCreateRentalOrder,
@@ -34,7 +31,7 @@ import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
 import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation } from './Admin/vi-pham';
-
+import { addBaoTri, deleteBaotri, getBaotriChiTiet, getBaotriTongHop, getDonThueByPhuongTien, updateBaotri } from './Admin/Bao-tri';
 
 interface Env {
 	ua: R2Bucket;
@@ -45,7 +42,7 @@ interface Env {
 	product: R2Bucket;
 	ICC: R2Bucket;
 	RESEND_API_KEY: string;
-	VIO: R2Bucket
+	VIO: R2Bucket;
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -69,6 +66,7 @@ export default {
 		const method = request.method;
 
 		try {
+			// ------------------- Upload & File -------------------
 			if (path === '/upload' && method === 'POST') {
 				return handleUploadFile(request, env);
 			}
@@ -86,17 +84,17 @@ export default {
 				return handleGetFile(request, env, key);
 			}
 
-			// API for PhuongTien
+			// ------------------- API PhuongTien -------------------
 			if (path === '/api/phuong-tien' && method === 'GET') {
 				return handleGetPhuongTien(request, env);
 			}
 
-			// API for ChinhSachGia
+			// ------------------- API ChinhSachGia -------------------
 			if (path === '/api/chinh-sach-gia' && method === 'GET') {
 				return handleGetChinhSachGia(request, env);
 			}
 
-			// API for NguoiDung
+			// ------------------- API NguoiDung -------------------
 			if (path === '/api/nguoi-dung') {
 				if (method === 'GET') {
 					return handleGetNguoiDung(request, env);
@@ -106,6 +104,7 @@ export default {
 				}
 			}
 
+			// ------------------- Test kết nối -------------------
 			if (path === '/test-r2' && request.method === 'GET') {
 				try {
 					const listResponse = await env.r2.list();
@@ -115,74 +114,52 @@ export default {
 						objects: listResponse.objects,
 					});
 				} catch (err: any) {
-					return Response.json(
-						{
-							success: false,
-							error: 'Kết nối R2 thất bại: ' + err.message,
-						},
-						{ status: 500 }
-					);
-				}
-			}
-			// Kiểm tra đã kết nối DB chưa
-			if (path === '/test-db' && request.method === 'GET') {
-				try {
-					const { results } = await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table';").all();
-					return Response.json({
-						success: true,
-						message: 'Kết nối DB thành công',
-						tables: results,
-					});
-				} catch (err: any) {
-					return Response.json(
-						{
-							success: false,
-							error: 'Kết nối DB thất bại: ' + err.message,
-						},
-						{ status: 500 }
-					);
+					return Response.json({ success: false, error: 'Kết nối R2 thất bại: ' + err.message }, { status: 500 });
 				}
 			}
 
-			//kyc
+			if (path === '/test-db' && request.method === 'GET') {
+				try {
+					const { results } = await env.DB.prepare("SELECT name FROM sqlite_master WHERE type='table';").all();
+					return Response.json({ success: true, message: 'Kết nối DB thành công', tables: results });
+				} catch (err: any) {
+					return Response.json({ success: false, error: 'Kết nối DB thất bại: ' + err.message }, { status: 500 });
+				}
+			}
+
+			// ------------------- KYC -------------------
 			const kycListMatch = path.match(/^\/api\/customers\/(\d+)\/kyc$/);
 			if (kycListMatch && method === 'GET') {
 				const customerId = kycListMatch[1];
 				return handleGetKycDocuments(env, customerId);
 			}
-
 			const kycUserMatch = path.match(/^\/api\/kyc\/user\/(\d+)$/);
 			if (kycUserMatch && method === 'GET') {
 				const nguoiDungId = kycUserMatch[1];
 				return handleGetKycDocumentsByNguoiDungId(request, env, nguoiDungId);
 			}
-
 			const kycCccdSetMatch = path.match(/^\/api\/kyc\/cccd\/(\d+)$/);
 			if (kycCccdSetMatch && method === 'PUT') {
 				const customerId = kycCccdSetMatch[1];
 				return handleUpdateCccdSet(request, env, customerId);
 			}
-
 			if (path === '/api/kyc' && method === 'POST') {
 				return handleAddKycDocument(request, env);
 			}
 
-			// Route cho người dùng
+			// ------------------- User -------------------
 			if (path === '/api/users/upload-avatar' && method === 'POST') {
 				return handleImageUpload(request, env);
 			}
-
 			if (path === '/nguoi-dung') {
 				if (request.method === 'GET') return handleGetUsers(env);
 				if (request.method === 'POST') return handleCreateUser(request, env);
 			}
-
 			const statusMatch = path.match(/^\/nguoi-dung\/(\d+)\/status$/);
 			if (statusMatch && request.method === 'PUT') {
 				const id = statusMatch[1];
 				return handleToggleUserStatus(env, id);
 			}
-
 			const userMatch = path.match(/^\/nguoi-dung\/(\d+)$/);
 			if (userMatch) {
 				const id = userMatch[1];
@@ -190,23 +167,18 @@ export default {
 				if (request.method === 'DELETE') return handleDeleteUser(env, id);
 			}
 
-			// Route cho phương tiện
+			// ------------------- Phương tiện -------------------
 			if (path === '/Admin/phuong-tien' && request.method === 'POST') {
 				return PhuongTien.addphuongtien(request, env);
 			}
 			if (path.startsWith('/Admin/phuong-tien/') && request.method === 'PUT') {
 				const id = path.split('/')[3];
-				if (id) {
-					return PhuongTien.updatePhuongTien(request, env, id);
-				}
+				if (id) return PhuongTien.updatePhuongTien(request, env, id);
 			}
 			if (path.startsWith('/Admin/phuong-tien/') && request.method === 'DELETE') {
 				const id = path.split('/')[3];
-				if (id) {
-					return PhuongTien.deletePhuongTien(request, env, id);
-				}
+				if (id) return PhuongTien.deletePhuongTien(request, env, id);
 			}
-
 			const phuongTienIdMatch = path.match(/^\/Admin\/phuong-tien\/(\d+)$/);
 			if (phuongTienIdMatch) {
 				const id = phuongTienIdMatch[1];
@@ -214,35 +186,27 @@ export default {
 			}
 			if (path.startsWith('/Admin/phuong-tien')) {
 				return PhuongTien.getPhuongTiens(request, env);
-			} else if (path.startsWith('/api/customers')) {
-				// Route: GET /api/customers/by-user/:userId
+			}
+
+			// ------------------- Customers -------------------
+			if (path.startsWith('/api/customers')) {
 				const byUserMatch = path.match(/^\/api\/customers\/by-user\/([^\/]+)/);
 				if (byUserMatch && method === 'GET') {
 					const userId = byUserMatch[1];
 					return handleGetCustomerByUserId(env, userId);
 				}
-
-				// Route: GET /api/customers/:id hoặc PUT /api/customers/:id
 				const detailMatch = path.match(/^\/api\/customers\/([^\/]+)/);
 				if (detailMatch) {
 					const customerId = detailMatch[1];
-					if (method === 'GET') {
-						return handleGetCustomerById(env, customerId);
-					}
-					// if (path === 'PUT') {
-					//     return handleUpdateCustomer(request, env, customerId);
-					// }
-					if (method === 'PUT') {
-						return handleUpdateCustomer(request, env, customerId);
-					}
+					if (method === 'GET') return handleGetCustomerById(env, customerId);
+					if (method === 'PUT') return handleUpdateCustomer(request, env, customerId);
 				}
-
-				// Route: GET /api/customers (lấy tất cả)
 				if (path === '/api/customers' && method === 'GET') {
 					return handleGetCustomers(env);
 				}
 			}
-			//// Danh mục phương tiện
+
+			// ------------------- Danh mục phương tiện -------------------
 			const danhMucIdMatch = path.match(/^\/Admin\/danh-muc-phuong-tien\/(\d+)$/);
 			if (danhMucIdMatch) {
 				const id = danhMucIdMatch[1];
@@ -253,7 +217,8 @@ export default {
 				if (method === 'GET') return getDanhmucphuongtiens(request, env);
 				if (method === 'POST') return Adddanhmucphuongtien(request, env);
 			}
-			// Chính sách giá
+
+			// ------------------- Chính sách giá -------------------
 			const chinhSachIdMatch = path.match(/^\/Admin\/chinh-sach-gia\/(\d+)$/);
 			if (chinhSachIdMatch) {
 				const id = chinhSachIdMatch[1];
@@ -264,115 +229,88 @@ export default {
 				if (method === 'POST') return addChinhSachGia(request, env);
 			}
 
+			// ------------------- Product image -------------------
 			const productImageMatch = path.match(/^\/product-image\/(.+)/);
 			if (productImageMatch && method === 'GET') {
 				const key = decodeURIComponent(productImageMatch[1]);
 				return handleGetProductImage(request, env, key);
 			}
 
+			// ------------------- Đơn thuê -------------------
 			if (path === '/api/don-thue' && method === 'POST') {
 				return handleCreateRentalOrder(request, env);
 			}
-
 			if (path === '/api/don-thue/pending' && method === 'GET') {
 				return handleGetPendingOrders(request, env);
 			}
-
-			// Duyệt đơn
 			const approveMatch = path.match(/^\/api\/don-thue\/(\d+)\/approve$/);
 			if (approveMatch && method === 'POST') {
 				return handleApproveOrder(request, env, approveMatch[1]);
 			}
-
-			// Từ chối đơn
 			const rejectMatch = path.match(/^\/api\/don-thue\/(\d+)\/reject$/);
 			if (rejectMatch && method === 'POST') {
 				return handleRejectOrder(request, env, rejectMatch[1]);
 			}
-
-			// Route đề bàn giao xe
 			const handoverMatch = path.match(/^\/api\/don-thue\/(\d+)\/handover$/);
 			if (handoverMatch && method === 'POST') {
 				return handleVehicleHandover(request, env, handoverMatch[1]);
 			}
-
-			//Route để tiếp nhận trả xe
 			const returnMatch = path.match(/^\/api\/don-thue\/(\d+)\/return$/);
 			if (returnMatch && method === 'POST') {
 				return handleVehicleReturn(request, env, returnMatch[1]);
 			}
-
-			// Route để quyết toán đơn thuê
 			const finalizeMatch = path.match(/^\/api\/don-thue\/(\d+)\/finalize$/);
 			if (finalizeMatch && method === 'POST') {
 				return handleFinalizeOrder(request, env, finalizeMatch[1]);
 			}
-
-			// Route để lấy chi tiết đơn thuê
 			if (path === '/api/orders' && method === 'GET') {
 				return handleGetOrders(request, env);
 			}
-			// Hủy đơn
 			const cancelMatch = path.match(/^\/api\/don-thue\/(\d+)\/cancel$/);
 			if (cancelMatch && method === 'POST') {
 				return handleCancelOrder(request, env, cancelMatch[1]);
 			}
-
 			const orderDetailMatch = path.match(/^\/api\/don-thue\/(\d+)$/);
 			if (orderDetailMatch && method === 'GET') {
 				const orderId = orderDetailMatch[1];
 				return handleGetOrderDetails(request, env, orderId);
 			}
-
 			const confirmDepositMatch = path.match(/^\/api\/don-thue\/(\d+)\/confirm-deposit$/);
 			if (confirmDepositMatch && method === 'POST') {
 				const orderId = confirmDepositMatch[1];
 				return handleConfirmDeposit(request, env, orderId);
 			}
-			
-			//vi pham
-			if (path === '/api/violations' && method === 'POST') {
-				return handleCreateViolation(request, env); 
-			}
 
+			// ------------------- Vi phạm -------------------
+			if (path === '/api/violations' && method === 'POST') {
+				return handleCreateViolation(request, env);
+			}
 			if (path === '/api/violations' && method === 'GET') {
 				return handleGetViolations(request, env);
 			}
-
-			// const violationUpdateMatch = path.match(/^\/api\/violations\/(\d+)$/);
-			// if (violationUpdateMatch && method === 'PUT') {
-			// 	const violationId = violationUpdateMatch[1];
-			// 	return handleUpdateViolation(request, env, violationId);
-			// }
-
 			const violationMatch = path.match(/^\/api\/violations\/(\d+)$/);
-
 			if (violationMatch && method === 'PUT') {
 				const violationId = violationMatch[1];
 				return handleUpdateViolation(request, env, violationId);
 			}
-
 			if (violationMatch && method === 'DELETE') {
 				const violationId = violationMatch[1];
 				return handleDeleteViolation(request, env, violationId);
 			}
 
+			// ------------------- User Profile -------------------
 			if (path === '/api/user-profile' && method === 'GET') {
 				return handleGetUserProfile(request, env);
 			}
-
-			// API for Update User Profile
 			const userProfileMatch = path.match(/^\/api\/user-profile\/(\d+)$/);
 			if (userProfileMatch && method === 'PUT') {
 				return handleUpdateUserProfile(request, env);
 			}
-
-			// API for Change Password
 			if (path === '/api/user-profile/change-password' && method === 'PUT') {
 				return handleChangePassword(request, env);
 			}
 
-			// Đăng nhập
+			// ------------------- Login -------------------
 			if (path === '/login' && method === 'POST') {
 				return getLogin(request, env);
 			}
@@ -380,9 +318,32 @@ export default {
 				return handleLogin(request, env);
 			}
 
+			// ------------------- Bảo trì -------------------
+			if (path === '/api/baotri/tonghop' && method === 'GET') {
+				return getBaotriTongHop(request, env);
+			}
+			if (path.startsWith('/api/baotri/chitiet/') && method === 'GET') {
+				const phuongTienId = parseInt(path.split('/').pop() || '0', 10);
+				return getBaotriChiTiet(request, env, phuongTienId);
+			}
+			if (path === '/api/baotri' && method === 'POST') {
+				return addBaoTri(request, env);
+			}
+			if (path.startsWith('/api/baotri/') && method === 'PUT') {
+				const id = parseInt(path.split('/').pop() || '0', 10);
+				return updateBaotri(request, env, id);
+			}
+			if (path.startsWith('/api/baotri/') && method === 'DELETE') {
+				const id = parseInt(path.split('/').pop() || '0', 10);
+				return deleteBaotri(request, env, id);
+			}
+			if (path.startsWith('/Admin/don-thue') && method === 'GET') {
+				const url = new URL(request.url);
+				const phuongTienId = url.searchParams.get('phuong_tien_id');
+				return getDonThueByPhuongTien(request, env, phuongTienId ? parseInt(phuongTienId, 10) : 0);
+			}
 
-
-			// Route mặc định nếu không khớp
+			// ------------------- Default -------------------
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
 		} catch (e: any) {
 			console.error('API Error:', e);
