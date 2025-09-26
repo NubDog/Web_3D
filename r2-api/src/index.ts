@@ -16,6 +16,8 @@ import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/NguoiDung_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 import { handleGetKycDocumentsByNguoiDungId } from './API/KYC_User';
+import { handleGetUserOrders } from './API/UserOrder_API';
+import { handleGetUserContract } from './API/UserContract';
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
 import {
 	handleCreateRentalOrder,
@@ -308,6 +310,16 @@ export default {
 			}
 			if (path === '/api/user-profile/change-password' && method === 'PUT') {
 				return handleChangePassword(request, env);
+			}
+
+			// ------------------- User Orders -------------------
+			if (path === '/api/user-orders' && method === 'GET') {
+				return handleGetUserOrders(request, env);
+			}
+
+			// ------------------- User Hợp Đồng -------------------
+			if (path === '/api/user-hop-dong' && method === 'GET') {
+				return 	handleGetUserContract(request, env);
 			}
 
 			// ------------------- Login -------------------

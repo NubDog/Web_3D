@@ -24,7 +24,7 @@ export const AuthProvider2 = ({ children }: { children: ReactNode }) => {
         ...(isEmail ? { email: identifier } : { username: identifier })
     };
 
-    const response = await fetch('http://127.0.0.1:8787/api/login', {
+    const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

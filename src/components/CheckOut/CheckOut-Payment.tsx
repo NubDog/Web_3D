@@ -27,26 +27,41 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
     const handlePayment = async () => {
         setIsProcessing(true);
         try {
-            // Chuẩn bị dữ liệu theo format API
+            // Bước 1: Lấy khach_hang_id từ nguoi_dung_id
+            let khachHangId = null;
+            try {
+                const customerResponse = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/customers/by-user/${currentUser.nguoi_dung_id}`);
+                const customerResult = await customerResponse.json();
+                
+                if (customerResult.success && customerResult.data) {
+                    khachHangId = customerResult.data.khach_hang_id;
+                } else {
+                    throw new Error('Không tìm thấy thông tin khách hàng');
+                }
+            } catch (error) {
+                alert('Lỗi lấy thông tin khách hàng: ' + error);
+                setIsProcessing(false);
+                return;
+            }
+
+            // Bước 2: Chuẩn bị dữ liệu với khach_hang_id thật
             const apiData = {
-                khach_hang_id: 1, // TODO: Cần thêm user_id vào AuthContext hoặc lấy từ API khác
-                phuong_tien_id: checkoutData.product?.product_id || checkoutData.product?.id || 1, // Fallback tạm thời
-                ngay_bat_dau: checkoutData.ngayMuon, // Từ CheckOut-Shiping
-                ngay_ket_thuc: checkoutData.ngayTra, // Từ CheckOut-Shiping  
+                khach_hang_id: khachHangId,
+                phuong_tien_id: checkoutData.product?.product_id || checkoutData.product?.id,
+                ngay_bat_dau: checkoutData.ngayMuon,
+                ngay_ket_thuc: checkoutData.ngayTra,  
                 dia_diem_nhan: `${checkoutData.diaChiChiTiet || ''}, ${checkoutData.quanHuyen || ''}`.trim(),
                 dia_diem_tra: `${checkoutData.diaChiChiTiet || ''}, ${checkoutData.quanHuyen || ''}`.trim()
             };
 
             console.log('=== DỮ LIỆU GỬI CHO API ===');
-            console.log('checkoutData nhận được:', checkoutData);
-            console.log('product object:', checkoutData.product);
-            console.log('ngayMuon:', checkoutData.ngayMuon);
-            console.log('ngayTra:', checkoutData.ngayTra);
-            console.log('apiData chuẩn bị gửi:', apiData);
             console.log('currentUser:', currentUser);
+            console.log('khachHangId thật:', khachHangId);
+            console.log('checkoutData:', checkoutData);
+            console.log('apiData chuẩn bị gửi:', apiData);
             console.log('========================');
 
-            const response = await fetch('http://localhost:8787/api/don-thue', {
+            const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/don-thue', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

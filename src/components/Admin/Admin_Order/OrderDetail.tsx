@@ -7,6 +7,8 @@ import OrderTimeline from '../Component-Admin/Component-OrderTimeline';
 import ReturnVehicleModal from '../Component-Admin/ReturnVehicleModal';
 
 import { useAuth } from '../../contexts-login-tam-thoi/AuthContext';
+
+const API_BASE_URL = 'https://r2-api.sharkeatrice.workers.dev';
 import HandoverModal from '../Component-Admin/HandoverModal';
 import FinalizeModal from '../Component-Admin/Component-FinalizeModal';
 import CancelOrderModal from '../Component-Admin/CancelOrderModal';
@@ -53,8 +55,7 @@ interface RecordData {
 const OrderDetail: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
     const navigate = useNavigate();
-    
-     const { user } = useAuth();
+    const { user } = useAuth();
 
     const [order, setOrder] = useState<OrderDetail | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -72,7 +73,7 @@ const OrderDetail: React.FC = () => {
         if (!orderId) return;
         setIsLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}`);
+            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}`);
             const result = await response.json();
             if (result.success) {
                 setOrder(result.data);
@@ -93,10 +94,10 @@ const OrderDetail: React.FC = () => {
     const handleApprove = async () => {
         setIsSubmitting(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/approve`, {
+            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/approve`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nhan_vien_id: 1}) 
+                body: JSON.stringify({ nhan_vien_id: user?.id }) 
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
@@ -116,10 +117,10 @@ const OrderDetail: React.FC = () => {
 
         setIsSubmitting(true);
         try {
-             const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/reject`, {
+             const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/reject`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nhan_vien_id: 1, ly_do: reason })
+                body: JSON.stringify({ nhan_vien_id: user?.id, ly_do: reason })
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
@@ -138,7 +139,7 @@ const OrderDetail: React.FC = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/cancel`, {
+            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/cancel`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ nhan_vien_id: user?.id || 1, ly_do_huy: reason })
@@ -172,7 +173,7 @@ const OrderDetail: React.FC = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/handover`, {
+            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/handover`, {
                 method: 'POST',
                 body: formData,
             });
@@ -206,7 +207,7 @@ const OrderDetail: React.FC = () => {
         
         setIsSubmitting(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/return`, {
+            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/return`, {
                 method: 'POST',
                 body: formData,
             });
@@ -227,7 +228,7 @@ const OrderDetail: React.FC = () => {
     setIsSubmitting(true);
     try {
   
-        const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/confirm-deposit`, {
+        const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/confirm-deposit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ nhan_vien_id: user?.id || 1 })
@@ -259,7 +260,7 @@ const OrderDetail: React.FC = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/don-thue/${orderId}/finalize`, {
+            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/finalize`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),

@@ -1,0 +1,451 @@
+/* UserContract Page Styles - Apple-inspired design */
+.UserContract-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+}
+
+.UserContract-content {
+    flex: 1;
+    padding: 0;
+    margin: 0;
+}
+
+.UserContract-wrapper {
+    max-width: 980px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 60px 20px 100px;
+}
+
+/* Header Section */
+.UserContract-header {
+    text-align: center;
+    margin-bottom: 60px;
+    padding: 0 20px;
+}
+
+.UserContract-header h1 {
+    font-size: 48px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin: 0 0 16px 0;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.UserContract-header-info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.UserContract-count {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-gray-light);
+    background: rgba(0, 0, 0, 0.05);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+}
+
+/* Loading State */
+.UserContract-loading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    text-align: center;
+    gap: 20px;
+}
+
+.UserContract-loading-spinner {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+
+.spinner {
+    width: 100%;
+    height: 100%;
+    border: 3px solid rgba(0, 122, 255, 0.1);
+    border-top: 3px solid #007aff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.UserContract-loading h2 {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--text-gray);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.UserContract-loading p {
+    font-size: 16px;
+    color: var(--text-gray-light);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Error State */
+.UserContract-error {
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+    color: #ff3b30;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Not Logged In State */
+.UserContract-not-logged-in {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.UserContract-login-prompt h2 {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin: 0 0 16px 0;
+    letter-spacing: -0.01em;
+}
+
+.UserContract-login-prompt p {
+    font-size: 17px;
+    color: var(--text-gray-light);
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+}
+
+/* Empty State */
+.UserContract-empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    text-align: center;
+}
+
+.UserContract-empty-content h3 {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin: 0 0 16px 0;
+    letter-spacing: -0.01em;
+}
+
+.UserContract-empty-content p {
+    font-size: 17px;
+    color: var(--text-gray-light);
+    margin: 0 0 32px 0;
+    line-height: 1.5;
+    max-width: 400px;
+}
+
+/* Contract Grid */
+.UserContract-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+
+/* Contract Card */
+.UserContract-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.UserContract-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+}
+
+.UserContract-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Card Header */
+.UserContract-card-header {
+    margin-bottom: 20px;
+}
+
+.UserContract-card-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+
+.UserContract-card-title h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin: 0;
+    letter-spacing: -0.01em;
+    flex: 1;
+}
+
+/* Status Badge */
+.UserContract-status {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-icon {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.UserContract-status-active {
+    background: rgba(52, 199, 89, 0.15);
+    color: #34c759;
+    border: 1px solid rgba(52, 199, 89, 0.2);
+}
+
+.UserContract-status-expired {
+    background: rgba(255, 149, 0, 0.15);
+    color: #ff9500;
+    border: 1px solid rgba(255, 149, 0, 0.2);
+}
+
+.UserContract-status-pending {
+    background: rgba(0, 122, 255, 0.15);
+    color: #007aff;
+    border: 1px solid rgba(0, 122, 255, 0.2);
+}
+
+.UserContract-status-cancelled {
+    background: rgba(255, 59, 48, 0.15);
+    color: #ff3b30;
+    border: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+.UserContract-status-default {
+    background: rgba(142, 142, 147, 0.15);
+    color: #8e8e93;
+    border: 1px solid rgba(142, 142, 147, 0.2);
+}
+
+/* Card Content */
+.UserContract-card-content {
+    margin-bottom: 24px;
+}
+
+.UserContract-info-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.UserContract-info-group:last-child {
+    margin-bottom: 0;
+}
+
+.UserContract-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.UserContract-info-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.UserContract-info-item label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-gray-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+.UserContract-info-item span {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-gray);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.UserContract-terms {
+    font-size: 14px;
+    color: var(--text-gray-light);
+    line-height: 1.5;
+    margin: 0;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    border-left: 3px solid rgba(0, 122, 255, 0.3);
+}
+
+/* Card Actions */
+.UserContract-card-actions {
+    display: flex;
+    justify-content: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.UserContract-download-btn {
+    background: linear-gradient(135deg, #007aff, #0051d5);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+.download-icon {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+.UserContract-no-file {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: rgba(142, 142, 147, 0.1);
+    border-radius: 12px;
+    color: var(--text-gray-light);
+    font-size: 15px;
+    font-weight: 500;
+    border: 1px solid rgba(142, 142, 147, 0.2);
+}
+
+.no-file-icon {
+    font-size: 16px;
+    opacity: 0.7;
+}
+
+.UserContract-download-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+    background: linear-gradient(135deg, #0051d5, #003d99);
+}
+
+.UserContract-download-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .UserContract-wrapper {
+        padding: 40px 16px 80px;
+    }
+    
+    .UserContract-header h1 {
+        font-size: 36px;
+    }
+    
+    .UserContract-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .UserContract-card {
+        padding: 20px;
+    }
+    
+    .UserContract-info-group {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .UserContract-card-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .UserContract-header h1 {
+        font-size: 28px;
+    }
+    
+    .UserContract-card {
+        padding: 16px;
+    }
+    
+    .UserContract-card-title h3 {
+        font-size: 18px;
+    }
+}
+
+/* Animation for card entrance */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.UserContract-card {
+    animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.UserContract-card:nth-child(1) { animation-delay: 0.1s; }
+.UserContract-card:nth-child(2) { animation-delay: 0.2s; }
+.UserContract-card:nth-child(3) { animation-delay: 0.3s; }
+.UserContract-card:nth-child(4) { animation-delay: 0.4s; }
+.UserContract-card:nth-child(5) { animation-delay: 0.5s; }
+.UserContract-card:nth-child(6) { animation-delay: 0.6s; }

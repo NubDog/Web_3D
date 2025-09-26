@@ -17,7 +17,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({id}) => {
     const navigate = useNavigate();
-    const StoreBike = () => {navigate('/store/store-bike')};
+    const StoreBike = '/store/store-bike';
 
     const StoreLink = [
         {
@@ -60,10 +60,10 @@ const Header: React.FC<HeaderProps> = ({id}) => {
                 <li className="header-menu_items"><a href="/store">Cửa hàng</a></li>
                 
                 {danhMucPhuongTien.slice(0, 10).map((item, index) => (
-                    <li key={index} className="header-menu_items"><a href={StoreLink.map((link) => link.StoreBike)}>{item.ten_danh_muc}</a></li>
+                    <li key={index} className="header-menu_items"><a href={StoreBike}>{item.ten_danh_muc}</a></li>
                 ))}
 
-                <li className="header-menu_items"><a href="#">Hỗ trợ</a></li>
+                <li className="header-menu_items"><a href={StoreBike}>Hỗ trợ</a></li>
                 <li className="header-menu_items"><a href="#"><i className="fa-solid fa-magnifying-glass"></i></a></li>
             </ul>
 
