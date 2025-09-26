@@ -27,7 +27,6 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
     const handlePayment = async () => {
         setIsProcessing(true);
         try {
-            // Bước 1: Lấy khach_hang_id từ nguoi_dung_id
             let khachHangId = null;
             try {
                 const customerResponse = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/customers/by-user/${currentUser.nguoi_dung_id}`);
@@ -44,7 +43,6 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 return;
             }
 
-            // Bước 2: Chuẩn bị dữ liệu với khach_hang_id thật
             const apiData = {
                 khach_hang_id: khachHangId,
                 phuong_tien_id: checkoutData.product?.product_id || checkoutData.product?.id,
@@ -73,7 +71,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
 
             if (result.success) {
                 console.log('Tạo đơn thuê thành công:', result);
-                onNext(); // Chuyển đến bước final
+                onNext();
             } else {
                 alert('Lỗi tạo đơn thuê: ' + result.error);
             }
