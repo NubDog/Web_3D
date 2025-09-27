@@ -6,7 +6,7 @@ import { FaUserCircle, FaCar, FaFileInvoiceDollar, FaCalendarAlt } from 'react-i
 import OrderTimeline from '../Component-Admin/Component-OrderTimeline';
 import ReturnVehicleModal from '../Component-Admin/ReturnVehicleModal';
 
-import { useAuth } from '../../contexts-login-tam-thoi/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const API_BASE_URL = 'https://r2-api.sharkeatrice.workers.dev';
 import HandoverModal from '../Component-Admin/HandoverModal';
@@ -55,7 +55,7 @@ interface RecordData {
 const OrderDetail: React.FC = () => {
     const { orderId } = useParams<{ orderId: string }>();
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { currentUser } = useAuth();
 
     const [order, setOrder] = useState<OrderDetail | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -97,7 +97,7 @@ const OrderDetail: React.FC = () => {
             const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/approve`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nhan_vien_id: user?.id }) 
+                body: JSON.stringify({ nhan_vien_id: currentUser?.nguoi_dung_id }) 
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
@@ -120,7 +120,7 @@ const OrderDetail: React.FC = () => {
              const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/reject`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nhan_vien_id: user?.id, ly_do: reason })
+                body: JSON.stringify({ nhan_vien_id: currentUser?.nguoi_dung_id, ly_do: reason })
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
@@ -142,7 +142,7 @@ const OrderDetail: React.FC = () => {
             const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/cancel`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nhan_vien_id: user?.id || 1, ly_do_huy: reason })
+                body: JSON.stringify({ nhan_vien_id: currentUser?.nguoi_dung_id || 1, ly_do_huy: reason })
             });
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
@@ -163,7 +163,7 @@ const OrderDetail: React.FC = () => {
         formData.append("so_km", data.so_km);
         formData.append("muc_xang", data.muc_xang);
         formData.append("ghi_chu_hu_hong", data.ghi_chu_hu_hong);
-        formData.append("nhan_vien_id", String(user?.id || 1));
+        formData.append("nhan_vien_id", String(currentUser?.nguoi_dung_id || 1));
         
         if (data.anh_minh_chung) {
             for (let i = 0; i < data.anh_minh_chung.length; i++) {
@@ -197,7 +197,7 @@ const OrderDetail: React.FC = () => {
         formData.append("so_km_tra", data.so_km_tra);
         formData.append("muc_xang_tra", data.muc_xang_tra);
         formData.append("ghi_chu_hu_hong_moi", data.ghi_chu_hu_hong_moi);
-        formData.append("nhan_vien_id", String(user?.id || 1));
+        formData.append("nhan_vien_id", String(currentUser?.nguoi_dung_id || 1));
 
         if (data.anh_minh_chung) {
             for (let i = 0; i < data.anh_minh_chung.length; i++) {
@@ -231,7 +231,7 @@ const OrderDetail: React.FC = () => {
         const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/confirm-deposit`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nhan_vien_id: user?.id || 1 })
+            body: JSON.stringify({ nhan_vien_id: currentUser?.nguoi_dung_id || 1 })
         });
         const result = await response.json();
         if (!result.success) throw new Error(result.error);
@@ -254,7 +254,7 @@ const OrderDetail: React.FC = () => {
         // }
         
         const body = {
-            nhan_vien_id: user?.id || 1,
+            nhan_vien_id: currentUser?.nguoi_dung_id || 1,
             ...data
         };
 

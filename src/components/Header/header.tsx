@@ -58,11 +58,14 @@ const Header: React.FC<HeaderProps> = ({id}) => {
             <Logo />
             <ul className="header-menu">
                 <li className="header-menu_items"><a href="/store">Cửa hàng</a></li>
+            <li className="header-menu_items"><a href="/store/store-bike">Xe máy</a></li>
+                <li className="header-menu_items"><a href="/store">Siêu xe</a></li>
+                <li className="header-menu_items"><a href="/store">SUV</a></li>
+                <li className="header-menu_items"><a href="/store">Trực Thăng</a></li>
+                <li className="header-menu_items"><a href="/store">Xe đạp</a></li>
+                <li className="header-menu_items"><a href="/store">Flycam</a></li>
+                <li className="header-menu_items"><a href="/store">Tank</a></li>
                 
-                {danhMucPhuongTien.slice(0, 10).map((item, index) => (
-                    <li key={index} className="header-menu_items"><a href={StoreBike}>{item.ten_danh_muc}</a></li>
-                ))}
-
                 <li className="header-menu_items"><a href={StoreBike}>Hỗ trợ</a></li>
                 <li className="header-menu_items"><a href="#"><i className="fa-solid fa-magnifying-glass"></i></a></li>
             </ul>
@@ -86,6 +89,14 @@ const Header: React.FC<HeaderProps> = ({id}) => {
                                     <button onClick={() => navigate('/account_home')}>
                                     <i className="fa-solid fa-user"></i>
                                     Thông tin tài khoản
+                                    </button>
+                                    <button onClick={() => navigate('/user/order')}>
+                                    <i className="fa-solid fa-file-lines"></i>
+                                    Đơn thuê của tôi
+                                    </button>
+                                    <button onClick={() => navigate('/user/contract')}>
+                                    <i className="fa-solid fa-file-contract"></i>
+                                    Hợp đồng của tôi
                                     </button>
                                 </div>
                                 )}

@@ -11,7 +11,8 @@ import {
     CubeTexture,
     PBRMaterial,
     ImageProcessingConfiguration,
-    GlowLayer
+    GlowLayer,
+    SSAORenderingPipeline
 } from '@babylonjs/core';
 
 import '@babylonjs/loaders/glTF';
@@ -81,7 +82,7 @@ const BabylonScene: React.FC<BabylonProps> = ({ modelUrl, onModelLoaded }) => {
       canvas.addEventListener('touchmove', preventTouchZoom, { passive: false });
 
       // SSAO bị tạm thời vô hiệu hóa vì gây lỗi postProcess
-      // let ssao: SSAORenderingPipeline | null = null;
+      let ssao: SSAORenderingPipeline | null = null;
 
       // Thêm hiệu ứng Glow để làm đèn và các chi tiết phát sáng
       const glowLayer = new GlowLayer("glow", scene);

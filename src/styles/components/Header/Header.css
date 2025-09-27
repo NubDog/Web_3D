@@ -1,7 +1,6 @@
 .header{
     display: flex;
     z-index: 1000;
-    position: fixed;
     top: 0;
     left: 0;
     align-items: center;
@@ -11,7 +10,6 @@
     padding: 10px 0;
     color: var(--text-gray);
     width: 100vw;
-    
     background-color: var(--background-black);
 
     font-size: 14px;
