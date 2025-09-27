@@ -51,7 +51,7 @@ export async function getLogin(request: Request, env: Env): Promise<Response> {
 				success: true,
 				message: 'Đăng nhập thành công ✅',
 				data: {
-					id: user.nguoi_dung_id,
+					nguoi_dung_id: user.nguoi_dung_id,
 					username: user.ho_ten,
 					chucVu: user.vai_tro,
 				},

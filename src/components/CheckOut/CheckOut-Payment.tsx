@@ -25,6 +25,12 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
     console.log(checkoutData);
 
     const handlePayment = async () => {
+        if (!currentUser || !currentUser.nguoi_dung_id) {
+            alert("Không thể xác thực người dùng. Vui lòng đăng nhập lại.");
+            setIsProcessing(false);
+            return;
+        }
+
         setIsProcessing(true);
         try {
             let khachHangId = null;

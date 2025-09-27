@@ -39,10 +39,21 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
         }
 
 
+        const customerStmt = env.DB.prepare(
+            `SELECT nguoi_dung_id FROM KhachHang WHERE khach_hang_id = ?`
+        );
+        const customerInfo = await customerStmt.bind(khach_hang_id).first<{ nguoi_dung_id: number }>();
+
+        if (!customerInfo) {
+            return jsonResponse({ success: false, error: "Không tìm thấy thông tin khách hàng." }, 404);
+        }
+        const nguoi_dung_id = customerInfo.nguoi_dung_id;
+
+
         const CheckBlock = env.DB.prepare(
             `SELECT trang_thai from NguoiDung where nguoi_dung_id = ?`
         )
-        const getStatus = await CheckBlock.bind(khach_hang_id).first<{trang_thai:string}>()
+        const getStatus = await CheckBlock.bind(nguoi_dung_id).first<{trang_thai:string}>()
 
         if(getStatus?.trang_thai === 'inactive'){
             return jsonResponse({ success: false, error: "Người dùng đã bị khóa." }, 410); 

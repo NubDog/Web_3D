@@ -65,6 +65,7 @@ const AccountHome = () => {
             } finally {
                 setIsLoading(false);
             }
+
         };
 
         fetchUserProfile();
@@ -178,6 +179,8 @@ const AccountHome = () => {
             </div>
         );
     }
+
+    console.log({userProfile});
 
     return (
         <div className="AccountHome-container">

@@ -104,6 +104,7 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
             console.log("Đăng ký thành công:", result.data);
 
             const userToLogin = {
+                nguoi_dung_id: result.data.nguoi_dung_id,
                 ho_ten: result.data.ho_ten,
                 email: result.data.email,
                 vai_tro: result.data.vai_tro,
