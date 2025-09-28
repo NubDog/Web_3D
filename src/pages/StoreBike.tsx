@@ -81,52 +81,6 @@ const StoreBike = () => {
         fetchData();
     }, []);
 
-    // Handle video scroll effect
-    useEffect(() => {
-        const handleScroll = () => {
-            if (heroRef.current) {
-                const scrollY = window.scrollY;
-                const heroHeight = heroRef.current.offsetHeight;
-                const halfHeroHeight = heroHeight * 2; // Bắt đầu thu nhỏ từ 1/2 hero height
-                
-                if (scrollY >= halfHeroHeight) {
-                    // Tính progress từ 1/2 hero height đến cuối hero
-                    const remainingHeight = heroHeight - halfHeroHeight;
-                    const progress = Math.min((scrollY - halfHeroHeight) / remainingHeight, 1);
-                    
-                    // Scale từ 100vw về 1912px
-                    const viewportWidth = window.innerWidth;
-                    const targetWidth = 1912;
-                    
-                    let targetScale;
-                    if (viewportWidth > targetWidth) {
-                        // Màn hình lớn hơn 1912px: thu nhỏ về 1912px
-                        targetScale = targetWidth / viewportWidth;
-                    } else {
-                        // Màn hình nhỏ hơn hoặc bằng 1912px: thu nhỏ nhẹ để tạo hiệu ứng
-                        targetScale = 0.85; // Thu nhỏ 15%
-                    }
-                    
-                    // Interpolate từ scale 1 về targetScale
-                    const scale = 1 - (progress * (1 - targetScale));
-                    setVideoScale(Math.max(scale, targetScale));
-                } else {
-                    setVideoScale(1);
-                }
-            }
-        };
-
-        // Initial call để set đúng scale khi load page
-        handleScroll();
-        
-        window.addEventListener('scroll', handleScroll);
-        window.addEventListener('resize', handleScroll); // Update khi resize window
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('resize', handleScroll);
-        };
-    }, []);
-
     const handleViewDetail = (product: PhuongTien) => {
         navigate('/product_detail', {
             state: {

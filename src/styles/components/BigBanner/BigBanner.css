@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    background-color: var(--background-dark-car);
+    background-color: var(--background-white);
     width: 100vw;
     height: 790px;
     overflow: hidden !important;

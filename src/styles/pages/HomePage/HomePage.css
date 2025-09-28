@@ -27,7 +27,7 @@
     width: 100vw;
     cursor: pointer;
 
-    background-color: var(--background-dark-car);
+    background-color: var(--background-white);
 }
 
 .icon-down, .icon-up {

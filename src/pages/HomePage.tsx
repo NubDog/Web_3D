@@ -43,12 +43,12 @@ const HomePage = () => {
             />
 
             <button className="suv-button-view" onClick={() => {
-                document.getElementById('suv-banner')?.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('suv-button-up')?.scrollIntoView({ behavior: 'smooth' });
             }}>
                 <i className="icon-down fa-solid fa-angle-down"></i>
             </button>
 
-            <button className="suv-button-view" onClick={() => {
+            <button id="suv-button-up" className="suv-button-view" onClick={() => {
                 document.getElementById('header-home')?.scrollIntoView({ behavior: 'smooth' });
             }}>
                 <i className="icon-up fa-solid fa-angle-up"></i>
