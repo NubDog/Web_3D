@@ -1,7 +1,8 @@
-import React, { useState, useEffect, type FormEvent,type ChangeEvent } from 'react';
+import React, { useState, useEffect, useMemo, type FormEvent, type ChangeEvent } from 'react';
 import styles from '../css/admin.module.css';
 import { Link } from 'react-router-dom';
 import locations from '../../../data/data.json';
+import Pagination from '../Pagination';
 
 // Định nghĩa kiểu dữ liệu cho một User
 interface User {
@@ -64,11 +65,49 @@ const UserAdmin: React.FC = () => {
 
     const [districts, setDistricts] = useState<District[]>([]);
 
+    //lọc
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterRole, setFilterRole] = useState(''); 
+    const [filterStatus, setFilterStatus] = useState(''); 
+    const [filterDate, setFilterDate] = useState('');
+    const [isFilterVisible, setIsFilterVisible] = useState(false);
 
-    // Fetch users khi component được render
+    //Phân trang
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+
+
+
+    const filteredUsers = useMemo(() => {
+        return users.filter(user => {
+            // Lọc theo Search Term (Tên, Email, SĐT)
+            const searchTermLower = searchTerm.toLowerCase();
+            const matchesSearch = searchTermLower === '' ||
+                user.ho_ten.toLowerCase().includes(searchTermLower) ||
+                user.email.toLowerCase().includes(searchTermLower) ||
+                user.so_dien_thoai?.includes(searchTerm);
+
+            // Lọc theo Vai trò
+            const matchesRole = filterRole === '' || user.vai_tro === filterRole;
+
+            // Lọc theo Trạng thái
+            const matchesStatus = filterStatus === '' || user.trang_thai === filterStatus;
+
+            // Lọc theo Ngày tạo
+            const matchesDate = filterDate === '' || user.ngay_tao.startsWith(filterDate);
+
+            return matchesSearch && matchesRole && matchesStatus && matchesDate;
+        });
+    }, [users, searchTerm, filterRole, filterStatus, filterDate]);
+
+
     useEffect(() => {
-        fetchUsers();
+    fetchUsers();
     }, []);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filteredUsers]);
 
     // Hàm hiển thị toast
     const showToast = (message: string, isError = false) => {
@@ -77,6 +116,8 @@ const UserAdmin: React.FC = () => {
             setToast({ message: '', isError: false, show: false });
         }, 3000);
     };
+
+     
     
     // Hàm định dạng ngày tháng
      const formatDate = (dateString: string) => {
@@ -132,8 +173,15 @@ const UserAdmin: React.FC = () => {
         setUserToLock(user);
         setIsLockModalOpen(true);
     };
-    
 
+     
+    
+     const paginatedUsers = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredUsers.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredUsers, currentPage, itemsPerPage]);
+
+    const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
     const confirmLockUnlock = async () => {
     if (!userToLock) return;
     
@@ -275,10 +323,66 @@ const UserAdmin: React.FC = () => {
             <div className={styles.card}>
                 <div className={styles.cardHeader}>
                     <h2 className={styles.cardTitle}>Danh sách người dùng</h2>
+                    <button 
+                        onClick={() => setIsFilterVisible(!isFilterVisible)} 
+                        className={`${styles.button} ${styles.filterToggleButton}`}
+                    >
+                        Bộ lọc
+                    </button>
                     <button onClick={() => handleOpenModal()} className={`${styles.button} ${styles.buttonPrimary}`}>
                         Thêm người dùng mới
                     </button>
                 </div>
+                <div className={styles.buttonGroup}>
+                </div>
+
+                {isFilterVisible && (
+                    <div className={styles.filterBar}>
+                        <input
+                            type="text"
+                            placeholder="Tìm theo tên, email, SĐT..."
+                            className={styles.filterInput}
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <select
+                            className={styles.filterSelect}
+                            value={filterRole}
+                            onChange={(e) => setFilterRole(e.target.value)}
+                        >
+                            <option value="">Tất cả vai trò</option>
+                            <option value="KhachHang">Khách hàng</option>
+                            <option value="NhanVien">Nhân viên</option>
+                            <option value="admin">Quản trị viên</option>
+                        </select>
+                        <select
+                            className={styles.filterSelect}
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                        >
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <input
+                            type="date"
+                            className={styles.filterInput}
+                            value={filterDate}
+                            onChange={(e) => setFilterDate(e.target.value)}
+                        />
+                        <button 
+                            onClick={() => {
+                                setSearchTerm('');
+                                setFilterRole('');
+                                setFilterStatus('');
+                                setFilterDate('');
+                            }}
+                            className={`${styles.button} ${styles.buttonSecondary}`}
+                        >
+                            Reset
+                        </button>
+                    </div>
+                )}
                 <div className={styles.tableContainer}>
                     <table className={styles.table}>
                         <thead>
@@ -297,13 +401,13 @@ const UserAdmin: React.FC = () => {
                         </thead>
                         <tbody>
                             {isLoading ? (
-                                <tr><td colSpan={9} className={styles.tableMessage}>Đang tải dữ liệu...</td></tr>
+                                <tr><td colSpan={10} className={styles.tableMessage}>Đang tải dữ liệu...</td></tr>
                             ) : error ? (
-                                <tr><td colSpan={9} className={`${styles.tableMessage} ${styles.errorText}`}>{error}</td></tr>
-                            ) : users.length > 0 ? (
-                                users.map((user, index) => (
+                                <tr><td colSpan={10} className={`${styles.tableMessage} ${styles.errorText}`}>{error}</td></tr>
+                            ) : paginatedUsers.length > 0 ? (
+                                paginatedUsers.map((user, index) => (
                                     <tr key={user.nguoi_dung_id}>
-                                        <td>{index + 1}</td>
+                                        <td>{(currentPage - 1) * itemsPerPage + index + 1}</td>
                                         <td>{user.ten_dang_nhap}</td>
                                         <td>{user.ho_ten}</td>
                                         <td>{user.email}</td>
@@ -528,7 +632,13 @@ const UserAdmin: React.FC = () => {
                     <p>{toast.message}</p>
                 </div>
             )}
+            <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage}
+                />
         </div>
+        
     );
 };
 

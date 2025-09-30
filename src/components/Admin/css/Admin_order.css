@@ -94,6 +94,7 @@
     justify-content: flex-end;
     align-items: center;
     margin-top: 1.5rem;
+    color: #0056b3 !important;
 }
 
 .pagination button {
