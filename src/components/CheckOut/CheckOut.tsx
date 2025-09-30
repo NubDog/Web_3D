@@ -47,7 +47,10 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                         <p>Phương thức giao xe của bạn:</p>
                         <div className="checkOut-product-shipment-option">
                             <div className='checkOut-product-shipment-option-time'>
-                                <p>Giao xe hôm nay</p>
+                                <div className="checkOut-product-shipment-option-time-item">
+                                    <p>Giao xe trực tiếp</p>
+                                    <p>Bạn đến chi nhánh để lấy xe</p>
+                                </div>
 
                                 <div className='checkOut-product-shipment-message'>
                                     <p>Một số điều cần ghi nhớ:</p>

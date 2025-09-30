@@ -85,158 +85,6 @@
     border-radius: 28px;
 }
 
-/* Products Section */
-.store-bike-products {
-    position: relative;
-    z-index: 3;
-    background: white;
-    min-height: 100vh;
-    padding: 80px 0;
-}
-
-.store-bike-product-item {
-    width: 100%;
-    margin-bottom: 120px;
-    border-radius: 24px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.store-bike-product-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-}
-
-.store-bike-product-item:last-child {
-    margin-bottom: 0;
-}
-
-/* Product Image Container */
-.store-bike-product-image-container {
-    position: relative;
-    width: 100%;
-    height: 1076px;
-    overflow: hidden;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.store-bike-product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.store-bike-product-image-container:hover .store-bike-product-image {
-    transform: scale(1.05);
-}
-
-/* Hover Overlay */
-.store-bike-product-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    backdrop-filter: blur(8px);
-}
-
-.store-bike-product-image-container:hover .store-bike-product-overlay {
-    opacity: 1;
-}
-
-.store-bike-product-overlay .main-button {
-    background: rgba(255, 255, 255, 0.9);
-    color: var(--text-gray);
-    border: none;
-    backdrop-filter: blur(20px);
-    transform: translateY(20px);
-    transition: all 0.3s ease;
-}
-
-.store-bike-product-image-container:hover .store-bike-product-overlay .main-button {
-    transform: translateY(0);
-}
-
-.store-bike-product-overlay .main-button:hover {
-    background: white;
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-/* Product Info */
-.store-bike-product-info {
-    padding: 40px 48px 48px;
-    text-align: center;
-}
-
-.store-bike-product-name {
-    font-size: 32px;
-    font-weight: 600;
-    color: var(--text-gray);
-    margin: 0 0 12px 0;
-    line-height: 1.2;
-}
-
-.store-bike-product-category {
-    font-size: 18px;
-    font-weight: 400;
-    color: var(--text-gray-light);
-    margin: 0 0 24px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Product Details */
-.store-bike-product-details {
-    margin: 24px 0;
-    padding: 20px;
-    background: rgba(245, 247, 250, 0.6);
-    border-radius: 16px;
-    text-align: left;
-}
-
-.store-bike-detail-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.store-bike-detail-item:last-child {
-    border-bottom: none;
-}
-
-.store-bike-detail-label {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text-gray);
-}
-
-.store-bike-detail-value {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-gray);
-}
-
-.store-bike-product-price {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--text-blue);
-    margin: 0;
-}
 
 /* Responsive Design */
 @media (max-width: 1200px) {
@@ -259,31 +107,6 @@
         min-height: 100%;
     }
     
-    .store-bike-product-image-container {
-        height: 800px;
-    }
-    
-    .store-bike-product-info {
-        padding: 32px 32px 40px;
-    }
-    
-    .store-bike-product-name {
-        font-size: 28px;
-    }
-    
-    .store-bike-product-details {
-        margin: 20px 0;
-        padding: 16px;
-    }
-    
-    .store-bike-detail-item {
-        padding: 10px 0;
-    }
-    
-    .store-bike-detail-label,
-    .store-bike-detail-value {
-        font-size: 15px;
-    }
 }
 
 @media (max-width: 768px) {
@@ -299,48 +122,6 @@
         font-size: 18px;
     }
     
-    .store-bike-product-item {
-        margin-bottom: 80px;
-        border-radius: 16px;
-    }
-    
-    .store-bike-product-image-container {
-        height: 600px;
-    }
-    
-    .store-bike-product-info {
-        padding: 24px 24px 32px;
-    }
-    
-    .store-bike-product-name {
-        font-size: 24px;
-    }
-    
-    .store-bike-product-category {
-        font-size: 16px;
-    }
-    
-    .store-bike-product-details {
-        margin: 16px 0;
-        padding: 14px;
-    }
-    
-    .store-bike-detail-item {
-        padding: 8px 0;
-    }
-    
-    .store-bike-detail-label,
-    .store-bike-detail-value {
-        font-size: 14px;
-    }
-    
-    .store-bike-product-price {
-        font-size: 20px;
-    }
-    
-    .store-bike-products {
-        padding: 60px 0;
-    }
 }
 
 @media (max-width: 480px) {
@@ -356,39 +137,6 @@
         font-size: 16px;
     }
     
-    .store-bike-product-image-container {
-        height: 450px;
-    }
-    
-    .store-bike-product-info {
-        padding: 20px 20px 24px;
-    }
-    
-    .store-bike-product-name {
-        font-size: 20px;
-    }
-    
-    .store-bike-product-category {
-        font-size: 14px;
-    }
-    
-    .store-bike-product-details {
-        margin: 12px 0;
-        padding: 12px;
-    }
-    
-    .store-bike-detail-item {
-        padding: 6px 0;
-    }
-    
-    .store-bike-detail-label,
-    .store-bike-detail-value {
-        font-size: 13px;
-    }
-    
-    .store-bike-product-price {
-        font-size: 18px;
-    }
 }
 
 /* Smooth Scroll Behavior */
@@ -397,13 +145,8 @@ html {
 }
 
 /* Performance Optimizations */
-.store-bike-video,
-.store-bike-product-image {
+.store-bike-video {
     will-change: transform;
-}
-
-.store-bike-product-overlay {
-    will-change: opacity;
 }
 
 .storeBike-about {
@@ -422,8 +165,6 @@ html {
     padding-left: calc((100% - 1680px) / 2);
 }
 
-.storeBike-about-gallery {
-}
 
 .storeBike_gallery_containerCard {
     display: flex;

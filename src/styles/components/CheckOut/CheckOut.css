@@ -3,7 +3,7 @@
     flex-direction: column;
     align-items: center;
     background-color: var(--background-white);
-    margin-top: 66px;
+    width: 100%;
 }
 
 .cheackOut-content {
@@ -121,8 +121,15 @@
     gap: 40px;
 }
 
-.checkOut-product-shipment-option-time > p {
+checkOut-product-shipment-option-time-item {
     display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.checkOut-product-shipment-option-time-item > p {
+    display: flex;
+    margin-bottom: 20px;
     align-items: center;
     justify-content: center;
     font-size: 18px;

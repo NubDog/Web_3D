@@ -33,6 +33,7 @@ const ProductDetailPage = () => {
     const location = useLocation();
     const { product } = location.state || {};
     
+    const [totalPrice, setTotalPrice] = useState<number | null>(null);
     const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(null);
     const [pricing, setPricing] = useState<ChinhSachGia | null>(null);
     const [loading, setLoading] = useState(true);
@@ -50,7 +51,6 @@ const ProductDetailPage = () => {
             }
 
             try {
-                // Fetch thông tin chi tiết phương tiện
                 const response = await fetch(`${API_URL}`);
                 const responseChinhSach = await fetch(`${API_URL_CHINH_SACH_GIA}`);
                 
@@ -62,19 +62,24 @@ const ProductDetailPage = () => {
                 const resultChinhSach = await responseChinhSach.json();
 
                 if (result.success && resultChinhSach.success) {
-                    // Tìm phương tiện theo ID
                     const vehicle = result.data.find((v: VehicleDetail) => v.phuong_tien_id === product.id);
                     
                     if (!vehicle) {
                         throw new Error('Không tìm thấy phương tiện');
                     }
 
-                    // Tìm thông tin giá
                     const priceInfo = resultChinhSach.data.find((cs: ChinhSachGia) => cs.chinh_sach_id === vehicle.chinh_sach_id);
 
                     setVehicleDetail(vehicle);
                     setPricing(priceInfo || null);
-                    console.log(vehicle);
+                    
+                    console.log("giá cơ bản của xe là: ", priceInfo?.gia_co_ban);
+                    console.log("Giá thuê cơ bản của xe là:", vehicle.gia_thue);
+                    console.log("Thông tin xe:", vehicle);
+
+                    const calculatedTotalPrice = (priceInfo?.gia_co_ban ?? 0) + (vehicle?.gia_thue ?? 0);
+                    setTotalPrice(calculatedTotalPrice);
+                    console.log("Tổng giá của san phẩm là: ", calculatedTotalPrice);
                 } else {
                     throw new Error('Không thể lấy dữ liệu từ API');
                 }
@@ -119,7 +124,6 @@ const ProductDetailPage = () => {
         <div className="ProductDetail-container">
             <Header />
             
-            {/* 3D Model Viewer */}
             <div className="ProductDetail-viewer-container">
                 <div className="ProductDetail-3d-viewer">
                     {vehicleDetail.model ? (
@@ -135,14 +139,17 @@ const ProductDetailPage = () => {
                 </div>
             </div>
 
-            {/* Vehicle Details */}
             <div className="ProductDetail-content">
                 <div className="ProductDetail-info">
                     <h1 className="ProductDetail-title">{vehicleDetail.ten_phuong_tien}</h1>
                     
                     <div className="ProductDetail-price">
                         <span className="ProductDetail-price-amount">
-                            {pricing?.gia_co_ban ? pricing.gia_co_ban.toLocaleString('vi-VN') : vehicleDetail.gia_thue?.toLocaleString('vi-VN') || 'Vui lòng liên hệ'}
+                            {
+                                pricing?.gia_co_ban != null && vehicleDetail?.gia_thue != null
+                                ? (pricing.gia_co_ban + vehicleDetail.gia_thue).toLocaleString('vi-VN')
+                                : 'Vui lòng liên hệ'
+                            }
                         </span>
                         <span className="ProductDetail-price-unit"> VNĐ/ngày</span>
                     </div>
@@ -190,7 +197,7 @@ const ProductDetailPage = () => {
                                     id: vehicleDetail.phuong_tien_id,
                                     product_name: vehicleDetail.ten_phuong_tien,
                                     product_category: vehicleDetail.loai,
-                                    product_price: pricing?.gia_co_ban || vehicleDetail.gia_thue,
+                                    product_totalPrice: totalPrice,
                                     img: vehicleDetail.img
                                 }
                             }}
