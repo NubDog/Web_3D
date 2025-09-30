@@ -80,8 +80,10 @@
 }
 
 .checkOut-product img {
-    width: 240px;
-    height: 135px;
+    object-fit: contain;
+    object-position: center;
+    width: 420px;
+    height: 236px;
 }
 
 .checkOut-product-infor {
@@ -93,7 +95,7 @@
 
 .checkOut-product-infor p {
     font-size: 18px;
-    font-weight: 400;
+    font-weight: 600;
 }
 
 .checkOut-product-infor p:last-child {
@@ -138,9 +140,13 @@ checkOut-product-shipment-option-time-item {
     height: 83px;
     padding: 16px;
     text-align: center;
-    border: 2px solid var(--text-blue);
+    /* border: 2px solid var(--text-blue); */
     border-radius: 16px;
     cursor: pointer;
+}
+
+.checkOut-product-shipment-option-time-item > p:focus {
+    border: 2px solid var(--text-blue);
 }
 
 .checkOut-product-shipment-message {

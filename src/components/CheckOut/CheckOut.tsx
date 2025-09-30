@@ -6,6 +6,7 @@ import Sub_Button from './../../components/Button/Sub-Button/Sub-Button';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import Checkbox from './../../components/CheckBox/Checkbox'
 
 interface CheckOutProps {
     onNext: (data: any) => void;
@@ -48,6 +49,7 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                         <div className="checkOut-product-shipment-option">
                             <div className='checkOut-product-shipment-option-time'>
                                 <div className="checkOut-product-shipment-option-time-item">
+                                    <Checkbox />
                                     <p>Giao xe trực tiếp</p>
                                     <p>Bạn đến chi nhánh để lấy xe</p>
                                 </div>

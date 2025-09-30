@@ -145,11 +145,7 @@ const ProductDetailPage = () => {
                     
                     <div className="ProductDetail-price">
                         <span className="ProductDetail-price-amount">
-                            {
-                                pricing?.gia_co_ban != null && vehicleDetail?.gia_thue != null
-                                ? (pricing.gia_co_ban + vehicleDetail.gia_thue).toLocaleString('vi-VN')
-                                : 'Vui lòng liên hệ'
-                            }
+                            {totalPrice}
                         </span>
                         <span className="ProductDetail-price-unit"> VNĐ/ngày</span>
                     </div>
