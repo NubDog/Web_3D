@@ -4,9 +4,20 @@ import './../styles/pages/StoreBike/StoreBike.css';
 import Header from '../components/Header/header';
 import Footer from '../components/Footer/Footer';
 import Button from '../components/Button/Button';
+import StoreBikeGalleryCard from '../components/StoreBike/StoreGalleryCard';
+import StoreBikeProduct from './../components/StoreBike/StoreBikeProduct';
+import useVisibilityPercentage from '../hooks/useVisibilityPercentage';
 import videoShowcase from '../assets/Video ShowCase/Ninja H2： Vol.10 Ninja H2R - BUILT BEYOND BELIEF.mp4';
 import placeholderBike from '../assets/Ninja H2R.png';
 
+import GalleryBike from './../assets/Gallery img/Gallery Bike.png'
+import GalleryBike_DJIOsmo from './../assets/Gallery img/DJI launches Osmo Action 4.png';
+import GalleryBike_FuelSaver from './../assets/Gallery img/GalleryBike_FuelSaver.jpg';
+import GalleryBike_Style from './../assets/Gallery img/GalleryBike_Style.jpg';
+import GalleryBike_Safety from './../assets/Gallery img/GalleryBike_Safety.png';
+import GalleryBike_Tech from './../assets/Gallery img/GalleryBike_Tech.jpg';
+import GalleryBike_off_road from './../assets/Gallery img/GalleryBike_off_road.jpg'
+import { SmoothStepBlock } from '@babylonjs/core';
 interface PhuongTien {
     phuong_tien_id: number;
     ten_phuong_tien: string;
@@ -17,7 +28,8 @@ interface PhuongTien {
     loai: string;
     bien_so: string;
     so_km: number;
-    img?: string;
+    img: string;
+    gia_thue: string;
 }
 
 interface ChinhSachGia {
@@ -26,14 +38,127 @@ interface ChinhSachGia {
     ten_chinh_sach: string;
 }
 
+interface ProductInfor {
+    phuong_tien_id: string;
+    ten_phuong_tien: string;
+    trang_thai: string;
+    chinh_sach_id: string;
+    loai: string;
+    img: string;
+    danh_muc_id: string;
+    bien_so: string;
+    so_km: string;
+}
+
+const informationCardGallery = [
+    {
+        card_title: "Nhỏ gọn và sự tiện lợi",
+        card_subtitle: "Đưa bạn đi đến mọi nẻo đường",
+        card_img: GalleryBike,
+        card_link: "#",
+    },
+
+    {
+        card_title: "DJI và mũ bảo hiểm",
+        card_subtitle: "Sự kết hợp tuyệt vời",
+        card_img: GalleryBike_DJIOsmo,
+        card_link: "#",
+    },
+
+    {
+        card_title: "Cân mọi địa hình",
+        card_subtitle: "Vượt đèo trèo núi",
+        card_img: GalleryBike_off_road,
+        card_link: "#",
+    },
+
+    {
+        card_title: "Tiết kiệm xăng tối đa",
+        card_subtitle: "Vận hành êm ái, nhẹ ví tiền",
+        card_img: GalleryBike_FuelSaver,
+        card_link: "#",
+    },
+
+    {
+        card_title: "Thiết kế thời thượng",
+        card_subtitle: "Phong cách hiện đại, cá tính mọi nơi",
+        card_img: GalleryBike_Style,
+        card_link: "#",
+    },
+
+    {
+        card_title: "An toàn tối đa",
+        card_subtitle: "Phanh ABS và công nghệ chống trượt",
+        card_img: GalleryBike_Safety,
+        card_link: "#",
+    },
+
+    {
+        card_title: "Công nghệ hiện đại",
+        card_subtitle: "Màn hình thông minh, kết nối điện thoại",
+        card_img: GalleryBike_Tech,
+        card_link: "#",
+    }
+]
+
 const StoreBike = () => {
     const navigate = useNavigate();
     const [phuongTien, setPhuongTien] = useState<PhuongTien[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [videoScale, setVideoScale] = useState(1);
-    const videoRef = useRef<HTMLVideoElement>(null);
     const heroRef = useRef<HTMLDivElement>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const videoContainerRef = useRef<HTMLDivElement>(null);
+    const cardBoxRef = useRef<HTMLDivElement>(null);
+
+    const scrollLeft = () => {
+        if (cardBoxRef.current) {
+            const element = cardBoxRef.current;
+            element.scrollBy({ left: -420, behavior: 'smooth'});
+        }
+    }
+
+    const scrollRight = () => {
+        if (cardBoxRef.current) {
+            const element = cardBoxRef.current;
+            element.scrollBy({ left: 420, behavior: 'smooth' });
+        }
+    }
+    // const [videoScale, setVideoScale] = useState(1);
+    // const [videoWidth, setVideoWidth] = useState(0);
+    // const [videoHeight, setVideoHeight] = useState(0);
+
+    // Kỹ thuật video tự co lại theo cuộn màn hình sẻ được làm sau
+    // const [videoContainerRef, visibilityPercentage, isVideoVisible] = useVisibilityPercentage({
+    //     threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+    //     rootMargin: '0px',
+    //     continuous: true
+    // });
+
+
+    // useEffect(() => {
+    //     if (visibilityPercentage == 67) {
+    //         setVideoWidth(1912);
+    //         setVideoHeight(1080);
+    //     }
+    //     if (visibilityPercentage > 70) {
+    //         setVideoWidth(1854);
+    //         setVideoHeight(1048);
+    //     }
+    //     if (visibilityPercentage > 80) {
+    //         setVideoWidth(1796);
+    //         setVideoHeight(1015);
+    //     }
+    //     if (visibilityPercentage > 90) {
+    //         setVideoWidth(1738);
+    //         setVideoHeight(981);
+    //     }
+    //     if (visibilityPercentage > 100) {
+    //         setVideoWidth(1680);
+    //         setVideoHeight(949);
+    //     }
+        
+    // }, [visibilityPercentage]);
 
     const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/phuong-tien';
     const API_URL_CHINH_SACH_GIA = 'https://r2-api.sharkeatrice.workers.dev/api/chinh-sach-gia';
@@ -42,7 +167,7 @@ const StoreBike = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const fieldsPhuongTien = 'phuong_tien_id,ten_phuong_tien,trang_thai,chinh_sach_id,loai,img,danh_muc_id,bien_so,so_km';
+                const fieldsPhuongTien = 'phuong_tien_id,ten_phuong_tien,trang_thai,chinh_sach_id,loai,img,gia_thue,danh_muc_id,bien_so,so_km';
                 const response = await fetch(`${API_URL}?fields=${fieldsPhuongTien}`);
                 
                 const fieldsChinhSach = 'chinh_sach_id,gia_co_ban,ten_chinh_sach';
@@ -89,11 +214,14 @@ const StoreBike = () => {
                     product_name: product.ten_phuong_tien,
                     product_category: product.loai,
                     product_price: product.gia_co_ban,
-                    img: product.img
+                    img: product.img,
+                    gia_thue: product.gia_thue
                 }
             }
         });
     };
+
+    console.log(phuongTien);
 
     if (loading) {
         return (
@@ -123,25 +251,19 @@ const StoreBike = () => {
         <div className="store-bike-page">
             <Header />
             
-            {/* Hero Section với Video */}
-            <div className="store-bike-hero" ref={heroRef}>
+            <div className="store-bike-hero col-1658" ref={heroRef}>
                 <div className="store-bike-container">
                     <div className="store-bike-title-section">
                         <h2 className="store-bike-title">
-                            Xe 2 bánh
-                            <span className="store-bike-subtitle">Bạn muốn đi đâu là nó đưa bạn tới đó</span>
+                            Xe máy
                         </h2>
+                        <p className="store-bike-subtitle">Bạn muốn đi đâu? <br/> Nó đưa bạn tới đó</p>
                     </div>
                 </div>
                 
                 <div className="store-bike-video-container">
                     <video 
-                        ref={videoRef}
                         className="store-bike-video"
-                        style={{
-                            transform: `scale(${videoScale})`,
-                            transformOrigin: 'center top'
-                        }}
                         autoPlay 
                         loop 
                         muted 
@@ -154,52 +276,83 @@ const StoreBike = () => {
                 </div>
             </div>
 
-            {/* Products Section */}
-            <div className="store-bike-products">
-                <div className="store-bike-container">
-                    {phuongTien.map((product) => (
-                        <div key={product.phuong_tien_id} className="store-bike-product-item">
-                            <div className="store-bike-product-image-container">
-                                <img 
-                                    src={product.img || placeholderBike} 
-                                    alt={product.ten_phuong_tien}
-                                    className="store-bike-product-image"
-                                    onError={(e) => {
-                                        e.currentTarget.src = placeholderBike;
-                                    }}
-                                />
-                                <div className="store-bike-product-overlay">
-                                    <Button 
-                                        conttent="Xem chi tiết xe"
-                                        onClick={() => handleViewDetail(product)}
-                                    />
-                                </div>
-                            </div>
-                            
-                            <div className="store-bike-product-info">
-                                <h3 className="store-bike-product-name">{product.ten_phuong_tien}</h3>
-                                <p className="store-bike-product-category">{product.loai}</p>
-                                
-                                <div className="store-bike-product-details">
-                                    <div className="store-bike-detail-item">
-                                        <span className="store-bike-detail-label">Biển số:</span>
-                                        <span className="store-bike-detail-value">{product.bien_so || 'Chưa có thông tin'}</span>
-                                    </div>
-                                    <div className="store-bike-detail-item">
-                                        <span className="store-bike-detail-label">Số km:</span>
-                                        <span className="store-bike-detail-value">{product.so_km ? product.so_km.toLocaleString('vi-VN') + ' km' : 'Chưa có thông tin'}</span>
-                                    </div>
-                                </div>
-                                
-                                <p className="store-bike-product-price">
-                                    {product.gia_co_ban ? product.gia_co_ban.toLocaleString('vi-VN') + ' VNĐ/ngày' : 'Liên hệ để biết giá'}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
+            <div className="storeBike-about">
+                <div className="storeBike-title">
+                    <h2> TÌM HIỂU XE MÁY.</h2>
+                </div>
+
+                <div id="storeBike_Gallery" className="storeBike-about-gallery">
+
+                    <div className="Card-scroll-buttons">
+                        <button
+                            className="active left"
+                            aria-label="Scroll Left"
+                            onClick={scrollLeft}
+                        >
+                            <i className="icon-scroll fa-solid fa-angle-left"></i>
+                        </button>
+
+                        <button 
+                            className="active" 
+                            aria-label="Scroll Right"
+                            onClick={scrollRight}
+                        >
+                            <i className="icon-scroll fa-solid fa-angle-right"></i>
+                        </button>
+                    </div>
+
+                    <div className="storeBike_gallery_containerCard" ref={cardBoxRef}>
+                        {informationCardGallery.map((item, index) => (
+                            <StoreBikeGalleryCard
+                                key = {index}
+                                card_title = {item.card_title}
+                                card_subtitle = {item.card_subtitle}
+                                card_img = {item.card_img}
+                                card_link = {item.card_link}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
 
+            <div className="StoreBike-product">
+                <div className="storeBike-title">
+                    <h2>Khám phá dòng sản phẩm.</h2>
+                </div>
+                
+                <div className="StoreBike-product-container">
+                    <div className="Card-scroll-buttons">
+                        <button
+                            className="active left"
+                            aria-label="Scroll Left"
+                            onClick={scrollLeft}
+                        >
+                            <i className="icon-scroll fa-solid fa-angle-left"></i>
+                        </button>
+
+                        <button 
+                            className="active" 
+                            aria-label="Scroll Right"
+                            onClick={scrollRight}
+                        >
+                            <i className="icon-scroll fa-solid fa-angle-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div className="StoreBike-product-box" ref={cardBoxRef}>
+                        {phuongTien.map((bike) => (
+                            <StoreBikeProduct
+                                key = {bike.phuong_tien_id}
+                                src_img = {bike.img}
+                                ten_phuong_tien = {bike.ten_phuong_tien}
+                                loai = {bike.loai}
+                                gia_thue = {bike.gia_thue}
+                                bien_so = {bike.bien_so}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
             <Footer />
         </div>
     );

@@ -9,7 +9,7 @@
     align-items: center;
     padding: 10px 0;
     color: var(--text-gray);
-    width: 100vw;
+    width: 100%;
     background-color: var(--background-black);
 
     font-size: 14px;

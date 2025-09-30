@@ -1,20 +1,20 @@
-/* StoreBike.css - Apple-style design */
-
 .store-bike-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     min-height: 100vh;
+    background-color: var(--white);
     color: var(--text-gray);
 }
 
-/* Container 1912px */
 .store-bike-container {
-    max-width: 1912px;
+    max-width: 1658px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 24px;
 }
 
-/* Loading & Error States */
 .store-bike-loading,
 .store-bike-error {
     min-height: 50vh;
@@ -31,16 +31,16 @@
     color: var(--text-gray);
 }
 
-/* Hero Section */
 .store-bike-hero {
-    position: relative;
     width: 100%;
     min-height: 100vh;
     overflow: hidden;
 }
 
 .store-bike-title-section {
-    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     z-index: 2;
     padding: 120px 0 60px;
     text-align: center;
@@ -57,35 +57,32 @@
 
 .store-bike-subtitle {
     display: block;
-    font-size: 28px;
-    font-weight: 400;
-    color: var(--text-gray-light);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-gray);
     margin-top: 8px;
     line-height: 1.3;
 }
 
-/* Video Container */
 .store-bike-video-container {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
+    height: 910px;
     z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     overflow: hidden;
+    margin-bottom: 144px;
 }
 
 .store-bike-video {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     transition: transform 0.2s ease-out;
     will-change: transform;
     transform-origin: center center;
+    border-radius: 28px;
 }
 
 /* Products Section */
@@ -409,38 +406,57 @@ html {
     will-change: opacity;
 }
 
-/* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
-    .store-bike-products {
-        background: #1a1a1a;
-    }
-    
-    .store-bike-product-item {
-        background: #2a2a2a;
-        box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
-    }
-    
-    .store-bike-product-item:hover {
-        box-shadow: 0 12px 40px rgba(255, 255, 255, 0.1);
-    }
+.storeBike-about {
+    display: flex;
+    position: relative;
+    overflow: visible;
+    flex-direction: column;
+    width: 100%;
+    min-width: 1658px;
+    gap: 85px;
 }
 
-/* Animation cho scroll */
-.store-bike-product-item {
-    opacity: 0;
-    transform: translateY(40px);
-    animation: fadeInUp 0.6s ease forwards;
+.storeBike-title {
+    font-size: 56px;
+    font-weight: 600;
+    padding-left: calc((100% - 1680px) / 2);
 }
 
-.store-bike-product-item:nth-child(1) { animation-delay: 0.1s; }
-.store-bike-product-item:nth-child(2) { animation-delay: 0.2s; }
-.store-bike-product-item:nth-child(3) { animation-delay: 0.3s; }
-.store-bike-product-item:nth-child(4) { animation-delay: 0.4s; }
-.store-bike-product-item:nth-child(5) { animation-delay: 0.5s; }
+.storeBike-about-gallery {
+}
 
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.storeBike_gallery_containerCard {
+    display: flex;
+    gap: 20px;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    width: 100%;
+    overflow-x: auto;
+    padding-left: calc((100% - 1680px) / 2);
+    padding-right: calc((100% - 1680px) /2);
+}
+
+.StoreBike-product {
+    width: 100%;
+    margin-top: 160px;
+    padding-top: 156px;
+}
+
+.StoreBike-product-container {
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+
+.StoreBike-product-box {
+    display: flex;
+    gap: 80px;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    overflow-x: scroll;
+    width: 100%;
+    padding-left: calc((100% - 1680px) / 2);
+    padding-right: calc((100% - 1680px) /2);
 }

@@ -1,0 +1,42 @@
+.GalleryCard-container {
+    position: relative;
+    height: 740px;
+    width: 405px;
+    flex: 0 0 auto;
+}
+
+.GalleryCard-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.GalleryCard-link img {
+    object-fit: cover;
+    object-position: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 32px;
+}
+
+.GalleryCard-title {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 28px;
+}
+
+.GalleryCard-title p {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--black);
+    margin-bottom: 10px;
+}
+
+.GalleryCard-title h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--white);
+}

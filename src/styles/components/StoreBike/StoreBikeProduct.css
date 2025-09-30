@@ -1,0 +1,37 @@
+.StoreBikeProduct-container {
+    flex: 0 0 auto;
+    width: 420px;
+}
+
+.StoreBikeProduct-img {
+    width: 100%;
+}
+
+.StoreBikeProduct-img img {
+    object-fit: contain;
+    object-position: center;
+    height: 236px;
+    width: 100%;
+}
+
+.StoreBikeProduct-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    text-wrap: wrap;
+}
+
+.StoreBikeProduct-name {
+    min-height: 80px;
+}
+
+
+.StoreBikeProduct-introduce {
+}
+
+.StoreBikeProduct-button {
+    width: 80%;
+    margin: 0 auto;
+    margin-top: 40px;
+}

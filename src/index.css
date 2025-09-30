@@ -131,6 +131,11 @@ button {
   width: 100%;
 }
 
+.col-1658 {
+  max-width: 1658px;
+  width: 100%;
+}
+
 .col-980 {
   max-width: 980px;
   width: 100%;
@@ -143,3 +148,18 @@ button {
   text-transform: uppercase !important;
 }
 
+.h2-title {
+  font-size: 56px;
+  font-weight: 600;
+}
+
+.text-font-28 {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.text-font-17 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-gray);
+}
