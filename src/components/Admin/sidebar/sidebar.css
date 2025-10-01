@@ -137,3 +137,28 @@
  
 }
 
+.sidebar {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-menu{
+  flex-grow: 1;
+}
+
+.sidebar-footer {
+  border-top: 1px solid #444;
+}
+.btn-logout {
+  width: 100%;
+  background: none;
+  border: none;
+  color: #d1d5db;
+  text-align: left;
+  padding: 15px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+

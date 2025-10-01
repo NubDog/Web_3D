@@ -33,12 +33,12 @@ import UserContract from "./pages/UserContract";
 import AdminDashboardReportRental from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_dashboard_report-rental";
 import AdminReportingOverTime from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_over_time";
 import AdminReportingCustomer from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_customer";
+import AdminRoute from "./components/Admin/AdminRoute";
 
 function App() {
   return (
-    <AuthProvider>
-      <AuthProvider2>
-        <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/store" element={<Store />} />
@@ -57,42 +57,43 @@ function App() {
             {/* Trang edit components */}
             <Route path="/edit-components" element={<EditComponents />} />
             {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Navigate to="users" />} />
-              <Route path="admin_dashboard" element={<Admin_dashboard />} />
-              <Route path="admin_dashboard_report-rental" element={<AdminDashboardReportRental />} />
-              <Route path="AdminReportingOverTime" element={<AdminReportingOverTime />} />
-              <Route path="AdminReportingCustomer" element={<AdminReportingCustomer />} />
-              <Route path="users" element={<UserAdmin />} />
-              <Route
-                path="users/:userId/customer-detail"
-                element={<CustomerDetail />}
-              />
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Navigate to="users" />} />
+                <Route path="admin_dashboard" element={<Admin_dashboard />} />
+                <Route path="admin_dashboard_report-rental" element={<AdminDashboardReportRental />} />
+                <Route path="AdminReportingOverTime" element={<AdminReportingOverTime />} />
+                <Route path="AdminReportingCustomer" element={<AdminReportingCustomer />} />
+                <Route path="users" element={<UserAdmin />} />
+                <Route
+                  path="users/:userId/customer-detail"
+                  element={<CustomerDetail />}
+                />
 
-              <Route path="phuong-tien" element={<PhuongTienList />} />
-              <Route
-                path="phuong-tien/them/:id?"
-                element={<PhuongTienModal />}
-              />
-              <Route
-                path="danh-muc-phuong-tien"
-                element={<DanhMucPhuongTienList />}
-              />
-              <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
+                <Route path="phuong-tien" element={<PhuongTienList />} />
+                <Route
+                  path="phuong-tien/them/:id?"
+                  element={<PhuongTienModal />}
+                />
+                <Route
+                  path="danh-muc-phuong-tien"
+                  element={<DanhMucPhuongTienList />}
+                />
+                <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
 
-              <Route path="orders/:status" element={<OrderList />} />
-              <Route path="order/:orderId" element={<OrderDetail />} />
-              <Route path="violations" element={<ViolationList />} />
-              <Route path="bao_tri" element={<BaoTriList />} />
+                <Route path="orders/:status" element={<OrderList />} />
+                <Route path="order/:orderId" element={<OrderDetail />} />
+                <Route path="violations" element={<ViolationList />} />
+                <Route path="bao_tri" element={<BaoTriList />} />
+              </Route>
             </Route>
             //{" "}
             {/* <Route path="/babylon" element={<BabylonTankViewer />} />
           // <Route path="/test-sql" element={<TestConectSql />} /> 
           // */}
           </Routes>
-        </BrowserRouter>
-      </AuthProvider2>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
