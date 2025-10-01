@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo} from "react";
 import { Link } from "react-router-dom";
 import "../css/PhuongTienList.css";
+import Pagination from "../Pagination";
 
 export interface PhuongTien {
   phuong_tien_id: number;
@@ -50,6 +51,50 @@ const PhuongTienList: React.FC = () => {
     show: false,
   });
 
+  //lọc
+    const [isFilterVisible, setIsFilterVisible] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState("");
+    const [filterCategory, setFilterCategory] = useState("");
+    const [filterPolicy, setFilterPolicy] = useState("");
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+
+  //phân trang
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+
+
+     const uniqueCategories = useMemo(() => 
+        [...new Set(phuongTien.map(pt => pt.ten_danh_muc).filter(Boolean))] as string[]
+    , [phuongTien]);
+
+    const uniquePolicies = useMemo(() => 
+        [...new Set(phuongTien.map(pt => pt.ten_chinh_sach).filter(Boolean))] as string[]
+    , [phuongTien]);
+
+
+    // === BƯỚC 3: LOGIC LỌC CHÍNH ===
+    const filteredPhuongTien = useMemo(() => {
+        const parsedMinPrice = minPrice ? parseFloat(minPrice) : 0;
+        const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : Infinity;
+
+        return phuongTien.filter(item => {
+            const searchTermLower = searchTerm.toLowerCase();
+            const matchesSearch = searchTermLower === "" ||
+                item.ten_phuong_tien.toLowerCase().includes(searchTermLower) ||
+                item.bien_so.toLowerCase().includes(searchTermLower);
+            
+            const matchesStatus = filterStatus === "" || item.trang_thai === filterStatus;
+            const matchesCategory = filterCategory === "" || item.ten_danh_muc === filterCategory;
+            const matchesPolicy = filterPolicy === "" || item.ten_chinh_sach === filterPolicy;
+            const matchesPrice = item.gia_thue >= parsedMinPrice && item.gia_thue <= parsedMaxPrice;
+
+            return matchesSearch && matchesStatus && matchesCategory && matchesPolicy && matchesPrice;
+        });
+    }, [phuongTien, searchTerm, filterStatus, filterCategory, filterPolicy, minPrice, maxPrice]);
+
+
   // Function to display Toast
   const showToast = (message: string, isError = false) => {
     setToast({ message, isError, show: true });
@@ -57,6 +102,19 @@ const PhuongTienList: React.FC = () => {
       setToast({ message: "", isError: false, show: false });
     }, 3000);
   };
+
+  const getStatusClass = (status: string) => {
+    switch (status) {
+        case "SAN_SANG":
+            return "bg-green-500y";
+        case "DA_DAT":
+            return "bg-grey-500y";
+        case "BAO_TRI":
+            return "bg-red-500y";
+        default:
+            return "bg-yelow-500y";
+    }
+};
 
   // Function to format dates
   const formatDate = (dateString: string) => {
@@ -95,6 +153,16 @@ const PhuongTienList: React.FC = () => {
   useEffect(() => {
     fetchPhuongTien();
   }, []);
+
+   useEffect(() => {
+        setCurrentPage(1);
+    }, [filteredPhuongTien]);
+
+     const totalPages = Math.ceil(filteredPhuongTien.length / itemsPerPage);
+    const paginatedPhuongTien = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredPhuongTien.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredPhuongTien, currentPage, itemsPerPage]);
 
   // Open the Delete Confirmation Modal
   const handleDeleteClick = (id: number) => {
@@ -149,12 +217,74 @@ const PhuongTienList: React.FC = () => {
           Danh sách Phương tiện
         </h2>
         {/* Nút Thêm bây giờ là một Link */}
-        <Link to="them" className="add-button-link no-underline">
-          <button className="add-button bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-colors">
-            + Thêm Phương tiện
-          </button>
-        </Link>
+        <div className="flex items-center gap-4">
+                <button 
+                    onClick={() => setIsFilterVisible(!isFilterVisible)}
+                    className="filter-toggle-button"
+                >
+                    Bộ lọc
+                </button>
+                <Link to="them" className="add-button-link no-underline">
+                    <button className="add-button bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold shadow-md hover:bg-blue-600 transition-colors">
+                        + Thêm Phương tiện
+                    </button>
+                </Link>
+            </div>
       </div>
+
+     {isFilterVisible && (
+        <div className="filter-bar">
+            <div className="filter-group">
+                <input
+                    type="text"
+                    placeholder="Tìm theo tên, biển số..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="filter-input filter-search-input"
+                />
+                <input 
+                    type="number" 
+                    placeholder="Giá thuê từ..." 
+                    value={minPrice} 
+                    onChange={e => setMinPrice(e.target.value)} 
+                    className="filter-input" 
+                />
+                <input 
+                    type="number" 
+                    placeholder="Giá thuê đến..." 
+                    value={maxPrice} 
+                    onChange={e => setMaxPrice(e.target.value)} 
+                    className="filter-input" 
+                />
+            </div>
+
+            <div className="filter-group">
+                <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)} className="filter-select">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="SAN_SANG">Sẵn sàng</option>
+                    <option value="DA_DAT">Đã Đặt</option>
+                    <option value="BAO_TRI">Bảo trì</option>
+                </select>
+                <select value={filterCategory} onChange={e => setFilterCategory(e.target.value)} className="filter-select">
+                    <option value="">Tất cả danh mục</option>
+                    {uniqueCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                </select>
+                <select value={filterPolicy} onChange={e => setFilterPolicy(e.target.value)} className="filter-select">
+                    <option value="">Tất cả chính sách</option>
+                    {uniquePolicies.map(pol => <option key={pol} value={pol}>{pol}</option>)}
+                </select>
+                <button
+                    onClick={() => {
+                        setSearchTerm(''); setFilterStatus(''); setFilterCategory(''); 
+                        setFilterPolicy(''); setMinPrice(''); setMaxPrice('');
+                    }}
+                    className="reset-button"
+                >
+                    Reset
+                </button>
+            </div>
+        </div>
+    )}
 
       <div className="table-responsive overflow-x-auto rounded-lg shadow-md">
         <table className="phuong-tien-table min-w-full bg-white border-collapse rounded-lg">
@@ -175,13 +305,13 @@ const PhuongTienList: React.FC = () => {
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
-            {phuongTien.map((item, index) => (
+            {paginatedPhuongTien.map((item, index) => (
               <tr
                 key={item.phuong_tien_id}
                 className="border-b border-gray-200 hover:bg-gray-100"
               >
                 <td className="py-3 px-6 text-left whitespace-nowrap">
-                  {index + 1}
+                   {(currentPage - 1) * itemsPerPage + index + 1}
                 </td>
                 <td className="py-3 px-6 text-left">{item.ten_phuong_tien}</td>
                 <td className="py-3 px-6 text-left">{item.bien_so}</td>
@@ -279,6 +409,11 @@ const PhuongTienList: React.FC = () => {
           <p className="font-semibold">{toast.message}</p>
         </div>
       )}
+       <Pagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+        />
     </div>
   );
 };

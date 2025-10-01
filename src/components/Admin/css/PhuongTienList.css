@@ -362,3 +362,114 @@
   border-radius: 4px;
   margin-bottom: 12px;
 }
+
+.filter-bar {
+    animation: fadeInDown 0.3s ease-in-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.filter-bar {
+    padding: 1.5rem;
+    margin-top: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    
+    /* Sử dụng Flexbox để tạo layout */
+    display: flex;
+    flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+    justify-content: space-between; /* Đẩy 2 nhóm ra xa nhau */
+    align-items: flex-end; /* Căn các item xuống dưới */
+    gap: 1.5rem; /* Khoảng cách giữa 2 nhóm */
+    
+    animation: fadeInDown 0.3s ease-in-out;
+}
+
+/* Nhóm các phần tử lọc lại với nhau */
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    flex-grow: 1; /* Cho phép các nhóm co giãn */
+}
+
+.filter-input,
+.filter-select {
+    width: auto; /* Bỏ width 100% cũ */
+    flex: 1 1 200px; /* Cho phép co giãn với kích thước cơ bản 200px */
+    padding: 0.65rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    background-color: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    color: #8b8d8c !important;
+
+}
+
+/* Ô tìm kiếm chính rộng hơn */
+.filter-search-input {
+    flex: 2 1 300px; /* Rộng gấp đôi các ô khác */
+    min-width: 300px;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.reset-button {
+    background-color: #e2e8f0;
+    color: #4a5568;
+    padding: 0.65rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    border: 1px solid transparent;
+    height: fit-content; /* Giúp căn chỉnh với các ô input */
+}
+
+.reset-button:hover {
+    background-color: #cbd5e1;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-toggle-button {
+  background-color: #ffffff;
+  color: #374151; /* Màu chữ xám đậm */
+  border: 1px solid #d1d5db; /* Viền xám nhạt */
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  position: relative;
+  margin-right: 10px;
+}
+
+.filter-toggle-button:hover {
+  background-color: #c3c4c4; /* Nền hơi xám khi hover */
+  border-color: #9ca3af;
+}
