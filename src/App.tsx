@@ -30,6 +30,8 @@ import BaoTriList from "./components/Admin/Bao_tri/Baotri";
 import StoreBike from "./pages/StoreBike";
 import AccountOrder from "./pages/AccountOrder";
 import UserContract from "./pages/UserContract";
+import AdminDashboardReportRental from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_dashboard_report-rental";
+import AdminReportingOverTime from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_over_time"
 
 function App() {
   return (
@@ -57,6 +59,8 @@ function App() {
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Navigate to="users" />} />
               <Route path="admin_dashboard" element={<Admin_dashboard />} />
+              <Route path="admin_dashboard_report-rental" element={<AdminDashboardReportRental />} />
+              <Route path="AdminReportingOverTime" element={<AdminReportingOverTime />} />
               <Route path="users" element={<UserAdmin />} />
               <Route
                 path="users/:userId/customer-detail"
