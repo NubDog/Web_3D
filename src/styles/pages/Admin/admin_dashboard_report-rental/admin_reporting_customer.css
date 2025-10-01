@@ -1,0 +1,293 @@
+/* Admin Reporting Customer Styles */
+.admin-reporting-customer {
+    min-height: 100vh;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.admin-reporting-customer-container {
+    max-width: 1400px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+}
+
+/* Header */
+.admin-reporting-customer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.admin-reporting-customer .header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.admin-reporting-customer .back-button {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--text-gray);
+    font-size: 18px;
+}
+
+.admin-reporting-customer .back-button:hover {
+    background: #f5f5f5;
+    border-color: #06c;
+    color: #06c;
+    transform: translateX(-2px);
+}
+
+.admin-reporting-customer .header-title h1 {
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--text-gray);
+    margin: 0 0 8px 0;
+    letter-spacing: -0.02em;
+}
+
+.admin-reporting-customer .header-title p {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-gray);
+    opacity: 0.7;
+    margin: 0;
+}
+
+.admin-reporting-customer .header-stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.admin-reporting-customer .stat-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    min-width: 110px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-reporting-customer .stat-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-reporting-customer .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-gray);
+    margin-bottom: 4px;
+}
+
+.admin-reporting-customer .stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-gray);
+    opacity: 0.7;
+    text-align: center;
+}
+
+/* Chart Section */
+.admin-reporting-customer .chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+}
+
+.admin-reporting-customer .chart-section:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.admin-reporting-customer .chart-section:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.admin-reporting-customer .chart-section:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-reporting-customer .chart-header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin: 0 0 8px 0;
+}
+
+.admin-reporting-customer .chart-header p {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-gray);
+    opacity: 0.7;
+    margin: 0;
+}
+
+.admin-reporting-customer .chart-container {
+    height: 400px;
+    padding: 32px;
+    border-radius: 20px;
+    border: 1px solid #e5e7eb;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-reporting-customer .chart-container:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Special heights for different chart types */
+.admin-reporting-customer .chart-horizontal {
+    height: 550px;
+}
+
+.admin-reporting-customer .chart-pie {
+    height: 500px;
+}
+
+/* Custom Tooltip */
+.admin-reporting-customer .chart-tooltip {
+    background: rgba(0, 0, 0, 0.9);
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: white;
+    font-size: 13px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.admin-reporting-customer .chart-tooltip strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-reporting-customer .chart-tooltip div {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    margin-top: 4px;
+}
+
+.admin-reporting-customer .chart-tooltip span {
+    font-weight: 700;
+    color: #60a5fa;
+}
+
+/* Action Section */
+.admin-reporting-customer .action-section {
+    display: flex;
+    justify-content: center;
+    padding: 32px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .admin-reporting-customer-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .admin-reporting-customer .header-stats {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-reporting-customer {
+        padding: 20px 16px;
+    }
+    
+    .admin-reporting-customer .header-title h1 {
+        font-size: 32px;
+    }
+    
+    .admin-reporting-customer .header-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .admin-reporting-customer .back-button {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .admin-reporting-customer .header-stats {
+        flex-direction: row;
+        width: 100%;
+        overflow-x: auto;
+    }
+    
+    .admin-reporting-customer .stat-badge {
+        min-width: 100px;
+    }
+    
+    .admin-reporting-customer .chart-container,
+    .admin-reporting-customer .chart-horizontal,
+    .admin-reporting-customer .chart-pie {
+        height: 350px;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-reporting-customer .header-title h1 {
+        font-size: 28px;
+    }
+    
+    .admin-reporting-customer .chart-header h2 {
+        font-size: 22px;
+    }
+    
+    .admin-reporting-customer .chart-container,
+    .admin-reporting-customer .chart-horizontal,
+    .admin-reporting-customer .chart-pie {
+        height: 300px;
+        padding: 16px;
+    }
+    
+    .admin-reporting-customer .stat-badge {
+        padding: 12px 16px;
+        min-width: 90px;
+    }
+    
+    .admin-reporting-customer .stat-value {
+        font-size: 20px;
+    }
+}

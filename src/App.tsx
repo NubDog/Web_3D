@@ -31,7 +31,8 @@ import StoreBike from "./pages/StoreBike";
 import AccountOrder from "./pages/AccountOrder";
 import UserContract from "./pages/UserContract";
 import AdminDashboardReportRental from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_dashboard_report-rental";
-import AdminReportingOverTime from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_over_time"
+import AdminReportingOverTime from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_over_time";
+import AdminReportingCustomer from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_customer";
 
 function App() {
   return (
@@ -61,6 +62,7 @@ function App() {
               <Route path="admin_dashboard" element={<Admin_dashboard />} />
               <Route path="admin_dashboard_report-rental" element={<AdminDashboardReportRental />} />
               <Route path="AdminReportingOverTime" element={<AdminReportingOverTime />} />
+              <Route path="AdminReportingCustomer" element={<AdminReportingCustomer />} />
               <Route path="users" element={<UserAdmin />} />
               <Route
                 path="users/:userId/customer-detail"

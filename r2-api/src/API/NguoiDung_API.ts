@@ -3,7 +3,6 @@ interface Env {
     ua: R2Bucket
 }
 
-// Danh sách tất cả các cột hợp lệ trong bảng NguoiDung để xác thực
 const ALL_COLUMNS = [
     'nguoi_dung_id',
     'ten_dang_nhap',

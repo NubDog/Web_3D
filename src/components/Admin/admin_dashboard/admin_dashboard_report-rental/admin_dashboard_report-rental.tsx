@@ -23,10 +23,27 @@ interface DonThueData {
     ngay_cap_nhat: string;
 }
 
+interface KhachHangData {
+    khach_hang_id: number;
+    nguoi_dung_id: number;
+    ho_ten: string;
+    ngay_sinh: string;
+    dia_chi: string;
+    thanh_pho: string;
+    tinh: string;
+    ma_buu_chinh: string;
+    quoc_gia: string;
+    avatar: string;
+    ten_dang_nhap: string;
+    ngay_tao: string;
+    ngay_cap_nhat: string;
+}
+
 const AdminDashboardReportRental = () => {
     const navigate = useNavigate();
     const [selectedReport, setSelectedReport] = useState<ReportType>(null);
     const [donThueData, setDonThueData] = useState<DonThueData[]>([]);
+    const [khachHangData, setKhachHangData] = useState<KhachHangData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -51,8 +68,25 @@ const AdminDashboardReportRental = () => {
         }
     };
 
+    // Gọi API để lấy dữ liệu khách hàng
+    const fetchKhachHangData = async () => {
+        try {
+            const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/customers');
+            const result = await response.json();
+            
+            if (result.success) {
+                setKhachHangData(result.data);
+            } else {
+                console.error('Không thể lấy dữ liệu khách hàng:', result.error);
+            }
+        } catch (err) {
+            console.error('Lỗi kết nối API khách hàng:', err);
+        }
+    };
+
     useEffect(() => {
         fetchDonThueData();
+        fetchKhachHangData();
     }, []);
 
     const handleReportSelect = (reportType: ReportType) => {
@@ -62,6 +96,8 @@ const AdminDashboardReportRental = () => {
     const handleViewReport = () => {
         if (selectedReport === 'time') {
             navigate('/admin/AdminReportingOverTime', { state: { donThueData } });
+        } else if (selectedReport === 'customer') {
+            navigate('/admin/AdminReportingCustomer', { state: { donThueData, khachHangData } });
         } else if (selectedReport) {
             console.log(`Viewing ${selectedReport} report with data:`, donThueData);
             // Các báo cáo khác sẽ làm sau

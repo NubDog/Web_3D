@@ -15,6 +15,7 @@ import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/NguoiDung_API';
 import { handleGetDonThue } from './API/DonThue_API';
+import { handleGetKhachHang } from './API/KhachHang_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 import { handleGetKycDocumentsByNguoiDungId } from './API/KYC_User';
 import { handleGetUserOrders } from './API/UserOrder_API';
@@ -110,6 +111,11 @@ export default {
 				if (method === 'POST') {
 					return handleCreateNguoiDung(request, env);
 				}
+			}
+
+			// ------------------- API KhachHang -------------------
+			if (path === '/api/khach-hang' && method === 'GET') {
+				return handleGetKhachHang(request, env);
 			}
 
 			// ------------------- Test kết nối -------------------
