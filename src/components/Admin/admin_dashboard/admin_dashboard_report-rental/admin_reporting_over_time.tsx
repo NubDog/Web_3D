@@ -273,8 +273,8 @@ const AdminReportingOverTime = () => {
                             tooltip={({ point }) => (
                                 <div className="chart-tooltip">
                                     <strong>{point.data.xFormatted}</strong>
-                                    <div style={{ color: point.serieColor }}>
-                                        {point.serieId}: <span>{Number(point.data.yFormatted).toLocaleString('vi-VN')} VNĐ</span>
+                                    <div style={{ color: point.seriesColor }}>
+                                        {point.seriesId}: <span>{Number(point.data.yFormatted).toLocaleString('vi-VN')} VNĐ</span>
                                     </div>
                                 </div>
                             )}
