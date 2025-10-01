@@ -120,7 +120,7 @@
 
 .checkOut-product-shipment-option-time {
     display: flex;
-    gap: 40px;
+    justify-content: space-between;
 }
 
 checkOut-product-shipment-option-time-item {

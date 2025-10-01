@@ -15,6 +15,7 @@ const CheckOutPage = () => {
     const [checkoutData, setCheckoutData] = useState({});
     const location = useLocation();
     const { product } = location.state || {};
+    console.log("p[iorweajtpoirewahl", product)
 
     if (!product) {
         return (
@@ -49,11 +50,11 @@ const CheckOutPage = () => {
             <Header />
             <div className='cheackOut-header col-980'>
                 <h3>Thanh Toán</h3>
-                <p>Tổng giá trị đơn thuê: {product.product_price} VNĐ</p>
+                <p>Giá thuê xe trong một ngày: {product.product_totalPrice.toLocaleString('vi-VN')} VNĐ</p>
             </div>
 
             {step === 'checkout' && <CheckOut onNext={handleNextFromCheckout} />}
-            {step === 'shipping' && <CheckOutShiping onNext={handleNextFromShipping} onBack={handleBack} />}
+            {step === 'shipping' && <CheckOutShiping onNext={handleNextFromShipping} onBack={handleBack} checkoutData={checkoutData} />}
             {step === 'payment' && <CheckOutPayment checkoutData={checkoutData} onBack={handleBack} onNext={handleNextFromPayment} />}
             {step === 'final' && <CheckOutFinal checkoutData={checkoutData} />}
 

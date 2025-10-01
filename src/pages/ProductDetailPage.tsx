@@ -145,7 +145,7 @@ const ProductDetailPage = () => {
                     
                     <div className="ProductDetail-price">
                         <span className="ProductDetail-price-amount">
-                            {totalPrice}
+                            {totalPrice?.toLocaleString('vi-VN')}
                         </span>
                         <span className="ProductDetail-price-unit"> VNĐ/ngày</span>
                     </div>

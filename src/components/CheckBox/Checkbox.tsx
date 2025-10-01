@@ -1,16 +1,25 @@
-import React from "react";
 import "./Checkbox.css";
 
-const Checkbox: React.FC = () => {
+interface cardProps {
+    checkbox_content: string;
+    id?: string;
+    value: string;
+    onChange: React.ChangeEventHandler<HTMLInputElement>;
+}
+
+const Checkbox = ({checkbox_content, id, value, onChange}: cardProps) => {
   return (
     <div className="checkbox-wrapper">
       <input
-        type="checkbox"
+        type="radio"
         className="check"
-        id="check1-61"
+        id={id}
+        value={value}
         defaultChecked={false}
+        name="delivery-option"
+        onChange={onChange}
       />
-      <label htmlFor="check1-61" className="label">
+      <label htmlFor={id} className="label">
         <svg width="45" height="45" viewBox="0 0 95 95">
           <rect x="30" y="20" width="50" height="50" stroke="black" fill="none" />
           <g transform="translate(0,-952.36222)">
@@ -23,7 +32,7 @@ const Checkbox: React.FC = () => {
             />
           </g>
         </svg>
-        <span>Checkbox</span>
+        <span>{checkbox_content}</span>
       </label>
     </div>
   );

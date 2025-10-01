@@ -24,6 +24,12 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
 
     console.log(checkoutData);
 
+    // Tính toán giá thuê
+    const dailyPrice = checkoutData.product?.product_totalPrice || 0;
+    const rentalDays = checkoutData.rentalDays || 1;
+    const totalRentalPrice = dailyPrice * rentalDays;
+    const depositAmount = totalRentalPrice * 5; // Tiền cọc gấp 5 lần tổng tiền thuê
+
     const handlePayment = async () => {
         if (!currentUser || !currentUser.nguoi_dung_id) {
             alert("Không thể xác thực người dùng. Vui lòng đăng nhập lại.");
@@ -120,6 +126,44 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                             content={isProcessing ? "Đang xử lý..." : "Thanh toán"} 
                             onClick={handlePayment} 
                         />
+                    </div>
+                </div>
+            </div>
+
+            {/* Form hiển thị chi tiết giá thuê */}
+            <div className='checkOut-rental-summary'>
+                <h2>Chi tiết hóa đơn thuê xe</h2>
+                
+                <div className='rental-summary-content'>
+                    <div className='rental-summary-row'>
+                        <span className='rental-summary-label'>Giá thuê xe (1 ngày):</span>
+                        <span className='rental-summary-value'>{dailyPrice.toLocaleString('vi-VN')} VNĐ</span>
+                    </div>
+                    
+                    <div className='rental-summary-row'>
+                        <span className='rental-summary-label'>Số ngày thuê:</span>
+                        <span className='rental-summary-value'>{rentalDays} ngày</span>
+                    </div>
+                    
+                    <div className='rental-summary-row rental-summary-subtotal'>
+                        <span className='rental-summary-label'>Tổng tiền thuê:</span>
+                        <span className='rental-summary-value'>{totalRentalPrice.toLocaleString('vi-VN')} VNĐ</span>
+                    </div>
+                    
+                    <div className='rental-summary-row rental-summary-deposit'>
+                        <span className='rental-summary-label'>Tiền đặt cọc:</span>
+                        <span className='rental-summary-value'>{depositAmount.toLocaleString('vi-VN')} VNĐ</span>
+                    </div>
+                    
+                    <div className='rental-summary-total'>
+                        <div className='rental-summary-row'>
+                            <span className='rental-summary-label'>Tổng thanh toán:</span>
+                            <span className='rental-summary-value'>{(totalRentalPrice + depositAmount).toLocaleString('vi-VN')} VNĐ</span>
+                        </div>
+                    </div>
+                    
+                    <div className='rental-summary-note'>
+                        <p>* Số tiền đặt cọc sẽ được hoàn trả lại sau khi phương tiện được trả</p>
                     </div>
                 </div>
             </div>

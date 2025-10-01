@@ -2,17 +2,19 @@ import React from 'react';
 import './../../styles/components/CheckOut/CheckOut-Shiping.css';
 import Input from '../Input/input';
 import Sub_Button from '../Button/Sub-Button/Sub-Button';
-import { useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 interface CheckOutShipingProps {
     onNext: (data: any) => void;
     onBack: () => void;
+    checkoutData?: any;
 }
 
-const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack }) => {
-    const location = useLocation();
+const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, checkoutData }) => {
+    // Log để kiểm tra dữ liệu nhận được
+    console.log('Dữ liệu từ component trước:', checkoutData);
+    
     const [ho, setHo] = useState('');
     const [ten, setTen] = useState('');
     const [quanHuyen, setQuanHuyen] = useState('');
@@ -21,6 +23,25 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack }) => 
     const [ngayTra, setNgayTra] = useState('');
     const [soDienThoai, setSoDienThoai] = useState('');
     const [email, setEmail] = useState('');
+
+    // Hàm tính số ngày giữa hai ngày
+    const calculateRentalDays = (startDate: string, endDate: string): number => {
+        if (!startDate || !endDate) return 0;
+        
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
+        // Tính số milliseconds giữa hai ngày
+        const timeDifference = end.getTime() - start.getTime();
+        
+        // Chuyển đổi từ milliseconds sang ngày (1 ngày = 24 * 60 * 60 * 1000 ms)
+        const dayDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+        
+        return dayDifference > 0 ? dayDifference : 0;
+    };
+
+    // Tính số ngày thuê
+    const rentalDays = calculateRentalDays(ngayMuon, ngayTra);
 
     const handleChange1 = (e: React.ChangeEvent<HTMLInputElement>) => {
         setHo(e.target.value);
@@ -53,7 +74,22 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack }) => 
             return;
         }
 
-        onNext({ ho, ten, quanHuyen, diaChiChiTiet, ngayMuon, ngayTra, soDienThoai, email });
+        if (rentalDays <= 0) {
+            alert('Ngày trả phải sau ngày mượn.');
+            return;
+        }
+
+        onNext({ 
+            ho, 
+            ten, 
+            quanHuyen, 
+            diaChiChiTiet, 
+            ngayMuon, 
+            ngayTra, 
+            soDienThoai, 
+            email,
+            rentalDays
+        });
     };
 
     return (
@@ -105,6 +141,24 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack }) => 
                     onChange={handleChange6}
                     type='date'
                 />
+
+                {rentalDays > 0 && (
+                    <div style={{ 
+                        padding: '10px', 
+                        backgroundColor: '#f0f8ff', 
+                        borderRadius: '8px', 
+                        margin: '10px 0',
+                        border: '1px solid #e0e0e0'
+                    }}>
+                        <p style={{ 
+                            margin: 0, 
+                            fontWeight: 'bold', 
+                            color: '#333' 
+                        }}>
+                            Tổng số ngày thuê: {rentalDays} ngày
+                        </p>
+                    </div>
+                )}
 
                 <h3>Thông tin liên hệ của bạn là gì?</h3>
                 <Input 

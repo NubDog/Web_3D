@@ -49,3 +49,104 @@
     padding: 10px;
     margin-top: 20px;
 }
+
+/* Rental Summary Styles */
+.checkOut-rental-summary {
+    margin-top: 48px;
+    padding: 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.checkOut-rental-summary h2 {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-gray);
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.rental-summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.rental-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+.rental-summary-label {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-gray);
+}
+
+.rental-summary-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text-gray);
+}
+
+.rental-summary-subtotal {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 16px;
+}
+
+.rental-summary-subtotal .rental-summary-label,
+.rental-summary-subtotal .rental-summary-value {
+    font-weight: 600;
+}
+
+.rental-summary-deposit {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #fbbf24;
+}
+
+.rental-summary-deposit .rental-summary-label {
+    color: #d97706;
+    font-weight: 500;
+}
+
+.rental-summary-deposit .rental-summary-value {
+    color: #d97706;
+    font-weight: 600;
+}
+
+.rental-summary-total {
+    border-top: 2px solid var(--text-gray);
+    padding-top: 16px;
+    margin-top: 8px;
+}
+
+.rental-summary-total .rental-summary-label {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-gray);
+}
+
+.rental-summary-total .rental-summary-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-blue);
+}
+
+.rental-summary-note {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid var(--text-blue);
+}
+
+.rental-summary-note p {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-gray);
+    margin: 0;
+    font-style: italic;
+}

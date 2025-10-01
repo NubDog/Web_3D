@@ -14,6 +14,11 @@ interface CheckOutProps {
 
 const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
     const location = useLocation();
+    const [selectReceiveValue, setSelectReceiveValue] = useState("");
+    
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectReceiveValue(event.target.value);
+    };
 
     const { product } = location.state || {};
 
@@ -22,8 +27,6 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
             <div>Hello World</div>
         )
     }
-
-    console.log(product);
 
     return (
         <div className='cheackOut-container'>
@@ -49,9 +52,19 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                         <div className="checkOut-product-shipment-option">
                             <div className='checkOut-product-shipment-option-time'>
                                 <div className="checkOut-product-shipment-option-time-item">
-                                    <Checkbox />
-                                    <p>Giao xe trực tiếp</p>
-                                    <p>Bạn đến chi nhánh để lấy xe</p>
+                                    <Checkbox 
+                                        checkbox_content = "Giao xe trực tiếp"
+                                        id = "GiaoXeTrucTiep"
+                                        value = "delivery"
+                                        onChange = {handleChange}
+                                    />
+
+                                    <Checkbox 
+                                        checkbox_content = "Bạn đến chi nhánh lấy xe"
+                                        id = "BanDenChiNhanh"
+                                        value = "pickup"
+                                        onChange = {handleChange}
+                                    />
                                 </div>
 
                                 <div className='checkOut-product-shipment-message'>
@@ -68,7 +81,18 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                     </div>
 
                     <div className="checkOut-button">
-                        <Sub_Button content='Tiếp Tục Đến Địa Chỉ Giao Hàng' onClick={() => onNext({ product })} />
+                        <Sub_Button content='Tiếp Tục Đến Địa Chỉ Giao Hàng' onClick={() => {
+                            if (!selectReceiveValue) {
+                                alert('Vui lòng chọn phương thức giao xe');
+                                return;
+                            }
+                            onNext({ 
+                                product: {
+                                    ...product,
+                                    deliveryMethod: selectReceiveValue
+                                }
+                            });
+                        }} />
                     </div>
 
                     <div className="checkOut-product-question">

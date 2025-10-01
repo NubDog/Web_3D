@@ -1,4 +1,4 @@
-.checkbox-wrapper input[type="checkbox"] {
+.checkbox-wrapper input[type="radio"] {
   visibility: hidden;
   display: none;
 }
@@ -8,6 +8,7 @@
   .checkbox-wrapper ::before {
   box-sizing: border-box;
   user-select: none;
+  color: var(--text-gray);
 }
 
 .checkbox-wrapper {
