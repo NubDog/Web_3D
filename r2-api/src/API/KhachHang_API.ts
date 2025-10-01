@@ -16,33 +16,27 @@ const jsonResponse = (data: any, status = 200, headers = {}) => {
 };
 
 /**
- * Xử lý yêu cầu GET để lấy dữ liệu người dùng với đầy đủ thông tin
- * Bao gồm cả avatar từ bảng KhachHang
+ * Xử lý yêu cầu GET để lấy dữ liệu từ bảng KhachHang
+ * CHỈ lấy các cột trong bảng KhachHang
  */
 export async function handleGetKhachHang(request: Request, env: Env): Promise<Response> {
     try {
         const query = `
             SELECT 
-                kh.khach_hang_id,
-                kh.nguoi_dung_id,
-                nd.ten_dang_nhap,
-                nd.mat_khau,
-                nd.vai_tro,
-                nd.trang_thai,
-                kh.ho_ten,
-                nd.email,
-                nd.so_dien_thoai,
-                kh.ngay_sinh,
-                kh.dia_chi,
-                kh.thanh_pho,
-                kh.tinh,
-                kh.ma_buu_chinh,
-                kh.quoc_gia,
-                kh.ngay_tao,
-                kh.ngay_cap_nhat,
-                kh.avatar as img
-            FROM KhachHang kh
-            LEFT JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
+                khach_hang_id,
+                nguoi_dung_id,
+                ho_ten,
+                ngay_sinh,
+                dia_chi,
+                thanh_pho,
+                tinh,
+                ma_buu_chinh,
+                quoc_gia,
+                ngay_tao,
+                ngay_cap_nhat,
+                avatar,
+                avatar as img
+            FROM KhachHang
         `;
 
         const { results } = await env.DB.prepare(query).all();

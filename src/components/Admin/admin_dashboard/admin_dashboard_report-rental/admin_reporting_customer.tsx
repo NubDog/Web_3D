@@ -21,13 +21,7 @@ interface DonThueData {
 interface KhachHangData {
     khach_hang_id: number;
     nguoi_dung_id: number;
-    ten_dang_nhap: string;
-    mat_khau: string;
-    vai_tro: string;
-    trang_thai: string;
     ho_ten: string;
-    email: string;
-    so_dien_thoai: string;
     ngay_sinh: string;
     dia_chi: string;
     thanh_pho: string;
@@ -36,6 +30,7 @@ interface KhachHangData {
     quoc_gia: string;
     ngay_tao: string;
     ngay_cap_nhat: string;
+    avatar: string;
     img: string;
 }
 
