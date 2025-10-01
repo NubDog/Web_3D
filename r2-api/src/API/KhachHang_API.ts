@@ -23,19 +23,26 @@ export async function handleGetKhachHang(request: Request, env: Env): Promise<Re
     try {
         const query = `
             SELECT 
-                nd.nguoi_dung_id,
+                kh.khach_hang_id,
+                kh.nguoi_dung_id,
                 nd.ten_dang_nhap,
                 nd.mat_khau,
                 nd.vai_tro,
                 nd.trang_thai,
-                nd.ho_ten,
+                kh.ho_ten,
                 nd.email,
                 nd.so_dien_thoai,
-                nd.ngay_tao,
-                nd.ngay_cap_nhat,
+                kh.ngay_sinh,
+                kh.dia_chi,
+                kh.thanh_pho,
+                kh.tinh,
+                kh.ma_buu_chinh,
+                kh.quoc_gia,
+                kh.ngay_tao,
+                kh.ngay_cap_nhat,
                 kh.avatar as img
-            FROM NguoiDung nd
-            LEFT JOIN KhachHang kh ON nd.nguoi_dung_id = kh.nguoi_dung_id
+            FROM KhachHang kh
+            LEFT JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
         `;
 
         const { results } = await env.DB.prepare(query).all();
