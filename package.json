@@ -12,6 +12,10 @@
   "dependencies": {
     "@babylonjs/core": "^8.23.1",
     "@babylonjs/loaders": "^8.23.1",
+    "@nivo/bar": "^0.99.0",
+    "@nivo/core": "^0.99.0",
+    "@nivo/line": "^0.99.0",
+    "@nivo/pie": "^0.99.0",
     "browser-image-compression": "^2.0.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

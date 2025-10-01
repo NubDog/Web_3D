@@ -7,12 +7,13 @@ import { useAuth } from './../../contexts/AuthContext';
 interface CheckOutPaymentProps {
     checkoutData: any;
     onBack: () => void;
-    onNext: () => void;
+    onNext: (data?: any) => void;
 }
 
 const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack, onNext }) => {
     const { currentUser } = useAuth();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
 
     if (!currentUser) {
         return (
@@ -30,13 +31,14 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
     const totalRentalPrice = dailyPrice * rentalDays;
     const depositAmount = totalRentalPrice * 5; // Tiền cọc gấp 5 lần tổng tiền thuê
 
-    const handlePayment = async () => {
+    const handlePayment = async (paymentMethod: string) => {
         if (!currentUser || !currentUser.nguoi_dung_id) {
             alert("Không thể xác thực người dùng. Vui lòng đăng nhập lại.");
             setIsProcessing(false);
             return;
         }
 
+        setSelectedPaymentMethod(paymentMethod);
         setIsProcessing(true);
         try {
             let khachHangId = null;
@@ -83,7 +85,14 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
 
             if (result.success) {
                 console.log('Tạo đơn thuê thành công:', result);
-                onNext();
+                // Gửi thông tin phương thức thanh toán qua component tiếp theo
+                onNext({ 
+                    ...checkoutData, 
+                    paymentMethod: paymentMethod,
+                    totalAmount: totalRentalPrice + depositAmount,
+                    rentalAmount: totalRentalPrice,
+                    depositAmount: depositAmount
+                });
             } else {
                 alert('Lỗi tạo đơn thuê: ' + result.error);
             }
@@ -101,36 +110,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 <i className="fa-solid fa-arrow-left"></i>
                 <p>Quay lại</p>
             </div>
-            <h1>Bạn muốn thanh toán bằng phương thức nào?</h1>
 
-            <div className='checkOut-payment-option'>
-                <div className='checkOut-payment-option-card-group'>
-                    <h3>Thanh toán bằng thẻ:</h3>
-
-                    <div className='checkOut-payment-option-card' tabIndex={0}>
-                        <MasterCard />
-                    </div>
-                    <div className='checkOut-payment-option-card-button'>
-                        <Sub_Button 
-                            content={isProcessing ? "Đang xử lý..." : "Thanh toán"} 
-                            onClick={handlePayment} 
-                        />
-                    </div>
-                </div>
-
-                <div className="checkOut-payment-option-cash-group">
-                    <h3>Thanh toán bằng tiền mặt:</h3>
-
-                    <div className="checkOut-payment-option-cash-card" tabIndex={0}>
-                        <Sub_Button 
-                            content={isProcessing ? "Đang xử lý..." : "Thanh toán"} 
-                            onClick={handlePayment} 
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Form hiển thị chi tiết giá thuê */}
             <div className='checkOut-rental-summary'>
                 <h2>Chi tiết hóa đơn thuê xe</h2>
                 
@@ -167,6 +147,68 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                     </div>
                 </div>
             </div>
+            
+            <h1>Bạn muốn thanh toán bằng phương thức nào?</h1>
+            
+            <div className='payment-notice'>
+                <div className='payment-notice-header'>
+                    <i className="fa-solid fa-info-circle"></i>
+                    <span>Thông tin quan trọng về thanh toán</span>
+                </div>
+                <div className='payment-notice-content'>
+                    <div className='payment-notice-item'>
+                        <i className="fa-solid fa-check-circle"></i>
+                        <p>Bạn có thể thay đổi phương thức thanh toán lúc ký hợp đồng với nhân viên</p>
+                    </div>
+                    <div className='payment-notice-item'>
+                        <i className="fa-solid fa-exclamation-triangle"></i>
+                        <p>Bạn chỉ cần thanh toán tổng hóa đơn ngay sau khi ký hợp đồng. Hiện tại chúng tôi chưa nhận bất kỳ hình thức chuyển khoản nào</p>
+                    </div>
+                    <div className='payment-notice-item warning'>
+                        <i className="fa-solid fa-shield-alt"></i>
+                        <p>Vui lòng không chuyển khoản trước cho nhân viên chúng tôi với bất kỳ lý do nào</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className='checkOut-payment-option'>
+                <div className='checkOut-payment-option-card-group'>
+                    <h3>Thanh toán bằng thẻ:</h3>
+
+                    <div className={`checkOut-payment-option-card ${selectedPaymentMethod === 'card' ? 'selected' : ''}`} 
+                         tabIndex={0}
+                         onClick={() => setSelectedPaymentMethod('card')}>
+                        <MasterCard />
+                    </div>
+                    <div className='checkOut-payment-option-card-button'>
+                        <Sub_Button 
+                            content={isProcessing && selectedPaymentMethod === 'card' ? "Đang xử lý..." : "Thanh toán bằng thẻ"} 
+                            onClick={() => handlePayment('card')} 
+                        />
+                    </div>
+                </div>
+
+                <div className="checkOut-payment-option-cash-group">
+                    <h3>Thanh toán bằng tiền mặt:</h3>
+
+                    <div className={`checkOut-payment-option-cash-card ${selectedPaymentMethod === 'cash' ? 'selected' : ''}`} 
+                         tabIndex={0}
+                         onClick={() => setSelectedPaymentMethod('cash')}>
+                        <div className='cash-payment-info'>
+                            <i className="fa-solid fa-money-bills"></i>
+                            <p>Thanh toán trực tiếp khi nhận xe</p>
+                        </div>
+                    </div>
+                    <div className='checkOut-payment-option-cash-button'>
+                        <Sub_Button 
+                            content={isProcessing && selectedPaymentMethod === 'cash' ? "Đang xử lý..." : "Xác nhận thanh toán tiền mặt"} 
+                            onClick={() => handlePayment('cash')} 
+                        />
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     )
 }

@@ -27,13 +27,13 @@ const CheckOutPage = () => {
         setCheckoutData({ ...checkoutData, ...data });
         setStep('shipping');
     };
-
     const handleNextFromShipping = (shippingData: any) => {
         setCheckoutData({ ...checkoutData, ...shippingData });
         setStep('payment');
     };
 
-    const handleNextFromPayment = () => {
+    const handleNextFromPayment = (paymentData: any) => {
+        setCheckoutData({ ...checkoutData, ...paymentData });
         setStep('final');
     };
 

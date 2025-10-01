@@ -14,6 +14,7 @@ import { handleGetKycDocuments, handleAddKycDocument, handleUpdateCccdSet } from
 import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/NguoiDung_API';
+import { handleGetDonThue } from './API/DonThue_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 import { handleGetKycDocumentsByNguoiDungId } from './API/KYC_User';
 import { handleGetUserOrders } from './API/UserOrder_API';
@@ -94,6 +95,11 @@ export default {
 			// ------------------- API ChinhSachGia -------------------
 			if (path === '/api/chinh-sach-gia' && method === 'GET') {
 				return handleGetChinhSachGia(request, env);
+			}
+
+			// ------------------- API DonThue -------------------
+			if (path === '/api/don-thue-data' && method === 'GET') {
+				return handleGetDonThue(request, env);
 			}
 
 			// ------------------- API NguoiDung -------------------

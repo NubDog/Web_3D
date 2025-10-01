@@ -10,6 +10,9 @@ interface CheckOutFinalProps {
 const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
     const navigate = useNavigate();
 
+    // Debug: In ra dữ liệu để kiểm tra
+    console.log('CheckOut Final - checkoutData:', checkoutData);
+
     const handleGoHome = () => {
         navigate('/');
     };
@@ -36,15 +39,44 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                         </div>
                         <div className='detail-row'>
                             <span className='detail-label'>Địa điểm nhận:</span>
-                            <span className='detail-value'>{checkoutData.dia_diem_nhan || checkoutData.dia_chi_chi_tiet}</span>
+                            <span className='detail-value'>{`${checkoutData.diaChiChiTiet || ''}, ${checkoutData.quanHuyen || ''}`.trim().replace(/^,|,$/, '') || 'N/A'}</span>
                         </div>
                         <div className='detail-row'>
                             <span className='detail-label'>Ngày thuê:</span>
-                            <span className='detail-value'>{checkoutData.ngay_bat_dau || checkoutData.ngay_muon}</span>
+                            <span className='detail-value'>{checkoutData.ngayMuon || 'N/A'}</span>
                         </div>
                         <div className='detail-row'>
                             <span className='detail-label'>Ngày trả:</span>
-                            <span className='detail-value'>{checkoutData.ngay_ket_thuc || checkoutData.ngay_tra}</span>
+                            <span className='detail-value'>{checkoutData.ngayTra || 'N/A'}</span>
+                        </div>
+                        <div className='detail-row'>
+                            <span className='detail-label'>Số ngày thuê:</span>
+                            <span className='detail-value'>{checkoutData.rentalDays || 'N/A'} ngày</span>
+                        </div>
+                        <div className='detail-row'>
+                            <span className='detail-label'>Phương thức thanh toán:</span>
+                            <span className='detail-value'>
+                                {checkoutData.paymentMethod === 'card' ? 'Thanh toán bằng thẻ' : 
+                                 checkoutData.paymentMethod === 'cash' ? 'Thanh toán tiền mặt' : 'Chưa chọn'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className='checkOut-final-payment-summary'>
+                    <h3>Chi tiết thanh toán:</h3>
+                    <div className='payment-summary-details'>
+                        <div className='detail-row'>
+                            <span className='detail-label'>Tiền thuê xe:</span>
+                            <span className='detail-value'>{(checkoutData.rentalAmount || 0).toLocaleString('vi-VN')} VNĐ</span>
+                        </div>
+                        <div className='detail-row'>
+                            <span className='detail-label'>Tiền đặt cọc:</span>
+                            <span className='detail-value'>{(checkoutData.depositAmount || 0).toLocaleString('vi-VN')} VNĐ</span>
+                        </div>
+                        <div className='detail-row total-row'>
+                            <span className='detail-label'>Tổng thanh toán:</span>
+                            <span className='detail-value'>{(checkoutData.totalAmount || 0).toLocaleString('vi-VN')} VNĐ</span>
                         </div>
                     </div>
                 </div>
