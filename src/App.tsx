@@ -36,6 +36,7 @@ import AdminReportingCustomer from "./components/Admin/admin_dashboard/admin_das
 import AdminReportingVehicle from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_vehicle";
 import AdminReportingLocation from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_location";
 import AdminReportingStatus from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_status";
+import AdminReportingFinance from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_finance";
 import AdminRoute from "./components/Admin/AdminRoute";
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
                 <Route path="AdminReportingVehicle" element={<AdminReportingVehicle />} />
                 <Route path="AdminReportingLocation" element={<AdminReportingLocation />} />
                 <Route path="AdminReportingStatus" element={<AdminReportingStatus />} />
+                <Route path="AdminReportingFinance" element={<AdminReportingFinance />} />
                 <Route path="users" element={<UserAdmin />} />
                 <Route
                   path="users/:userId/customer-detail"

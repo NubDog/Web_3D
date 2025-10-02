@@ -139,6 +139,8 @@ const AdminDashboardReportRental = () => {
             navigate('/admin/AdminReportingLocation', { state: { donThueData } });
         } else if (selectedReport === 'status') {
             navigate('/admin/AdminReportingStatus', { state: { donThueData } });
+        } else if (selectedReport === 'finance') {
+            navigate('/admin/AdminReportingFinance', { state: { donThueData } });
         } else if (selectedReport) {
             console.log(`Viewing ${selectedReport} report with data:`, donThueData);
             // Các báo cáo khác sẽ làm sau
