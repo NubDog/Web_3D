@@ -39,11 +39,29 @@ interface KhachHangData {
     img: string;
 }
 
+interface PhuongTienData {
+    phuong_tien_id: number;
+    ten_phuong_tien: string;
+    loai: string;
+    danh_muc_id: number;
+    trang_thai: string;
+    bien_so: string;
+    so_km: number;
+    chinh_sach_id: number;
+    so_khung: string;
+    ngay_tao: string;
+    ngay_cap_nhat: string;
+    img: string;
+    gia_thue: number;
+    model: string;
+}
+
 const AdminDashboardReportRental = () => {
     const navigate = useNavigate();
     const [selectedReport, setSelectedReport] = useState<ReportType>(null);
     const [donThueData, setDonThueData] = useState<DonThueData[]>([]);
     const [khachHangData, setKhachHangData] = useState<KhachHangData[]>([]);
+    const [phuongTienData, setPhuongTienData] = useState<PhuongTienData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -84,9 +102,26 @@ const AdminDashboardReportRental = () => {
         }
     };
 
+    // Gọi API để lấy dữ liệu phương tiện
+    const fetchPhuongTienData = async () => {
+        try {
+            const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/phuong-tien');
+            const result = await response.json();
+            
+            if (result.success) {
+                setPhuongTienData(result.data);
+            } else {
+                console.error('Không thể lấy dữ liệu phương tiện:', result.error);
+            }
+        } catch (err) {
+            console.error('Lỗi kết nối API phương tiện:', err);
+        }
+    };
+
     useEffect(() => {
         fetchDonThueData();
         fetchKhachHangData();
+        fetchPhuongTienData();
     }, []);
 
     const handleReportSelect = (reportType: ReportType) => {
@@ -98,6 +133,8 @@ const AdminDashboardReportRental = () => {
             navigate('/admin/AdminReportingOverTime', { state: { donThueData } });
         } else if (selectedReport === 'customer') {
             navigate('/admin/AdminReportingCustomer', { state: { donThueData, khachHangData } });
+        } else if (selectedReport === 'vehicle') {
+            navigate('/admin/AdminReportingVehicle', { state: { donThueData, phuongTienData } });
         } else if (selectedReport) {
             console.log(`Viewing ${selectedReport} report with data:`, donThueData);
             // Các báo cáo khác sẽ làm sau
