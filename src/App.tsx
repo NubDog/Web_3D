@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import {  ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "./App.css";
 import BabylonTankViewer from "./components/babylon";
 import FileManager from "./components/ManagerFile_R2Storage/FileManager";
@@ -101,6 +102,18 @@ function App() {
           // <Route path="/test-sql" element={<TestConectSql />} /> 
           // */}
           </Routes>
+           <ToastContainer
+            position="top-right"
+            autoClose={3000} // Tự động đóng sau 3 giây
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
       </AuthProvider>
     </BrowserRouter>
   );

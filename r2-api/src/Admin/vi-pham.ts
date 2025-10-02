@@ -76,11 +76,15 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
             bangChungUrl = `${publicUrl}/${uniqueKey}`;
         }
         
-        const rentalOrder = await env.DB.prepare(`SELECT phuong_tien_id FROM DonThue WHERE don_thue_id = ?`).bind(don_thue_id).first<{ phuong_tien_id: number }>();
+
+        const rentalOrder = await env.DB.prepare(`SELECT phuong_tien_id, trang_thai FROM DonThue WHERE don_thue_id = ?`).bind(don_thue_id).first<{ phuong_tien_id: number, trang_thai:string }>();
         if (!rentalOrder) {
             return jsonResponse({ success: false, error: `Không tìm thấy đơn thuê với ID: ${don_thue_id}` }, 404);
         }
         const phuong_tien_id = rentalOrder.phuong_tien_id;
+
+
+        if(rentalOrder.trang_thai === 'HOÀN_THÀNH' ){
 
         const stmt = env.DB.prepare(
             `INSERT INTO ViPham (don_thue_id, phuong_tien_id, loai_vi_pham, so_tien_phat, thoi_gian_xay_ra, ghi_chu, duong_dan_bang_chung, co_quan_xu_ly)
@@ -198,7 +202,7 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
                     </html>
                     `
             };
-           
+        
 
            const resendResponse = await fetch('https://api.resend.com/emails', {
                 method: 'POST',
@@ -208,6 +212,7 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
                 },
                 body: JSON.stringify(emailBody)
             });
+            
 
              if (!resendResponse.ok) {
                 const errorResult = await resendResponse.json();
@@ -215,15 +220,20 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
             } else {
                 console.log("Gửi email thành công!");
             }
+            
         } else {
             if (!customerInfo) console.error("Không tìm thấy thông tin khách hàng để gửi email.");
             if (!env.RESEND_API_KEY) console.error("Thiếu RESEND_API_KEY trong biến môi trường.");
         }
+    
 
         return jsonResponse({ success: true, message: "Ghi nhận vi phạm thành công và đã gửi thông báo." }, 201);
+        }
+        return jsonResponse({ success: false, error: 'Đơn hàng phải trong trạng thái HOÀN_THÀNH.'}, 500);   
     } catch (e: any) {
         return jsonResponse({ success: false, error: e.message }, 500);
     }
+    
 };
 
 export async function handleUpdateViolation(request: Request, env: Env, violationId: string) {
@@ -466,11 +476,9 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                      console.error("Gửi email thất bại. Lỗi từ Resend:", JSON.stringify(errorResult, null, 2));
                 }
             }
-        }
-
-
+        
         return jsonResponse({ success: true, message: "Cập nhật vi phạm thành công." });
-
+        }
     } catch (e: any) {
         return jsonResponse({ success: false, error: 'Lỗi khi cập nhật vi phạm.', details: e.message }, 500);
     }
