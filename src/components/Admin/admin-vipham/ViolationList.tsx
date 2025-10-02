@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { toast } from 'react-toastify';
+import React, { useState, useEffect, useCallback} from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './../css/admin-violation.css';
 import ViolationFormModal from '../Component-Admin/ViolationFormModal';
 
@@ -192,6 +193,7 @@ const ViolationList: React.FC = () => {
                 </table>
             </div>
         </div>
+       
          <ViolationFormModal 
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
