@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./sidebar.css";
+import { useAuth } from "../../../contexts/AuthContext";
 
 import {
   FaTachometerAlt,
@@ -10,6 +11,8 @@ import {
   FaBars,
   FaClipboardList,
   FaExclamationTriangle,
+  FaHome,        
+  FaSignOutAlt,
 } from "react-icons/fa";
 
 interface SidebarProps {
@@ -19,6 +22,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
   const [openDropdown, setOpenDropdown] = useState("");
+  const { logout } = useAuth();
 
   const handleDropdownToggle = (dropdownName: string) => {
     if (isOpen) {
@@ -88,7 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
             </ul>
           )}
         </li>
-      </ul>
+      
 
       <li className="dropdown-item">
         <div
@@ -163,7 +167,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
           {isOpen && <span>Bảo Trì</span>}
         </NavLink>
       </li>
-    </div>
+      </ul>
+       <div className="sidebar-footer">
+        {/* Dùng lại cấu trúc ul/li giống như menu chính */}
+        <ul className="sidebar-menu">
+          <li>
+            <NavLink to="/" className="nav-link">
+              <FaHome className="nav-icon" />
+              {isOpen && <span>Trang chủ</span>}
+            </NavLink>
+          </li>
+          <li>
+            <button onClick={logout} className="nav-link btn-logout">
+              <FaSignOutAlt className="nav-icon" />
+              {isOpen && <span>Đăng xuất</span>}
+            </button>
+          </li>
+        </ul>
+      </div>
+      </div>
+    
   );
 };
 

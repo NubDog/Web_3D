@@ -14,9 +14,11 @@ interface NguoiDung {
 
 const SignIn: React.FC<{ onSwitchToSignUp: () => void }> = ({ onSwitchToSignUp }) => {
     const [nguoiDung, setNguoiDung] = useState<NguoiDung[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const { login } = useAuth();
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState<string | null>(null);
+    const [identifier, setIdentifier] = useState('');
+    const [password, setPassword] = useState('');
+    const { login, loading, error } = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ ten_dang_nhap: '', mat_khau: '' });
 
@@ -25,36 +27,12 @@ const SignIn: React.FC<{ onSwitchToSignUp: () => void }> = ({ onSwitchToSignUp }
 };
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        setError(null);
-
         try {
-            const { ten_dang_nhap, mat_khau } = formData;
-            const isEmail = ten_dang_nhap.includes('@');
-
-            const payload = {
-                [isEmail ? 'email' : 'ten_dang_nhap']: ten_dang_nhap,
-                mat_khau: mat_khau
-            };
-
-            const response = await fetch('http://127.0.0.1:8787/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            
-            const result = await response.json();
-            if (!result.success) {
-                throw new Error(result.error);
-            }
-
-            login(result.data);
-            navigate('/');
-
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
+            // Chỉ cần gọi hàm login từ context
+            await login(identifier, password);
+            // Việc điều hướng đã được xử lý bên trong context
+        } catch (err) {
+            console.error("Login failed:", err); // Lỗi đã được set trong context, ở đây chỉ log ra
         }
     };
     const API_URL = 'http://127.0.0.1:8787/api/nguoi-dung';
@@ -97,34 +75,37 @@ const SignIn: React.FC<{ onSwitchToSignUp: () => void }> = ({ onSwitchToSignUp }
           <label htmlFor="identifier" className="signin-signup-label">Tên đăng nhập hoặc Email</label>
           <div className="signin-signup-input-wrapper">
               <i className="fa-regular fa-user" aria-hidden="true"></i>
+              
               <input
-                  id="identifier"
-                  name="ten_dang_nhap" // Giữ nguyên name này
-                  type="text"
-                  value={formData.ten_dang_nhap}
-                  onChange={handleChange}
-                  className="signin-signup-input"
-                  // SỬA LẠI PLACEHOLDER
-                  placeholder="Nhập tên đăng nhập hoặc email"
-                  autoComplete="username"
-                  required
-              />
+                id="identifier"
+                name="ten_dang_nhap"
+                className="signin-signup-input"
+                autoComplete="username"
+                type="text"
+                placeholder="Nhập tên đăng nhập hoặc email"
+                // onChange phải gọi setIdentifier
+                onChange={(e) => setIdentifier(e.target.value)}
+                value={identifier} // value phải được gán vào state
+                required
+            />
           </div>
         </div>
 
         <div className="signin-signup-field">
           <label htmlFor="mat_khau" className="signin-signup-label">Mật khẩu</label>
                     <div className="signin-signup-input-wrapper">
-                        <i className="fa-solid fa-lock" aria-hidden="true"></i>
-                        <input
-                            id="mat_khau"
-                            name="mat_khau" 
+                        <i className="fa-solid fa-lock" aria-hidden="true"></i>                       
+
+                         <input
                             type="password"
-                            value={formData.mat_khau} 
-                            onChange={handleChange} 
-                            className="signin-signup-input"
                             placeholder="Mật khẩu"
+                            // onChange phải gọi setPassword
+                            onChange={(e) => setPassword(e.target.value)}
+                            id="mat_khau"
+                            className="signin-signup-input"
+                            name="mat_khau" 
                             autoComplete="current-password"
+                            value={password}
                             required
                         />
             <i className="fa-solid fa-eye" aria-hidden="true"></i>

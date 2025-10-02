@@ -5,65 +5,94 @@ import React, {
   useEffect,
   type ReactNode,
 } from "react";
+import { useNavigate } from "react-router-dom";
 
-// Định nghĩa kiểu dữ liệu cho người dùng
 interface User {
   nguoi_dung_id: number;
   ho_ten: string;
   email: string;
-  vai_tro: string;
-  // Bạn có thể thêm các trường thông tin khác của người dùng ở đây
+  vai_tro: string; // 'admin', 'user', etc.
 }
 
-// Định nghĩa những gì context sẽ cung cấp
 interface AuthContextType {
   currentUser: User | null;
-  login: (userData: User) => void;
+  loading: boolean;
+  error: string | null;
+  // Hàm login phải nhận vào TÊN ĐĂNG NHẬP và MẬT KHẨU
+  login: (identifier: string, mat_khau: string) => Promise<void>;
   logout: () => void;
 }
 
-// Tạo Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Tạo Provider Component
-// Component này sẽ "bao bọc" ứng dụng của bạn và cung cấp context
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // Khi ứng dụng tải lần đầu, kiểm tra xem có thông tin người dùng trong localStorage không
   useEffect(() => {
     const storedUser = localStorage.getItem("currentUser");
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
+    setLoading(false);
   }, []);
 
-  // Hàm để đăng nhập
-  const login = (userData: User) => {
-    setCurrentUser(userData);
-    localStorage.setItem("currentUser", JSON.stringify(userData)); // Lưu vào localStorage
+  const login = async (identifier: string, mat_khau: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const isEmail = identifier.includes('@');
+      const payload = {
+        [isEmail ? 'email' : 'ten_dang_nhap']: identifier,
+        mat_khau,
+      };
+
+      // Gọi API bằng fetch
+      const response = await fetch('http://127.0.0.1:8787/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!result.success || !result.data) {
+        // Ném lỗi từ server để component SignIn có thể bắt
+        throw new Error(result.error || 'Tên đăng nhập hoặc mật khẩu không đúng.');
+      }
+      
+      const userData: User = result.data;
+      setCurrentUser(userData);
+      localStorage.setItem("currentUser", JSON.stringify(userData));
+      
+      if (userData.vai_tro === 'admin') {
+          navigate('/admin');
+      } else {
+          navigate('/');
+      }
+
+    } catch (err: any) {
+      setError(err.message);
+      throw err; // Ném lỗi ra ngoài
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Hàm để đăng xuất
   const logout = () => {
     setCurrentUser(null);
-    localStorage.removeItem("currentUser"); // Xóa khỏi localStorage
+    localStorage.removeItem("currentUser");
+    navigate('/signin');
   };
 
-  const value = {
-    currentUser,
-    login,
-    logout,
-  };
+  const value = { currentUser, loading, error, login, logout };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// Tạo một hook tùy chỉnh để dễ dàng sử dụng context trong các component khác
+// Hook tùy chỉnh để sử dụng context
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
