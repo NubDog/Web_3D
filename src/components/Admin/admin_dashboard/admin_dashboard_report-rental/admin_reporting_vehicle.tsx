@@ -357,7 +357,7 @@ const AdminReportingVehicle = () => {
                             }}
                             tooltip={({ point }) => (
                                 <div className="chart-tooltip">
-                                    <strong>{point.serieId}</strong>
+                                    <strong>{point.seriesId}</strong>
                                     <div>{point.data.xFormatted}: <span>{point.data.yFormatted} lượt</span></div>
                                 </div>
                             )}

@@ -18,7 +18,8 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
     const [ho, setHo] = useState('');
     const [ten, setTen] = useState('');
     const [quanHuyen, setQuanHuyen] = useState('');
-    const [diaChiChiTiet, setDiaChiChiTiet] = useState('');
+    const [diaDiemNhan, setDiadiemNhan] = useState('');
+    const [diadiemTra, setDiadiemTra] = useState('');
     const [ngayMuon, setNgayMuon] = useState('');
     const [ngayTra, setNgayTra] = useState('');
     const [soDienThoai, setSoDienThoai] = useState('');
@@ -53,7 +54,10 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
         setQuanHuyen(e.target.value);
     }
     const handleChange4 = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setDiaChiChiTiet(e.target.value);
+        setDiadiemNhan(e.target.value);
+    }
+    const handleChange4_1 = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setDiadiemTra(e.target.value);
     }
     const handleChange5 = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNgayMuon(e.target.value);
@@ -69,7 +73,7 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
     }
 
     const handleNextClick = () => {
-        if (!ho || !ten || !quanHuyen || !diaChiChiTiet || !ngayMuon || !ngayTra || !soDienThoai || !email) {
+        if (!ho || !ten || !quanHuyen || !diaDiemNhan || !diadiemTra || !ngayMuon || !ngayTra || !soDienThoai || !email) {
             alert('Vui lòng điền đầy đủ thông tin.');
             return;
         }
@@ -83,7 +87,8 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
             ho, 
             ten, 
             quanHuyen, 
-            diaChiChiTiet, 
+            diaDiemNhan,
+            diadiemTra,
             ngayMuon, 
             ngayTra, 
             soDienThoai, 
@@ -121,9 +126,15 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                     type='text'
                 />
                 <Input 
-                    placeholder='Địa chỉ chi tiết'
-                    value={diaChiChiTiet}
+                    placeholder='Địa điểm nhận xe'
+                    value={diaDiemNhan}
                     onChange={handleChange4}
+                    type='text'
+                />
+                <Input 
+                    placeholder='Địa điểm trả xe'
+                    value={diadiemTra}
+                    onChange={handleChange4_1}
                     type='text'
                 />
 

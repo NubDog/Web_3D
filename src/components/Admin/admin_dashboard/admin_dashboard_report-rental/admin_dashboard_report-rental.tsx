@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './../../../../styles/pages/Admin/admin_dashboard_report-rental/admin_dashboard_report-rental.css'
 import Sub_Button from '../../../Button/Sub-Button/Sub-Button';
 
-type ReportType = 'time' | 'customer' | 'vehicle' | 'staff' | 'location' | 'status' | 'finance' | null;
+type ReportType = 'time' | 'customer' | 'vehicle' | 'location' | 'status' | 'finance' | null;
 
 interface DonThueData {
     don_thue_id: number;
@@ -135,6 +135,8 @@ const AdminDashboardReportRental = () => {
             navigate('/admin/AdminReportingCustomer', { state: { donThueData, khachHangData } });
         } else if (selectedReport === 'vehicle') {
             navigate('/admin/AdminReportingVehicle', { state: { donThueData, phuongTienData } });
+        } else if (selectedReport === 'location') {
+            navigate('/admin/AdminReportingLocation', { state: { donThueData } });
         } else if (selectedReport) {
             console.log(`Viewing ${selectedReport} report with data:`, donThueData);
             // Các báo cáo khác sẽ làm sau
@@ -162,13 +164,6 @@ const AdminDashboardReportRental = () => {
             description: 'Hiệu suất và tỷ lệ sử dụng của từng loại xe',
             icon: 'fa-car',
             features: ['Xe được thuê nhiều nhất', 'Tỷ lệ sử dụng', 'Doanh thu theo loại xe']
-        },
-        {
-            type: 'staff' as ReportType,
-            title: 'Báo cáo theo nhân viên',
-            description: 'Hiệu suất làm việc và số đơn xử lý của nhân viên',
-            icon: 'fa-user-tie',
-            features: ['Số đơn xử lý', 'Tỷ lệ thành công', 'Hiệu suất cá nhân']
         },
         {
             type: 'location' as ReportType,
