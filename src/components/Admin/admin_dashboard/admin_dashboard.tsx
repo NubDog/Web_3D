@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import './../../../styles/pages/Admin/AdminDashBoard.css';
 import Sub_Button from './../../Button/Sub-Button/Sub-Button';
 
@@ -6,6 +7,7 @@ type ReportType = 'rental' | 'contract' | null;
 
 const AdminDashboard = () => {
     const [selectedReport, setSelectedReport] = useState<ReportType>(null);
+    const navigate = useNavigate();
 
     const handleReportSelect = (reportType: ReportType) => {
         setSelectedReport(reportType);
@@ -100,7 +102,7 @@ const AdminDashboard = () => {
                                 <div className="action-buttons">
                                     <Sub_Button 
                                         content="Xem biểu đồ chi tiết" 
-                                        onClick={() => console.log(`Viewing ${selectedReport} report`)} 
+                                        onClick={() => navigate("../admin_dashboard_report-rental")} 
                                     />
                                 </div>
                             </div>
