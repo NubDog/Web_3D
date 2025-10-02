@@ -59,6 +59,22 @@
     color: #212529;
 }
 
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    /* Chuyển icon thành màu xám đậm (invert 20%) để dễ nhìn hơn */
+    filter: invert(100%);
+    transition: filter 0.2s ease; /* Thêm hiệu ứng chuyển động mượt mà */
+}
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+    /* Khi di chuột vào, icon sẽ gần như màu đen */
+    filter: invert(10%);
+}
+
+.form-group input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+    /* Khi di chuột vào, icon sẽ gần như màu đen */
+    filter: invert(10%);
+}
+
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {

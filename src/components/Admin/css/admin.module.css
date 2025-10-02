@@ -472,7 +472,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .filterToggleButton {
     background-color: #6c757d; /* Màu xám */
     color: white;
-    margin-left: 740px;
+    /* margin-left: 740px; */
+    margin-right: 10px;
 }
 
 .filterToggleButton:hover {

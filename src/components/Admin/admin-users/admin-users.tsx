@@ -323,15 +323,17 @@ const UserAdmin: React.FC = () => {
             <div className={styles.card}>
                 <div className={styles.cardHeader}>
                     <h2 className={styles.cardTitle}>Danh sách người dùng</h2>
-                    <button 
-                        onClick={() => setIsFilterVisible(!isFilterVisible)} 
-                        className={`${styles.button} ${styles.filterToggleButton}`}
-                    >
-                        Bộ lọc
-                    </button>
-                    <button onClick={() => handleOpenModal()} className={`${styles.button} ${styles.buttonPrimary}`}>
-                        Thêm người dùng mới
-                    </button>
+                    <div className='flex items-center gap-4'>
+                        <button 
+                            onClick={() => setIsFilterVisible(!isFilterVisible)} 
+                            className={`${styles.button} ${styles.filterToggleButton}`}
+                        >
+                            Bộ lọc
+                        </button>
+                        <button onClick={() => handleOpenModal()} className={`${styles.button} ${styles.buttonPrimary}`}>
+                            Thêm người dùng mới
+                        </button>
+                    </div>
                 </div>
                 <div className={styles.buttonGroup}>
                 </div>

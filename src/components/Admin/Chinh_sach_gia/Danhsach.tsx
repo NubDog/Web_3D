@@ -178,9 +178,9 @@ const ChinhSachGiaList: React.FC = () => {
             <tr>
               <th>STT</th>
               <th>Tên chính sách</th>
-              <th>Giá cơ bản</th>
+              {/* <th>Giá cơ bản</th> */}
               <th>Tiền cọc mặc định</th>
-              <th>Phí phạt cơ bản</th>
+              {/* <th>Phí phạt cơ bản</th> */}
               <th>Tỷ lệ giảm</th>
               {/* <th>Ngày tạo</th>
               <th>Ngày cập nhật</th> */}
@@ -192,9 +192,9 @@ const ChinhSachGiaList: React.FC = () => {
               <tr key={item.chinh_sach_id}>
                 <td>{idx + 1}</td>
                 <td>{item.ten_chinh_sach}</td>
-                <td>{item.gia_co_ban}</td>
+                {/* <td>{item.gia_co_ban}</td> */}
                 <td>{item.tien_coc_mac_dinh}</td>
-                <td>{item.phi_phat_co_ban}</td>
+                {/* <td>{item.phi_phat_co_ban}</td> */}
                 <td>{item.ty_le_giam ?? "—"}</td>
                 {/* <td>{item.ngay_tao}</td>
                 <td>{item.ngay_cap_nhat}</td> */}

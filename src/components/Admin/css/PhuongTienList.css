@@ -379,8 +379,9 @@
 }
 .filter-bar {
     padding: 1.5rem;
-    margin-top: 1rem;
-    background-color: #f8f9fa;
+    /* margin-top: 1rem; */
+    margin-bottom: 1rem;
+    background-color: #f7fbff;
     border-radius: 0.75rem;
     border: 1px solid #e2e8f0;
     
@@ -473,3 +474,4 @@
   background-color: #c3c4c4; /* Nền hơi xám khi hover */
   border-color: #9ca3af;
 }
+
