@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./Baotrilist.css";
+import './BaoTriList.css';
 import { useAuth } from "../../../contexts/AuthContext";
 
 interface BaoTriTongHop {
