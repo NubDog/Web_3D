@@ -1,18 +1,37 @@
 import react from 'react';
+import { useNavigate } from 'react-router-dom';
 import './../../styles/components/StoreBike/CardGallery.css'
 import './../../styles/components/StoreBike/StoreBikeProduct.css'
 import Placeholder from '../../assets/Ninja H2R.png';
 import Sub_Button from '../../components/Button/Sub-Button/Sub-Button'
 
 interface CardProps {
+    id: number;
     src_img: string;
     ten_phuong_tien: string;
     loai: string;
     gia_thue: string;
     bien_so: string;
+    gia_co_ban: number;
 }
 
-const StoreBikeProduct = ({src_img, ten_phuong_tien, loai, gia_thue, bien_so}: CardProps) => {
+const StoreBikeProduct = ({id, src_img, ten_phuong_tien, loai, gia_thue, bien_so, gia_co_ban}: CardProps) => {
+    const navigate = useNavigate();
+
+    const handleRentNow = () => {
+        navigate('/checkout', {
+            state: {
+                product: {
+                    id: id,
+                    product_name: ten_phuong_tien,
+                    product_category: loai,
+                    product_totalPrice: gia_co_ban,
+                    img: src_img
+                }
+            }
+        });
+    };
+
     return (
         <div className="StoreBikeProduct-container">
             <div className="StoreBikeProduct-img">
@@ -41,7 +60,7 @@ const StoreBikeProduct = ({src_img, ten_phuong_tien, loai, gia_thue, bien_so}: C
             <div className="StoreBikeProduct-button">
                 <Sub_Button 
                     content = 'Thuê ngay'
-                    onClick = {() => {}}
+                    onClick = {handleRentNow}
                 />
             </div>
         </div>

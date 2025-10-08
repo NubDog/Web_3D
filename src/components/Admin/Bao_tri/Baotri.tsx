@@ -43,14 +43,11 @@ const BaoTriList: React.FC = () => {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [chiTiet, setChiTiet] = useState<Record<number, BaoTriChiTiet[]>>({});
 
-  // modal
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // user từ context
   const { currentUser } = useAuth();
 
-  // form thêm
   const [formAdd, setFormAdd] = useState<any>({
     phuong_tien_id: 0,
     don_thue_id_lien_quan: 0,
@@ -60,7 +57,6 @@ const BaoTriList: React.FC = () => {
     nhan_vien_tao: currentUser?.nguoi_dung_id || 0,
   });
 
-  // form sửa
   const [formEdit, setFormEdit] = useState<any>({
     bao_tri_id: 0,
     mo_ta: "",
@@ -80,7 +76,6 @@ const BaoTriList: React.FC = () => {
       .then((json) => json.success && setPhuongTienList(json.data));
   }, []);
 
-  // cập nhật nhan_vien_tao khi user thay đổi (sau khi login)
   useEffect(() => {
     if (currentUser?.nguoi_dung_id) {
       setFormAdd((prev: any) => ({
@@ -105,7 +100,6 @@ const BaoTriList: React.FC = () => {
     }
   };
 
-  // mở modal thêm
   const openAddModal = () => {
     setFormAdd({
       phuong_tien_id: 0,
@@ -119,7 +113,6 @@ const BaoTriList: React.FC = () => {
     setShowAddModal(true);
   };
 
-  // khi chọn phương tiện → load đơn thuê liên quan
   const handleChangePhuongTien = async (id: number) => {
     setFormAdd({
       ...formAdd,

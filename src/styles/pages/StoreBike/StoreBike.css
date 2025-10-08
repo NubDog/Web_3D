@@ -162,6 +162,7 @@ html {
 .storeBike-title {
     font-size: 56px;
     font-weight: 600;
+    margin-bottom: 80px;
     padding-left: calc((100% - 1680px) / 2);
 }
 
@@ -182,6 +183,7 @@ html {
     width: 100%;
     margin-top: 160px;
     padding-top: 156px;
+    margin-bottom: 160px;
 }
 
 .StoreBike-product-container {

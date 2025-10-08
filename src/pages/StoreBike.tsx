@@ -6,6 +6,7 @@ import Footer from '../components/Footer/Footer';
 import Button from '../components/Button/Button';
 import StoreBikeGalleryCard from '../components/StoreBike/StoreGalleryCard';
 import StoreBikeProduct from './../components/StoreBike/StoreBikeProduct';
+import BannerCardSection from './../components/StoreComponents/BannerCardSection';
 import useVisibilityPercentage from '../hooks/useVisibilityPercentage';
 import videoShowcase from '../assets/Video ShowCase/Ninja H2： Vol.10 Ninja H2R - BUILT BEYOND BELIEF.mp4';
 import placeholderBike from '../assets/Ninja H2R.png';
@@ -18,6 +19,7 @@ import GalleryBike_Safety from './../assets/Gallery img/GalleryBike_Safety.png';
 import GalleryBike_Tech from './../assets/Gallery img/GalleryBike_Tech.jpg';
 import GalleryBike_off_road from './../assets/Gallery img/GalleryBike_off_road.jpg'
 import { SmoothStepBlock } from '@babylonjs/core';
+
 interface PhuongTien {
     phuong_tien_id: number;
     ten_phuong_tien: string;
@@ -343,16 +345,23 @@ const StoreBike = () => {
                         {phuongTien.map((bike) => (
                             <StoreBikeProduct
                                 key = {bike.phuong_tien_id}
+                                id = {bike.phuong_tien_id}
                                 src_img = {bike.img}
                                 ten_phuong_tien = {bike.ten_phuong_tien}
                                 loai = {bike.loai}
                                 gia_thue = {bike.gia_thue}
                                 bien_so = {bike.bien_so}
+                                gia_co_ban = {bike.gia_co_ban}
                             />
                         ))}
                     </div>
                 </div>
             </div>
+
+            <div className="BannerCardSection">
+                <BannerCardSection />
+            </div>
+
             <Footer />
         </div>
     );
