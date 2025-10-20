@@ -206,11 +206,13 @@ html {
 
 .BannerCardSection {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
     padding: 160px 0 165px 0;
     background-color: #A9B8C5;
+    gap: 165px;
 }
 
 .BannerCard-container {

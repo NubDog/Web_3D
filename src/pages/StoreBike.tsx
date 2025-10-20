@@ -18,8 +18,13 @@ import GalleryBike_FuelSaver from './../assets/Gallery img/GalleryBike_FuelSaver
 import GalleryBike_Style from './../assets/Gallery img/GalleryBike_Style.jpg';
 import GalleryBike_Safety from './../assets/Gallery img/GalleryBike_Safety.png';
 import GalleryBike_Tech from './../assets/Gallery img/GalleryBike_Tech.jpg';
-import GalleryBike_off_road from './../assets/Gallery img/GalleryBike_off_road.jpg'
+import GalleryBike_off_road from './../assets/Gallery img/GalleryBike_off_road.jpg';
 import { SmoothStepBlock } from '@babylonjs/core';
+
+import Bannerimg1 from './../assets/Banner img/2023-YAMAHA-MT-07.png';
+import Bannerimg2 from './../assets/Banner img/7-7-2.png';
+import Bannerimg3 from './../assets/Banner img/464dcfd2-42b3-471f-b1de-14559b12e46d.png';
+import Bannerimg4 from './../assets/Banner img/MG_Facelift_V85-Travel-NuovaGamma_box_1920x1440_moto-intera_2.png';
 
 interface PhuongTien {
     phuong_tien_id: number;
@@ -364,12 +369,45 @@ const StoreBike = () => {
                 <div className="BannerCard-container col-1658">
 
                     <TitleBanner
-                        title="Xe mo to 2 banh"
+                        title="Xe mô tô 2 bánh."
                     />
                     
                     <div className="BannerCard-content">
-                        <BannerCardSection />
-                        <BannerCardSection />
+                        <BannerCardSection
+                            img = {Bannerimg1}
+                            title = "Thuê xe máy. Tiện lợi vượt mong đợi."
+                            subtitle = "Lên kế hoạch cho chuyến đi của bạn? Với dịch vụ thuê xe máy của chúng tôi, bạn có thể dễ dàng chọn lựa chiếc xe ưng ý, tận hưởng sự tự do di chuyển và khám phá mọi ngóc ngách."
+                            link = "Xem ngay bộ sưu tập xe >"
+                        />
+                        <BannerCardSection
+                            img = {Bannerimg2}
+                            title = "Trải nghiệm hoàn hảo. Khám phá tự do."
+                            subtitle = "Tận hưởng cảm giác tự do tuyệt đối khi vi vu trên chiếc xe máy thuê. Xe luôn được bảo dưỡng định kỳ, trang bị đầy đủ an toàn, đảm bảo chuyến đi của bạn luôn suôn sẻ và đáng nhớ."
+                            link = "Tìm hiểu thêm về dịch vụ >"
+                        />
+                    </div>
+
+                </div>
+
+                <div className="BannerCard-container col-1658">
+
+                    <TitleBanner
+                        title="Xe mô tô 2 bánh."
+                    />
+                    
+                    <div className="BannerCard-content">
+                        <BannerCardSection
+                            img = {Bannerimg3}
+                            title = "Khám phá Việt Nam. Với mức giá tốt nhất."
+                            subtitle = "Dịch vụ thuê xe máy giúp bạn tiết kiệm chi phí di chuyển, linh hoạt lịch trình và trải nghiệm địa phương một cách chân thực nhất. Bắt đầu cuộc phiêu lưu của bạn ngay hôm nay!"
+                            link = "Xem bảng giá chi tiết >"
+                        />
+                        <BannerCardSection
+                            img = {Bannerimg4}
+                            title = "Hỗ trợ tận tâm. Mọi lúc mọi nơi."
+                            subtitle = "Đội ngũ của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7, từ lúc đặt xe đến khi kết thúc hành trình. An tâm trên mọi cung đường với sự đồng hành chuyên nghiệp."
+                            link = "Liên hệ hỗ trợ >"
+                        />
                     </div>
 
                 </div>

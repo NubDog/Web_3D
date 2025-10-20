@@ -1,27 +1,34 @@
 import React from 'react';
 import './../../styles/components/StoreComponents/BannerCardSection.css'
 
-const BannerCardSection = () => {
+interface BannerCardSectionProps {
+    img: string;
+    title: string;
+    subtitle: string;
+    link: string;
+}
+
+const BannerCardSection = ({img, title, subtitle, link}:BannerCardSectionProps) => {
     return (
         <div className="BannerCardSection-container animation-zoom">
 
             <div className="BannerCardSection-link main-link">
                 <a href="#">
-                    
+                    <img src={img} alt="" className="BannerCardSection-img"/>
                 </a>
             </div>
 
             <div className="BannerCardSection-content">
                 <div className="BannerCardSection-title BannerCardSection-width-480">
-                    Chọn xe, đặt lịch, lên đường.
+                    {title}
                 </div>
 
                 <div className="BannerCardSection-subtitle BannerCardSection-width-480">
-                    Không cần sở hữu. Chỉ cần trải nghiệm. Hàng trăm mẫu xe chất lượng cao, từ xe số đến xe tay côn, luôn sẵn sàng cho chuyến đi của bạn. Thủ tục nhanh gọn chỉ trong 5 phút.               
+                    {subtitle}
                 </div>
 
                 <div className="BannerCardSection-link BannerCardSection-width-480">
-                    <a href="#">Xem ngay</a>
+                    <a href="#">{link}</a>
                 </div>
             </div>
 

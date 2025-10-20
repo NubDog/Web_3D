@@ -65,10 +65,17 @@
     align-items: center;
 }
 
-.BannerCardSection-link:hover {
-    animation: zoom 1s ease-in-out;
+.BannerCardSection-link a {
+    display: flex;
+    flex-direction: column-reverse;
+
+    color: var(--text-blue);
 }
 
-.BannerCardSection-link a {
-    color: var(--text-blue);
+.BannerCardSection-img {
+    height: 380px;
+    width: 100%;
+    object-fit: contain;
+    object-position: center;
+    margin-bottom: 20px;
 }
