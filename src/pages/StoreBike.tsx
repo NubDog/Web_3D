@@ -411,6 +411,14 @@ const StoreBike = () => {
                     </div>
 
                 </div>
+                
+                <div className="BannerCard-container col-1658">
+
+                    <TitleBanner
+                        title="Xe Máy"
+                    />
+
+                </div>
 
             </div>
 
