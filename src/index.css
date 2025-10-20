@@ -21,7 +21,7 @@
   --white-blue: #F0F4F8;
   --white: #ffffff;
   --black: #000000;
-  --text-gray: #111827;
+  --text-gray: rgb(17, 24, 39);
   --text-gray-light: #6e6e73;
   --text-blue: #06c;
   --background-gray: rgba(22, 22, 23, .8);
@@ -126,6 +126,16 @@ button {
   }
 }
 
+.animation-zoom {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0) scale(1);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animation-zoom:hover {
+  transform: translateZ(0) scale(1.03);
+}
 .col-1617 {
   max-width: 1617px;
   width: 100%;
@@ -160,6 +170,12 @@ button {
 
 .text-font-17 {
   font-size: 17px;
+  font-weight: 600;
+  color: var(--text-gray);
+}
+
+.header-line {
+  font-size: 56px;
   font-weight: 600;
   color: var(--text-gray);
 }

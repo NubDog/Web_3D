@@ -6,7 +6,7 @@
     align-items: center;
     width: 806px;
     height: 684px;
-    background-color: var(--background-white);
+    background-color: var(--white);
     border-radius: 32px;
 
     padding: 60px 0 0 0;
@@ -29,4 +29,46 @@
     height: 100%;
     width: 100%;
     z-index: 10;
+}
+
+.BannerCardSection-content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.BannerCardSection-width-480 {
+    display: flex;
+    flex-wrap: wrap;
+    width: 480px;
+}
+
+.BannerCardSection-title {
+    font-size: 32px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.BannerCardSection-subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--text-gray);
+    text-align: center;
+}
+
+.BannerCardSection-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.BannerCardSection-link:hover {
+    animation: zoom 1s ease-in-out;
+}
+
+.BannerCardSection-link a {
+    color: var(--text-blue);
 }

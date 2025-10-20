@@ -203,3 +203,26 @@ html {
     padding-left: calc((100% - 1680px) / 2);
     padding-right: calc((100% - 1680px) /2);
 }
+
+.BannerCardSection {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 160px 0 165px 0;
+    background-color: #A9B8C5;
+}
+
+.BannerCard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.BannerCard-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}

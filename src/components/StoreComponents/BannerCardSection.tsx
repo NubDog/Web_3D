@@ -3,23 +3,25 @@ import './../../styles/components/StoreComponents/BannerCardSection.css'
 
 const BannerCardSection = () => {
     return (
-        <div className="BannerCardSection-container">
+        <div className="BannerCardSection-container animation-zoom">
 
             <div className="BannerCardSection-link main-link">
-                <a href="#"></a>
+                <a href="#">
+                    
+                </a>
             </div>
 
             <div className="BannerCardSection-content">
-                <div className="BannerCardSection-title">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                <div className="BannerCardSection-title BannerCardSection-width-480">
+                    Chọn xe, đặt lịch, lên đường.
                 </div>
 
-                <div className="BannerCardSection-subtitle">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia ducimus cupiditate quos illum obcaecati repellendus pariatur voluptatibus nihil earum vero! Labore quasi magni quaerat itaque pariatur illo reprehenderit sequi doloribus?               
+                <div className="BannerCardSection-subtitle BannerCardSection-width-480">
+                    Không cần sở hữu. Chỉ cần trải nghiệm. Hàng trăm mẫu xe chất lượng cao, từ xe số đến xe tay côn, luôn sẵn sàng cho chuyến đi của bạn. Thủ tục nhanh gọn chỉ trong 5 phút.               
                 </div>
 
-                <div className="BannerCardSection-link">
-                    <a href="#">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum non a quasi? Quae, itaque accusamus aut accusantium fuga ratione velit a voluptate provident, atque nihil eligendi incidunt exercitationem animi possimus?</a>
+                <div className="BannerCardSection-link BannerCardSection-width-480">
+                    <a href="#">Xem ngay</a>
                 </div>
             </div>
 
