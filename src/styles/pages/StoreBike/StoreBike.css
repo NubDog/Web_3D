@@ -222,6 +222,11 @@ html {
     justify-content: center;
 }
 
+.BannerCard-container-list {
+    margin-top: 160px;
+    margin-bottom: 160px;
+}
+
 .BannerCard-content {
     display: flex;
     align-items: center;

@@ -8,6 +8,7 @@ import StoreBikeGalleryCard from '../components/StoreBike/StoreGalleryCard';
 import StoreBikeProduct from './../components/StoreBike/StoreBikeProduct';
 import BannerCardSection from './../components/StoreComponents/BannerCardSection';
 import TitleBanner from './../components/TitleBanner/TitleBanner';
+import ListBikeSection from './../components/StoreComponents/ListBikeSection';
 import useVisibilityPercentage from '../hooks/useVisibilityPercentage';
 import videoShowcase from '../assets/Video ShowCase/Ninja H2： Vol.10 Ninja H2R - BUILT BEYOND BELIEF.mp4';
 import placeholderBike from '../assets/Ninja H2R.png';
@@ -412,13 +413,16 @@ const StoreBike = () => {
 
                 </div>
                 
-                <div className="BannerCard-container col-1658">
 
-                    <TitleBanner
-                        title="Xe Máy"
-                    />
+            </div>
 
-                </div>
+            <div className="BannerCard-container col-1658 BannerCard-container-list">
+
+                <TitleBanner
+                    title="Xe Máy"
+                />
+
+                <ListBikeSection />
 
             </div>
 

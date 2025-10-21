@@ -1,0 +1,23 @@
+.ListBikeSection-container {
+    display: flex;
+    gap: 90px;
+    width: 100%;
+}
+
+.ListBikeSection-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ListBikeSection-list li a {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-gray);
+}
+
+.ListBikeSection-title {
+    color: var(--text-gray-light);
+    font-size: 18px;
+    font-weight: 500;
+}
