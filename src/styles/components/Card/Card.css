@@ -141,9 +141,9 @@
     display: flex;
     justify-content: space-between;
     position: absolute;
-    top: 50%;
+    top: 60%;
     right: 0;
-    transfrom: translateY(-50%);
+    transform: translateY(-50%);
     gap: 12px;
     width: 100%;
     padding: 0 28px;
