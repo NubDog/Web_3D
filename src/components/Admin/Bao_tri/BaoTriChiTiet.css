@@ -1,0 +1,286 @@
+/* --- Base Reset & General Layout --- */
+.baotri-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 20px auto;
+  font-family: "Roboto", Arial, sans-serif;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  color: #007bff;
+  border-bottom: 3px solid #007bff;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  font-size: 2em;
+}
+
+.sub-header {
+  color: #343a40;
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+  font-size: 1.25em;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #dee2e6;
+  margin: 25px 0;
+}
+
+.sub-divider {
+  margin: 15px 0;
+  border-top: 1px dashed #eee;
+}
+
+/* --- Grid & Cards --- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.card {
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cost-text {
+  font-weight: bold;
+  color: #dc3545;
+  font-size: 1.1em;
+}
+
+/* --- Status Badge --- */
+.status-header {
+  margin-bottom: 20px;
+}
+
+.status-badge {
+  font-weight: bold;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Status Colors */
+.badge-pending {
+  background-color: #ffc107;
+} /* Chờ duyệt */
+.badge-approved {
+  background-color: #28a745;
+} /* Đã duyệt */
+.badge-scheduled {
+  background-color: #17a2b8;
+} /* Đang lên lịch */
+.badge-in-progress {
+  background-color: #fd7e14;
+} /* Đang bảo trì */
+.badge-completed {
+  background-color: #007bff;
+} /* Đã hoàn thành */
+.badge-cancelled {
+  background-color: #dc3545;
+} /* Đã hủy */
+.badge-default {
+  background-color: #6c757d;
+}
+
+/* --- Timeline (Thanh Tiến Trình) --- */
+.timeline-container {
+  padding: 15px 20px;
+  border: 1px solid #007bff30;
+  border-radius: 8px;
+  background: #e6f7ff;
+  margin-bottom: 20px;
+}
+
+.timeline-cancelled {
+  border: 1px solid #dc3545 !important;
+  background: #f8d7da !important;
+  color: #721c24;
+}
+
+.timeline-message {
+  margin: 0;
+  font-weight: bold;
+}
+
+.timeline-sub-message {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.timeline-track {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Sửa thành flex-start để căn trên */
+  position: relative;
+  padding: 20px 0;
+}
+
+/* Đường kẻ ngang (Lưu ý: dùng before/after để tạo đường kẻ giả) */
+.timeline-track::before {
+  content: "";
+  position: absolute;
+  top: 35px; /* Căn giữa chiều cao circle */
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #ccc;
+  z-index: 5;
+}
+
+.timeline-step {
+  flex: 1;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 5px;
+}
+
+/* Đánh dấu đường kẻ đã hoàn thành */
+.timeline-step.completed ~ .timeline-step::before {
+  /* Không dùng được cách này cho CSS class, cần xử lý trong JS hoặc dùng thư viện */
+}
+
+.timeline-step:first-child {
+  padding-left: 0;
+}
+.timeline-step:last-child {
+  padding-right: 0;
+  /* Loại bỏ khoảng trống ảo ở cuối timeline */
+  flex: 0;
+}
+
+.timeline-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #ccc; /* Default */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.timeline-step.completed .timeline-circle {
+  background-color: #28a745;
+}
+
+.timeline-step.active .timeline-circle {
+  border: 3px solid #007bff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
+  transform: scale(1.1);
+}
+
+.timeline-label {
+  margin-top: 10px;
+  font-size: 0.9em;
+  font-weight: normal;
+  color: #6c757d;
+  max-width: 100px;
+}
+
+.timeline-step.active .timeline-label {
+  font-weight: bold;
+  color: #007bff;
+}
+
+/* --- Action & Button Group --- */
+.action-section {
+  padding: 20px;
+  border: 1px solid #007bff;
+  border-radius: 8px;
+  background: #f0f8ff;
+  margin-top: 20px;
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.button {
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-size: 0.9em;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  min-width: 180px;
+}
+
+.button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.button-primary {
+  background-color: #17a2b8;
+  color: white;
+}
+.button-approve {
+  background-color: #28a745;
+  color: white;
+}
+.button-reject {
+  background-color: #dc3545;
+  color: white;
+}
+.button-warning {
+  background-color: #ffc107;
+  color: #333;
+}
+.button-complete {
+  background-color: #007bff;
+  color: white;
+}
+
+.status-message {
+  margin: 0;
+  font-weight: bold;
+  color: #6c757d;
+}
+
+/* --- Image Section (dù đã bỏ ảnh, giữ lại style khung) --- */
+.image-section {
+  text-align: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #ced4da;
+}
+
+.image-sub-header {
+  margin-top: 0 !important;
+}
+
+.image {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  border-radius: 8px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}

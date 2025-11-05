@@ -11,8 +11,8 @@ import {
   FaBars,
   FaClipboardList,
   FaExclamationTriangle,
-  FaHome,        
-  FaSignOutAlt,
+  FaHome,
+  FaSignOutAlt,
 } from "react-icons/fa";
 
 interface SidebarProps {
@@ -92,83 +92,107 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
             </ul>
           )}
         </li>
-      
 
-      <li className="dropdown-item">
-        <div
-          className="nav-link dropdown-toggle"
-          onClick={() => handleDropdownToggle("orders")}
-        >
-          <div className="nav-link-main">
-            <FaClipboardList className="nav-icon" />
-            {isOpen && <span>Đơn Thuê</span>}
+        <li className="dropdown-item">
+          <div
+            className="nav-link dropdown-toggle"
+            onClick={() => handleDropdownToggle("orders")}
+          >
+            <div className="nav-link-main">
+              <FaClipboardList className="nav-icon" />
+              {isOpen && <span>Đơn Thuê</span>}
+            </div>
+            {isOpen && (
+              <FaChevronDown
+                className={`dropdown-arrow ${
+                  openDropdown === "orders" ? "open" : ""
+                }`}
+              />
+            )}
           </div>
           {isOpen && (
-            <FaChevronDown
-              className={`dropdown-arrow ${
+            <ul
+              className={`dropdown-menu ${
                 openDropdown === "orders" ? "open" : ""
               }`}
-            />
+            >
+              <li>
+                <NavLink to="/admin/orders/all" className="nav-link">
+                  - Tất cả đơn
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/orders/pending" className="nav-link">
+                  - Đơn chờ duyệt
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/orders/approved" className="nav-link">
+                  - Đã duyệt
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/orders/active" className="nav-link">
+                  - Đang thuê
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/orders/returned" className="nav-link">
+                  - Đã trả
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/orders/completed" className="nav-link">
+                  - Đã hoàn tất
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/orders/cancelled" className="nav-link">
+                  - Đã hủy
+                </NavLink>
+              </li>
+            </ul>
           )}
-        </div>
-        {isOpen && (
-          <ul
-            className={`dropdown-menu ${
-              openDropdown === "orders" ? "open" : ""
-            }`}
+        </li>
+        <li>
+          <NavLink to="/admin/violations" className="nav-link">
+            <FaExclamationTriangle className="nav-icon" />
+            {isOpen && <span>Vi phạm</span>}
+          </NavLink>
+        </li>
+        <li className="dropdown-item">
+          <div
+            className="nav-link dropdown-toggle"
+            onClick={() => handleDropdownToggle("maintenance")}
           >
-            <li>
-              <NavLink to="/admin/orders/all" className="nav-link">
-                - Tất cả đơn
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/admin/orders/pending" className="nav-link">
-                - Đơn chờ duyệt
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/admin/orders/approved" className="nav-link">
-                - Đã duyệt
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/admin/orders/active" className="nav-link">
-                - Đang thuê
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/admin/orders/returned" className="nav-link">
-                - Đã trả
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/admin/orders/completed" className="nav-link">
-                - Đã hoàn tất
-              </NavLink>
-            </li>
-            <li>
-              <NavLink to="/admin/orders/cancelled" className="nav-link">
-                - Đã hủy
-              </NavLink>
-            </li>
-          </ul>
-        )}
-      </li>
-      <li>
-        <NavLink to="/admin/violations" className="nav-link">
-          <FaExclamationTriangle className="nav-icon" />
-          {isOpen && <span>Vi phạm</span>}
-        </NavLink>
-      </li>
-      <li>
-        <NavLink to="/admin/bao_tri" className="nav-link">
-          <FaTachometerAlt className="nav-icon" />
-          {isOpen && <span>Bảo Trì</span>}
-        </NavLink>
-      </li>
+            <div className="nav-link-main">
+              <FaClipboardList className="nav-icon" />
+              {isOpen && <span>Bảo Trì</span>}
+            </div>
+            {isOpen && (
+              <FaChevronDown
+                className={`dropdown-arrow ${
+                  openDropdown === "maintenance" ? "open" : ""
+                }`}
+              />
+            )}
+          </div>
+          {isOpen && (
+            <ul
+              className={`dropdown-menu ${
+                openDropdown === "maintenance" ? "open" : ""
+              }`}
+            >
+              <li>
+                <NavLink to="/admin/bao_tri" className="nav-link">
+                  - Tất cả bảo trì
+                </NavLink>
+              </li>
+            </ul>
+          )}
+        </li>
       </ul>
-       <div className="sidebar-footer">
+      <div className="sidebar-footer">
         {/* Dùng lại cấu trúc ul/li giống như menu chính */}
         <ul className="sidebar-menu">
           <li>
@@ -185,8 +209,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
           </li>
         </ul>
       </div>
-      </div>
-    
+    </div>
   );
 };
 

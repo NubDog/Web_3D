@@ -1,7 +1,8 @@
+// code của thành
 import React, { useEffect, useState } from "react";
-import './BaoTriList.css';
+import "./Baotrilist.css";
 import { useAuth } from "../../../contexts/AuthContext";
-
+import { Link } from "react-router-dom";
 interface BaoTriTongHop {
   phuong_tien_id: number;
   ten_phuong_tien: string;
@@ -43,11 +44,14 @@ const BaoTriList: React.FC = () => {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [chiTiet, setChiTiet] = useState<Record<number, BaoTriChiTiet[]>>({});
 
+  // modal
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // user từ context
   const { currentUser } = useAuth();
 
+  // form thêm
   const [formAdd, setFormAdd] = useState<any>({
     phuong_tien_id: 0,
     don_thue_id_lien_quan: 0,
@@ -57,6 +61,7 @@ const BaoTriList: React.FC = () => {
     nhan_vien_tao: currentUser?.nguoi_dung_id || 0,
   });
 
+  // form sửa
   const [formEdit, setFormEdit] = useState<any>({
     bao_tri_id: 0,
     mo_ta: "",
@@ -76,6 +81,7 @@ const BaoTriList: React.FC = () => {
       .then((json) => json.success && setPhuongTienList(json.data));
   }, []);
 
+  // cập nhật nhan_vien_tao khi user thay đổi (sau khi login)
   useEffect(() => {
     if (currentUser?.nguoi_dung_id) {
       setFormAdd((prev: any) => ({
@@ -100,6 +106,7 @@ const BaoTriList: React.FC = () => {
     }
   };
 
+  // mở modal thêm
   const openAddModal = () => {
     setFormAdd({
       phuong_tien_id: 0,
@@ -113,6 +120,7 @@ const BaoTriList: React.FC = () => {
     setShowAddModal(true);
   };
 
+  // khi chọn phương tiện → load đơn thuê liên quan
   const handleChangePhuongTien = async (id: number) => {
     setFormAdd({
       ...formAdd,
@@ -157,7 +165,7 @@ const BaoTriList: React.FC = () => {
       don_thue_id_lien_quan: formAdd.don_thue_id_lien_quan,
       mo_ta: formAdd.mo_ta.trim(),
       chi_phi: parseFloat(formAdd.chi_phi),
-      trang_thai: formAdd.trang_thai,
+      trang_thai: "CHỜ_DUYỆT",
       nhan_vien_tao: currentUser?.nguoi_dung_id || 0,
     };
 
@@ -225,7 +233,7 @@ const BaoTriList: React.FC = () => {
 
   return (
     <div className="bao-tri-container">
-      {/* Header */}
+
       <div className="bao-tri-header">
         <h2 className="Text">Danh sách Bảo Trì</h2>
         <button className="bao-tri-add" onClick={openAddModal}>
@@ -272,10 +280,10 @@ const BaoTriList: React.FC = () => {
                         <table className="bao-tri-subtable">
                           <thead>
                             <tr>
-                              <th>ID</th>
+                              <th>STT</th>
                               <th>Mô tả</th>
                               <th>Chi phí</th>
-                              <th>Trạng thái</th>
+                  
                               <th>Người tạo</th>
                               <th>Ngày tạo</th>
                               <th>Ngày cập nhật</th>
@@ -283,43 +291,24 @@ const BaoTriList: React.FC = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {chiTiet[row.phuong_tien_id].map((ct) => (
+                            {chiTiet[row.phuong_tien_id].map((ct, index) => (
                               <tr key={ct.bao_tri_id}>
-                                <td>{ct.bao_tri_id}</td>
+                                <td>{index + 1}</td>
                                 <td>{ct.mo_ta}</td>
                                 <td>{ct.chi_phi.toLocaleString("vi-VN")} đ</td>
-                                <td>
-                                  <span
-                                    className={`status-badge status-${ct.trang_thai}`}
-                                  >
-                                    {ct.trang_thai.replace("_", " ")}
-                                  </span>
-                                </td>
+                       
 
                                 <td>{ct.ten_nguoi_tao}</td>
                                 <td>{ct.ngay_tao}</td>
                                 <td>{ct.ngay_cap_nhat}</td>
+
                                 <td>
-                                  <button
-                                    onClick={() => {
-                                      setFormEdit({
-                                        bao_tri_id: ct.bao_tri_id,
-                                        mo_ta: ct.mo_ta,
-                                        chi_phi: ct.chi_phi.toString(),
-                                        trang_thai: ct.trang_thai,
-                                      });
-                                      setShowEditModal(true);
-                                    }}
-                                    className="bao-tri-edit"
+                                  <Link
+                                    to={`/admin/bao_tri/chitiet/${ct.bao_tri_id}`}
+                                    className="bao-tri-chitiet"
                                   >
-                                    Sửa
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(ct.bao_tri_id)}
-                                    className="bao-tri-delete"
-                                  >
-                                    Xóa
-                                  </button>
+                                    Xem chi tiết
+                                  </Link>
                                 </td>
                               </tr>
                             ))}
@@ -395,19 +384,7 @@ const BaoTriList: React.FC = () => {
               }
             />
 
-            <label className="Text">Trạng thái</label>
-            <select
-              className="Text"
-              value={formAdd.trang_thai}
-              onChange={(e) =>
-                setFormAdd({ ...formAdd, trang_thai: e.target.value })
-              }
-            >
-              <option value="HỦY">Hủy</option>
-              <option value="CHỜ_DUYỆT">Chờ duyệt</option>
-              <option value="ĐANG_XỬ_LÝ">Đang xử lý</option>
-              <option value="HOÀN_THÀNH">Hoàn thành</option>
-            </select>
+            
 
             <div className="modal-actions">
               <button onClick={handleAdd} className="bao-tri-save">
@@ -418,57 +395,9 @@ const BaoTriList: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Modal sửa */}
-      {showEditModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3 className="Text">Sửa bảo trì</h3>
-            <label className="Text">Mô tả</label>
-            <input
-              className="Text"
-              type="text"
-              value={formEdit.mo_ta}
-              onChange={(e) =>
-                setFormEdit({ ...formEdit, mo_ta: e.target.value })
-              }
-            />
-
-            <label className="Text">Chi phí</label>
-            <input
-              className="Text"
-              type="number"
-              value={formEdit.chi_phi}
-              onChange={(e) =>
-                setFormEdit({ ...formEdit, chi_phi: e.target.value })
-              }
-            />
-
-            <label className="Text">Trạng thái</label>
-            <select
-              className="Text"
-              value={formEdit.trang_thai}
-              onChange={(e) =>
-                setFormEdit({ ...formEdit, trang_thai: e.target.value })
-              }
-            >
-              <option value="HỦY">Hủy</option>
-              <option value="CHỜ_DUYỆT">Chờ duyệt</option>
-              <option value="ĐANG_XỬ_LÝ">Đang xử lý</option>
-              <option value="HOÀN_THÀNH">Hoàn thành</option>
-            </select>
-
-            <div className="modal-actions">
-              <button onClick={handleEdit} className="bao-tri-save">
-                Cập nhật
-              </button>
-              <button onClick={() => setShowEditModal(false)}>Hủy</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
 
 export default BaoTriList;
+

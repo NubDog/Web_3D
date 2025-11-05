@@ -35,7 +35,7 @@ import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
 import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation } from './Admin/vi-pham';
-import { addBaoTri, deleteBaotri, getBaotriChiTiet, getBaotriTongHop, getDonThueByPhuongTien, updateBaotri } from './Admin/Bao-tri';
+import { addBaoTri, deleteBaotri, getBaotrichitiet, getBaotriChiTiet, getBaotriTongHop, getDonThueByPhuongTien, updateBaotri } from './Admin/Bao-tri';
 
 interface Env {
 	ua: R2Bucket;
@@ -331,7 +331,7 @@ export default {
 
 			// ------------------- User Hợp Đồng -------------------
 			if (path === '/api/user-hop-dong' && method === 'GET') {
-				return 	handleGetUserContract(request, env);
+				return handleGetUserContract(request, env);
 			}
 
 			// ------------------- Login -------------------
@@ -365,6 +365,11 @@ export default {
 				const url = new URL(request.url);
 				const phuongTienId = url.searchParams.get('phuong_tien_id');
 				return getDonThueByPhuongTien(request, env, phuongTienId ? parseInt(phuongTienId, 10) : 0);
+			}
+			const baotrichitiet = path.match(/^\/Admin\/baotri\/chitiet\/(\d+)$/);
+			if (baotrichitiet && method === 'POST') {
+				const baoTriId = parseInt(baotrichitiet[1], 10);
+				return getBaotrichitiet(request, env, baoTriId);
 			}
 
 			// ------------------- Default -------------------

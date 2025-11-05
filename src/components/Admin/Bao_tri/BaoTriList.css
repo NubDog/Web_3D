@@ -146,9 +146,9 @@
   border-radius: 6px;
 }
 
-.bao-tri-delete {
-  background: #f44336;
-  color: white;
+.bao-tri-chitiet {
+  background: #288b62 !important;
+  color: white !important;
   border: none;
   padding: 4px 10px;
   border-radius: 6px;

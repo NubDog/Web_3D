@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import {  ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import BabylonTankViewer from "./components/babylon";
 import FileManager from "./components/ManagerFile_R2Storage/FileManager";
@@ -39,81 +39,103 @@ import AdminReportingLocation from "./components/Admin/admin_dashboard/admin_das
 import AdminReportingStatus from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_status";
 import AdminReportingFinance from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_finance";
 import AdminRoute from "./components/Admin/AdminRoute";
+import BaoTriChiTiet from "./components/Admin/Bao_tri/Bao_tri_chitiet";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/store" element={<Store />} />
-            <Route path="/store/store-bike" element={<StoreBike />} />
-            <Route path="/user/order" element={<AccountOrder />} />
-            <Route path="/user/contract" element={<UserContract />} />
-            <Route path="/signin" element={<SignInPage />} />
-            <Route path="/account_home" element={<AccountHome />} />
-            <Route
-              path="/account_home/account_home_kyc"
-              element={<AccountHome_KYC />}
-            />
-            <Route path="/checkout" element={<CheckOut />} />
-            <Route path="/product_detail" element={<ProductDetailPage />} />
-            {/* <Route path="/signup" element={<SignUp />} /> */}
-            {/* Trang edit components */}
-            <Route path="/edit-components" element={<EditComponents />} />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/store" element={<Store />} />
+          <Route path="/store/store-bike" element={<StoreBike />} />
+          <Route path="/user/order" element={<AccountOrder />} />
+          <Route path="/user/contract" element={<UserContract />} />
+          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/account_home" element={<AccountHome />} />
+          <Route
+            path="/account_home/account_home_kyc"
+            element={<AccountHome_KYC />}
+          />
+          <Route path="/checkout" element={<CheckOut />} />
+          <Route path="/product_detail" element={<ProductDetailPage />} />
+          {/* <Route path="/signup" element={<SignUp />} /> */}
+          {/* Trang edit components */}
+          <Route path="/edit-components" element={<EditComponents />} />
+          {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}
+          <Route element={<AdminRoute />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="users" />} />
+              <Route path="admin_dashboard" element={<Admin_dashboard />} />
+              <Route
+                path="admin_dashboard_report-rental"
+                element={<AdminDashboardReportRental />}
+              />
+              <Route
+                path="AdminReportingOverTime"
+                element={<AdminReportingOverTime />}
+              />
+              <Route
+                path="AdminReportingCustomer"
+                element={<AdminReportingCustomer />}
+              />
+              <Route
+                path="AdminReportingVehicle"
+                element={<AdminReportingVehicle />}
+              />
+              <Route
+                path="AdminReportingLocation"
+                element={<AdminReportingLocation />}
+              />
+              <Route
+                path="AdminReportingStatus"
+                element={<AdminReportingStatus />}
+              />
+              <Route
+                path="AdminReportingFinance"
+                element={<AdminReportingFinance />}
+              />
+              <Route path="users" element={<UserAdmin />} />
+              <Route
+                path="users/:userId/customer-detail"
+                element={<CustomerDetail />}
+              />
 
-            {/* Muốn vào trang admin gõ /admin nha mấy thằng lồn */}
-            <Route element={<AdminRoute />}>
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<Navigate to="users" />} />
-                <Route path="admin_dashboard" element={<Admin_dashboard />} />
-                <Route path="admin_dashboard_report-rental" element={<AdminDashboardReportRental />} />
-                <Route path="AdminReportingOverTime" element={<AdminReportingOverTime />} />
-                <Route path="AdminReportingCustomer" element={<AdminReportingCustomer />} />
-                <Route path="AdminReportingVehicle" element={<AdminReportingVehicle />} />
-                <Route path="AdminReportingLocation" element={<AdminReportingLocation />} />
-                <Route path="AdminReportingStatus" element={<AdminReportingStatus />} />
-                <Route path="AdminReportingFinance" element={<AdminReportingFinance />} />
-                <Route path="users" element={<UserAdmin />} />
-                <Route
-                  path="users/:userId/customer-detail"
-                  element={<CustomerDetail />}
-                />
+              <Route path="phuong-tien" element={<PhuongTienList />} />
+              <Route
+                path="phuong-tien/them/:id?"
+                element={<PhuongTienModal />}
+              />
+              <Route
+                path="danh-muc-phuong-tien"
+                element={<DanhMucPhuongTienList />}
+              />
+              <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
 
-                <Route path="phuong-tien" element={<PhuongTienList />} />
-                <Route
-                  path="phuong-tien/them/:id?"
-                  element={<PhuongTienModal />}
-                />
-                <Route
-                  path="danh-muc-phuong-tien"
-                  element={<DanhMucPhuongTienList />}
-                />
-                <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
-
-                <Route path="orders/:status" element={<OrderList />} />
-                <Route path="order/:orderId" element={<OrderDetail />} />
-                <Route path="violations" element={<ViolationList />} />
-                <Route path="bao_tri" element={<BaoTriList />} />
-              </Route>
+              <Route path="orders/:status" element={<OrderList />} />
+              <Route path="order/:orderId" element={<OrderDetail />} />
+              <Route path="violations" element={<ViolationList />} />
+              <Route path="bao_tri" element={<BaoTriList />} />
+              <Route path="bao_tri/chitiet/:id" element={<BaoTriChiTiet />} />
             </Route>
-            //{" "}
-            {/* <Route path="/babylon" element={<BabylonTankViewer />} />
+          </Route>
+          //{" "}
+          {/* <Route path="/babylon" element={<BabylonTankViewer />} />
           // <Route path="/test-sql" element={<TestConectSql />} /> 
           // */}
-          </Routes>
-           <ToastContainer
-            position="top-right"
-            autoClose={3000} // Tự động đóng sau 3 giây
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-          />
+        </Routes>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000} // Tự động đóng sau 3 giây
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </AuthProvider>
     </BrowserRouter>
   );
