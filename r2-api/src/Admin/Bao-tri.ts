@@ -234,3 +234,53 @@ export async function getBaotrichitiet(request: Request, env: Env, id: number): 
 		return withCORS({ success: false, error: 'Lỗi khi lấy chi tiết bảo trì: ' + error.message }, 500);
 	}
 }
+// Xem Bảo Trì Chờ Duyệt :
+export async function getBaotri(request: Request, env: Env): Promise<Response> {
+	try {
+		// Lấy query param "status"
+		const url = new URL(request.url);
+		const status = url.searchParams.get('status');
+
+		// Các trạng thái hợp lệ
+		const validStatuses = ['CHO_DUYET', 'DA_DUYET', 'DANG_LEN_LICH', 'DANG_BAO_TRI', 'CHO_KIEM_TRA_BAN_GIAO', 'DA_HOAN_THANH', 'DA_HUY'];
+
+		// Câu SQL cơ bản
+		let query = `
+			SELECT 
+				d.*, 
+				nd.ho_ten AS ten_nhan_vien, 
+				pt.ten_phuong_tien, 
+				c.don_thue_id
+			FROM BaoTri d
+			LEFT JOIN NguoiDung nd ON nd.nguoi_dung_id = d.nhan_vien_tao
+			LEFT JOIN PhuongTien pt ON pt.phuong_tien_id = d.phuong_tien_id
+			LEFT JOIN DonThue c ON c.don_thue_id = d.don_thue_id_lien_quan
+		`;
+
+		// Nếu có status hợp lệ → lọc theo trạng thái
+		if (status && validStatuses.includes(status)) {
+			query += ` WHERE d.trang_thai = '${status}'`;
+		} else {
+			// Nếu không có → lấy toàn bộ trạng thái hợp lệ
+			query += ` WHERE d.trang_thai IN (${validStatuses.map((s) => `'${s}'`).join(',')})`;
+		}
+
+		query += ` ORDER BY d.ngay_tao DESC`;
+
+		// Thực thi query
+		const result = await env.DB.prepare(query).all();
+
+		return withCORS({
+			success: true,
+			data: result.results,
+		});
+	} catch (error: any) {
+		return withCORS(
+			{
+				success: false,
+				error: 'Lỗi khi lấy danh sách bảo trì: ' + error.message,
+			},
+			500
+		);
+	}
+}

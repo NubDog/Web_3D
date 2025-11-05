@@ -40,6 +40,7 @@ import AdminReportingStatus from "./components/Admin/admin_dashboard/admin_dashb
 import AdminReportingFinance from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_reporting_finance";
 import AdminRoute from "./components/Admin/AdminRoute";
 import BaoTriChiTiet from "./components/Admin/Bao_tri/Bao_tri_chitiet";
+import BaoTritrangthai from "./components/Admin/Bao_tri/Bao_tri_List";
 
 function App() {
   return (
@@ -117,6 +118,7 @@ function App() {
               <Route path="violations" element={<ViolationList />} />
               <Route path="bao_tri" element={<BaoTriList />} />
               <Route path="bao_tri/chitiet/:id" element={<BaoTriChiTiet />} />
+              <Route path="bao_tri/:status" element={<BaoTritrangthai />} />
             </Route>
           </Route>
           //{" "}

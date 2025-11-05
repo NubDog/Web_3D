@@ -35,7 +35,17 @@ import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
 import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation } from './Admin/vi-pham';
-import { addBaoTri, deleteBaotri, getBaotrichitiet, getBaotriChiTiet, getBaotriTongHop, getDonThueByPhuongTien, updateBaotri } from './Admin/Bao-tri';
+import {
+	addBaoTri,
+	deleteBaotri,
+	getBaotri,
+	getBaotrichitiet,
+	getBaotriChiTiet,
+	getBaotrichoduyet,
+	getBaotriTongHop,
+	getDonThueByPhuongTien,
+	updateBaotri,
+} from './Admin/Bao-tri';
 
 interface Env {
 	ua: R2Bucket;
@@ -370,6 +380,9 @@ export default {
 			if (baotrichitiet && method === 'POST') {
 				const baoTriId = parseInt(baotrichitiet[1], 10);
 				return getBaotrichitiet(request, env, baoTriId);
+			}
+			if (path === '/Admin/baotri' && method === 'GET') {
+				return getBaotri(request, env);
 			}
 
 			// ------------------- Default -------------------

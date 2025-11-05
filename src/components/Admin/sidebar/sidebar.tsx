@@ -184,8 +184,46 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
               }`}
             >
               <li>
-                <NavLink to="/admin/bao_tri" className="nav-link">
+                <NavLink to="/admin/bao_tri" end className="nav-link">
                   - Tất cả bảo trì
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/bao_tri/cho_duyet" className="nav-link">
+                  - Chờ Duyệt
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/bao_tri/da_duyet" className="nav-link">
+                  - Đã Duyệt
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/bao_tri/dang_len_lich" className="nav-link">
+                  - Đang Lên Lịch
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/bao_tri/dang_bao_tri" className="nav-link">
+                  - Đang Bảo Trì
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/admin/bao_tri/cho_kiem_tra_ban_giao"
+                  className="nav-link"
+                >
+                  - Cho Kiểm Tra Bàn Giao
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/bao_tri/da_hoan_thanh" className="nav-link">
+                  - Đã Hoàn Thành
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/bao_tri/da_huy" className="nav-link">
+                  - Đã Hủy
                 </NavLink>
               </li>
             </ul>
