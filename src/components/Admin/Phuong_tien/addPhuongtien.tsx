@@ -125,9 +125,9 @@ const PhuongTienModal: React.FC = () => {
     if (data.so_km !== undefined && data.so_km <= 0) {
       errors.so_km = "Số km không được âm và phải lớn hơn 0";
     }
-    if (!data.trang_thai) {
-      errors.trang_thai = "Vui lòng chọn trạng thái";
-    }
+    // if (!data.trang_thai) {
+    //   errors.trang_thai = "Vui lòng chọn trạng thái";
+    // }
     if (!data.loai) {
       errors.loai = "Vui lòng nhập loại phương tiện";
     }
@@ -166,12 +166,12 @@ const PhuongTienModal: React.FC = () => {
       ten_phuong_tien: (formData.get("ten_phuong_tien") as string) || "",
       bien_so: (formData.get("bien_so") as string) || "",
       so_km: Number(formData.get("so_km")) || 0,
-      trang_thai: (formData.get("trang_thai") as string) || "",
+      trang_thai: "SAN_SANG" ,  //(formData.get("trang_thai") as string) || "",
       loai: (formData.get("loai") as string) || "",
       danh_muc_id: Number(formData.get("danh_muc_id")) || 0,
       so_khung: (formData.get("so_khung") as string) || "",
       gia_thue,
-      chinh_sach_id, // ✅ gán tự động
+      chinh_sach_id,
     };
 
     const errors = validateForm(payload);
@@ -258,7 +258,7 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
-          <div className="form-group">
+          {/* <div className="form-group">
             <label>Trạng thái:</label>
             <select
               name="trang_thai"
@@ -272,7 +272,7 @@ const PhuongTienModal: React.FC = () => {
             {formErrors.trang_thai && (
               <span className="error-text">{formErrors.trang_thai}</span>
             )}
-          </div>
+          </div> */}
 
           <div className="form-group">
             <label>Loại:</label>

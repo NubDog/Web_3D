@@ -116,6 +116,8 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 			chinh_sach_id: number;
 			so_khung: string;
 			gia_thue: number;
+			// img: string;
+			// model: string;
 		};
 		const { ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue } = body;
 		if (!ten_phuong_tien || !loai || !danh_muc_id || !trang_thai || !bien_so || !so_km || !chinh_sach_id || !so_khung || !gia_thue) {
