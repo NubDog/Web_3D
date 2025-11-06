@@ -13,8 +13,8 @@ import {
   FaExclamationTriangle,
   FaHome,
   FaSignOutAlt,
+  FaScrewdriver,
 } from "react-icons/fa";
-
 interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
@@ -166,7 +166,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
             onClick={() => handleDropdownToggle("maintenance")}
           >
             <div className="nav-link-main">
-              <FaClipboardList className="nav-icon" />
+              <FaScrewdriver className="nav-icon" />
               {isOpen && <span>Bảo Trì</span>}
             </div>
             {isOpen && (
