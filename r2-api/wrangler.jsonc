@@ -14,7 +14,7 @@
 		{
 			"binding": "DB",
 			"database_name": "rental-db",
-			"database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe",
+			"database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe"
 			// "preview_database_id": "f4d978b9-7505-4e3d-b45a-0de2a5fb6bbe"
 		}
 	],
@@ -22,7 +22,7 @@
 		{
 			"binding": "r2",
 			"bucket_name": "models-3d",
-			"preview_bucket_name": "models-3d-dev"
+			"preview_bucket_name": "models-3d"
 		},
 		{
 			"binding": "ua",
@@ -49,7 +49,7 @@
 			"binding": "VIO",
 			"bucket_name": "violation-img",
 			"preview_bucket_name": "violation-img"
-		},
+		}
 		// {
 		// 	"bucket_name": "models-3d-dev",
 		// 	"binding": "models_3d_dev"

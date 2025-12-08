@@ -2,6 +2,7 @@ import React, { useState, useEffect, type FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../css/PhuongTienList.css";
 
+// --- INTERFACE CẬP NHẬT ---
 export interface PhuongTien {
   phuong_tien_id: number;
   ten_phuong_tien: string;
@@ -17,6 +18,8 @@ export interface PhuongTien {
   ngay_tao: string;
   ngay_cap_nhat: string;
   gia_thue: number;
+  img?: string; // Đường dẫn ảnh
+  model_url?: string; // ✅ ĐÃ THÊM: Đường dẫn Models 3D
 }
 
 interface DanhMuc {
@@ -40,6 +43,7 @@ const PhuongTienModal: React.FC = () => {
 
   const [danhMucList, setDanhMucList] = useState<DanhMuc[]>([]);
 
+  // Hàm hỗ trợ tạo URL cho API (Giữ nguyên)
   const buildCandidateUrls = (path: string) => {
     const base = API_BASE_URL.replace(/\/$/, "");
     return [
@@ -50,6 +54,7 @@ const PhuongTienModal: React.FC = () => {
     ];
   };
 
+  // Hàm Fetch có Fallback (Giữ nguyên)
   const fetchWithFallback = async (path: string) => {
     const urls = buildCandidateUrls(path);
     let lastErr: any = null;
@@ -84,6 +89,7 @@ const PhuongTienModal: React.FC = () => {
     );
   };
 
+  // Tải chi tiết Phương tiện (Giữ nguyên)
   useEffect(() => {
     const loadDetail = async () => {
       if (!isEditing) {
@@ -104,6 +110,7 @@ const PhuongTienModal: React.FC = () => {
     loadDetail();
   }, [id, isEditing]);
 
+  // Tải danh sách Danh Mục (Giữ nguyên)
   useEffect(() => {
     const loadLists = async () => {
       try {
@@ -114,6 +121,7 @@ const PhuongTienModal: React.FC = () => {
     loadLists();
   }, []);
 
+  // Hàm Validate Form (Giữ nguyên)
   const validateForm = (data: Partial<PhuongTien>) => {
     const errors: Record<string, string> = {};
     if (!data.ten_phuong_tien || data.ten_phuong_tien.trim().length < 3) {
@@ -122,12 +130,9 @@ const PhuongTienModal: React.FC = () => {
     if (!data.bien_so || !/^[0-9A-Z-]{5,15}$/i.test(data.bien_so)) {
       errors.bien_so = "Biển số không hợp lệ (5-15 ký tự, chỉ chữ/số/gạch)";
     }
-    if (data.so_km !== undefined && data.so_km <= 0) {
-      errors.so_km = "Số km không được âm và phải lớn hơn 0";
+    if (data.so_km !== undefined && data.so_km < 0) {
+      errors.so_km = "Số km không được âm";
     }
-    // if (!data.trang_thai) {
-    //   errors.trang_thai = "Vui lòng chọn trạng thái";
-    // }
     if (!data.loai) {
       errors.loai = "Vui lòng nhập loại phương tiện";
     }
@@ -143,16 +148,18 @@ const PhuongTienModal: React.FC = () => {
     return errors;
   };
 
+  // --- HÀM SUBMIT GIỮ NGUYÊN (Sử dụng FormData) ---
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setFormErrors({});
+
     const form = e.currentTarget;
     const formData = new FormData(form);
 
     const gia_thue = Number(formData.get("gia_thue")) || 0;
 
-    // ✅ Tự động tính chinh_sach_id dựa vào giá thuê
+    // Tự động tính chinh_sach_id và thêm vào FormData
     let chinh_sach_id = 0;
     if (gia_thue > 0 && gia_thue <= 1000000) {
       chinh_sach_id = 1;
@@ -162,19 +169,21 @@ const PhuongTienModal: React.FC = () => {
       chinh_sach_id = 3;
     }
 
-    const payload: Partial<PhuongTien> = {
+    formData.set("chinh_sach_id", chinh_sach_id.toString());
+    formData.set("trang_thai", "SAN_SANG");
+
+    // Tạo object tạm thời để validate
+    const payloadForValidation: Partial<PhuongTien> = {
       ten_phuong_tien: (formData.get("ten_phuong_tien") as string) || "",
       bien_so: (formData.get("bien_so") as string) || "",
       so_km: Number(formData.get("so_km")) || 0,
-      trang_thai: "SAN_SANG" ,  //(formData.get("trang_thai") as string) || "",
       loai: (formData.get("loai") as string) || "",
       danh_muc_id: Number(formData.get("danh_muc_id")) || 0,
       so_khung: (formData.get("so_khung") as string) || "",
-      gia_thue,
-      chinh_sach_id,
+      gia_thue: gia_thue,
     };
 
-    const errors = validateForm(payload);
+    const errors = validateForm(payloadForValidation);
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -188,14 +197,18 @@ const PhuongTienModal: React.FC = () => {
       try {
         const resp = await fetch(url, {
           method: isEditing ? "PUT" : "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+          body: formData, // Gửi FormData trực tiếp
         });
+
+        const responseData = await resp.json().catch(() => null);
+
         if (resp.ok) {
           navigate("/admin/phuong-tien");
           return;
         } else {
-          lastErr = new Error(`HTTP ${resp.status}`);
+          lastErr = new Error(
+            `Lỗi HTTP ${resp.status}: ${responseData?.error || resp.statusText}`
+          );
         }
       } catch (err: any) {
         lastErr = err;
@@ -203,6 +216,7 @@ const PhuongTienModal: React.FC = () => {
     }
     setError(`Không thể lưu dữ liệu: ${lastErr?.message || "unknown"}`);
   };
+  // --- KẾT THÚC HÀM SUBMIT ---
 
   if (loading) {
     return (
@@ -222,6 +236,7 @@ const PhuongTienModal: React.FC = () => {
         {error && <div className="error-global">{error}</div>}
 
         <form onSubmit={handleSubmit}>
+          {/* Tên Phương tiện */}
           <div className="form-group">
             <label>Tên Phương tiện:</label>
             <input
@@ -234,6 +249,7 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
+          {/* Biển số */}
           <div className="form-group">
             <label>Biển số:</label>
             <input
@@ -246,6 +262,7 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
+          {/* Số KM */}
           <div className="form-group">
             <label>Số KM:</label>
             <input
@@ -258,22 +275,7 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
-          {/* <div className="form-group">
-            <label>Trạng thái:</label>
-            <select
-              name="trang_thai"
-              defaultValue={phuongTien?.trang_thai || "SAN_SANG"}
-            >
-              <option value="SAN_SANG">Sẵn sàng</option>
-              <option value="DA_DAT">Đã đặt</option>
-              <option value="BAO_TRI">Bảo trì</option>
-              <option value="CHO_DUYET">Chờ duyệt</option>
-            </select>
-            {formErrors.trang_thai && (
-              <span className="error-text">{formErrors.trang_thai}</span>
-            )}
-          </div> */}
-
+          {/* Loại */}
           <div className="form-group">
             <label>Loại:</label>
             <input
@@ -286,6 +288,7 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
+          {/* Danh mục */}
           <div className="form-group">
             <label>Danh mục:</label>
             <select
@@ -304,6 +307,7 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
+          {/* Số khung */}
           <div className="form-group">
             <label>Số khung:</label>
             <input
@@ -316,6 +320,7 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
+          {/* Giá Thuê */}
           <div className="form-group">
             <label>Giá Thuê:</label>
             <input
@@ -328,6 +333,69 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
+          {/* HÌNH ẢNH (UPLOAD R2) */}
+          <div className="form-group">
+            <label>Hình ảnh Phương tiện:</label>
+            <input
+              type="file"
+              name="file_anh" // Tên key này phải khớp với backend!
+              accept="image/*"
+            />
+
+            {/* Hiển thị ảnh hiện tại khi chỉnh sửa */}
+            {isEditing && phuongTien?.img && (
+              <div className="mt-2 p-2 border rounded border-gray-300">
+                <p className="text-sm font-semibold mb-1">Ảnh hiện tại:</p>
+                <img
+                  src={`${phuongTien.img}`} // ✅ Dùng trực tiếp img vì backend đã lưu full URL
+                  alt="Ảnh phương tiện"
+                  className="w-32 h-32 object-cover rounded shadow"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src =
+                      "https://via.placeholder.com/128?text=Lỗi+Ảnh";
+                  }}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Chọn file mới để thay thế.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* ✅ MODELS 3D (UPLOAD R2) */}
+          <div className="form-group">
+            <label>Models 3D (GLB/GLTF/FBX):</label>
+            <input
+              type="file"
+              name="models_3d" // ✅ Tên key này phải khớp với backend!
+              accept=".glb,.gltf,.fbx,.obj,.zip" // Gợi ý định dạng file 3D
+            />
+
+            {/* Hiển thị models hiện tại khi chỉnh sửa */}
+            {isEditing && phuongTien?.model_url && (
+              <div className="mt-2 p-2 border rounded border-gray-300">
+                <p className="text-sm font-semibold mb-1">
+                  Models 3D hiện tại:
+                </p>
+                <a
+                  href={phuongTien.model_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 underline text-sm block truncate"
+                >
+                  {phuongTien.model_url.substring(
+                    phuongTien.model_url.lastIndexOf("/") + 1
+                  )}
+                </a>
+                <p className="text-xs text-gray-500 mt-1">
+                  Chọn file mới để thay thế.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Actions */}
           <div className="form-actions">
             <button type="button" onClick={() => navigate(-1)}>
               Hủy
