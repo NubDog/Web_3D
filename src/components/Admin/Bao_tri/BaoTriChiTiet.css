@@ -284,3 +284,50 @@
   border: 3px solid #fff;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
 }
+/* --- CSS CHO NÚT QUAY LẠI --- */
+
+/* Thiết lập container cho nút quay lại */
+.back-button-container {
+  margin-top: 30px; /* Tạo khoảng cách với phần trên */
+  text-align: left; /* Đảm bảo nút nằm bên trái */
+}
+
+/* Định kiểu cho nút Quay lại */
+.button-back {
+  /* Thiết kế chung */
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 18px;
+  border: 1px solid #ccc; /* Đường viền nhẹ */
+  border-radius: 6px; /* Bo tròn góc */
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+
+  /* Màu sắc */
+  background-color: #f7f7f7; /* Nền xám nhạt */
+  color: #333; /* Màu chữ đậm */
+}
+
+/* Loại bỏ gạch chân của Link và đặt màu chữ */
+.button-back a {
+  text-decoration: none;
+  color: inherit; /* Kế thừa màu từ button-back */
+  display: flex;
+  align-items: center;
+}
+
+/* Hiệu ứng di chuột (Hover Effect) */
+.button-back:hover {
+  background-color: #e8e8e8; /* Nền đậm hơn khi hover */
+  border-color: #aaa;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Thêm bóng nhẹ */
+}
+
+/* Icon (Sử dụng biểu tượng mũi tên) */
+.button-back .icon {
+  margin-right: 8px; /* Khoảng cách giữa icon và chữ */
+  font-size: 18px; /* Kích thước icon lớn hơn một chút */
+  line-height: 1;
+}

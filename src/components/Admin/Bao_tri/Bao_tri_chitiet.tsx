@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./BaoTriChiTiet.css";
 
@@ -253,12 +253,9 @@ const BaoTriChiTiet: React.FC = () => {
           </button>
         );
       case STATUS_MAP["Đã hoàn thành"]:
+      // return <p className="status-message">Bảo Trì Đã Hoàn Thành</p>;
       case STATUS_MAP["Đã hủy"]:
-      // return (
-      //   <p className="status-message">
-      //     Đã Bảo Trì Thành Công
-      //   </p>
-      // );
+      // return <p className="status-message">Đã Hủy Bảo Trì</p>;
       default:
         return null;
     }
@@ -377,6 +374,13 @@ const BaoTriChiTiet: React.FC = () => {
       <div className="action-section">
         <h3 className="sub-header">🛠️ Chuyển đổi Trạng thái</h3>
         <div className="button-group">{renderActionButtons()}</div>
+      </div>
+      <div className="back-button-container">
+        <button className="button-back">
+          <Link to="/admin/bao_tri">
+            <span className="icon">←</span>Quay lại Danh sách Bảo trì
+          </Link>
+        </button>
       </div>
     </div>
   );

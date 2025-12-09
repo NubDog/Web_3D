@@ -57,7 +57,7 @@ const BaoTriList: React.FC = () => {
     don_thue_id_lien_quan: 0,
     mo_ta: "",
     chi_phi: "",
-    trang_thai: "CHỜ_DUYỆT",
+    trang_thai: "CHO_DUYET",
     nhan_vien_tao: currentUser?.nguoi_dung_id || 0,
   });
 
@@ -66,7 +66,7 @@ const BaoTriList: React.FC = () => {
     bao_tri_id: 0,
     mo_ta: "",
     chi_phi: "",
-    trang_thai: "CHỜ_DUYỆT",
+    trang_thai: "CHO_DUYET",
   });
 
   const [phuongTienList, setPhuongTienList] = useState<PhuongTien[]>([]);
@@ -113,7 +113,7 @@ const BaoTriList: React.FC = () => {
       don_thue_id_lien_quan: 0,
       mo_ta: "",
       chi_phi: "",
-      trang_thai: "Chờ duyệt",
+      trang_thai: "CHO_DUYET",
       nhan_vien_tao: currentUser?.nguoi_dung_id || 0,
     });
     setDonThueList([]);
@@ -165,7 +165,7 @@ const BaoTriList: React.FC = () => {
       don_thue_id_lien_quan: formAdd.don_thue_id_lien_quan,
       mo_ta: formAdd.mo_ta.trim(),
       chi_phi: parseFloat(formAdd.chi_phi),
-      trang_thai: "CHỜ_DUYỆT",
+      trang_thai: "CHO_DUYET",
       nhan_vien_tao: currentUser?.nguoi_dung_id || 0,
     };
 
@@ -233,7 +233,6 @@ const BaoTriList: React.FC = () => {
 
   return (
     <div className="bao-tri-container">
-
       <div className="bao-tri-header">
         <h2 className="Text">Danh sách Bảo Trì</h2>
         <button className="bao-tri-add" onClick={openAddModal}>
@@ -283,7 +282,7 @@ const BaoTriList: React.FC = () => {
                               <th>STT</th>
                               <th>Mô tả</th>
                               <th>Chi phí</th>
-                  
+
                               <th>Người tạo</th>
                               <th>Ngày tạo</th>
                               <th>Ngày cập nhật</th>
@@ -296,7 +295,6 @@ const BaoTriList: React.FC = () => {
                                 <td>{index + 1}</td>
                                 <td>{ct.mo_ta}</td>
                                 <td>{ct.chi_phi.toLocaleString("vi-VN")} đ</td>
-                       
 
                                 <td>{ct.ten_nguoi_tao}</td>
                                 <td>{ct.ngay_tao}</td>
@@ -384,8 +382,6 @@ const BaoTriList: React.FC = () => {
               }
             />
 
-            
-
             <div className="modal-actions">
               <button onClick={handleAdd} className="bao-tri-save">
                 Lưu
@@ -400,4 +396,3 @@ const BaoTriList: React.FC = () => {
 };
 
 export default BaoTriList;
-

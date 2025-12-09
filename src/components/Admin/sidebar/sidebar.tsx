@@ -154,12 +154,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
             </ul>
           )}
         </li>
-        <li>
-          <NavLink to="/admin/violations" className="nav-link">
-            <FaExclamationTriangle className="nav-icon" />
-            {isOpen && <span>Vi phạm</span>}
-          </NavLink>
-        </li>
         <li className="dropdown-item">
           <div
             className="nav-link dropdown-toggle"
@@ -228,6 +222,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
               </li>
             </ul>
           )}
+        </li>
+        <li>
+          <NavLink to="/admin/violations" className="nav-link">
+            <FaExclamationTriangle className="nav-icon" />
+            {isOpen && <span>Vi phạm</span>}
+          </NavLink>
         </li>
       </ul>
       <div className="sidebar-footer">

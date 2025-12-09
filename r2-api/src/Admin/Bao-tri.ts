@@ -139,7 +139,7 @@ export async function addBaoTri(request: Request, env: Env): Promise<Response> {
 			 (phuong_tien_id, don_thue_id_lien_quan, ngay_lich, mo_ta, chi_phi, trang_thai, nhan_vien_tao, ngay_tao, ngay_cap_nhat)
 			 VALUES (?, ?, datetime('now'), ?, ?, ?, ?, datetime('now'), datetime('now'))`
 		)
-			.bind(phuong_tien_id, don_thue_id_lien_quan, mo_ta || '', chi_phi || 0, trang_thai || 'CHỜ_DUYỆT', nhan_vien_tao)
+			.bind(phuong_tien_id, don_thue_id_lien_quan, mo_ta || '', chi_phi || 0, trang_thai || 'CHO_DUYET', nhan_vien_tao)
 			.run();
 
 		return withCORS({
