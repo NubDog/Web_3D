@@ -41,7 +41,7 @@ import {
 	getBaotri,
 	getBaotrichitiet,
 	getBaotriChiTiet,
-	getBaotrichoduyet,
+	// getBaotrichoduyet,
 	getBaotriTongHop,
 	getDonThueByPhuongTien,
 	updateBaotri,

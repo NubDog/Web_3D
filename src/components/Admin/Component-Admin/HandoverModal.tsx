@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './css/handoverModal.css';
 
 interface HandoverData {
@@ -13,13 +13,20 @@ interface HandoverModalProps {
   onClose: () => void;
   onSubmit: (data: HandoverData) => void;
   isSubmitting: boolean;
+  initialKm: number;
 }
 
-const HandoverModal: React.FC<HandoverModalProps> = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
-  const [so_km, setSoKm] = useState('');
+const HandoverModal: React.FC<HandoverModalProps> = ({ isOpen, onClose, onSubmit, isSubmitting, initialKm }) => {
+  const [soKm, setSoKm] = useState<string>("");
   const [muc_xang, setMucXang] = useState('Đầy bình');
   const [ghi_chu, setGhiChu] = useState('');
   const [files, setFiles] = useState<FileList | null>(null);
+
+  useEffect(() => {
+    if (isOpen && initialKm !== undefined) {
+      setSoKm(initialKm.toString());
+    }
+  }, [isOpen, initialKm]);
 
   if (!isOpen) {
     return null;
@@ -28,7 +35,7 @@ const HandoverModal: React.FC<HandoverModalProps> = ({ isOpen, onClose, onSubmit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit({
-      so_km: so_km,
+      so_km: soKm,
       muc_xang: muc_xang,
       ghi_chu_hu_hong: ghi_chu,
       anh_minh_chung: files,
@@ -45,8 +52,15 @@ const HandoverModal: React.FC<HandoverModalProps> = ({ isOpen, onClose, onSubmit
           </div>
           <div className="modal-body">
             <div className="form-group">
-              <label htmlFor="so_km">Số KM lúc giao</label>
-              <input id="so_km" type="number" value={so_km} onChange={(e) => setSoKm(e.target.value)} required />
+              <label htmlFor="so_km">Số KM lúc giao</label> 
+              <input 
+                id="so_km" 
+                type="number" 
+                value={soKm} 
+                onChange={(e) => setSoKm(e.target.value)} 
+                required 
+                placeholder="Nhập số KM thực tế"
+              />
             </div>
             <div className="form-group">
               <label htmlFor="muc_xang">Mức xăng</label>

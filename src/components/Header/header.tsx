@@ -70,7 +70,7 @@ const Header: React.FC<HeaderProps> = ({id}) => {
                 <li className="header-menu_items"><a href="#"><i className="fa-solid fa-magnifying-glass"></i></a></li>
             </ul>
 
-            <div className="user-login">
+            <div className="user-login" >
                  {currentUser ? (
                     <div className="user-info">
                         <div className="welcome-container">

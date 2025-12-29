@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import './css/ReturnVehicleModal.css'; 
 
 interface ReturnData {
@@ -13,13 +13,21 @@ interface ReturnVehicleModalProps {
   onClose: () => void;
   onSubmit: (data: ReturnData) => void;
   isSubmitting: boolean;
+  initialKm: number;
 }
 
-const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose, onSubmit, isSubmitting }) => {
-  const [so_km, setSoKm] = useState('');
+const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose, onSubmit, isSubmitting, initialKm }) => {
+  const [so_km, setSoKm] = useState<string>('');
   const [muc_xang, setMucXang] = useState('Đầy bình');
   const [ghi_chu, setGhiChu] = useState('');
   const [files, setFiles] = useState<FileList | null>(null);
+  const [so_km_truoc,setSoKmTruoc] = useState<string>('')
+
+    useEffect(() => {
+      if (isOpen && initialKm !== undefined) {
+        setSoKm(initialKm.toString());
+      }
+    }, [isOpen, initialKm]);
 
   if (!isOpen) {
     return null;
@@ -27,6 +35,11 @@ const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (Number(so_km) < initialKm) {
+      alert(`Số KM trả (${so_km}) không được nhỏ hơn số KM lúc giao (${initialKm}). Vui lòng kiểm tra lại.`);
+      return;
+    }
+
     onSubmit({
       so_km_tra: so_km,
       muc_xang_tra: muc_xang,
@@ -45,7 +58,7 @@ const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({ isOpen, onClose
           </div>
           <div className="modal-body">
             <div className="form-group">
-              <label htmlFor="so_km">Số KM lúc trả</label>
+              <label htmlFor="so_km">Số KM lúc trả (Số km trước lúc giao là {initialKm} km)</label>
               <input id="so_km" type="number" value={so_km} onChange={(e) => setSoKm(e.target.value)} required />
             </div>
             <div className="form-group">

@@ -278,6 +278,7 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
                 pt.ten_phuong_tien, pt.bien_so, pt.gia_thue,
                 cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh,
                 tc.trang_thai AS trang_thai_coc,
+                pt.so_km AS so_km_xe,
 
                 bbgn_giao.so_km AS giao_so_km,
                 bbgn_giao.muc_xang AS giao_muc_xang,

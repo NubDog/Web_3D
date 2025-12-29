@@ -27,6 +27,7 @@ interface OrderDetail {
     email: string;
     ten_phuong_tien: string;
     bien_so: string;
+    so_km_xe: number;
     ten_chinh_sach: string;
     tien_coc_id: number | null;
     trang_thai_coc: 'DANG_GIU' | 'CHO_THANH_TOAN' | string | null;
@@ -389,7 +390,6 @@ const OrderDetail: React.FC = () => {
         });
     };
 
-
     return (
         <div className="order-detail-container">
             <header>
@@ -484,7 +484,7 @@ const OrderDetail: React.FC = () => {
                             <h2>Tình Trạng Thanh Toán</h2>
                             <p>
                                 <strong>Tiền cọc:</strong> 
-                                <span className={`status-badge status-${order.trang_thai_coc}`}>
+                                <span className={`status-badge status-${order.trang_thai_coc}`} style={{color: 'black'}}>
                                     {order.trang_thai_coc === 'DANG_GIU' ? 'Đã Nhận Cọc' : 'Chưa Nhận Cọc'}
                                 </span>
                             </p>
@@ -514,12 +514,14 @@ const OrderDetail: React.FC = () => {
                 onClose={() => setIsReturnModalOpen(false)}
                 onSubmit={handleReturn}
                 isSubmitting={isSubmitting}
+                initialKm={order?.so_km_xe || 0}
                 />
                 <HandoverModal 
                 isOpen={isHandoverModalOpen}
                 onClose={() => setIsHandoverModalOpen(false)}
                 onSubmit={handleHandover}
                 isSubmitting={isSubmitting}
+                initialKm={order?.so_km_xe || 0}
                 />
                  <FinalizeModal
                 isOpen={isFinalizeModalOpen}

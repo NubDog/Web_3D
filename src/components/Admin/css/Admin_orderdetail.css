@@ -26,6 +26,7 @@
     font-size: 0.9rem;
     color: auto;
     text-transform: uppercase;
+    background-color: #fdfdfd;
 }
 
 .status-CHO_DUYET { background-color: #ffc107; color: #333; }
