@@ -91,13 +91,18 @@ export async function handleLogin(request: Request, env: Env): Promise<Response>
             .bind(identifier)
             .first<{ nguoi_dung_id: number; ho_ten: string; email: string; vai_tro: string; mat_khau: string; trang_thai: string }>();
 
-        if (!user || user.trang_thai !== 'active') {
-            return jsonResponse({ success: false, error: 'Người dùng bị vô hiệu hóa' }, 401);
-        }
+         if (!user) {
+            return jsonResponse({ success: false, error: 'Tên đăng nhập hoặc mật khẩu không chính xác.' }, 401);
+        }
 
-        if (user.mat_khau !== body.mat_khau) {
-            return jsonResponse({ success: false, error: 'Tên đăng nhập hoặc mật khẩu không chính xác.' }, 401);
-        }
+        if (user.trang_thai !== 'active') {
+            return jsonResponse({ success: false, error: 'Người dùng bị vô hiệu hóa' }, 401);
+        }
+        
+        if (user.mat_khau !== body.mat_khau) {
+            return jsonResponse({ success: false, error: 'Tên đăng nhập hoặc mật khẩu không chính xác.' }, 401);
+        }
+
 
         const { mat_khau, ...userData } = user;
 

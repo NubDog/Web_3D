@@ -458,7 +458,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
 
                 const emailBody = {
                     from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>', 
-                    to: 'khoatran3123@gmail.com', // dùng 'customerInfo.email' để gọi email từ database còn bây giờ dùng email bản thân để test
+                    to: `khoatran3123@gmail.com`, // dùng 'customerInfo.email' để gọi email từ database còn bây giờ dùng email bản thân để test
                     subject: subject,
                     html: htmlBody
                 };
@@ -477,8 +477,8 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                 }
             }
         
-        return jsonResponse({ success: true, message: "Cập nhật vi phạm thành công." });
         }
+        return jsonResponse({ success: true, message: "Cập nhật vi phạm thành công." });
     } catch (e: any) {
         return jsonResponse({ success: false, error: 'Lỗi khi cập nhật vi phạm.', details: e.message }, 500);
     }

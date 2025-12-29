@@ -247,6 +247,8 @@ const OrderDetail: React.FC = () => {
     }
 };
 
+    //hàm quyết toán
+    
     const handleFinalize = async (data: { phi_hu_hong: number; phi_tre: number; chi_phi_khac: number; ghi_chu_quyet_toan: string; }) => {
         // if (!user) {
         //     toast.error("Vui lòng đăng nhập để thực hiện hành động này.");
@@ -377,6 +379,16 @@ const OrderDetail: React.FC = () => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
 
+    const formatDateTime = (dateString: string) => {
+        return new Date(dateString).toLocaleString('vi-VN', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    };
+
 
     return (
         <div className="order-detail-container">
@@ -440,6 +452,22 @@ const OrderDetail: React.FC = () => {
 
                 {/* CỘT BÊN PHẢI: THÔNG TIN PHỤ & HÀNH ĐỘNG */}
                 <div className="sidebar-content">
+                    <div className="info-card">
+                        <h2><FaCalendarAlt /> Thời gian thuê</h2>
+                        <div className="time-info">
+                            <p style={{ marginBottom: '8px' }}>
+                                <strong>Bắt đầu:</strong><br />
+                                <span style={{ color: '#2c3e50' }}>{formatDateTime(order.ngay_bat_dau)}</span>
+                            </p>
+                            <p style={{ marginBottom: '8px' }}>
+                                <strong>Kết thúc:</strong><br />
+                                <span style={{ color: '#2c3e50' }}>{formatDateTime(order.ngay_ket_thuc)}</span>
+                            </p>
+                            <hr style={{ border: '0.5px solid #eee', margin: '10px 0' }} />
+                            <p><strong>Tổng cộng:</strong> {soNgayThue} ngày</p>
+                        </div>
+                    </div>
+
                     <div className="info-card">
                         <h2><FaUserCircle /> Khách hàng</h2>
                         <p><strong>Họ tên:</strong> {order.ho_ten}</p>
