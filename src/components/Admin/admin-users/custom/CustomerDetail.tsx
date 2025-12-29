@@ -583,7 +583,7 @@ const [formData, setFormData] = useState<Customer>({
                                                         <div key={doc.tai_lieu_id} className="kyc-document-item-admin">
                                                             <a href={doc.duong_dan_file} target="_blank" rel="noopener noreferrer"><img src={doc.duong_dan_file} alt={doc.loai_giay_to} className="kyc-admin-preview" /></a>
                                                             <div className="kyc-doc-info">
-                                                                <p>{index === 1? "Mặt trước" : "Mặt sau"}</p>
+                                                                <p>{index === 1? "Mặt sau" : "Mặt trước"}</p>
                                                                 <p><strong>{doc.loai_giay_to}</strong></p>
                                                                 <p>Số: {doc.so_giay_to || 'N/A'}</p>
                                                                 <p>Trạng thái: <span className={`status-badge status-${doc.trang_thai?.toLowerCase()}`}>{doc.trang_thai}</span></p>

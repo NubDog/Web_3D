@@ -15,30 +15,21 @@ const bufferToHex = (buffer: ArrayBuffer): string => ([...new Uint8Array(buffer)
 
 
 export const handleGetKycDocuments = async (env: Env, customerId: string) => {
-    console.log("\n--- BẮT ĐẦU DEBUG handleGetKycDocuments ---");
     try {
-        console.log(`[BACKEND-DEBUG] Worker nhận được customerId dạng chuỗi: "${customerId}"`);
         
         const idAsNumber = parseInt(customerId, 10);
-        console.log(`[BACKEND-DEBUG] Đã chuyển đổi ID sang dạng số: ${idAsNumber}`);
 
         if (isNaN(idAsNumber)) {
-            console.error("[BACKEND-DEBUG] Lỗi: ID không phải là số hợp lệ.");
             return jsonResponse({ success: false, error: 'ID khách hàng không hợp lệ' }, 400);
         }
         
         const query = "SELECT * FROM TaiLieuKYC WHERE khach_hang_id = ?";
-        console.log(`[BACKEND-DEBUG] Chuẩn bị chạy câu lệnh: ${query} với ID = ${idAsNumber}`);
         
         const { results } = await env.DB.prepare(query).bind(idAsNumber).all();
-        
-        console.log('[BACKEND-DEBUG] Kết quả D1 trả về:', JSON.stringify(results, null, 2));
-        console.log("--- KẾT THÚC DEBUG ---");
 
         return jsonResponse({ success: true, data: results });
 
     } catch (e: any) {
-        console.error("[BACKEND-DEBUG] Đã có lỗi xảy ra trong khối catch:", e);
         return jsonResponse({ success: false, error: 'Lỗi truy vấn KYC', details: e.message }, 500);
     }
 };
