@@ -43,6 +43,8 @@ interface OrderDetail {
     tra_muc_xang: string | null;
     tra_ghi_chu: string | null;
     tra_anh: string | null; 
+
+    duong_dan_file?: string; 
 }
 
 interface RecordData {
@@ -478,6 +480,39 @@ const OrderDetail: React.FC = () => {
                         <p><strong>Tên xe:</strong> {order.ten_phuong_tien}</p>
                         <p><strong>Biển số:</strong> {order.bien_so}</p>
                     </div>
+
+                    {order.duong_dan_file && (
+                        <div className="info-card" style={{ marginTop: '20px', padding: '15px', border: '1px solid #e5e7eb', borderRadius: '8px', backgroundColor: '#f9fafb' }}>
+                            
+                            <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '10px', color: '#111827' }}>
+                                Hợp Đồng Thuê Xe
+                            </h3>
+
+                            <button 
+                                onClick={() => window.open(order.duong_dan_file, '_blank')}
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    padding: '10px 16px',
+                                    backgroundColor: '#2563eb',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    transition: 'background 0.2s'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+                                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                            >
+                                <span>📄</span>
+                                <span>Xem Hợp Đồng (PDF)</span>
+                            </button>
+
+                        </div>
+                    )}
 
                     {order.trang_thai === 'DA_DUYET' && (
                         <div className="info-card">

@@ -50,6 +50,11 @@
 			"bucket_name": "violation-img",
 			"preview_bucket_name": "violation-img"
 		}
+		,{
+			"binding": "hd",
+			"bucket_name": "hd-pdf",
+			"preview_bucket_name": "hd-pdf"
+		}
 		// {
 		// 	"bucket_name": "models-3d-dev",
 		// 	"binding": "models_3d_dev"

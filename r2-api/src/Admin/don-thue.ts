@@ -1,3 +1,5 @@
+import { generateContractPDF } from "./file-pdf";
+
 const jsonResponse = (data: any, status = 200) => {
 	const headers = {
 		'Content-Type': 'application/json',
@@ -10,6 +12,7 @@ const jsonResponse = (data: any, status = 200) => {
 
 interface Env {
     DB: D1Database;
+    hd: R2Bucket
 }
 
 interface RentalRequestBody {
@@ -144,49 +147,148 @@ export const handleGetPendingOrders = async (request: Request, env: Env) => {
 };
 
 //Duyệt đơn
+// export const handleApproveOrder = async (request: Request, env: Env, orderId: string) => {
+//     try {
+//         const { nhan_vien_id } = await request.json<{ nhan_vien_id: number }>();
+//         if (!nhan_vien_id) {
+//             return jsonResponse({ success: false, error: "Thiếu ID nhân viên." }, 400);
+//         }
+
+//         const orderInfo = await env.DB.prepare("SELECT * FROM DonThue WHERE don_thue_id = ? AND trang_thai = 'CHO_DUYET'").bind(orderId).first<{ don_thue_id: number, khach_hang_id:number, tong_tien: number, tien_coc_yeu_cau: number }>();
+
+//         if (!orderInfo) {
+//             return jsonResponse({ success: false, error: "Đơn thuê không hợp lệ hoặc đã được xử lý." }, 404);
+//         }
+
+//         const today = new Date();
+//         const year = today.getFullYear();
+//         const month = String(today.getMonth() + 1).padStart(2, '0');
+//         const day = String(today.getDate()).padStart(2, '0');
+//         const so_hop_dong = `HD-${year}${month}${day}-${orderId}`;
+
+//         const approveOrderStmt = env.DB.prepare(
+//             "UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ? WHERE don_thue_id = ?"
+//         );
+//         const createContractStmt = env.DB.prepare(
+//             "INSERT INTO HopDong (don_thue_id, so_hop_dong, ngay_ky, nhan_vien_ky, khach_hang_ky, trang_thai) VALUES (?, ?, datetime('now','+7 hours'), ?,?, 'CHO_KY')"
+//         );
+//         const createDepositStmt = env.DB.prepare(
+//             "INSERT INTO TienCoc (don_thue_id, so_tien, trang_thai) VALUES (?, ?, 'CHO_THANH_TOAN')"
+//         );
+//         const createPaymentStmt = env.DB.prepare(
+//             "INSERT INTO ThanhToan (don_thue_id, so_tien, muc_dich, trang_thai) VALUES (?, ?, 'PHI_THUE', 'CHO_THANH_TOAN')"
+//         );
+
+//         await env.DB.batch([
+//             approveOrderStmt.bind(nhan_vien_id, orderId),
+//             createContractStmt.bind(orderId, so_hop_dong, nhan_vien_id, orderInfo.khach_hang_id ), 
+//             createDepositStmt.bind(orderId, orderInfo.tien_coc_yeu_cau),
+//             createPaymentStmt.bind(orderId, orderInfo.tong_tien),
+//         ]);
+
+//         return jsonResponse({ success: true, message: `Đã duyệt đơn thuê #${orderId}` });
+
+//     } catch (e: any) {
+//         console.error("API handleApproveOrder Lỗi:", e);
+//         return jsonResponse({ success: false, error: e.message }, 500);
+//     }
+// };
+
 export const handleApproveOrder = async (request: Request, env: Env, orderId: string) => {
     try {
         const { nhan_vien_id } = await request.json<{ nhan_vien_id: number }>();
-        if (!nhan_vien_id) {
-            return jsonResponse({ success: false, error: "Thiếu ID nhân viên." }, 400);
-        }
+        if (!nhan_vien_id) return jsonResponse({ success: false, error: "Thiếu ID nhân viên" }, 400);
 
-        const orderInfo = await env.DB.prepare("SELECT * FROM DonThue WHERE don_thue_id = ? AND trang_thai = 'CHO_DUYET'").bind(orderId).first<{ don_thue_id: number, khach_hang_id:number, tong_tien: number, tien_coc_yeu_cau: number }>();
+        const orderInfo = await env.DB.prepare(`
+            SELECT 
+                dt.don_thue_id, dt.tong_tien, dt.tien_coc_yeu_cau, 
+                dt.ngay_bat_dau, dt.ngay_ket_thuc,
+                
+                kh.khach_hang_id, kh.ho_ten, kh.dia_chi,
+                
+                nd.so_dien_thoai,
 
-        if (!orderInfo) {
-            return jsonResponse({ success: false, error: "Đơn thuê không hợp lệ hoặc đã được xử lý." }, 404);
-        }
+                pt.ten_phuong_tien, pt.bien_so, pt.so_km,
 
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        const so_hop_dong = `HD-${year}${month}${day}-${orderId}`;
+                -- Lấy CCCD và Ảnh từ bảng TaiLieuKYC
+                kyc.so_giay_to,
+                kyc_truoc.duong_dan_file as anh_truoc,
+                kyc_sau.duong_dan_file as anh_sau
+                
+            FROM DonThue dt
+            JOIN KhachHang kh ON dt.khach_hang_id = kh.khach_hang_id
+            JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
+            JOIN PhuongTien pt ON dt.phuong_tien_id = pt.phuong_tien_id
+            
+            -- Join lấy số CCCD
+            LEFT JOIN TaiLieuKYC kyc ON kh.khach_hang_id = kyc.khach_hang_id 
+            
+            -- Join lấy ảnh mặt trước (Giả sử loai_giay_to = 'CCCD_TRUOC')
+            LEFT JOIN TaiLieuKYC kyc_truoc ON kh.khach_hang_id = kyc_truoc.khach_hang_id AND kyc_truoc.loai_giay_to = 'CCCD_TRUOC'
+            
+            -- Join lấy ảnh mặt sau
+            LEFT JOIN TaiLieuKYC kyc_sau ON kh.khach_hang_id = kyc_sau.khach_hang_id AND kyc_sau.loai_giay_to = 'CCCD_SAU'
 
-        const approveOrderStmt = env.DB.prepare(
-            "UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ? WHERE don_thue_id = ?"
-        );
-        const createContractStmt = env.DB.prepare(
-            "INSERT INTO HopDong (don_thue_id, so_hop_dong, ngay_ky, nhan_vien_ky, khach_hang_ky, trang_thai) VALUES (?, ?, datetime('now','+7 hours'), ?,?, 'CHO_KY')"
-        );
-        const createDepositStmt = env.DB.prepare(
-            "INSERT INTO TienCoc (don_thue_id, so_tien, trang_thai) VALUES (?, ?, 'CHO_THANH_TOAN')"
-        );
-        const createPaymentStmt = env.DB.prepare(
-            "INSERT INTO ThanhToan (don_thue_id, so_tien, muc_dich, trang_thai) VALUES (?, ?, 'PHI_THUE', 'CHO_THANH_TOAN')"
-        );
+            WHERE dt.don_thue_id = ? 
+            GROUP BY dt.don_thue_id
+        `).bind(Number(orderId)).first<any>();
 
+        if (!orderInfo) return jsonResponse({ success: false, error: "Không tìm thấy đơn" }, 404);
+
+        // 2. CHUẨN BỊ DATA VÀO PDF
+        const so_hop_dong = `HD-${orderId}-${new Date().getTime()}`;
+        const contractData = {
+            so_hop_dong: so_hop_dong,
+            don_thue_id: orderInfo.don_thue_id,
+            ngay_tao: new Date().toLocaleDateString('vi-VN'),
+            
+            khach_hang_ten: orderInfo.ho_ten,
+            cccd_so: orderInfo.so_giay_to,
+            sdt: orderInfo.so_dien_thoai,
+            dia_chi: orderInfo.dia_chi,
+            
+            ten_phuong_tien: orderInfo.ten_phuong_tien,
+            bien_so: orderInfo.bien_so,
+            km_luc_giao: orderInfo.so_km,
+
+            ngay_bat_dau: orderInfo.ngay_bat_dau, 
+            ngay_ket_thuc: orderInfo.ngay_ket_thuc,
+            
+            tong_tien: orderInfo.tong_tien.toLocaleString('vi-VN'),
+            tien_coc_yeu_cau: orderInfo.tien_coc_yeu_cau.toLocaleString('vi-VN'),
+            
+            cccd_anh_truoc: orderInfo.anh_truoc,
+            cccd_anh_sau: orderInfo.anh_sau
+        };
+
+        const pdfBytes = await generateContractPDF(contractData);
+        const key = `contracts/${so_hop_dong}.pdf`;
+        
+        await env.hd.put(key, pdfBytes, { 
+            httpMetadata: { contentType: 'application/pdf' } 
+        });
+        
+        const publicUrl = `https://pub-16b3320136404cf291d44538099e8338.r2.dev/${key}`;
+
+        // 4. LƯU VÀO DB 
         await env.DB.batch([
-            approveOrderStmt.bind(nhan_vien_id, orderId),
-            createContractStmt.bind(orderId, so_hop_dong, nhan_vien_id, orderInfo.khach_hang_id ), 
-            createDepositStmt.bind(orderId, orderInfo.tien_coc_yeu_cau),
-            createPaymentStmt.bind(orderId, orderInfo.tong_tien),
+            // Cập nhật trạng thái đơn
+            env.DB.prepare("UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ? WHERE don_thue_id = ?")
+                .bind(nhan_vien_id, orderId),
+            
+            // Tạo hợp đồng 
+            env.DB.prepare(`
+                INSERT INTO HopDong (don_thue_id, so_hop_dong, khach_hang_ky, ngay_ky, nhan_vien_ky, trang_thai, duong_dan_file) 
+                VALUES (?, ?,?, datetime('now','+7 hours'), ?, 'CHO_KY', ?)
+            `).bind(orderId, so_hop_dong, orderInfo.khach_hang_id , nhan_vien_id, publicUrl), 
+            // Tạo phiếu thu tiền cọc
+            env.DB.prepare("INSERT INTO TienCoc (don_thue_id, so_tien, phuong_thuc, trang_thai) VALUES (?, ?, 'TIEN_MAT','CHO_THANH_TOAN')")
+                .bind(orderId, orderInfo.tien_coc_yeu_cau)
         ]);
 
-        return jsonResponse({ success: true, message: `Đã duyệt đơn thuê #${orderId}` });
+        return jsonResponse({ success: true, contractUrl: publicUrl });
 
     } catch (e: any) {
-        console.error("API handleApproveOrder Lỗi:", e);
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
@@ -279,6 +381,7 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
                 cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh,
                 tc.trang_thai AS trang_thai_coc,
                 pt.so_km AS so_km_xe,
+                hd.duong_dan_file,
 
                 bbgn_giao.so_km AS giao_so_km,
                 bbgn_giao.muc_xang AS giao_muc_xang,
@@ -301,6 +404,8 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
             
             -- JOIN lấy thông tin trả xe
             LEFT JOIN BienBanGiaoNhan AS bbgn_tra ON dt.don_thue_id = bbgn_tra.don_thue_id AND bbgn_tra.loai_bien_ban = 'TRA_XE'
+
+            LEFT JOIN HopDong hd ON dt.don_thue_id = hd.don_thue_id
 
             WHERE dt.don_thue_id = ?`
         );
