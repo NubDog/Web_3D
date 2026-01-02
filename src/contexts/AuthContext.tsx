@@ -12,6 +12,7 @@ interface User {
   ho_ten: string;
   email: string;
   vai_tro: string; // 'admin', 'user', etc.
+  so_dien_thoai?: string;
 }
 
 interface AuthContextType {

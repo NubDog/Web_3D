@@ -16,7 +16,7 @@ import VehicleRecordModal from '../Component-Admin/VehicleRecordModal';
 
 interface OrderDetail {
     don_thue_id: number;
-    trang_thai: 'CHO_DUYET' | 'DA_DUYET' | 'DANG_THUE' | 'DA_TRA' | 'HOAN_TAT' | 'TU_CHOI';
+    trang_thai: 'CHO_DUYET' | 'DA_DUYET' | 'DANG_THUE' | 'DA_TRA' |'CHO_QUYET_TOAN'|'CHO_THANH_TOAN'| 'HOAN_TAT' | 'TU_CHOI';
     ngay_bat_dau: string;
     ngay_ket_thuc: string;
     dia_diem_nhan: string;
@@ -43,7 +43,7 @@ interface OrderDetail {
     tra_muc_xang: string | null;
     tra_ghi_chu: string | null;
     tra_anh: string | null; 
-
+    ghi_chu: string | null;
     duong_dan_file?: string; 
 }
 
@@ -132,6 +132,28 @@ const OrderDetail: React.FC = () => {
             navigate('/admin/orders/pending');
         } catch (err: any) {
             toast.error(`Lỗi: ${err.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleConfirmPayment = async () => {
+        if (!window.confirm("Xác nhận khách đã thanh toán đầy đủ số tiền này?")) return;
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/confirm-payment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nhan_vien_id: currentUser?.nguoi_dung_id })
+            });
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error);
+
+            toast.success("Đơn hàng đã hoàn tất!");
+            fetchOrder();
+        } catch (err: any) {
+            toast.error(err.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -250,38 +272,57 @@ const OrderDetail: React.FC = () => {
     }
 };
 
-    //hàm quyết toán
     
-    const handleFinalize = async (data: { phi_hu_hong: number; phi_tre: number; chi_phi_khac: number; ghi_chu_quyet_toan: string; }) => {
-        // if (!user) {
-        //     toast.error("Vui lòng đăng nhập để thực hiện hành động này.");
-        //     return;
-        // }
-        
-        const body = {
-            nhan_vien_id: currentUser?.nguoi_dung_id || 1,
-            ...data
-        };
+   const handleFinalize = async (data: { phi_hu_hong: number; phi_tre: number; chi_phi_khac: number; ghi_chu_quyet_toan: string; }) => {
+    if (!order) return;
 
-        setIsSubmitting(true);
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/finalize`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-            const result = await response.json();
-            if (!result.success) throw new Error(result.error);
+    const tong_phu_phi = data.phi_hu_hong + data.phi_tre + data.chi_phi_khac;
 
-            toast.success("Quyết toán đơn hàng thành công!");
-            setIsFinalizeModalOpen(false); 
-            fetchOrder();
-        } catch (err: any) {
-            toast.error(`Lỗi: ${err.message}`);
-        } finally {
-            setIsSubmitting(false);
-        }
+    const d1 = new Date(order.ngay_bat_dau);
+    const d2 = new Date(order.ngay_ket_thuc);
+    const soNgay = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) || 1;
+    
+    const tamTinh = order.gia_thue * soNgay;
+    const tienGiam = tamTinh * order.ty_le_giam;
+    const tienThueGoc = tamTinh - tienGiam;
+
+    const tong_tien_cuoi_cung = tienThueGoc + tong_phu_phi;
+
+    const ghiChuChiTiet = [
+        data.ghi_chu_quyet_toan,
+        data.phi_tre > 0 ? `Trễ: ${data.phi_tre.toLocaleString('vi-VN')}đ` : null,
+        data.phi_hu_hong > 0 ? `Hư hỏng: ${data.phi_hu_hong.toLocaleString('vi-VN')}đ` : null,
+        data.chi_phi_khac > 0 ? `Khác: ${data.chi_phi_khac.toLocaleString('vi-VN')}đ` : null
+    ].filter(Boolean).join(' | ');
+
+    const body = {
+        nhan_vien_id: currentUser?.nguoi_dung_id || 1,
+        tong_tien_phat_sinh: tong_phu_phi,    // Để tạo log thanh toán phụ phí
+        ghi_chu_quyet_toan: ghiChuChiTiet,    // Để lưu ghi chú
+        tong_tien_cuoi_cung: tong_tien_cuoi_cung // Để update giá chốt đơn
     };
+
+    setIsSubmitting(true);
+    try {
+        
+        const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/settle`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
+
+        toast.success("Đã chốt quyết toán. Vui lòng thu tiền khách hàng!");
+        setIsFinalizeModalOpen(false); 
+        fetchOrder(); 
+    } catch (err: any) {
+        toast.error(`Lỗi: ${err.message}`);
+    } finally {
+        setIsSubmitting(false);
+    }
+};
 
     const showRecordDetails = (type: 'giao' | 'tra') => {
         if (!order) return;
@@ -311,6 +352,7 @@ const OrderDetail: React.FC = () => {
 
      const renderActionButtons = () => {
         if (!order) return null;
+        const isWaitingPayment = order.ghi_chu && order.ghi_chu.includes('[WAITING_PAYMENT]');
 
         switch (order.trang_thai) {
             case 'CHO_DUYET':
@@ -352,11 +394,38 @@ const OrderDetail: React.FC = () => {
                     </button>
                  );
             case 'DA_TRA':
-                 return (
-                    <button className="button-primary" onClick={() => setIsFinalizeModalOpen(true)} disabled={isSubmitting}>
-                        {isSubmitting ? 'Đang xử lý...' : '💰 Quyết Toán Đơn'}
+        case 'CHO_QUYET_TOAN': 
+            if (isWaitingPayment) {
+                return (
+                    <div style={{display: 'flex', flexDirection: 'column', gap: '10px', width: '100%'}}>
+                        <div style={{
+                            padding: '10px', background: '#fff7e6', border: '1px solid #ffa940', 
+                            borderRadius: '4px', color: '#d46b08', textAlign: 'center', fontWeight: 'bold'
+                        }}>
+                            ⚠️ Đang chờ khách thanh toán: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.tong_tien)}
+                        </div>
+                        <button 
+                            className="button-primary" 
+                            style={{backgroundColor: '#52c41a'}}
+                            onClick={handleConfirmPayment} 
+                            disabled={isSubmitting}
+                        >
+                            💸 Xác nhận Đã Thu Tiền
+                        </button>
+                    </div>
+                );
+            } else {
+                return (
+                    <button 
+                        className="button-primary" 
+                        style={{backgroundColor: '#faad14'}} 
+                        onClick={() => setIsFinalizeModalOpen(true)} 
+                        disabled={isSubmitting}
+                    >
+                        💰 Quyết Toán Đơn
                     </button>
-                 );
+                );
+            }
             case 'HOAN_TAT':
                 return <p>Đơn hàng đã hoàn tất.</p>;
             case 'TU_CHOI':

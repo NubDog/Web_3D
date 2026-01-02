@@ -1,12 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './../../styles/components/CheckOut/CheckOut.css';
-import Input from './../../components/Input/input';
 import imghold from './../../assets/Lamborghini Sian FKP 37.png';
 import Sub_Button from './../../components/Button/Sub-Button/Sub-Button';
-import { useLocation, Link as RouterLink } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import Checkbox from './../../components/CheckBox/Checkbox'
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext'; 
 
 interface CheckOutProps {
     onNext: (data: any) => void;
@@ -14,26 +11,66 @@ interface CheckOutProps {
 
 const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
     const location = useLocation();
-    const [selectReceiveValue, setSelectReceiveValue] = useState("");
-    
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSelectReceiveValue(event.target.value);
-    };
+    const navigate = useNavigate(); 
+    const { currentUser } = useAuth(); 
+    const [isLoading, setIsLoading] = useState(false); 
 
     const { product } = location.state || {};
 
     if (!product) {
-        return (
-            <div>Hello World</div>
-        )
+        return <div>Không tìm thấy thông tin xe</div>;
     }
+
+    const handleRentRequest = async () => {
+        setIsLoading(true);
+        try {
+            if (!currentUser || !currentUser.nguoi_dung_id) {
+                alert("Vui lòng đăng nhập để thuê xe!");
+                navigate('/signin'); 
+                return;
+            }
+
+            const userId = currentUser.nguoi_dung_id;
+
+            const response = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/user/check-kyc?userId=${userId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Lỗi kết nối server');
+            }
+
+            const data = await response.json();
+
+            if (data.success && data.hasKYC) {
+                onNext({ 
+                    product: { ...product } 
+                });
+            } else {
+                const confirmUpdate = window.confirm("Hồ sơ của bạn chưa có ảnh CCCD/CMND. Bạn cần cập nhật để thuê xe. Đi đến trang cập nhật ngay?");
+                if (confirmUpdate) {
+                    navigate('/account_home/account_home_kyc'); 
+                }
+            }
+
+        } catch (error) {
+            console.error("Lỗi kiểm tra KYC:", error);
+            alert("Có lỗi xảy ra khi kiểm tra hồ sơ, vui lòng thử lại sau.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div className='cheackOut-container'>
             <div className='cheackOut-content col-980'>
 
                 <div className="checkOut-shipmentgroup">
-                    <p>Còn xe</p>
+                    <p style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '15px'}}>Xác nhận thuê xe</p>
+                    
                     <div className="checkOut-product">
                         <img
                             src={product?.img || imghold}
@@ -41,58 +78,31 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                         />
 
                         <div className="checkOut-product-infor">
-                            <p>{ product?.product_name }</p>
+                            <p style={{fontWeight: 'bold'}}>{ product?.product_name }</p>
                             <p>{ product?.product_category }</p>
-                            <p>Xem chi tiết</p>
+                            <p style={{color: '#007bff', cursor: 'pointer'}}>Xem chi tiết</p>
                         </div>
                     </div>
 
                     <div className="checkOut-product-shipment">
-                        <p>Phương thức giao xe của bạn:</p>
                         <div className="checkOut-product-shipment-option">
-                            <div className='checkOut-product-shipment-option-time'>
-                                <div className="checkOut-product-shipment-option-time-item">
-                                    <Checkbox 
-                                        checkbox_content = "Giao xe trực tiếp"
-                                        id = "GiaoXeTrucTiep"
-                                        value = "delivery"
-                                        onChange = {handleChange}
-                                    />
-
-                                    <Checkbox 
-                                        checkbox_content = "Bạn đến chi nhánh lấy xe"
-                                        id = "BanDenChiNhanh"
-                                        value = "pickup"
-                                        onChange = {handleChange}
-                                    />
-                                </div>
-
-                                <div className='checkOut-product-shipment-message'>
-                                    <p>Một số điều cần ghi nhớ:</p>
-                                    <ul>
-                                        <li>Nhân viên giao xe sẻ yêu cầu bạn ký tên vào biên bản bào giao và hợp đồng thuê</li>
-                                        <li>Thời gian giao xe sẻ là từ 8h sáng cho đến 10h tối tất cả các ngày trong tuần</li>
-                                        <li>Sử dụng địa chỉ giao hàng trước khi sáp nhập</li>
-                                    </ul>
-                                    <a href="#">Xem Chính Sách Giao Xe Của Shark Eat Rice</a>
-                                </div>
+                            <div className='checkOut-product-shipment-message' style={{marginTop: '0'}}>
+                                <p><strong>Quy trình xử lý:</strong></p>
+                                <ul>
+                                    <li>Hệ thống sẽ kiểm tra hồ sơ CCCD/CMND của bạn.</li>
+                                    <li>Nhân viên sẽ liên hệ xác nhận thời gian giao xe từ 8h - 22h.</li>
+                                    <li>Vui lòng chuẩn bị bản gốc giấy tờ để đối chiếu khi nhận xe.</li>
+                                </ul>
+                                <a href="#">Xem Chính Sách Giao Xe Của Shark Eat Rice</a>
                             </div>
                         </div>
                     </div>
 
-                    <div className="checkOut-button">
-                        <Sub_Button content='Tiếp Tục Đến Địa Chỉ Giao Hàng' onClick={() => {
-                            if (!selectReceiveValue) {
-                                alert('Vui lòng chọn phương thức giao xe');
-                                return;
-                            }
-                            onNext({ 
-                                product: {
-                                    ...product,
-                                    deliveryMethod: selectReceiveValue
-                                }
-                            });
-                        }} />
+                    <div className="checkOut-button" style={{marginTop: '20px'}}>
+                        <Sub_Button 
+                            content={isLoading ? 'Đang kiểm tra hồ sơ...' : 'Gửi Yêu Cầu Thuê Xe'} 
+                            onClick={handleRentRequest} 
+                        />
                     </div>
 
                     <div className="checkOut-product-question">

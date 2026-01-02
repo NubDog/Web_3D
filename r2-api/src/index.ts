@@ -17,7 +17,7 @@ import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/Ng
 import { handleGetDonThue } from './API/DonThue_API';
 import { handleGetKhachHang } from './API/KhachHang_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
-import { handleGetKycDocumentsByNguoiDungId } from './API/KYC_User';
+import { handleGetKycDocumentsByNguoiDungId,handleCheckStatusKYC } from './API/KYC_User';
 import { handleGetUserOrders } from './API/UserOrder_API';
 import { handleGetUserContract } from './API/UserContract';
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
@@ -29,6 +29,8 @@ import {
 	handleGetOrders,
 	handleGetOrderDetails,
 	handleCancelOrder,
+	handleSettleOrder,
+	handleConfirmPayment,
 } from './Admin/don-thue';
 import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
@@ -121,6 +123,10 @@ export default {
 				if (method === 'POST') {
 					return handleCreateNguoiDung(request, env);
 				}
+			}
+
+			if (url.pathname === '/api/user/check-kyc' && request.method === 'GET') {
+				return handleCheckStatusKYC(request, env);
 			}
 
 			// ------------------- API KhachHang -------------------
@@ -303,6 +309,17 @@ export default {
 			if (confirmDepositMatch && method === 'POST') {
 				const orderId = confirmDepositMatch[1];
 				return handleConfirmDeposit(request, env, orderId);
+			}
+			if (request.method === 'POST' && url.pathname.match(/^\/api\/don-thue\/\d+\/settle$/)) {
+				const id = url.pathname.split('/')[3]; // Lấy ID đơn hàng (số 7 trong log)
+				return handleSettleOrder(request, env, id);
+			}
+
+			// 2. Route cho bước Xác nhận thu tiền (Hoàn tất)
+			// Frontend gọi: /api/don-thue/:id/confirm-payment
+			if (request.method === 'POST' && url.pathname.match(/^\/api\/don-thue\/\d+\/confirm-payment$/)) {
+				const id = url.pathname.split('/')[3];
+				return handleConfirmPayment(request, env, id);
 			}
 
 			// ------------------- Vi phạm -------------------

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import './../../styles/components/CheckOut/CheckOut-Payment.css';
-import MasterCard from './../Card/MasterCard';
 import Sub_Button from './../Button/Sub-Button/Sub-Button';
 import { useAuth } from './../../contexts/AuthContext';
 
@@ -13,7 +12,6 @@ interface CheckOutPaymentProps {
 const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack, onNext }) => {
     const { currentUser } = useAuth();
     const [isProcessing, setIsProcessing] = useState(false);
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
 
     if (!currentUser) {
         return (
@@ -23,24 +21,20 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
         )
     }
 
-    console.log(checkoutData);
-
-    // Tính toán giá thuê
     const dailyPrice = checkoutData.product?.product_totalPrice || 0;
     const rentalDays = checkoutData.rentalDays || 1;
     const totalRentalPrice = dailyPrice * rentalDays;
-    const depositAmount = totalRentalPrice * 5; // Tiền cọc gấp 5 lần tổng tiền thuê
+    const depositAmount = totalRentalPrice * 5; 
 
-    const handlePayment = async (paymentMethod: string) => {
+    const handleConfirmBooking = async () => {
         if (!currentUser || !currentUser.nguoi_dung_id) {
             alert("Không thể xác thực người dùng. Vui lòng đăng nhập lại.");
-            setIsProcessing(false);
             return;
         }
 
-        setSelectedPaymentMethod(paymentMethod);
         setIsProcessing(true);
         try {
+            // Lấy thông tin khách hàng
             let khachHangId = null;
             try {
                 const customerResponse = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/customers/by-user/${currentUser.nguoi_dung_id}`);
@@ -52,7 +46,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                     throw new Error('Không tìm thấy thông tin khách hàng');
                 }
             } catch (error) {
-                alert('Lỗi lấy thông tin khách hàng: ' + error);
+                alert('Lỗi lấy thông tin khách hàng, vui lòng cập nhật hồ sơ cá nhân.');
                 setIsProcessing(false);
                 return;
             }
@@ -62,17 +56,11 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 phuong_tien_id: checkoutData.product?.product_id || checkoutData.product?.id,
                 ngay_bat_dau: checkoutData.ngayMuon,
                 ngay_ket_thuc: checkoutData.ngayTra,  
-                dia_diem_nhan: `${checkoutData.diaChiChiTiet || ''}, ${checkoutData.quanHuyen || ''}`.trim(),
+                dia_diem_nhan: `${checkoutData.diaChiChiTiet || ''}, ${checkoutData.quanHuyen || ''}`.trim(), 
                 dia_diem_tra: `${checkoutData.diaChiChiTiet || ''}, ${checkoutData.quanHuyen || ''}`.trim()
             };
 
-            console.log('=== DỮ LIỆU GỬI CHO API ===');
-            console.log('currentUser:', currentUser);
-            console.log('khachHangId thật:', khachHangId);
-            console.log('checkoutData:', checkoutData);
-            console.log('apiData chuẩn bị gửi:', apiData);
-            console.log('========================');
-
+            // Gọi API tạo đơn
             const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/don-thue', {
                 method: 'POST',
                 headers: {
@@ -85,10 +73,10 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
 
             if (result.success) {
                 console.log('Tạo đơn thuê thành công:', result);
-                // Gửi thông tin phương thức thanh toán qua component tiếp theo
+                
                 onNext({ 
                     ...checkoutData, 
-                    paymentMethod: paymentMethod,
+                    paymentMethod: 'pay_later', 
                     totalAmount: totalRentalPrice + depositAmount,
                     rentalAmount: totalRentalPrice,
                     depositAmount: depositAmount
@@ -112,7 +100,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
             </div>
 
             <div className='checkOut-rental-summary'>
-                <h2>Chi tiết hóa đơn thuê xe</h2>
+                <h2>Chi tiết hóa đơn dự kiến</h2>
                 
                 <div className='rental-summary-content'>
                     <div className='rental-summary-row'>
@@ -131,83 +119,56 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                     </div>
                     
                     <div className='rental-summary-row rental-summary-deposit'>
-                        <span className='rental-summary-label'>Tiền đặt cọc:</span>
+                        <span className='rental-summary-label'>Tiền đặt cọc (ước tính):</span>
                         <span className='rental-summary-value'>{depositAmount.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
                     
                     <div className='rental-summary-total'>
                         <div className='rental-summary-row'>
-                            <span className='rental-summary-label'>Tổng thanh toán:</span>
+                            <span className='rental-summary-label'>Tổng thanh toán khi nhận xe:</span>
                             <span className='rental-summary-value'>{(totalRentalPrice + depositAmount).toLocaleString('vi-VN')} VNĐ</span>
                         </div>
                     </div>
                     
                     <div className='rental-summary-note'>
-                        <p>* Số tiền đặt cọc sẽ được hoàn trả lại sau khi phương tiện được trả</p>
+                        <p>* Số tiền đặt cọc sẽ được hoàn trả lại sau khi bạn trả xe nguyên vẹn.</p>
                     </div>
                 </div>
             </div>
             
-            <h1>Bạn muốn thanh toán bằng phương thức nào?</h1>
+            <h1>Thông tin thanh toán & Hợp đồng</h1>
             
-            <div className='payment-notice'>
+            <div className='payment-notice' style={{marginTop: '20px', marginBottom: '30px'}}>
                 <div className='payment-notice-header'>
-                    <i className="fa-solid fa-info-circle"></i>
-                    <span>Thông tin quan trọng về thanh toán</span>
+                    <i className="fa-solid fa-file-contract"></i>
+                    <span>Quy trình thanh toán</span>
                 </div>
                 <div className='payment-notice-content'>
                     <div className='payment-notice-item'>
-                        <i className="fa-solid fa-check-circle"></i>
-                        <p>Bạn có thể thay đổi phương thức thanh toán lúc ký hợp đồng với nhân viên</p>
+                        <i className="fa-solid fa-handshake"></i>
+                        <p>Bạn <strong>không cần thanh toán ngay bây giờ</strong>. Việc thanh toán sẽ diễn ra khi bạn gặp nhân viên giao xe.</p>
                     </div>
                     <div className='payment-notice-item'>
-                        <i className="fa-solid fa-exclamation-triangle"></i>
-                        <p>Bạn chỉ cần thanh toán tổng hóa đơn ngay sau khi ký hợp đồng. Hiện tại chúng tôi chưa nhận bất kỳ hình thức chuyển khoản nào</p>
+                        <i className="fa-solid fa-money-bill-transfer"></i>
+                        <p>Chúng tôi chấp nhận thanh toán bằng <strong>Tiền mặt</strong> hoặc <strong>Chuyển khoản QR Code</strong>.</p>
+                    </div>
+                    <div className='payment-notice-item'>
+                        <i className="fa-solid fa-clipboard-check"></i>
+                        <p>Bạn sẽ kiểm tra xe, ký hợp đồng thuê xe, sau đó mới tiến hành thanh toán và đặt cọc.</p>
                     </div>
                     <div className='payment-notice-item warning'>
                         <i className="fa-solid fa-shield-alt"></i>
-                        <p>Vui lòng không chuyển khoản trước cho nhân viên chúng tôi với bất kỳ lý do nào</p>
+                        <p>Lưu ý: Không chuyển khoản đặt cọc qua tin nhắn mạng xã hội để tránh lừa đảo.</p>
                     </div>
                 </div>
             </div>
 
-            <div className='checkOut-payment-option'>
-                <div className='checkOut-payment-option-card-group'>
-                    <h3>Thanh toán bằng thẻ:</h3>
-
-                    <div className={`checkOut-payment-option-card ${selectedPaymentMethod === 'card' ? 'selected' : ''}`} 
-                         tabIndex={0}
-                         onClick={() => setSelectedPaymentMethod('card')}>
-                        <MasterCard />
-                    </div>
-                    <div className='checkOut-payment-option-card-button'>
-                        <Sub_Button 
-                            content={isProcessing && selectedPaymentMethod === 'card' ? "Đang xử lý..." : "Thanh toán bằng thẻ"} 
-                            onClick={() => handlePayment('card')} 
-                        />
-                    </div>
-                </div>
-
-                <div className="checkOut-payment-option-cash-group">
-                    <h3>Thanh toán bằng tiền mặt:</h3>
-
-                    <div className={`checkOut-payment-option-cash-card ${selectedPaymentMethod === 'cash' ? 'selected' : ''}`} 
-                         tabIndex={0}
-                         onClick={() => setSelectedPaymentMethod('cash')}>
-                        <div className='cash-payment-info'>
-                            <i className="fa-solid fa-money-bills"></i>
-                            <p>Thanh toán trực tiếp khi nhận xe</p>
-                        </div>
-                    </div>
-                    <div className='checkOut-payment-option-cash-button'>
-                        <Sub_Button 
-                            content={isProcessing && selectedPaymentMethod === 'cash' ? "Đang xử lý..." : "Xác nhận thanh toán tiền mặt"} 
-                            onClick={() => handlePayment('cash')} 
-                        />
-                    </div>
-                </div>
+            <div className='checkOut-payment-confirm-button' style={{textAlign: 'center', marginTop: '20px'}}>
+                <Sub_Button 
+                    content={isProcessing ? "Đang xử lý đơn..." : "Xác Nhận Đặt Thuê Xe"} 
+                    onClick={handleConfirmBooking} 
+                />
             </div>
-
 
         </div>
     )

@@ -2,7 +2,7 @@ import React from 'react';
 import './css/OrderTimeline.css'; 
 import { FaCheckCircle, FaSpinner, FaCircle, FaTimesCircle } from 'react-icons/fa';
 
-type OrderStatus = 'CHO_DUYET' | 'DA_DUYET' | 'DANG_THUE' | 'DA_TRA' | 'HOAN_TAT' | 'TU_CHOI';
+type OrderStatus = 'CHO_DUYET' | 'DA_DUYET' | 'DANG_THUE' | 'DA_TRA'|'CHO_QUYET_TOAN'| 'CHO_THANH_TOAN' | 'HOAN_TAT' | 'TU_CHOI';
 
 interface OrderTimelineProps {
   status: OrderStatus;
@@ -14,6 +14,7 @@ const OrderTimeline: React.FC<OrderTimelineProps> = ({ status }) => {
     { name: 'DA_DUYET', label: 'Đã Duyệt' },
     { name: 'DANG_THUE', label: 'Đang Thuê' },
     { name: 'DA_TRA', label: 'Đã Trả' },
+    { name: 'CHO_THANH_TOAN', label: 'Chờ Thanh Toán' },
     { name: 'HOAN_TAT', label: 'Hoàn Tất' },
   ];
 

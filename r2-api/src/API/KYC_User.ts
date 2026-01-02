@@ -38,3 +38,34 @@ export const handleGetKycDocumentsByNguoiDungId = async (request: Request, env: 
         return jsonResponse({ success: false, error: 'Lỗi truy vấn dữ liệu KYC', details: e.message }, 500);
     }
 };
+
+export const handleCheckStatusKYC = async (request: Request, env: Env) => {
+    try {
+        const url = new URL(request.url);
+        const nguoi_dung_id = url.searchParams.get('userId');
+
+        if (!nguoi_dung_id) {
+            return jsonResponse({ success: false, error: 'Thiếu User ID' }, 400);
+        }
+
+        const khachHang = await env.DB.prepare("SELECT khach_hang_id FROM KhachHang WHERE nguoi_dung_id = ?")
+            .bind(nguoi_dung_id)
+            .first<{ khach_hang_id: number }>();
+
+        if (!khachHang) {
+            return jsonResponse({ success: true, hasKYC: false });
+        }
+
+        const taiLieu = await env.DB.prepare("SELECT COUNT(*) as count FROM TaiLieuKYC WHERE khach_hang_id = ?")
+            .bind(khachHang.khach_hang_id)
+            .first<{ count: number }>();
+        
+        const hasKYC = (taiLieu?.count || 0) > 0;
+
+        return jsonResponse({ success: true, hasKYC: hasKYC });
+
+    } catch (e: any) {
+        console.error("Lỗi check KYC:", e);
+        return jsonResponse({ success: false, error: e.message }, 500);
+    }
+};

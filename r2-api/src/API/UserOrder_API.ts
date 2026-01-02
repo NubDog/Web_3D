@@ -23,66 +23,59 @@ export async function handleGetUserOrders(request: Request, env: Env): Promise<R
     const url = new URL(request.url);
     const nguoiDungId = url.searchParams.get('nguoi_dung_id');
 
-    // Kiểm tra xem có nguoi_dung_id không
     if (!nguoiDungId) {
-        return jsonResponse({
-            success: false,
-            error: 'Thiếu thông tin nguoi_dung_id. Vui lòng đăng nhập.',
-        }, 400);
+        return jsonResponse({ success: false, error: 'Thiếu thông tin nguoi_dung_id.' }, 400);
     }
 
-    console.log(nguoiDungId);
-
-    try {
-        // Bước 1: Lấy khach_hang_id từ bảng KhachHang dựa trên nguoi_dung_id
-        const khachHangQuery = `SELECT khach_hang_id FROM KhachHang WHERE nguoi_dung_id = ?`;
-        const khachHangResult = await env.DB.prepare(khachHangQuery).bind(nguoiDungId).first();
-
-        if (!khachHangResult) {
-            return jsonResponse({
-                success: false,
-                error: 'Không tìm thấy thông tin khách hàng.',
-            }, 404);
-        }
-
-        const khachHangId = khachHangResult.khach_hang_id;
-
-        // Bước 2: Lấy thông tin đơn thuê từ bảng DonThue
-        const donThueQuery = `
+  try {
+       const query = `
             SELECT 
-                don_thue_id,
-                khach_hang_id,
-                phuong_tien_id,
-                chinh_sach_id,
-                nhan_vien_tao,
-                ngay_bat_dau,
-                ngay_ket_thuc,
-                dia_diem_nhan,
-                dia_diem_tra,
-                trang_thai,
-                tong_tien,
-                tien_coc_yeu_cau,
-                ghi_chu,
-                ngay_tao,
-                ngay_cap_nhat
-            FROM DonThue 
-            WHERE khach_hang_id = ?
-            ORDER BY ngay_tao DESC
-        `;
+                dt.don_thue_id,
+                dt.ngay_bat_dau,
+                dt.ngay_ket_thuc,
+                dt.dia_diem_nhan,
+                dt.dia_diem_tra,
+                dt.tong_tien,
+                dt.tien_coc_yeu_cau,
+                dt.ghi_chu,
+                dt.ngay_tao,
+                pt.ten_phuong_tien,
+                hd.duong_dan_file AS hop_dong_url,
 
-        const { results } = await env.DB.prepare(donThueQuery).bind(khachHangId).all();
+                pt.gia_thue,           
+                cs.ty_le_giam,         
+                cs.ten_chinh_sach,                    
+
+                CASE 
+                   
+                    WHEN dt.trang_thai IN ('DANG_THUE', 'DA_TRA', 'CHO_THANH_TOAN', 'HOAN_THANH', 'DA_HUY') THEN dt.trang_thai
+                    
+                 
+                    WHEN dt.trang_thai = 'DA_DUYET' AND tc.trang_thai IN ('DA_NHAN', 'DA_THANH_TOAN', 'DANG_GIU') THEN 'DA_COC'
+                    
+                    ELSE dt.trang_thai 
+                END AS trang_thai,
+                
+                dt.tong_tien AS tong_tien_thuc_te
+
+            FROM DonThue dt
+            JOIN KhachHang kh ON dt.khach_hang_id = kh.khach_hang_id
+            JOIN PhuongTien pt ON dt.phuong_tien_id = pt.phuong_tien_id
+            JOIN ChinhSachGia cs ON dt.chinh_sach_id = cs.chinh_sach_id
+            LEFT JOIN HopDong hd ON dt.don_thue_id = hd.don_thue_id
+            LEFT JOIN TienCoc tc ON dt.don_thue_id = tc.don_thue_id
+            WHERE kh.nguoi_dung_id = ?
+            ORDER BY dt.ngay_tao DESC
+        `;
+        const { results } = await env.DB.prepare(query).bind(nguoiDungId).all();
 
         return jsonResponse({
             success: true,
             data: results,
-            message: `Lấy thành công ${results.length} đơn thuê.`,
         });
 
     } catch (e: any) {
-        return jsonResponse({
-            success: false,
-            error: 'Lỗi truy vấn cơ sở dữ liệu.',
-            details: e.message,
-        }, 500);
+        console.error("SQL Error:", e);
+        return jsonResponse({ success: false, error: 'Lỗi truy vấn dữ liệu: ' + e.message }, 500);
     }
 }
