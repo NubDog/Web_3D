@@ -6,7 +6,7 @@ import Logo from './../Logo/logo.tsx'
 import Button from '../Button/Button.tsx'
 import Button_logout from '../Button/Button_logout.tsx'
 import { useAuth } from '../../contexts/AuthContext';
- 
+
 interface danhMucPhuongTien {
     ten_danh_muc: string;
 }
@@ -15,7 +15,7 @@ interface HeaderProps {
     id?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({id}) => {
+const Header: React.FC<HeaderProps> = ({ id }) => {
     const navigate = useNavigate();
     const StoreBike = '/store/store-bike';
 
@@ -26,8 +26,8 @@ const Header: React.FC<HeaderProps> = ({id}) => {
     ]
     const [danhMucPhuongTien, setDanhMucPhuongTien] = useState<danhMucPhuongTien[]>([]);
     const [loading, setLoading] = useState(false);
-    const { currentUser, logout  } = useAuth();
-    
+    const { currentUser, logout } = useAuth();
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const adminRoles = ['admin', 'NhanVien'];
@@ -54,24 +54,24 @@ const Header: React.FC<HeaderProps> = ({id}) => {
     }, []);
 
     return (
-        <div className="header" id={id}>
+        <div className="header-main" id={id}>
             <Logo />
             <ul className="header-menu">
                 <li className="header-menu_items"><a href="/store">Cửa hàng</a></li>
-            <li className="header-menu_items"><a href="/store/store-bike">Xe máy</a></li>
+                <li className="header-menu_items"><a href="/store/store-bike">Xe máy</a></li>
                 <li className="header-menu_items"><a href="/store">Siêu xe</a></li>
                 <li className="header-menu_items"><a href="/store">SUV</a></li>
                 <li className="header-menu_items"><a href="/store">Trực Thăng</a></li>
                 <li className="header-menu_items"><a href="/store">Xe đạp</a></li>
                 <li className="header-menu_items"><a href="/store">Flycam</a></li>
                 <li className="header-menu_items"><a href="/store">Tank</a></li>
-                
+
                 <li className="header-menu_items"><a href={StoreBike}>Hỗ trợ</a></li>
                 <li className="header-menu_items"><a href="#"><i className="fa-solid fa-magnifying-glass"></i></a></li>
             </ul>
 
             <div className="user-login" >
-                 {currentUser ? (
+                {currentUser ? (
                     <div className="user-info">
                         <div className="welcome-container">
                             <span className="welcome-message">
@@ -80,34 +80,34 @@ const Header: React.FC<HeaderProps> = ({id}) => {
                             {isUserAdmin ? (
                                 <div className="user-dropdown">
                                     <button onClick={() => navigate('/admin')}>
-                                    <i className="fa-solid fa-shield-halved"></i>
-                                    Trang Quản trị
+                                        <i className="fa-solid fa-shield-halved"></i>
+                                        Trang Quản trị
                                     </button>
                                 </div>
-                                ) : (
+                            ) : (
                                 <div className="user-dropdown">
                                     <button onClick={() => navigate('/account_home')}>
-                                    <i className="fa-solid fa-user"></i>
-                                    Thông tin tài khoản
+                                        <i className="fa-solid fa-user"></i>
+                                        Thông tin tài khoản
                                     </button>
                                     <button onClick={() => navigate('/user/order')}>
-                                    <i className="fa-solid fa-file-lines"></i>
-                                    Đơn thuê của tôi
+                                        <i className="fa-solid fa-file-lines"></i>
+                                        Đơn thuê của tôi
                                     </button>
                                     <button onClick={() => navigate('/user/contract')}>
-                                    <i className="fa-solid fa-file-contract"></i>
-                                    Hợp đồng của tôi
+                                        <i className="fa-solid fa-file-contract"></i>
+                                        Hợp đồng của tôi
                                     </button>
                                 </div>
-                                )}
+                            )}
 
-                            
+
                         </div>
                         <Button_logout />
                     </div>
                 ) : (
-                    <Button 
-                        conttent="Đăng nhập / đăng ký" 
+                    <Button
+                        conttent="Đăng nhập / đăng ký"
                         onClick={() => navigate('/signin')}
                     />
                 )}

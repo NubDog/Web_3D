@@ -3,7 +3,7 @@ import './../../styles/components/CheckOut/CheckOut.css';
 import imghold from './../../assets/Lamborghini Sian FKP 37.png';
 import Sub_Button from './../../components/Button/Sub-Button/Sub-Button';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext'; 
+import { useAuth } from '../../contexts/AuthContext';
 
 interface CheckOutProps {
     onNext: (data: any) => void;
@@ -11,9 +11,9 @@ interface CheckOutProps {
 
 const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
     const location = useLocation();
-    const navigate = useNavigate(); 
-    const { currentUser } = useAuth(); 
-    const [isLoading, setIsLoading] = useState(false); 
+    const navigate = useNavigate();
+    const { currentUser } = useAuth();
+    const [isLoading, setIsLoading] = useState(false);
 
     const { product } = location.state || {};
 
@@ -26,7 +26,7 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
         try {
             if (!currentUser || !currentUser.nguoi_dung_id) {
                 alert("Vui lòng đăng nhập để thuê xe!");
-                navigate('/signin'); 
+                navigate('/signin');
                 return;
             }
 
@@ -46,13 +46,13 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
             const data = await response.json();
 
             if (data.success && data.hasKYC) {
-                onNext({ 
-                    product: { ...product } 
+                onNext({
+                    product: { ...product }
                 });
             } else {
                 const confirmUpdate = window.confirm("Hồ sơ của bạn chưa có ảnh CCCD/CMND. Bạn cần cập nhật để thuê xe. Đi đến trang cập nhật ngay?");
                 if (confirmUpdate) {
-                    navigate('/account_home/account_home_kyc'); 
+                    navigate('/account_home/account_home_kyc');
                 }
             }
 
@@ -69,8 +69,8 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
             <div className='cheackOut-content col-980'>
 
                 <div className="checkOut-shipmentgroup">
-                    <p style={{fontSize: '20px', fontWeight: 'bold', marginBottom: '15px'}}>Xác nhận thuê xe</p>
-                    
+                    <p style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>Xác nhận thuê xe</p>
+
                     <div className="checkOut-product">
                         <img
                             src={product?.img || imghold}
@@ -78,15 +78,15 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                         />
 
                         <div className="checkOut-product-infor">
-                            <p style={{fontWeight: 'bold'}}>{ product?.product_name }</p>
-                            <p>{ product?.product_category }</p>
-                            <p style={{color: '#007bff', cursor: 'pointer'}}>Xem chi tiết</p>
+                            <p style={{ fontWeight: 'bold' }}>{product?.product_name}</p>
+                            <p>{product?.product_category}</p>
+                            <p style={{ color: '#007bff', cursor: 'pointer' }}>Xem chi tiết</p>
                         </div>
                     </div>
 
                     <div className="checkOut-product-shipment">
                         <div className="checkOut-product-shipment-option">
-                            <div className='checkOut-product-shipment-message' style={{marginTop: '0'}}>
+                            <div className='checkOut-product-shipment-message' style={{ marginTop: '0' }}>
                                 <p><strong>Quy trình xử lý:</strong></p>
                                 <ul>
                                     <li>Hệ thống sẽ kiểm tra hồ sơ CCCD/CMND của bạn.</li>
@@ -98,10 +98,10 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                         </div>
                     </div>
 
-                    <div className="checkOut-button" style={{marginTop: '20px'}}>
-                        <Sub_Button 
-                            content={isLoading ? 'Đang kiểm tra hồ sơ...' : 'Gửi Yêu Cầu Thuê Xe'} 
-                            onClick={handleRentRequest} 
+                    <div className="checkOut-button" style={{ marginTop: '20px' }}>
+                        <Sub_Button
+                            content={isLoading ? 'Đang kiểm tra hồ sơ...' : 'Gửi Yêu Cầu Thuê Xe'}
+                            onClick={handleRentRequest}
                         />
                     </div>
 

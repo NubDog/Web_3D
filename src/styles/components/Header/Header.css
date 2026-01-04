@@ -1,4 +1,4 @@
-.header{
+.header-main {
     display: flex;
     z-index: 1000;
     top: 0;
@@ -30,7 +30,8 @@
     padding: 10px;
 }
 
-.header-menu_items:hover, .user-login:hover {
+.header-menu_items:hover,
+.user-login:hover {
     opacity: 1;
     cursor: pointer;
 }
@@ -50,11 +51,11 @@
 }
 
 .welcome-container {
-    position: relative; 
+    position: relative;
     padding: 10px 0;
-    padding-bottom: 23px; 
+    padding-bottom: 23px;
     margin-bottom: -23px;
-    font-size: 50%;
+    font-size: 100%;
 }
 
 .welcome-message {
@@ -63,9 +64,7 @@
     color: var(--white-blue);
 }
 
-/* --- CSS cho Dropdown Menu --- */
 .user-dropdown {
-    /* Mặc định ẩn đi */
     display: none;
     position: absolute;
     top: 100%;
@@ -80,7 +79,6 @@
     border: 1px solid #eee;
 }
 
-/* Khi hover vào welcome-container, dropdown sẽ hiện ra */
 .welcome-container:hover .user-dropdown {
     display: block;
 }
@@ -97,7 +95,7 @@
     align-items: center;
     gap: 10px;
     color: #333;
-    width: 100%; /* Đảm bảo nút chiếm hết chiều rộng dropdown */
+    width: 100%;
 }
 
 .user-dropdown button:hover {
