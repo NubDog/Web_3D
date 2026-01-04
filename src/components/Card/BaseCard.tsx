@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 
 import './../../styles/components/Card/Card.css';
@@ -16,13 +16,13 @@ interface CardProps {
     card_title: string;
     card_subtitle: string;
     data: DataItem[];
-    Card_content_customMiddle:string;
+    Card_content_customMiddle: string;
 }
 
 
-const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: CardProps) => {
+const BaseCard = ({ card_title, card_subtitle, data, Card_content_customMiddle }: CardProps) => {
     const cardBoxRef = useRef<HTMLDivElement>(null);
-    const [clickCount, setClickCount] = useState(0);
+
     const numberCard = data?.length ?? 0;
 
     const scrollLeft = () => {
@@ -32,7 +32,7 @@ const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: 
             console.log('Scroll width:', element.scrollWidth);
             console.log('Client width:', element.clientWidth);
             console.log('Can scroll left:', element.scrollLeft > 0);
-            
+
             element.scrollBy({ left: -420, behavior: 'smooth' });
         }
     };
@@ -44,37 +44,29 @@ const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: 
             console.log('Scroll width:', element.scrollWidth);
             console.log('Client width:', element.clientWidth);
             console.log('Can scroll right:', element.scrollLeft < element.scrollWidth - element.clientWidth);
-            
+
             element.scrollBy({ left: 420, behavior: 'smooth' });
         }
     };
 
-    const handleScrollLeft = () => {
-        scrollLeft();
-        setClickCount(prevCount => prevCount - 1);
-    };
 
-    const handleScrollRight = () => {
-        scrollRight();
-        setClickCount(prevCount => prevCount + 1);
-    };
 
     // console.log('Số lần bấm nút cuộn:', clickCount);
 
 
-    
+
     return (
         <div className="Card-container">
             <div className="Card-title-container col-1617">
                 <h2 className="Card-title">{card_title}<span>{card_subtitle}</span></h2>
             </div>
-            
+
             <div className="Card-box" ref={cardBoxRef}>
                 <div className="Card-scroll-buttons">
-                    <button className={clickCount === 0 ? 'non-active' : 'active'} onClick={handleScrollLeft} aria-label="Scroll Left">
+                    <button className="active" onClick={scrollLeft} aria-label="Scroll Left">
                         <i className="icon-scroll fa-solid fa-angle-left"></i>
                     </button>
-                    <button className={numberCard < 4 || clickCount >= 6 ? 'non-active' : 'active'} onClick={handleScrollRight} aria-label="Scroll Right">
+                    <button className={numberCard < 4 ? 'non-active' : 'active'} onClick={scrollRight} aria-label="Scroll Right">
                         <i className="icon-scroll fa-solid fa-angle-right"></i>
                     </button>
                 </div>
@@ -82,7 +74,7 @@ const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: 
                     <div className={`Card-content ${Card_content_customMiddle ?? ''}`} key={item.id}>
                         <div className="Card-content-title-link">
                             <Link to="/product_detail" state={{ product: item }}>
-                                <img 
+                                <img
                                     src={item.img || Lamborghini_model_Sian}
                                     alt={item.product_name}
                                     onError={(e) => {
@@ -90,7 +82,7 @@ const BaseCard = ({card_title, card_subtitle, data, Card_content_customMiddle}: 
                                     }}
                                 />
                             </Link>
-                            <Link to="/product_detail" state={{ product: item}}></Link>
+                            <Link to="/product_detail" state={{ product: item }}></Link>
                         </div>
                         <div className="Card-content-title">
                             <h3 className="Card-content-title-header">{item.product_name}</h3>
