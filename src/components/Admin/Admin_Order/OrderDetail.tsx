@@ -438,6 +438,7 @@ const OrderDetail: React.FC = () => {
     if (isLoading) return <div>Đang tải thông tin đơn hàng...</div>;
     if (error) return <div className="error-message">Lỗi: {error}</div>;
     if (!order) return <div>Không tìm thấy đơn hàng.</div>;
+    const trangThaiDaKetThuc = ['DA_TRA', 'CHO_THANH_TOAN', 'HOAN_TAT'];
 
     const ngayBatDau = new Date(order.ngay_bat_dau);
     const ngayKetThuc = new Date(order.ngay_ket_thuc);
@@ -448,10 +449,9 @@ const OrderDetail: React.FC = () => {
     const tienThueDuKien = tamTinh - tienGiamGia;
 
     const phuPhi = order.tong_tien - tienThueDuKien;
-    const coPhatSinh = Math.abs(phuPhi) > 1000;
+    const coPhatSinh = Math.abs(phuPhi) > 1000 && trangThaiDaKetThuc.includes(order.trang_thai);
 
-    const tongTienCuoiCung = tamTinh - tienGiamGia;
-
+    const tongTienHienThi = coPhatSinh ? order.tong_tien : tienThueDuKien;
     const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
@@ -503,16 +503,16 @@ const OrderDetail: React.FC = () => {
                                 </div>
                             )}
 
-                            <hr className="fi-divider" />
+                            {/* <hr className="fi-divider" />
 
                             <div className="fi-row total">
                                 <span>Tiền thuê dự kiến (đã trừ {formatCurrency(order.tien_coc_yeu_cau)} tiền cọc):</span>
                                 <span style={{fontSize: '1.4rem', color: '#007bff'}}>{formatCurrency(tienThueDuKien - order.tien_coc_yeu_cau)}</span>
-                            </div>
+                            </div> */}
 
                             {/* 4. PHỤ PHÍ / HƯ HỎNG / TRỄ (MỚI THÊM) */}
                             {coPhatSinh && (
-                                <div className="fi-row surcharge" style={{ color: phuPhi > 0 ? '#dc3545' : '#28a745', fontWeight: 'bold' }}>
+                                <div className="fi-row surcharge" style={{color: phuPhi > 0 ? '#dc3545' : '#28a745', fontWeight: 'bold'}}>
                                     <span>Phí phát sinh (Hư hỏng/Trễ):</span>
                                     <span>{phuPhi > 0 ? '+' : ''}{formatCurrency(phuPhi)}</span>
                                 </div>
@@ -522,9 +522,14 @@ const OrderDetail: React.FC = () => {
 
                             {/* 5. TỔNG TIỀN */}
                             <div className="fi-row total">
-                                <span>Tổng thanh toán (đã trừ {formatCurrency(order.tien_coc_yeu_cau)} tiền cọc):</span>
-                                <span style={{fontSize: '1.4rem', color: '#007bff'}}>{formatCurrency(order.tong_tien-order.tien_coc_yeu_cau)}</span>
-                            </div>
+                            <span>
+                                {/* Đổi nhãn hiển thị cho hợp lý */}
+                                {trangThaiDaKetThuc.includes(order.trang_thai) ? 'Tổng quyết toán:' : 'Tổng tiền thuê dự kiến:'} (đã trừ {formatCurrency(order.tien_coc_yeu_cau)} tiền cọc)
+                            </span>
+                            <span style={{fontSize: '1.4rem', color: '#007bff'}}>
+                                {formatCurrency(tongTienHienThi - order.tien_coc_yeu_cau)}
+                            </span>
+                        </div>
 
 
                             {coPhatSinh && order.ghi_chu && (
