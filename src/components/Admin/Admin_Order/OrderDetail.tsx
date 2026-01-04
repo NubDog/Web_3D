@@ -286,7 +286,7 @@ const OrderDetail: React.FC = () => {
     const tienGiam = tamTinh * order.ty_le_giam;
     const tienThueGoc = tamTinh - tienGiam;
 
-    const tong_tien_cuoi_cung = tienThueGoc + tong_phu_phi;
+    const tong_tien_cuoi_cung = tienThueGoc + tong_phu_phi - order.tien_coc_yeu_cau;
 
     const ghiChuChiTiet = [
         data.ghi_chu_quyet_toan,
@@ -402,7 +402,7 @@ const OrderDetail: React.FC = () => {
                             padding: '10px', background: '#fff7e6', border: '1px solid #ffa940', 
                             borderRadius: '4px', color: '#d46b08', textAlign: 'center', fontWeight: 'bold'
                         }}>
-                            ⚠️ Đang chờ khách thanh toán: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.tong_tien)}
+                            ⚠️ Đang chờ khách thanh toán: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.tong_tien -order.tien_coc_yeu_cau)}
                         </div>
                         <button 
                             className="button-primary" 
@@ -445,6 +445,11 @@ const OrderDetail: React.FC = () => {
 
     const tamTinh = order.gia_thue* soNgayThue;
     const tienGiamGia = tamTinh * order.ty_le_giam;
+    const tienThueDuKien = tamTinh - tienGiamGia;
+
+    const phuPhi = order.tong_tien - tienThueDuKien;
+    const coPhatSinh = Math.abs(phuPhi) > 1000;
+
     const tongTienCuoiCung = tamTinh - tienGiamGia;
 
     const formatCurrency = (amount: number) => {
@@ -460,6 +465,7 @@ const OrderDetail: React.FC = () => {
             minute: '2-digit',
         });
     };
+
 
     return (
         <div className="order-detail-container">
@@ -477,29 +483,63 @@ const OrderDetail: React.FC = () => {
                     <div className="info-card">
                         <h2><FaFileInvoiceDollar /> Thông tin Tài chính</h2>
                         <div className="financial-breakdown">
+                            {/* 1. GIÁ THUÊ */}
                             <div className="fi-row">
                                 <span>Giá thuê:</span>
                                 <span>{formatCurrency(order.gia_thue)} x {soNgayThue} ngày</span>
                             </div>
+
+                            {/* 2. TẠM TÍNH */}
                             <div className="fi-row subtotal">
                                 <span>Tạm tính:</span>
                                 <span>{formatCurrency(tamTinh)}</span>
                             </div>
-                            <div className="fi-row discount">
-                                <span>Khuyến mãi ({order.ten_chinh_sach} -{order.ty_le_giam * 100}%):</span>
-                                <span>-{formatCurrency(tienGiamGia)}</span>
-                            </div>
+
+                            {/* 3. KHUYẾN MÃI */}
+                            {tienGiamGia > 0 && (
+                                <div className="fi-row discount">
+                                    <span>Khuyến mãi ({order.ten_chinh_sach} -{order.ty_le_giam * 100}%):</span>
+                                    <span>-{formatCurrency(tienGiamGia)}</span>
+                                </div>
+                            )}
+
                             <hr className="fi-divider" />
+
                             <div className="fi-row total">
-                                <span>Tổng tiền thuê:</span>
-                                <span>{formatCurrency(tongTienCuoiCung)}</span>
+                                <span>Tiền thuê dự kiến (đã trừ {formatCurrency(order.tien_coc_yeu_cau)} tiền cọc):</span>
+                                <span style={{fontSize: '1.4rem', color: '#007bff'}}>{formatCurrency(tienThueDuKien - order.tien_coc_yeu_cau)}</span>
                             </div>
-                            <div className="fi-row">
-                                <span>Tiền cọc yêu cầu:</span>
+
+                            {/* 4. PHỤ PHÍ / HƯ HỎNG / TRỄ (MỚI THÊM) */}
+                            {coPhatSinh && (
+                                <div className="fi-row surcharge" style={{ color: phuPhi > 0 ? '#dc3545' : '#28a745', fontWeight: 'bold' }}>
+                                    <span>Phí phát sinh (Hư hỏng/Trễ):</span>
+                                    <span>{phuPhi > 0 ? '+' : ''}{formatCurrency(phuPhi)}</span>
+                                </div>
+                            )}
+
+                            <hr className="fi-divider" />
+
+                            {/* 5. TỔNG TIỀN */}
+                            <div className="fi-row total">
+                                <span>Tổng thanh toán (đã trừ {formatCurrency(order.tien_coc_yeu_cau)} tiền cọc):</span>
+                                <span style={{fontSize: '1.4rem', color: '#007bff'}}>{formatCurrency(order.tong_tien-order.tien_coc_yeu_cau)}</span>
+                            </div>
+
+
+                            {coPhatSinh && order.ghi_chu && (
+                                <div style={{marginTop: '10px', padding: '8px', backgroundColor: '#fff3cd', borderRadius: '4px', fontSize: '0.85rem', color: '#856404'}}>
+                                    <strong>Chi tiết:</strong> {order.ghi_chu.replace('[WAITING_PAYMENT] |', '')}
+                                </div>
+                            )}
+
+                            <div className="fi-row" style={{marginTop: '15px'}}>
+                                <span>Tiền cọc đã giữ:</span>
                                 <span>{formatCurrency(order.tien_coc_yeu_cau)}</span>
                             </div>
                         </div>
                     </div>
+
 
                      {(order.giao_so_km || order.tra_so_km) && (
                         <div className="info-card">
