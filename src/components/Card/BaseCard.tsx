@@ -28,10 +28,10 @@ const BaseCard = ({ card_title, card_subtitle, data, Card_content_customMiddle }
     const scrollLeft = () => {
         if (cardBoxRef.current) {
             const element = cardBoxRef.current;
-            console.log('Current scroll left:', element.scrollLeft);
-            console.log('Scroll width:', element.scrollWidth);
-            console.log('Client width:', element.clientWidth);
-            console.log('Can scroll left:', element.scrollLeft > 0);
+            // console.log('Current scroll left:', element.scrollLeft);
+            // console.log('Scroll width:', element.scrollWidth);
+            // console.log('Client width:', element.clientWidth);
+            // console.log('Can scroll left:', element.scrollLeft > 0);
 
             element.scrollBy({ left: -420, behavior: 'smooth' });
         }
@@ -40,10 +40,10 @@ const BaseCard = ({ card_title, card_subtitle, data, Card_content_customMiddle }
     const scrollRight = () => {
         if (cardBoxRef.current) {
             const element = cardBoxRef.current;
-            console.log('Current scroll left:', element.scrollLeft);
-            console.log('Scroll width:', element.scrollWidth);
-            console.log('Client width:', element.clientWidth);
-            console.log('Can scroll right:', element.scrollLeft < element.scrollWidth - element.clientWidth);
+            // console.log('Current scroll left:', element.scrollLeft);
+            // console.log('Scroll width:', element.scrollWidth);
+            // console.log('Client width:', element.clientWidth);
+            // console.log('Can scroll right:', element.scrollLeft < element.scrollWidth - element.clientWidth);
 
             element.scrollBy({ left: 420, behavior: 'smooth' });
         }

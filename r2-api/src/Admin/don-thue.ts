@@ -1,13 +1,13 @@
 import { generateContractPDF } from "./file-pdf";
 
 const jsonResponse = (data: any, status = 200) => {
-	const headers = {
-		'Content-Type': 'application/json',
-		'Access-Control-Allow-Origin': '*',
-		'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-		'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-	};
-	return new Response(JSON.stringify(data), { status, headers });
+    const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+    return new Response(JSON.stringify(data), { status, headers });
 };
 
 interface Env {
@@ -25,7 +25,6 @@ interface RentalRequestBody {
     dia_diem_tra: string;
 }
 
-//Tạo đơn (cho Người dùng)
 export const handleCreateRentalOrder = async (request: Request, env: Env) => {
     try {
         const body: RentalRequestBody = await request.json();
@@ -57,10 +56,10 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
         const CheckBlock = env.DB.prepare(
             `SELECT trang_thai from NguoiDung where nguoi_dung_id = ?`
         )
-        const getStatus = await CheckBlock.bind(nguoi_dung_id).first<{trang_thai:string}>()
+        const getStatus = await CheckBlock.bind(nguoi_dung_id).first<{ trang_thai: string }>()
 
-        if(getStatus?.trang_thai === 'inactive'){
-            return jsonResponse({ success: false, error: "Người dùng đã bị khóa." }, 410); 
+        if (getStatus?.trang_thai === 'inactive') {
+            return jsonResponse({ success: false, error: "Người dùng đã bị khóa." }, 410);
         }
 
         const vehicleStmt = env.DB.prepare(
@@ -75,11 +74,11 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
             return jsonResponse({ success: false, error: "Không tìm thấy phương tiện." }, 404);
         }
         if (vehicleInfo.trang_thai !== 'Hoạt động' && vehicleInfo.trang_thai !== 'SAN_SANG') {
-            return jsonResponse({ success: false, error: "Phương tiện không sẵn sàng để cho thuê." }, 409); 
+            return jsonResponse({ success: false, error: "Phương tiện không sẵn sàng để cho thuê." }, 409);
         }
 
         const conflictStmt = env.DB.prepare(
-           `SELECT don_thue_id FROM DonThue
+            `SELECT don_thue_id FROM DonThue
             WHERE phuong_tien_id = ? 
             AND trang_thai IN ('DA_DUYET', 'DANG_THUE')
             AND (
@@ -108,7 +107,7 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
             insertOrderStmt.bind(khach_hang_id, phuong_tien_id, ngay_bat_dau, ngay_ket_thuc, dia_diem_nhan, dia_diem_tra, vehicleInfo.chinh_sach_id, tong_tien, tien_coc_yeu_cau),
             updateVehicleStmt.bind(phuong_tien_id)
         ]);
-        
+
         return jsonResponse({
             success: true,
             message: `Yêu cầu thuê xe đã được gửi thành công!`,
@@ -259,58 +258,58 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
             so_hop_dong: so_hop_dong,
             don_thue_id: orderInfo.don_thue_id,
             ngay_tao: new Date().toLocaleDateString('vi-VN'),
-            
+
             khach_hang_ten: orderInfo.ho_ten,
             cccd_so: orderInfo.so_giay_to,
             sdt: orderInfo.so_dien_thoai,
             dia_chi: orderInfo.dia_chi,
-            
+
             ten_phuong_tien: orderInfo.ten_phuong_tien,
             bien_so: orderInfo.bien_so,
             km_luc_giao: orderInfo.so_km,
 
-            ngay_bat_dau: orderInfo.ngay_bat_dau, 
+            ngay_bat_dau: orderInfo.ngay_bat_dau,
             ngay_ket_thuc: orderInfo.ngay_ket_thuc,
-            
+
             don_gia: donGia,
-            tong_tien: tongTien, 
+            tong_tien: tongTien,
             tien_coc_yeu_cau: tienCoc,
             giam_gia: tienGiam,
-                    
+
             cccd_anh_truoc: orderInfo.anh_truoc,
             cccd_anh_sau: orderInfo.anh_sau
         };
 
         const pdfBytes = await generateContractPDF(contractData);
         const key = `contracts/${so_hop_dong}.pdf`;
-        
-        await env.hd.put(key, pdfBytes, { 
-            httpMetadata: { contentType: 'application/pdf' } 
+
+        await env.hd.put(key, pdfBytes, {
+            httpMetadata: { contentType: 'application/pdf' }
         });
-        
+
         const publicUrl = `https://pub-16b3320136404cf291d44538099e8338.r2.dev/${key}`;
 
         await env.DB.batch([
             // Cập nhật trạng thái đơn
             env.DB.prepare("UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ? WHERE don_thue_id = ?")
                 .bind(nhan_vien_id, orderId),
-            
+
             // Tạo hợp đồng 
             env.DB.prepare(`
                 INSERT INTO HopDong (don_thue_id, so_hop_dong, khach_hang_ky, ngay_ky, nhan_vien_ky, trang_thai, duong_dan_file) 
                 VALUES (?, ?,?, datetime('now','+7 hours'), ?, 'CHO_KY', ?)
-            `).bind(orderId, so_hop_dong, orderInfo.khach_hang_id , nhan_vien_id, publicUrl), 
+            `).bind(orderId, so_hop_dong, orderInfo.khach_hang_id, nhan_vien_id, publicUrl),
             // Tạo phiếu thu tiền cọc
             env.DB.prepare("INSERT INTO TienCoc (don_thue_id, so_tien, phuong_thuc, trang_thai) VALUES (?, ?, 'TIEN_MAT','CHO_THANH_TOAN')")
                 .bind(orderId, orderInfo.tien_coc_yeu_cau)
         ]);
-        
-       if (env.RESEND_API_KEY) { 
+
+        if (env.RESEND_API_KEY) {
             console.log("🔥 Đang gửi mail...");
-            
+
             const emailBody = {
                 from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
-                to: 'khoatran3123@gmail.com', 
+                to: 'khoatran3123@gmail.com',
                 subject: `[ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`,
                 html: `
                 <!DOCTYPE html>
@@ -370,7 +369,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                 headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(emailBody)
             });
-            
+
             if (res.ok) console.log("✅ Đã gửi mail thành công!");
             else console.log("❌ Lỗi Resend:", await res.text());
 
@@ -446,7 +445,7 @@ export const handleCancelOrder = async (request: Request, env: Env, orderId: str
         const cancelOrderStmt = env.DB.prepare(
             `UPDATE DonThue SET trang_thai = 'TU_CHOI', ghi_chu = ? WHERE don_thue_id = ?`
         );
-        
+
         const releaseVehicleStmt = env.DB.prepare(
             `UPDATE PhuongTien SET trang_thai = 'SAN_SANG' WHERE phuong_tien_id = ?`
         );
@@ -465,7 +464,7 @@ export const handleCancelOrder = async (request: Request, env: Env, orderId: str
 //hàm gọi chi tiết đơn thuê
 export const handleGetOrderDetails = async (request: Request, env: Env, orderId: string) => {
     try {
-         const stmt = env.DB.prepare(
+        const stmt = env.DB.prepare(
             `SELECT 
                 dt.*, 
                 kh.ho_ten, kh.email, 
@@ -519,7 +518,7 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
 export const handleGetOrders = async (request: Request, env: Env) => {
     try {
         const url = new URL(request.url);
-        const status = url.searchParams.get('status'); 
+        const status = url.searchParams.get('status');
 
         const baseQuery = `
             SELECT 
@@ -555,7 +554,7 @@ export const handleGetOrders = async (request: Request, env: Env) => {
 
         const stmt = env.DB.prepare(finalQuery).bind(...params);
         const { results } = await stmt.all();
-        
+
         return jsonResponse({ success: true, data: results });
 
     } catch (e: any) {
@@ -577,7 +576,7 @@ const sendEmail = async (apiKey: string, toEmail: string, userName: string, cont
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'ThueXe <onboarding@resend.dev>', 
+                from: 'ThueXe <onboarding@resend.dev>',
                 tto: ['khoatran3123@gmail.com'],  //[toEmail], 
                 subject: `[ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`,
                 html: `
@@ -608,17 +607,17 @@ const sendEmail = async (apiKey: string, toEmail: string, userName: string, cont
 // HÀM QUYẾT TOÁN (Chỉ tính tiền, chưa hoàn tất)
 export const handleSettleOrder = async (request: Request, env: Env, orderId: string) => {
     try {
-        const body = await request.json<{ 
-            tong_tien_phat_sinh: number;  
-            ghi_chu_quyet_toan: string;   
-            tong_tien_cuoi_cung: number;  
+        const body = await request.json<{
+            tong_tien_phat_sinh: number;
+            ghi_chu_quyet_toan: string;
+            tong_tien_cuoi_cung: number;
         }>();
 
         const { tong_tien_phat_sinh, ghi_chu_quyet_toan, tong_tien_cuoi_cung } = body;
 
-        const ghiChuMoi = `[WAITING_PAYMENT] | ${ghi_chu_quyet_toan}`; 
+        const ghiChuMoi = `[WAITING_PAYMENT] | ${ghi_chu_quyet_toan}`;
 
-        
+
         const updateStmt = env.DB.prepare(`
             UPDATE DonThue 
             SET tong_tien = ?, 
