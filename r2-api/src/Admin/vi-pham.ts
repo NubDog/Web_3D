@@ -84,7 +84,7 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
         const phuong_tien_id = rentalOrder.phuong_tien_id;
 
 
-        if(rentalOrder.trang_thai === 'HOÀN_THÀNH' ){
+        if(rentalOrder.trang_thai === 'HOAN_TAT' ){
 
         const stmt = env.DB.prepare(
             `INSERT INTO ViPham (don_thue_id, phuong_tien_id, loai_vi_pham, so_tien_phat, thoi_gian_xay_ra, ghi_chu, duong_dan_bang_chung, co_quan_xu_ly)

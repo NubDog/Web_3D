@@ -182,7 +182,7 @@ const ViolationList: React.FC = () => {
                                         'Không có'
                                     )}
                                 </td>
-                                <td><span className={`status-badge`}>{v.trang_thai}</span></td>
+                                <td><span className={`status-badge`} style={{color: 'black'}}>{v.trang_thai}</span></td>
                                 <td>
                                      <button className="btn-edit" onClick={() => handleOpenEditModal(v)}>Sửa</button>
                                      <button className="btn-delete" onClick={() => handleDeleteViolation(v.vi_pham_id)}>Xóa</button>

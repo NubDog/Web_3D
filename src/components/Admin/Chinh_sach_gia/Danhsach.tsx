@@ -56,7 +56,7 @@ const ChinhSachGiaList: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/Admin/chinh-sach-gia");
+      const res = await fetch("https://r2-api.sharkeatrice.workers.dev/api/chinh-sach-gia");
       if (!res.ok) throw new Error("Network error");
       const result: ApiResponse = await res.json();
       if (result.success) {
@@ -103,7 +103,7 @@ const ChinhSachGiaList: React.FC = () => {
       let res, result;
       if (editItem) {
         res = await fetch(
-          `/api/Admin/chinh-sach-gia/${editItem.chinh_sach_id}`,
+          `https://r2-api.sharkeatrice.workers.dev/api/chinh-sach-gia/${editItem.chinh_sach_id}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -111,7 +111,7 @@ const ChinhSachGiaList: React.FC = () => {
           }
         );
       } else {
-        res = await fetch("/api/Admin/chinh-sach-gia", {
+        res = await fetch("https://r2-api.sharkeatrice.workers.dev/api/chinh-sach-gia", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -141,7 +141,7 @@ const ChinhSachGiaList: React.FC = () => {
   const confirmDelete = async () => {
     if (!deleteId) return;
     try {
-      const res = await fetch(`/api/Admin/chinh-sach-gia/${deleteId}`, {
+      const res = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/chinh-sach-gia/${deleteId}`, {
         method: "DELETE",
       });
       const result = await res.json();
