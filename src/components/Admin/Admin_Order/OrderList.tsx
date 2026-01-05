@@ -42,7 +42,7 @@ const OrderList: React.FC = () => {
         setIsLoading(true); 
         setError(null); 
             try {
-                let apiUrl = `http://127.0.0.1:8787/api/orders`;
+                let apiUrl = `https://r2-api.sharkeatrice.workers.dev/orders`;
                 if (status !== 'all') {
                     apiUrl += `?status=${status}`;
                 }

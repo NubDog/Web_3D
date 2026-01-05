@@ -63,7 +63,7 @@ const BaoTriChiTiet: React.FC = () => {
     null
   );
   const [loading, setLoading] = useState<boolean>(true);
-  const API_URL = "http://127.0.0.1:8787";
+  const API_URL = "https://r2-api.sharkeatrice.workers.dev";
 
   // Hàm tiện ích: chuyển trạng thái DB sang trạng thái hiển thị
   const getDisplayStatus = (dbStatus: string): string => {

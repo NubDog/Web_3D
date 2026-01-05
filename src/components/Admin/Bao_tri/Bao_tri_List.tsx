@@ -41,7 +41,7 @@ const BaoTritrangthai: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      let apiUrl = "http://127.0.0.1:8787/Admin/baotri";
+      let apiUrl = "https://r2-api.sharkeatrice.workers.dev/Admin/baotri";
       if (status && status !== "all") {
         apiUrl += `?status=${status.toUpperCase()}`;
       }

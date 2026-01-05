@@ -72,7 +72,7 @@ const BaoTriList: React.FC = () => {
   const [phuongTienList, setPhuongTienList] = useState<PhuongTien[]>([]);
   const [donThueList, setDonThueList] = useState<DonThue[]>([]);
 
-  const API_URL = "http://127.0.0.1:8787";
+  const API_URL = "https://r2-api.sharkeatrice.workers.dev";
 
   useEffect(() => {
     fetchTongHop();

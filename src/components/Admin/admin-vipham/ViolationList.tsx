@@ -30,7 +30,7 @@ const ViolationList: React.FC = () => {
     const fetchViolations = useCallback(async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/violations?status=${filterStatus}`);
+            const response = await fetch(`https://r2-api.sharkeatrice.workers.dev/violations?status=${filterStatus}`);
             const result = await response.json();
             if (result.success) {
                 setViolations(result.data);
@@ -59,7 +59,7 @@ const ViolationList: React.FC = () => {
             }
         }
         try {
-        const response = await fetch('http://127.0.0.1:8787/api/violations', {
+        const response = await fetch('https://r2-api.sharkeatrice.workers.dev/violations', {
             method: 'POST',
             body: submissionData, // Gửi FormData
         });
@@ -82,7 +82,7 @@ const ViolationList: React.FC = () => {
         }
 
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/violations/${violationId}`, {
+            const response = await fetch(`https://r2-api.sharkeatrice.workers.dev/violations/${violationId}`, {
                 method: 'DELETE',
             });
             const result = await response.json();
@@ -114,7 +114,7 @@ const ViolationList: React.FC = () => {
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(`http://127.0.0.1:8787/api/violations/${editingViolation.vi_pham_id}`, {
+            const response = await fetch(`https://r2-api.sharkeatrice.workers.dev/violations/${editingViolation.vi_pham_id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),

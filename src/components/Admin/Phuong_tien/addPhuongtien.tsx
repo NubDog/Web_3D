@@ -27,7 +27,7 @@ interface DanhMuc {
   ten_danh_muc: string;
 }
 
-const API_BASE_URL = "http://127.0.0.1:8787";
+const API_BASE_URL = "https://r2-api.sharkeatrice.workers.dev";
 
 const PhuongTienModal: React.FC = () => {
   const { id } = useParams<{ id: string }>();
