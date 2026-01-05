@@ -201,11 +201,12 @@ const CustomerDetail: React.FC = () => {
     const handleSaveSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!customer) return;
-
-
-
-
         let finalFormData = { ...formData };
+
+        if (finalFormData.ngay_sinh) {
+            const date = new Date(finalFormData.ngay_sinh);
+            finalFormData.ngay_sinh = date.toLocaleDateString('en-CA'); 
+        }
         setIsUploading(true);
 
         try {
@@ -258,7 +259,8 @@ const CustomerDetail: React.FC = () => {
 
     const toInputDate = (dateString: string) => {
         if (!dateString) return '';
-        return new Date(dateString).toISOString().split('T')[0];
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-CA');
     };
 
     const formatDateTime = (dateString: string) => {
@@ -266,6 +268,13 @@ const CustomerDetail: React.FC = () => {
         return new Intl.DateTimeFormat('vi-VN', {
             day: '2-digit', month: '2-digit', year: 'numeric',
             hour: '2-digit', minute: '2-digit'
+        }).format(new Date(dateString));
+    };
+
+    const formatDateOnly = (dateString: string) => {
+        if (!dateString) return 'N/A';
+        return new Intl.DateTimeFormat('vi-VN', {
+            day: '2-digit', month: '2-digit', year: 'numeric'
         }).format(new Date(dateString));
     };
 
@@ -509,10 +518,21 @@ const CustomerDetail: React.FC = () => {
                                     {isEditing ? (<input name="ho_ten" value={formData.ho_ten || ''} onChange={handleInputChange} className="detail-input" />)
                                         : (<span className="detail-value">{customer?.ho_ten}</span>)}
                                 </div>
-                                <div className="detail-item2">
+                               <div className="detail-item2">
                                     <span className="detail-label">Ngày sinh</span>
-                                    {isEditing ? (<input type="date" name="ngay_sinh" value={toInputDate(formData.ngay_sinh || '')} onChange={handleInputChange} className="detail-input" />)
-                                        : (<span className="detail-value">{customer?.ngay_sinh ? new Date(customer.ngay_sinh).toLocaleDateString('vi-VN') : 'N/A'}</span>)}
+                                    {isEditing ? (
+                                        <input 
+                                            type="date" 
+                                            name="ngay_sinh" 
+                                            value={toInputDate(formData.ngay_sinh || '')} 
+                                            onChange={handleInputChange} 
+                                            className="detail-input" 
+                                        />
+                                    ) : (
+                                        <span className="detail-value">
+                                            {formatDateOnly(customer?.ngay_sinh || '')}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="detail-item2">
                                     <span className="detail-label">Tỉnh/Thành phố</span>

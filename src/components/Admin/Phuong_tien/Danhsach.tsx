@@ -134,7 +134,7 @@ const PhuongTienList: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`/api/Admin/phuong-tien`);
+      const response = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/phuong-tien`);
       if (!response.ok) throw new Error("Network response was not ok");
       const result: ApiResponse = await response.json();
       if (result.success) {

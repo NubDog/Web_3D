@@ -53,7 +53,7 @@ const DanhMucPhuongTienList: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/Admin/danh-muc-phuong-tien`);
+      const res = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/danh-muc-phuong-tien`);
       if (!res.ok) throw new Error("Network response was not ok");
       const result: ApiResponse = await res.json();
       if (result.success) {
@@ -94,7 +94,7 @@ const DanhMucPhuongTienList: React.FC = () => {
       if (editItem) {
         // update
         res = await fetch(
-          `/api/Admin/danh-muc-phuong-tien/${editItem.danh_muc_id}`,
+          `https://r2-api.sharkeatrice.workers.dev/api/danh-muc-phuong-tien/${editItem.danh_muc_id}`,
           {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -103,7 +103,7 @@ const DanhMucPhuongTienList: React.FC = () => {
         );
       } else {
         // create
-        res = await fetch(`/api/Admin/danh-muc-phuong-tien`, {
+        res = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/danh-muc-phuong-tien`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ten_danh_muc, mo_ta }),
@@ -135,7 +135,7 @@ const DanhMucPhuongTienList: React.FC = () => {
     if (!danhMucIdToDelete) return;
     try {
       const res = await fetch(
-        `/api/Admin/danh-muc-phuong-tien/${danhMucIdToDelete}`,
+        `https://r2-api.sharkeatrice.workers.dev/api/Admin/danh-muc-phuong-tien/${danhMucIdToDelete}`,
         {
           method: "DELETE",
         }

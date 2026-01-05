@@ -42,7 +42,7 @@ const OrderList: React.FC = () => {
         setIsLoading(true); 
         setError(null); 
             try {
-                let apiUrl = `https://r2-api.sharkeatrice.workers.dev/orders`;
+                let apiUrl = `https://r2-api.sharkeatrice.workers.dev/api/orders`;
                 if (status !== 'all') {
                     apiUrl += `?status=${status}`;
                 }
