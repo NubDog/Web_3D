@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent,  type FormEvent} from 'react';
+import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import './../../styles/components/SignIn_SignUp/SignIn_SignUp.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -29,7 +29,7 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
         tinh: '',
         thanh_pho: '',
         ma_buu_chinh: '',
-        quoc_gia: 'VN', 
+        quoc_gia: 'VN',
     });
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
@@ -65,7 +65,7 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
         setDistricts(selectedProvince ? selectedProvince.Districts : []);
     };
 
-     const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             setAvatarFile(file); // Lưu lại đối tượng file
@@ -73,28 +73,28 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
         }
     };
 
-     const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
         const data = new FormData();
-        
+
         for (const key in formData) {
             data.append(key, (formData as any)[key]);
         }
-        
+
         if (avatarFile) {
             data.append('avatar', avatarFile);
         }
 
         try {
-            const response = await fetch('http://127.0.0.1:8787/api/nguoi-dung', {
+            const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/nguoi-dung', {
                 method: 'POST',
                 // headers: {
                 //     'Content-Type': 'application/json',
                 // },
-                body: data, 
+                body: data,
             });
 
             const result = await response.json();
@@ -103,13 +103,7 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
             }
             console.log("Đăng ký thành công:", result.data);
 
-            const userToLogin = {
-                nguoi_dung_id: result.data.nguoi_dung_id,
-                ho_ten: result.data.ho_ten,
-                email: result.data.email,
-                vai_tro: result.data.vai_tro,
-            };
-            login(userToLogin);
+            await login(formData.ten_dang_nhap, formData.mat_khau);
             navigate('/');
 
         } catch (err: any) {
@@ -125,11 +119,11 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
     };
     const prevStep = () => setStep(step - 1);
 
-  return (
-    <div className="signin-signup-container">
+    return (
+        <div className="signin-signup-container">
             <form className="signin-signup-form" onSubmit={handleSubmit}>
-                <h2 style={{textAlign: 'center', marginBottom: '20px', color: 'black', fontWeight: 'bold', fontSize: '20px'}}>Đăng Ký Tài Khoản</h2>
-                
+                <h2 style={{ textAlign: 'center', marginBottom: '20px', color: 'black', fontWeight: 'bold', fontSize: '20px' }}>Đăng Ký Tài Khoản</h2>
+
                 {/* --- STEP 1: THÔNG TIN TÀI KHOẢN --- */}
                 {step === 1 && (
                     <>
@@ -172,15 +166,15 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
                             <span className="signin-signup-button-submit-circle">
                                 <span className="signin-signup-button-submit-icon arrow"></span>
                             </span>
-                           <span className="signin-signup-button-submit-text">Tiếp theo</span>
+                            <span className="signin-signup-button-submit-text">Tiếp theo</span>
                         </button>
                     </>
                 )}
 
                 {/* --- STEP 2: THÔNG TIN CÁ NHÂN --- */}
                 {step === 2 && (
-                     <>
-                      <div className="signin-signup-field" style={{ alignItems: 'center' }}>
+                    <>
+                        <div className="signin-signup-field" style={{ alignItems: 'center' }}>
                             <label htmlFor="avatar-upload" className="avatar-uploader">
                                 {avatarPreview ? (
                                     <img src={avatarPreview} alt="Xem trước avatar" className="avatar-preview" />
@@ -222,7 +216,7 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div className="signin-signup-field">
                             <label htmlFor="dia_chi" className="signin-signup-label">Địa chỉ chi tiết</label>
                             <div className="signin-signup-input-wrapper">
@@ -243,26 +237,26 @@ const SignUp: React.FC<{ onSwitchToLogin: () => void }> = ({ onSwitchToLogin }) 
 
                         <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
                             <button type="button" className="signin-signup-button-submit" onClick={prevStep} style={{ flex: 1 }}>
-                               <span className="signin-signup-button-submit-text" style={{margin: 0}}>Quay lại</span>
-                           </button>
-                           <button type="submit" className="signin-signup-button-submit" disabled={loading} style={{ flex: 1 }}>
-                               <span className="signin-signup-button-submit-circle">
-                                   <span className="signin-signup-button-submit-icon arrow"></span>
-                               </span>
-                               <span className="signin-signup-button-submit-text">{loading ? 'Đang xử lý...' : 'Đăng ký'}</span>
-                           </button>
+                                <span className="signin-signup-button-submit-text" style={{ margin: 0 }}>Quay lại</span>
+                            </button>
+                            <button type="submit" className="signin-signup-button-submit" disabled={loading} style={{ flex: 1 }}>
+                                <span className="signin-signup-button-submit-circle">
+                                    <span className="signin-signup-button-submit-icon arrow"></span>
+                                </span>
+                                <span className="signin-signup-button-submit-text">{loading ? 'Đang xử lý...' : 'Đăng ký'}</span>
+                            </button>
                         </div>
                     </>
                 )}
-                 <p className="signin-signup-text" style={{marginTop: '15px'}}>
-                    Đã có tài khoản? 
+                <p className="signin-signup-text" style={{ marginTop: '15px' }}>
+                    Đã có tài khoản?
                     <a href="#" onClick={onSwitchToLogin} className="signin-signup-link">
                         Đăng nhập
                     </a>
                 </p>
             </form>
         </div>
-  );
+    );
 };
 
 export default SignUp;

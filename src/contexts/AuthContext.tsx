@@ -50,8 +50,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         mat_khau,
       };
 
-      // Gọi API bằng fetch
-      const response = await fetch('http://127.0.0.1:8787/api/login', {
+      const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -63,15 +62,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Ném lỗi từ server để component SignIn có thể bắt
         throw new Error(result.error || 'Tên đăng nhập hoặc mật khẩu không đúng.');
       }
-      
+
       const userData: User = result.data;
       setCurrentUser(userData);
       localStorage.setItem("currentUser", JSON.stringify(userData));
-      
+
       if (userData.vai_tro === 'admin') {
-          navigate('/admin');
+        navigate('/admin');
       } else {
-          navigate('/');
+        navigate('/');
       }
 
     } catch (err: any) {

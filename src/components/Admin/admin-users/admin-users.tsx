@@ -7,10 +7,10 @@ import Pagination from '../Pagination';
 // Định nghĩa kiểu dữ liệu cho một User
 interface User {
     nguoi_dung_id: number;
-    ten_dang_nhap:string;
+    ten_dang_nhap: string;
     ho_ten: string;
     vai_tro: string;
-    trang_thai:string;
+    trang_thai: string;
     email: string;
     so_dien_thoai?: string;
     ngay_tao: string;
@@ -36,16 +36,16 @@ interface District {
 
 // Component chính
 const UserAdmin: React.FC = () => {
-    const API_BASE_URL = 'http://127.0.0.1:8787';
+    const API_BASE_URL = 'https://r2-api.sharkeatrice.workers.dev';
 
     // States
-   const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    
+
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [currentUser, setCurrentUser] = useState<Partial<User> | null>(null);
-    const [selectedRole, setSelectedRole] = useState('KhachHang'); 
+    const [selectedRole, setSelectedRole] = useState('KhachHang');
 
     const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
     const [currentCustomer, setCurrentCustomer] = useState<Customer | null>(null);
@@ -67,8 +67,8 @@ const UserAdmin: React.FC = () => {
 
     //lọc
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterRole, setFilterRole] = useState(''); 
-    const [filterStatus, setFilterStatus] = useState(''); 
+    const [filterRole, setFilterRole] = useState('');
+    const [filterStatus, setFilterStatus] = useState('');
     const [filterDate, setFilterDate] = useState('');
     const [isFilterVisible, setIsFilterVisible] = useState(false);
 
@@ -102,7 +102,7 @@ const UserAdmin: React.FC = () => {
 
 
     useEffect(() => {
-    fetchUsers();
+        fetchUsers();
     }, []);
 
     useEffect(() => {
@@ -117,10 +117,10 @@ const UserAdmin: React.FC = () => {
         }, 3000);
     };
 
-     
-    
+
+
     // Hàm định dạng ngày tháng
-     const formatDate = (dateString: string) => {
+    const formatDate = (dateString: string) => {
         if (!dateString) return 'N/A';
         try {
             return new Intl.DateTimeFormat('vi-VN', {
@@ -161,7 +161,7 @@ const UserAdmin: React.FC = () => {
     };
 
     // Đóng modal
-     const handleCloseModal = () => {
+    const handleCloseModal = () => {
         setIsUserModalOpen(false);
         setIsCustomerModalOpen(false);
         setIsDeleteModalOpen(false);
@@ -174,33 +174,33 @@ const UserAdmin: React.FC = () => {
         setIsLockModalOpen(true);
     };
 
-     
-    
-     const paginatedUsers = useMemo(() => {
+
+
+    const paginatedUsers = useMemo(() => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         return filteredUsers.slice(startIndex, startIndex + itemsPerPage);
     }, [filteredUsers, currentPage, itemsPerPage]);
 
     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
     const confirmLockUnlock = async () => {
-    if (!userToLock) return;
-    
-    try {
+        if (!userToLock) return;
+
+        try {
             const newStatus = userToLock.trang_thai === 'active' ? 'inactive' : 'active';
             const response = await fetch(`${API_BASE_URL}/nguoi-dung/${userToLock.nguoi_dung_id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ trang_thai: newStatus })
             });
-            
+
             const result = await response.json();
             if (!response.ok || !result.success) {
                 throw new Error(result.error || 'Không thể thay đổi trạng thái người dùng');
             }
 
             // Update the users list with the new status
-            setUsers(users.map(u => 
-                u.nguoi_dung_id === userToLock.nguoi_dung_id 
+            setUsers(users.map(u =>
+                u.nguoi_dung_id === userToLock.nguoi_dung_id
                     ? { ...u, trang_thai: newStatus }
                     : u
             ));
@@ -213,7 +213,7 @@ const UserAdmin: React.FC = () => {
             setUserToLock(null);
         }
     };
-        
+
     // Xử lý submit form
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -251,26 +251,26 @@ const UserAdmin: React.FC = () => {
     };
 
     const handleProvinceChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const provinceName = e.target.value;
-    const selectedProvince = locations.find(p => p.Name === provinceName);
-    
-    if (currentUser) {
-        setCurrentUser(prev => ({
-            ...prev,
-            tinh: provinceName,
-            thanh_pho: '',
-        }));
-    }
-    
-    setDistricts(selectedProvince ? selectedProvince.Districts : []);
-};
+        const provinceName = e.target.value;
+        const selectedProvince = locations.find(p => p.Name === provinceName);
+
+        if (currentUser) {
+            setCurrentUser(prev => ({
+                ...prev,
+                tinh: provinceName,
+                thanh_pho: '',
+            }));
+        }
+
+        setDistricts(selectedProvince ? selectedProvince.Districts : []);
+    };
     // Mở modal xác nhận xóa
-   const handleDeleteClick = (id: number) => {
+    const handleDeleteClick = (id: number) => {
         setUserIdToDelete(id);
         setIsDeleteModalOpen(true);
     };
 
-    
+
     const handleViewCustomer = async (userId: number) => {
         setIsCustomerLoading(true);
         setIsCustomerModalOpen(true);
@@ -279,7 +279,7 @@ const UserAdmin: React.FC = () => {
             const response = await fetch(`${API_BASE_URL}/api/customers/by-user/${userId}`);
             const result = await response.json();
             if (response.status === 404) {
-                 throw new Error('Người dùng này chưa có hồ sơ khách hàng.');
+                throw new Error('Người dùng này chưa có hồ sơ khách hàng.');
             }
             if (!response.ok || !result.success) {
                 throw new Error(result.error || 'Không thể tải thông tin khách hàng');
@@ -324,8 +324,8 @@ const UserAdmin: React.FC = () => {
                 <div className={styles.cardHeader}>
                     <h2 className={styles.cardTitle}>Danh sách người dùng</h2>
                     <div className='flex items-center gap-4'>
-                        <button 
-                            onClick={() => setIsFilterVisible(!isFilterVisible)} 
+                        <button
+                            onClick={() => setIsFilterVisible(!isFilterVisible)}
                             className={`${styles.button} ${styles.filterToggleButton}`}
                         >
                             Bộ lọc
@@ -372,7 +372,7 @@ const UserAdmin: React.FC = () => {
                             value={filterDate}
                             onChange={(e) => setFilterDate(e.target.value)}
                         />
-                        <button 
+                        <button
                             onClick={() => {
                                 setSearchTerm('');
                                 setFilterRole('');
@@ -414,57 +414,57 @@ const UserAdmin: React.FC = () => {
                                         <td>{user.ho_ten}</td>
                                         <td>{user.email}</td>
                                         <td>{user.so_dien_thoai || 'N/A'}</td>
-                                        <td>{user.vai_tro }</td>
-                                       <td style={{ textAlign: "center" }}>
+                                        <td>{user.vai_tro}</td>
+                                        <td style={{ textAlign: "center" }}>
                                             <span
                                                 style={{
-                                                display: "inline-block",
-                                                minWidth: "80px",
-                                                padding: "4px 12px",
-                                                borderRadius: "20px",
-                                                fontWeight: "bold",
-                                                backgroundColor:
-                                                    user.trang_thai === "active" || user.trang_thai === "hoat_dong"
-                                                    ? "rgba(0, 200, 0, 0.15)"   // nền xanh nhạt
-                                                    : "rgba(255, 0, 0, 0.15)",  // nền đỏ nhạt
-                                                color:
-                                                    user.trang_thai === "active" || user.trang_thai === "hoat_dong"
-                                                    ? "green"
-                                                    : "red",
+                                                    display: "inline-block",
+                                                    minWidth: "80px",
+                                                    padding: "4px 12px",
+                                                    borderRadius: "20px",
+                                                    fontWeight: "bold",
+                                                    backgroundColor:
+                                                        user.trang_thai === "active" || user.trang_thai === "hoat_dong"
+                                                            ? "rgba(0, 200, 0, 0.15)"   // nền xanh nhạt
+                                                            : "rgba(255, 0, 0, 0.15)",  // nền đỏ nhạt
+                                                    color:
+                                                        user.trang_thai === "active" || user.trang_thai === "hoat_dong"
+                                                            ? "green"
+                                                            : "red",
                                                 }}
                                             >
                                                 {user.trang_thai === "active" || user.trang_thai === "hoat_dong"
-                                                ? "Active"
-                                                : "Inactive"}
+                                                    ? "Active"
+                                                    : "Inactive"}
                                             </span>
-                                            </td>
+                                        </td>
                                         <td>{formatDate(user.ngay_tao)}</td>
                                         <td>{formatDate(user.ngay_cap_nhat)}</td>
                                         <td className={styles.textRight}>
                                             {user.vai_tro !== 'admin' ? (
                                                 <>
-                                                    <Link 
+                                                    <Link
                                                         to={`/admin/users/${user.nguoi_dung_id}/customer-detail`}
                                                         className={`${styles.actionButton} ${styles.viewButton}`}
                                                     >
                                                         Xem
                                                     </Link>
-                                                    <button 
-                                                        className={`${styles.actionButton} ${user.trang_thai === 'active' ? styles.lockButton : user.trang_thai === 'hoat_dong'?  styles.lockButton  : styles.unlockButton}`}
+                                                    <button
+                                                        className={`${styles.actionButton} ${user.trang_thai === 'active' ? styles.lockButton : user.trang_thai === 'hoat_dong' ? styles.lockButton : styles.unlockButton}`}
                                                         onClick={() => handleLockUnlock(user)}
                                                     >
-                                                        {user.trang_thai === 'active' ? 'Khóa' : user.trang_thai === "hoat_dong" ? 'Khóa':'Mở khóa'}
+                                                        {user.trang_thai === 'active' ? 'Khóa' : user.trang_thai === "hoat_dong" ? 'Khóa' : 'Mở khóa'}
                                                     </button>
-                                                     <button className={`${styles.actionButton} ${styles.editButton}`} onClick={() => handleOpenModal(user)}>Sửa</button>
-                                            <button className={`${styles.actionButton} ${styles.deleteButton}`} onClick={() => handleDeleteClick(user.nguoi_dung_id)}>Xóa</button>
+                                                    <button className={`${styles.actionButton} ${styles.editButton}`} onClick={() => handleOpenModal(user)}>Sửa</button>
+                                                    <button className={`${styles.actionButton} ${styles.deleteButton}`} onClick={() => handleDeleteClick(user.nguoi_dung_id)}>Xóa</button>
                                                 </>
-                                                 
+
                                             ) : (
                                                 <>
                                                     <div>Thành,Khoa đẹp trai </div>
-                                                </> 
-                                                )}
-                                           
+                                                </>
+                                            )}
+
                                         </td>
                                     </tr>
                                 ))
@@ -502,7 +502,7 @@ const UserAdmin: React.FC = () => {
                                     </select>
                                 </div>
                             </div>
-                            
+
                             {/*  Hiển thị nếu vai trò là Khách Hàng khi tạo mới --- */}
                             {selectedRole === 'KhachHang' && !currentUser?.nguoi_dung_id && (
                                 <>
@@ -512,8 +512,8 @@ const UserAdmin: React.FC = () => {
                                         <div><label>Địa chỉ</label><input name="dia_chi" required /></div>
                                         <div>
                                             <label>Tỉnh/Thành phố</label>
-                                            <select 
-                                                name="tinh" 
+                                            <select
+                                                name="tinh"
                                                 onChange={handleProvinceChange}
                                                 required
                                             >
@@ -523,11 +523,11 @@ const UserAdmin: React.FC = () => {
                                                 ))}
                                             </select>
                                         </div>
-                                        
+
                                         <div>
                                             <label>Quận/Huyện</label>
-                                            <select 
-                                                name="thanh_pho" 
+                                            <select
+                                                name="thanh_pho"
                                                 required
                                                 disabled={districts.length === 0}
                                             >
@@ -552,8 +552,8 @@ const UserAdmin: React.FC = () => {
                 </div>
             )}
 
-             {/* Modal Xóa */}
-             {isDeleteModalOpen && (
+            {/* Modal Xóa */}
+            {isDeleteModalOpen && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContentSmall}>
                         <h3 className={styles.modalTitle}>Xác nhận xóa</h3>
@@ -564,53 +564,52 @@ const UserAdmin: React.FC = () => {
                         </div>
                     </div>
                 </div>
-             )}
+            )}
 
-             {/* Modal Khóa/Mở khóa */}
+            {/* Modal Khóa/Mở khóa */}
             {isLockModalOpen && userToLock && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContentSmall}>
                         <h3 className={styles.modalTitle}>
-                            {userToLock.trang_thai === 'active' 
-                                ? 'Xác nhận khóa người dùng' 
-                                :  userToLock.trang_thai === 'hoat_dong'? 'Xác nhận khóa người dùng'  : 'Xác nhận mở khóa người dùng'}
+                            {userToLock.trang_thai === 'active'
+                                ? 'Xác nhận khóa người dùng'
+                                : userToLock.trang_thai === 'hoat_dong' ? 'Xác nhận khóa người dùng' : 'Xác nhận mở khóa người dùng'}
                         </h3>
                         <p>
-                            {userToLock.trang_thai === 'active' 
-                                ? `Bạn có chắc chắn muốn khóa người dùng "${userToLock.ho_ten}" không?` 
-                                : userToLock.trang_thai === 'hoat_dong'? `Bạn có chắc chắn muốn khóa người dùng "${userToLock.ho_ten}" không?` : `Bạn có chắc chắn muốn mở khóa người dùng "${userToLock.ho_ten}" không?`}
+                            {userToLock.trang_thai === 'active'
+                                ? `Bạn có chắc chắn muốn khóa người dùng "${userToLock.ho_ten}" không?`
+                                : userToLock.trang_thai === 'hoat_dong' ? `Bạn có chắc chắn muốn khóa người dùng "${userToLock.ho_ten}" không?` : `Bạn có chắc chắn muốn mở khóa người dùng "${userToLock.ho_ten}" không?`}
                         </p>
                         <div className={styles.modalActions}>
-                            <button 
-                                onClick={() => setIsLockModalOpen(false)} 
+                            <button
+                                onClick={() => setIsLockModalOpen(false)}
                                 className={`${styles.button} ${styles.buttonSecondary}`}
                             >
                                 Hủy
                             </button>
-                            <button 
-                                onClick={confirmLockUnlock} 
-                                className={`${styles.button} ${
-                                    userToLock.trang_thai === 'active' 
-                                        ? styles.buttonDanger 
-                                        : userToLock.trang_thai === "hoat_dong"
-                                        ? styles.buttonDanger  
+                            <button
+                                onClick={confirmLockUnlock}
+                                className={`${styles.button} ${userToLock.trang_thai === 'active'
+                                    ? styles.buttonDanger
+                                    : userToLock.trang_thai === "hoat_dong"
+                                        ? styles.buttonDanger
                                         : styles.buttonSuccess
-                                }`}
+                                    }`}
                             >
-                                {userToLock.trang_thai === 'active' ? 'Khóa' : userToLock.trang_thai === "hoat_dong"? 'Khóa':'Mở khóa'}
+                                {userToLock.trang_thai === 'active' ? 'Khóa' : userToLock.trang_thai === "hoat_dong" ? 'Khóa' : 'Mở khóa'}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-             {isCustomerModalOpen && (
+            {isCustomerModalOpen && (
                 <div className={styles.modalOverlay}>
                     <div className={styles.modalContent}>
-                         <h3 className={styles.modalTitle}>Thông tin chi tiết khách hàng</h3>
-                         {isCustomerLoading ? (
+                        <h3 className={styles.modalTitle}>Thông tin chi tiết khách hàng</h3>
+                        {isCustomerLoading ? (
                             <p>Đang tải...</p>
-                         ) : currentCustomer ? (
+                        ) : currentCustomer ? (
                             <div className={styles.customerDetails}>
                                 <p><strong>Họ tên:</strong> {currentCustomer.ho_ten}</p>
                                 <p><strong>Ngày sinh:</strong> {formatDate(currentCustomer.ngay_sinh).split(' ')[0]}</p>
@@ -618,29 +617,29 @@ const UserAdmin: React.FC = () => {
                                 <p><strong>Mã bưu chính:</strong> {currentCustomer.ma_buu_chinh || 'N/A'}</p>
                                 <p><strong>Quốc gia:</strong> {currentCustomer.quoc_gia || 'N/A'}</p>
                             </div>
-                         ) : (
+                        ) : (
                             <p className={styles.errorText}>Không có dữ liệu.</p>
-                         )}
-                         <div className={styles.modalActions}>
+                        )}
+                        <div className={styles.modalActions}>
                             <button onClick={handleCloseModal} className={`${styles.button} ${styles.buttonSecondary}`}>Đóng</button>
-                         </div>
+                        </div>
                     </div>
                 </div>
             )}
-            
-             {/* Toast */}
+
+            {/* Toast */}
             {toast.show && (
                 <div className={`${styles.toast} ${toast.isError ? styles.toastError : styles.toastSuccess}`}>
                     <p>{toast.message}</p>
                 </div>
             )}
             <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={setCurrentPage}
-                />
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+            />
         </div>
-        
+
     );
 };
 

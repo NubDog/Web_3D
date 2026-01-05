@@ -1,69 +1,69 @@
-import { useState, useEffect, useRef, type FormEvent} from 'react';
+import { useState, useEffect, useRef, type FormEvent } from 'react';
 import './../../styles/components/SignIn_SignUp/SignIn_SignUp.css';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface NguoiDung {
-    ten_dang_nhap: string;
-    mat_khau: string;
-    vai_tro: string;
-    trang_thai: string;
-    ho_ten: string;
-    email: string;
+  ten_dang_nhap: string;
+  mat_khau: string;
+  vai_tro: string;
+  trang_thai: string;
+  ho_ten: string;
+  email: string;
 }
 
 const SignIn: React.FC<{ onSwitchToSignUp: () => void }> = ({ onSwitchToSignUp }) => {
-    const [nguoiDung, setNguoiDung] = useState<NguoiDung[]>([]);
-    // const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState<string | null>(null);
-    const [identifier, setIdentifier] = useState('');
-    const [password, setPassword] = useState('');
-    const { login, loading, error } = useAuth();
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({ ten_dang_nhap: '', mat_khau: '' });
+  const [nguoiDung, setNguoiDung] = useState<NguoiDung[]>([]);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState<string | null>(null);
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
+  const { login, loading, error } = useAuth();
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ ten_dang_nhap: '', mat_khau: '' });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-};
-    const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        try {
-            // Chỉ cần gọi hàm login từ context
-            await login(identifier, password);
-            // Việc điều hướng đã được xử lý bên trong context
-        } catch (err) {
-            console.error("Login failed:", err); // Lỗi đã được set trong context, ở đây chỉ log ra
-        }
-    };
-    const API_URL = 'http://127.0.0.1:8787/api/nguoi-dung';
+  };
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      // Chỉ cần gọi hàm login từ context
+      await login(identifier, password);
+      // Việc điều hướng đã được xử lý bên trong context
+    } catch (err) {
+      console.error("Login failed:", err); // Lỗi đã được set trong context, ở đây chỉ log ra
+    }
+  };
+  const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/nguoi-dung';
 
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             const fieldsNguoiDung = 'ten_dang_nhap,mat_khau,vai_tro,trang_thai,ho_ten,email';
-    //             const response = await fetch (`${API_URL}?fields=${fieldsNguoiDung}`);
+  // useEffect(() => {
+  //     const fetchData = async () => {
+  //         try {
+  //             const fieldsNguoiDung = 'ten_dang_nhap,mat_khau,vai_tro,trang_thai,ho_ten,email';
+  //             const response = await fetch (`${API_URL}?fields=${fieldsNguoiDung}`);
 
-    //             if (!response.ok) {
-    //                 throw new Error('Lỗi khi tải dữ liệu');
-    //             }
+  //             if (!response.ok) {
+  //                 throw new Error('Lỗi khi tải dữ liệu');
+  //             }
 
-    //             const result = await response.json();
+  //             const result = await response.json();
 
-    //             if (result.success) {
-    //                 const activeUsers = result.data.filter((user: NguoiDung) => user.trang_thai === 'active');
+  //             if (result.success) {
+  //                 const activeUsers = result.data.filter((user: NguoiDung) => user.trang_thai === 'active');
 
-    //                 setNguoiDung(activeUsers);
-    //             }
-    //         } catch (err: any) {
-    //             setError(err.message);
-    //         } finally {
-    //             setLoading(false);
-    //         }
-    //     };
-    //     fetchData();
-    // }, []);
+  //                 setNguoiDung(activeUsers);
+  //             }
+  //         } catch (err: any) {
+  //             setError(err.message);
+  //         } finally {
+  //             setLoading(false);
+  //         }
+  //     };
+  //     fetchData();
+  // }, []);
 
-    
+
 
   return (
     <div className="signin-signup-container">
@@ -74,40 +74,40 @@ const SignIn: React.FC<{ onSwitchToSignUp: () => void }> = ({ onSwitchToSignUp }
         <div className="signin-signup-field">
           <label htmlFor="identifier" className="signin-signup-label">Tên đăng nhập hoặc Email</label>
           <div className="signin-signup-input-wrapper">
-              <i className="fa-regular fa-user" aria-hidden="true"></i>
-              
-              <input
-                id="identifier"
-                name="ten_dang_nhap"
-                className="signin-signup-input"
-                autoComplete="username"
-                type="text"
-                placeholder="Nhập tên đăng nhập hoặc email"
-                // onChange phải gọi setIdentifier
-                onChange={(e) => setIdentifier(e.target.value)}
-                value={identifier} // value phải được gán vào state
-                required
+            <i className="fa-regular fa-user" aria-hidden="true"></i>
+
+            <input
+              id="identifier"
+              name="ten_dang_nhap"
+              className="signin-signup-input"
+              autoComplete="username"
+              type="text"
+              placeholder="Nhập tên đăng nhập hoặc email"
+              // onChange phải gọi setIdentifier
+              onChange={(e) => setIdentifier(e.target.value)}
+              value={identifier} // value phải được gán vào state
+              required
             />
           </div>
         </div>
 
         <div className="signin-signup-field">
           <label htmlFor="mat_khau" className="signin-signup-label">Mật khẩu</label>
-                    <div className="signin-signup-input-wrapper">
-                        <i className="fa-solid fa-lock" aria-hidden="true"></i>                       
+          <div className="signin-signup-input-wrapper">
+            <i className="fa-solid fa-lock" aria-hidden="true"></i>
 
-                         <input
-                            type="password"
-                            placeholder="Mật khẩu"
-                            // onChange phải gọi setPassword
-                            onChange={(e) => setPassword(e.target.value)}
-                            id="mat_khau"
-                            className="signin-signup-input"
-                            name="mat_khau" 
-                            autoComplete="current-password"
-                            value={password}
-                            required
-                        />
+            <input
+              type="password"
+              placeholder="Mật khẩu"
+              // onChange phải gọi setPassword
+              onChange={(e) => setPassword(e.target.value)}
+              id="mat_khau"
+              className="signin-signup-input"
+              name="mat_khau"
+              autoComplete="current-password"
+              value={password}
+              required
+            />
             <i className="fa-solid fa-eye" aria-hidden="true"></i>
           </div>
         </div>
@@ -122,14 +122,14 @@ const SignIn: React.FC<{ onSwitchToSignUp: () => void }> = ({ onSwitchToSignUp }
             Quên mật khẩu?
           </button>
         </div>
-        
-       {error && <p className="error-message">{error}</p>}
-       
+
+        {error && <p className="error-message">{error}</p>}
+
         <button className="signin-signup-button-submit">
-            <span className="signin-signup-button-submit-circle" aria-hidden="true">
+          <span className="signin-signup-button-submit-circle" aria-hidden="true">
             <span className="signin-signup-button-submit-icon arrow"></span>
-            </span>
-            <span className="signin-signup-button-submit-text">Đăng nhập</span>
+          </span>
+          <span className="signin-signup-button-submit-text">Đăng nhập</span>
         </button>
 
         <p className="signin-signup-text">
