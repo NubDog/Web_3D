@@ -227,3 +227,13 @@
 .record-buttons .button-secondary:hover {
     background-color: #e0e0e0;
 }
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+    }
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
+    }
+}

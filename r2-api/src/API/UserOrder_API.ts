@@ -44,7 +44,9 @@ export async function handleGetUserOrders(request: Request, env: Env): Promise<R
 
                 pt.gia_thue,           
                 cs.ty_le_giam,         
-                cs.ten_chinh_sach,                    
+                cs.ten_chinh_sach,     
+                tc.trang_thai as trang_thai_coc,
+                tc.ngay_giu as ngay_duyet_coc,               
 
                 CASE 
                    

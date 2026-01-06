@@ -50,6 +50,8 @@ import {
 	getPhuongTienToiHanBaoTri,
 	updateBaotri,
 } from './Admin/Bao-tri';
+import { handleFetch, handleScheduled } from './worker';
+
 
 interface Env {
 	ua: R2Bucket;
@@ -78,7 +80,7 @@ export default {
 		if (request.method === 'OPTIONS') {
 			return jsonResponse(null);
 		}
-
+		
 		const url = new URL(request.url);
 		const path = url.pathname;
 		const method = request.method;
@@ -433,4 +435,7 @@ export default {
 			return jsonResponse({ success: false, error: e.message || 'Internal Server Error' }, 500);
 		}
 	},
+	 async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+        return handleScheduled(event, env, ctx);
+    }
 };

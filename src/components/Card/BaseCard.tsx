@@ -28,10 +28,10 @@ const BaseCard = ({ card_title, card_subtitle, data, Card_content_customMiddle }
     const scrollLeft = () => {
         if (cardBoxRef.current) {
             const element = cardBoxRef.current;
-            console.log('Current scroll left:', element.scrollLeft);
-            console.log('Scroll width:', element.scrollWidth);
-            console.log('Client width:', element.clientWidth);
-            console.log('Can scroll left:', element.scrollLeft > 0);
+            // console.log('Current scroll left:', element.scrollLeft);
+            // console.log('Scroll width:', element.scrollWidth);
+            // console.log('Client width:', element.clientWidth);
+            // console.log('Can scroll left:', element.scrollLeft > 0);
 
             element.scrollBy({ left: -420, behavior: 'smooth' });
         }
@@ -40,10 +40,10 @@ const BaseCard = ({ card_title, card_subtitle, data, Card_content_customMiddle }
     const scrollRight = () => {
         if (cardBoxRef.current) {
             const element = cardBoxRef.current;
-            console.log('Current scroll left:', element.scrollLeft);
-            console.log('Scroll width:', element.scrollWidth);
-            console.log('Client width:', element.clientWidth);
-            console.log('Can scroll right:', element.scrollLeft < element.scrollWidth - element.clientWidth);
+            // console.log('Current scroll left:', element.scrollLeft);
+            // console.log('Scroll width:', element.scrollWidth);
+            // console.log('Client width:', element.clientWidth);
+            // console.log('Can scroll right:', element.scrollLeft < element.scrollWidth - element.clientWidth);
 
             element.scrollBy({ left: 420, behavior: 'smooth' });
         }
@@ -73,7 +73,7 @@ const BaseCard = ({ card_title, card_subtitle, data, Card_content_customMiddle }
                 {data.map((item) => (
                     <div className={`Card-content ${Card_content_customMiddle ?? ''}`} key={item.id}>
                         <div className="Card-content-title-link">
-                            <Link to="/product_detail" state={{ product: item }}>
+                            <Link to="/product_detail" state={{ productId: item.id }}>
                                 <img
                                     src={item.img || Lamborghini_model_Sian}
                                     alt={item.product_name}
@@ -82,7 +82,7 @@ const BaseCard = ({ card_title, card_subtitle, data, Card_content_customMiddle }
                                     }}
                                 />
                             </Link>
-                            <Link to="/product_detail" state={{ product: item }}></Link>
+                            <Link to="/product_detail" state={{ productId: item.id }}></Link>
                         </div>
                         <div className="Card-content-title">
                             <h3 className="Card-content-title-header">{item.product_name}</h3>

@@ -29,6 +29,9 @@ interface DonThue {
     gia_thue: number;       
     ty_le_giam: number;     
     ten_chinh_sach?: string;
+
+    trang_thai_coc?: string;      
+    ngay_duyet_coc?: string;
 }
 
 const AccountOrder = () => {
@@ -41,10 +44,18 @@ const AccountOrder = () => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<DonThue | null>(null);
     const [paymentSubmitted, setPaymentSubmitted] = useState(false);
-    
+    const [now, setNow] = useState(new Date().getTime())
+
     const [paymentType, setPaymentType] = useState<'DEPOSIT' | 'FINAL'>('DEPOSIT');
 
     const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/user-orders';
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setNow(new Date().getTime());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -68,21 +79,121 @@ const AccountOrder = () => {
             finally { setIsLoading(false); }
         };
         fetchOrders();
-        const interval = setInterval(fetchOrders, 10000); // Polling 10s
+        const interval = setInterval(fetchOrders, 10000);
         return () => clearInterval(interval);
     }, [currentUser, selectedOrder, showPaymentModal, paymentType]);
 
     const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('vi-VN');
 
+    // đồng hồ đếm ngược
+    // Đồng hồ đếm ngược
+const renderCountdown = (order: DonThue) => {
+    // 🔥 KIỂM TRA ĐIỀU KIỆN CHÍNH XÁC
+    const status = order.trang_thai?.toUpperCase();
+    const depositStatus = order.trang_thai_coc?.toUpperCase();
+    
+    // Chỉ hiển thị khi: DA_DUYET + CHO_THANH_TOAN (chưa cọc)
+    if (status !== 'DA_DUYET' || depositStatus !== 'CHO_THANH_TOAN') {
+        return null;
+    }
+
+    // 🔥 LẤY THỜI GIAN TỪ ngay_duyet_coc (giống Admin)
+    const approvedTimeString = order.ngay_duyet_coc;
+    
+    if (!approvedTimeString) {
+        console.warn(`Đơn #${order.don_thue_id}: Không có ngày duyệt cọc`);
+        return null;
+    }
+
+    // Parse thời gian (format: "2026-01-06 18:10:00")
+    const safeDateString = approvedTimeString.replace(' ', 'T');
+    const approvedTime = new Date(safeDateString).getTime();
+    
+    // Kiểm tra nếu ngày không hợp lệ
+    if (isNaN(approvedTime)) {
+        console.error(`Đơn #${order.don_thue_id}: Ngày không hợp lệ (${approvedTimeString})`);
+        return <div style={{color:'red', fontSize:'12px'}}>Lỗi thời gian</div>;
+    }
+
+    const deadline = approvedTime + (60 * 60 * 1000); // +60 phút
+    const distance = deadline - now;
+    
+    // TRƯỜNG HỢP 1: ĐÃ HẾT GIỜ 
+    if (distance <= 0) {
+        return (
+            <div style={{
+                marginTop: '15px',
+                padding: '12px',
+                backgroundColor: '#fff1f0',
+                border: '1px solid #ffa39e',
+                borderRadius: '6px',
+                color: '#cf1322',
+                fontSize: '13px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+            }}>
+                <i className="fa-solid fa-circle-exclamation"></i> 
+                <span>Đơn hàng đã quá hạn - Đang chờ hệ thống xử lý...</span>
+            </div>
+        );
+    }
+
+    // TRƯỜNG HỢP 2: CÒN GIỜ (HIỂN THỊ ĐỒNG HỒ) 
+    const m = Math.floor(distance / 1000 / 60);
+    const s = Math.floor((distance / 1000) % 60);
+    const timeString = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+    // Xác định màu sắc
+    const isDanger = distance < 60000; // < 1 phút
+    const isWarning = distance >= 60000 && distance < 15 * 60000; // 1-15 phút
+    const isSafe = distance >= 15 * 60000; // > 15 phút
+
+    return (
+        <div style={{
+            marginTop: '15px',
+            padding: '12px',
+            backgroundColor: isDanger ? '#fff2f0' : isWarning ? '#fffbe6' : '#f6ffed',
+            color: isDanger ? '#cf1322' : isWarning ? '#d48806' : '#52c41a',
+            border: `1px solid ${isDanger ? '#ffccc7' : isWarning ? '#ffe58f' : '#b7eb8f'}`,
+            borderRadius: '8px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            animation: isDanger ? 'pulse 1s infinite' : 'none'
+        }}>
+            <div style={{display:'flex', alignItems:'center', gap:'8px', marginBottom:'4px'}}>
+                <i className="fa-regular fa-clock"></i>
+                <span style={{fontSize: '14px', fontWeight: '500'}}>
+                    {isDanger ? '⚠️ GẤP! Thanh toán ngay:' : 'Vui lòng thanh toán cọc trong:'}
+                </span>
+            </div>
+            <span style={{
+                fontWeight: '800',
+                fontFamily: 'monospace',
+                fontSize: '24px',
+                letterSpacing: '2px'
+            }}>
+                {timeString}
+            </span>
+            <span style={{fontSize:'11px', opacity: 0.8}}>
+                {isDanger ? '(Đơn sắp bị hủy!)' : '(Trước khi đơn bị hủy tự động)'}
+            </span>
+        </div>
+    );
+};
+
     const getStatusBadge = (status: string) => {
         let color = '#6c757d'; let text = status; let bg = '#f8f9fa';
         switch (status?.toLowerCase()) {
             case 'da_duyet': color = '#007bff'; bg = '#e7f1ff'; text = 'Đã duyệt - Chờ cọc'; break;
             case 'da_coc': color = '#198754'; bg = '#d1e7dd'; text = 'Đã cọc - Chờ nhận xe'; break;
-            case 'dang_thue': color = '#0dcaf0'; bg = '#cff4fc'; text = 'Đang thuê xe'; break; // 🔥 Mới
+            case 'dang_thue': color = '#0dcaf0'; bg = '#cff4fc'; text = 'Đang thuê xe'; break;
             case 'da_tra': 
-            case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả xe - Chờ thanh toán'; break; // 🔥 Mới: Admin đã quyết toán xong
+            case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả xe - Chờ thanh toán'; break; 
             case 'hoan_thanh': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành'; break;
             case 'da_huy': color = '#dc3545'; bg = '#f8d7da'; text = 'Đã hủy'; break;
         }
@@ -155,7 +266,7 @@ const AccountOrder = () => {
                 <div style={{borderTop:'1px dashed #ccc', margin:'8px 0'}}></div>
 
                 <div style={{display:'flex', justifyContent:'space-between', marginBottom:'5px', fontWeight:'bold'}}>
-                   <span>TỔNG CỘNG:</span>
+                   <span style={{color: 'black'}}>TỔNG CỘNG:</span>
                    <span>{formatCurrency(selectedOrder.tong_tien)}</span>
                 </div>
 
@@ -167,7 +278,7 @@ const AccountOrder = () => {
                 <div style={{borderTop:'2px solid #eee', margin:'10px 0'}}></div>
 
                 <div style={{display:'flex', justifyContent:'space-between', fontSize:'18px'}}>
-                   <span>CẦN THANH TOÁN:</span>
+                   <span style={{color: 'black'}}>CẦN THANH TOÁN:</span>
                    <strong style={{color:'#6610f2'}}>{formatCurrency(canThanhToan > 0 ? canThanhToan : 0)}</strong>
                 </div>
             </div>
@@ -244,6 +355,7 @@ const AccountOrder = () => {
                                             const giaThueGoc = (order.gia_thue || 0) * soNgay;
                                             const tienGiam = giaThueGoc * (order.ty_le_giam || 0);
                                             const phiPhatSinh = order.tong_tien - (giaThueGoc - tienGiam);
+                                            const TongTienTamThoi = order.tong_tien - tienGiam
 
                                             return (
                                                 <>
@@ -258,19 +370,24 @@ const AccountOrder = () => {
                                                             <span>-{formatCurrency(tienGiam)}</span>
                                                         </div>
                                                     )}
-
-                                                    {Math.abs(phiPhatSinh) > 1000 && (
-                                                        <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '14px', color: phiPhatSinh > 0 ? '#dc3545' : '#28a745'}}>
-                                                            <span>Phụ phí / Điều chỉnh:</span>
-                                                            <span>{phiPhatSinh > 0 ? '+' : ''}{formatCurrency(phiPhatSinh)}</span>
-                                                        </div>
-                                                    )}
+                                                    {order.trang_thai == 'DA_TRA' || order.trang_thai == 'HOAN_TAT' ?
+                                                        <>
+                                                        {Math.abs(phiPhatSinh) > 1000 && (
+                                                            <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '14px', color: phiPhatSinh > 0 ? '#dc3545' : '#28a745'}}>
+                                                                <span>Phụ phí / Điều chỉnh:</span>
+                                                                <span>{phiPhatSinh > 0 ? '+' : ''}{formatCurrency(phiPhatSinh)}</span>
+                                                            </div>
+                                                        )}
+                                                        </>
+                                                        :
+                                                        null
+                                                    }
 
                                                     <div style={{borderTop: '1px dashed #ccc', margin: '8px 0'}}></div>
 
                                                     <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '8px'}}>
-                                                        <span style={{color: 'black', fontWeight: '600'}}>Tổng thanh toán:</span>
-                                                        <span style={{fontWeight: 'bold', color: '#007bff', fontSize: '16px'}}>{formatCurrency(order.tong_tien)}</span>
+                                                        <span style={{color: 'black', fontWeight: '600'}}>{order.trang_thai == 'DA_TRA' || order.trang_thai == 'HOAN_TAT' ? 'Tổng thanh toán (Chưa tính cọc):' : 'Tổng thanh toán tạm (Chưa tính cọc):' }</span>
+                                                        <span style={{fontWeight: 'bold', color: '#007bff', fontSize: '16px'}}>{order.trang_thai == 'DA_TRA' || order.trang_thai == 'HOAN_TAT' ? formatCurrency(order.tong_tien): formatCurrency(TongTienTamThoi) }</span>
                                                     </div>
 
                                                     <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '14px'}}>
@@ -282,6 +399,7 @@ const AccountOrder = () => {
                                         })()}
                                     </div>
                                 </div>
+                                {renderCountdown(order)}
                             </div>
 
                             <div style={{
@@ -370,6 +488,7 @@ const AccountOrder = () => {
                                 </div> */}
 
                                 {renderPaymentDetails()}
+
 
                                 <div style={{display: 'flex', gap: '10px', justifyContent: 'center'}}>
                                     <button onClick={() => setPaymentSubmitted(true)}
