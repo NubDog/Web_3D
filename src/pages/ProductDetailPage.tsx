@@ -27,12 +27,14 @@ interface ChinhSachGia {
     chinh_sach_id: number;
     gia_co_ban: number;
     ten_chinh_sach: string;
+    ty_le_giam: string;
 }
 
 const ProductDetailPage = () => {
     const location = useLocation();
-    const { product } = location.state || {};
-    
+    const { productId } = location.state || {};
+    console.log(productId);
+
     const [totalPrice, setTotalPrice] = useState<number | null>(null);
     const [vehicleDetail, setVehicleDetail] = useState<VehicleDetail | null>(null);
     const [pricing, setPricing] = useState<ChinhSachGia | null>(null);
@@ -44,7 +46,7 @@ const ProductDetailPage = () => {
 
     useEffect(() => {
         const fetchVehicleDetail = async () => {
-            if (!product?.id) {
+            if (!productId) {
                 setError('Không có ID sản phẩm');
                 setLoading(false);
                 return;
@@ -53,7 +55,7 @@ const ProductDetailPage = () => {
             try {
                 const response = await fetch(`${API_URL}`);
                 const responseChinhSach = await fetch(`${API_URL_CHINH_SACH_GIA}`);
-                
+
                 if (!response.ok || !responseChinhSach.ok) {
                     throw new Error('Lỗi khi tải dữ liệu');
                 }
@@ -62,8 +64,8 @@ const ProductDetailPage = () => {
                 const resultChinhSach = await responseChinhSach.json();
 
                 if (result.success && resultChinhSach.success) {
-                    const vehicle = result.data.find((v: VehicleDetail) => v.phuong_tien_id === product.id);
-                    
+                    const vehicle = result.data.find((v: VehicleDetail) => v.phuong_tien_id === productId);
+
                     if (!vehicle) {
                         throw new Error('Không tìm thấy phương tiện');
                     }
@@ -72,7 +74,7 @@ const ProductDetailPage = () => {
 
                     setVehicleDetail(vehicle);
                     setPricing(priceInfo || null);
-                    
+
                     console.log("giá cơ bản của xe là: ", priceInfo?.gia_co_ban);
                     console.log("Giá thuê cơ bản của xe là:", vehicle.gia_thue);
                     console.log("Thông tin xe:", vehicle);
@@ -92,7 +94,7 @@ const ProductDetailPage = () => {
         };
 
         fetchVehicleDetail();
-    }, [product]);
+    }, [productId]);
 
     if (loading) {
         return (
@@ -123,11 +125,11 @@ const ProductDetailPage = () => {
     return (
         <div className="ProductDetail-container">
             <Header />
-            
+
             <div className="ProductDetail-viewer-container">
                 <div className="ProductDetail-3d-viewer">
                     {vehicleDetail.model ? (
-                        <BabylonScene 
+                        <BabylonScene
                             modelUrl={vehicleDetail.model}
                             onModelLoaded={() => console.log('Model loaded successfully')}
                         />
@@ -142,7 +144,7 @@ const ProductDetailPage = () => {
             <div className="ProductDetail-content">
                 <div className="ProductDetail-info">
                     <h1 className="ProductDetail-title">{vehicleDetail.ten_phuong_tien}</h1>
-                    
+
                     <div className="ProductDetail-price">
                         <span className="ProductDetail-price-amount">
                             {totalPrice?.toLocaleString('vi-VN')}
@@ -181,14 +183,20 @@ const ProductDetailPage = () => {
                                     <span className="ProductDetail-spec-value">{pricing.ten_chinh_sach}</span>
                                 </div>
                             )}
+                            {pricing && (
+                                <div className="ProductDetail-spec-item">
+                                    <span className="ProductDetail-spec-label">Tỷ lệ giảm:</span>
+                                    <span className="ProductDetail-spec-value">{pricing.ty_le_giam}%</span>
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     {/* Checkout Button */}
                     <div className="ProductDetail-actions">
-                        <RouterLink 
-                            to="/checkout" 
-                            state={{ 
+                        <RouterLink
+                            to="/checkout"
+                            state={{
                                 product: {
                                     id: vehicleDetail.phuong_tien_id,
                                     product_name: vehicleDetail.ten_phuong_tien,
