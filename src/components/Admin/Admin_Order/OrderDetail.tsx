@@ -72,6 +72,8 @@ const OrderDetail: React.FC = () => {
     const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
     const [recordModalData, setRecordModalData] = useState<RecordData | null>(null);
 
+    const [depositTime, setDepositTime] = useState<string | null>(null);
+
     const fetchOrder = useCallback(async () => {
         if (!orderId) return;
         setIsLoading(true);
@@ -80,6 +82,17 @@ const OrderDetail: React.FC = () => {
             const result = await response.json();
             if (result.success) {
                 setOrder(result.data);
+                if (result.data.trang_thai === 'DA_DUYET' && 
+                result.data.trang_thai_coc === 'CHO_THANH_TOAN' &&
+                result.data.ngay_duyet_coc) {
+                
+                setDepositTime(result.data.ngay_duyet_coc);
+                console.log('⏰ Thời gian duyệt cọc:', result.data.ngay_duyet_coc);
+            } else {
+                setDepositTime(null);
+                console.log('❌ Không đủ điều kiện hiển thị countdown');
+            }
+
             } else {
                 throw new Error(result.error);
             }
@@ -113,6 +126,144 @@ const OrderDetail: React.FC = () => {
             setIsSubmitting(false);
         }
     };
+// Đồng hồ đếm giờ
+    const useCountdown = (targetDate: string | null) => {
+        const [timeRemaining, setTimeRemaining] = useState<number>(0);
+
+        useEffect(() => {
+            if (!targetDate) return;
+
+            const calculateTimeLeft = () => {
+                const now = new Date().getTime();
+                const target = new Date(targetDate).getTime() + (60 * 60 * 1000); // +60 phút
+                const difference = target - now;
+                return Math.max(0, difference);
+            };
+
+            setTimeRemaining(calculateTimeLeft());
+
+            const interval = setInterval(() => {
+                const remaining = calculateTimeLeft();
+                setTimeRemaining(remaining);
+                if (remaining === 0) clearInterval(interval);
+            }, 1000);
+
+            return () => clearInterval(interval);
+        }, [targetDate]);
+
+        const minutes = Math.floor(timeRemaining / 60000);
+        const seconds = Math.floor((timeRemaining % 60000) / 1000);
+
+        return {
+            minutes,
+            seconds,
+            isExpired: timeRemaining === 0,
+            timeRemaining
+        };
+    };
+
+    interface DepositCountdownProps {
+    approvedTime: string | null;
+    depositStatus: string | null;
+}
+
+const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depositStatus }) => {
+    const { minutes, seconds, isExpired, timeRemaining } = useCountdown(approvedTime);
+
+        if (depositStatus === 'DANG_GIU' || !approvedTime) return null;
+
+        const getStatusClass = () => {
+            const totalMinutes = timeRemaining / 60000;
+            if (totalMinutes <= 5) return 'danger';
+            if (totalMinutes <= 15) return 'warning';
+            return 'safe';
+        };
+
+        const getStatusIcon = () => {
+            const totalMinutes = timeRemaining / 60000;
+            if (totalMinutes <= 5) return '🔴';
+            if (totalMinutes <= 15) return '🟡';
+            return '🟢';
+        };
+
+        if (isExpired) {
+            return (
+                <div style={{
+                    padding: '15px',
+                    background: 'linear-gradient(135deg, #ffebee 0%, #ef5350 100%)',
+                    border: '2px solid #c62828',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    margin: '15px 0'
+                }}>
+                    <span style={{ fontSize: '24px' }}>⏰</span>
+                    <span style={{ fontWeight: 700, color: '#c62828', fontSize: '16px' }}>
+                        Đã hết hạn cọc - Đơn sẽ tự động hủy
+                    </span>
+                </div>
+            );
+        }
+
+        return (
+            <div style={{
+                margin: '20px 0',
+                padding: '20px',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                background: getStatusClass() === 'safe' 
+                    ? 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)'
+                    : getStatusClass() === 'warning'
+                    ? 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)'
+                    : 'linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%)',
+                border: `2px solid ${
+                    getStatusClass() === 'safe' ? '#4caf50' :
+                    getStatusClass() === 'warning' ? '#ff9800' : '#f44336'
+                }`,
+                animation: getStatusClass() === 'danger' ? 'pulse 1s ease-in-out infinite' : 'none'
+            }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
+                    <span style={{ fontSize: '24px' }}>{getStatusIcon()}</span>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#333' }}>
+                        Thời gian còn lại để thanh toán cọc:
+                    </span>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', margin: '15px 0' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '60px' }}>
+                        <span style={{ fontSize: '36px', fontWeight: 700, color: '#1a1a1a', fontFamily: 'monospace' }}>
+                            {String(minutes).padStart(2, '0')}
+                        </span>
+                        <span style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>phút</span>
+                    </div>
+                    <span style={{ fontSize: '36px', fontWeight: 700, color: '#1a1a1a', margin: '0 5px' }}>:</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '60px' }}>
+                        <span style={{ fontSize: '36px', fontWeight: 700, color: '#1a1a1a', fontFamily: 'monospace' }}>
+                            {String(seconds).padStart(2, '0')}
+                        </span>
+                        <span style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>giây</span>
+                    </div>
+                </div>
+
+                {minutes <= 5 && (
+                    <div style={{
+                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        padding: '10px',
+                        borderRadius: '6px',
+                        textAlign: 'center',
+                        fontWeight: 600,
+                        color: '#e65100',
+                        marginTop: '10px',
+                        fontSize: '14px'
+                    }}>
+                        ⚠️ Vui lòng nhắc khách hàng thanh toán cọc ngay!
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     
     const handleReject = async () => {
         const reason = prompt("Nhập lý do từ chối:");
@@ -637,6 +788,12 @@ const OrderDetail: React.FC = () => {
                                     {order.trang_thai_coc === 'DANG_GIU' ? 'Đã Nhận Cọc' : 'Chưa Nhận Cọc'}
                                 </span>
                             </p>
+                             {order.trang_thai_coc === 'CHO_THANH_TOAN' && depositTime && (
+                                    <DepositCountdown 
+                                        approvedTime={depositTime}
+                                        depositStatus={order.trang_thai_coc}
+                                    />
+                                )}
                             {order.trang_thai_coc !== 'DANG_GIU' && (
                                 <button 
                                     className="button-primary" 

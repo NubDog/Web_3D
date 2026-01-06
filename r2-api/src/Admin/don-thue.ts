@@ -291,7 +291,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
 
         await env.DB.batch([
             // Cập nhật trạng thái đơn
-            env.DB.prepare("UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ? WHERE don_thue_id = ?")
+            env.DB.prepare("UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ?, ngay_cap_nhat = datetime('now', '+7 hours') WHERE don_thue_id = ?")
                 .bind(nhan_vien_id, orderId),
 
             // Tạo hợp đồng 
@@ -300,8 +300,10 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                 VALUES (?, ?,?, datetime('now','+7 hours'), ?, 'CHO_KY', ?)
             `).bind(orderId, so_hop_dong, orderInfo.khach_hang_id, nhan_vien_id, publicUrl),
             // Tạo phiếu thu tiền cọc
-            env.DB.prepare("INSERT INTO TienCoc (don_thue_id, so_tien, phuong_thuc, trang_thai) VALUES (?, ?, 'TIEN_MAT','CHO_THANH_TOAN')")
-                .bind(orderId, orderInfo.tien_coc_yeu_cau)
+            env.DB.prepare(`
+                INSERT INTO TienCoc (don_thue_id, so_tien, phuong_thuc, trang_thai, ngay_giu, ngay_tao, ngay_cap_nhat) 
+                VALUES (?, ?, 'TIEN_MAT', 'CHO_THANH_TOAN', datetime('now', '+7 hours'), datetime('now', '+7 hours'), datetime('now', '+7 hours'))
+            `).bind(orderId, orderInfo.tien_coc_yeu_cau)
         ]);
 
         if (env.RESEND_API_KEY) {
@@ -471,6 +473,9 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
                 pt.ten_phuong_tien, pt.bien_so, pt.gia_thue,
                 cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh,
                 tc.trang_thai AS trang_thai_coc,
+                tc.tien_coc_id,
+                tc.ngay_giu as ngay_duyet_coc,
+
                 pt.so_km AS so_km_xe,
                 hd.duong_dan_file,
 
@@ -650,7 +655,62 @@ export const handleSettleOrder = async (request: Request, env: Env, orderId: str
 // XÁC NHẬN ĐÃ THU TIỀN (Hoàn tất đơn)
 export const handleConfirmPayment = async (request: Request, env: Env, orderId: string) => {
     try {
+        console.log("🔑 RESEND_API_KEY exists:", !!env.RESEND_API_KEY);
+        console.log("📧 Order ID:", orderId);
+        
         const { nhan_vien_id } = await request.json<{ nhan_vien_id: number }>();
+
+        const orderData = await env.DB.prepare(`
+            SELECT 
+                dt.don_thue_id,
+                dt.ngay_bat_dau,
+                dt.ngay_ket_thuc,
+                dt.tong_tien,
+                dt.tien_coc_yeu_cau,
+                
+                kh.ho_ten,
+                nd.email,
+                nd.so_dien_thoai,
+                
+                pt.ten_phuong_tien,
+                pt.bien_so,
+                
+                cs.ty_le_giam,
+                
+                hd.duong_dan_file as hop_dong_url
+                
+            FROM DonThue dt
+            JOIN KhachHang kh ON dt.khach_hang_id = kh.khach_hang_id
+            JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
+            JOIN PhuongTien pt ON dt.phuong_tien_id = pt.phuong_tien_id
+            JOIN ChinhSachGia cs ON dt.chinh_sach_id = cs.chinh_sach_id
+            LEFT JOIN HopDong hd ON dt.don_thue_id = hd.don_thue_id
+            
+            WHERE dt.don_thue_id = ?
+        `).bind(orderId).first<{
+            don_thue_id: number;
+            ngay_bat_dau: string;
+            ngay_ket_thuc: string;
+            tong_tien: number;
+            tien_coc_yeu_cau: number;
+            ho_ten: string;
+            email: string;
+            so_dien_thoai: string;
+            ten_phuong_tien: string;
+            bien_so: string;
+            ty_le_giam: number;
+            hop_dong_url: string;
+        }>();
+
+        if (!orderData) {
+            return jsonResponse({ success: false, error: "Không tìm thấy đơn hàng" }, 404);
+        }
+
+        console.log("📦 Order Data:", {
+            email: orderData.email,
+            ho_ten: orderData.ho_ten,
+            don_thue_id: orderData.don_thue_id
+        });
 
         await env.DB.prepare(`
             UPDATE DonThue 
@@ -663,8 +723,154 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
             UPDATE ThanhToan SET trang_thai = 'DA_THANH_TOAN' WHERE don_thue_id = ?
         `).bind(orderId).run();
 
-        return jsonResponse({ success: true, message: "Đã xác nhận thanh toán. Đơn hàng HOÀN TẤT." });
+        if (env.RESEND_API_KEY && orderData.email) {
+            console.log("📧 BẮT ĐẦU GỬI EMAIL...");
+
+            const fmt = (t: number) => t.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+            
+            const d1 = new Date(orderData.ngay_bat_dau);
+            const d2 = new Date(orderData.ngay_ket_thuc);
+            const soNgay = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) || 1;
+
+            const emailBody = {
+                from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                to: ['khoatran3123@gmail.com'], 
+                subject: `🎉 Hoàn tất đơn thuê xe #${orderId} - Cảm ơn bạn!`,
+                html: `
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset="UTF-8"></head>
+                <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; margin: 20px auto; border: 1px solid #e0e0e0; background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+                        
+                        <tr>
+                            <td align="center" bgcolor="#10b981" style="padding: 30px 20px;">
+                                <h1 style="color: #ffffff; margin: 0; font-size: 28px;">🎉 ĐƠN HÀNG HOÀN TẤT</h1>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 40px 30px;">
+                                <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderData.ho_ten},</h2>
+                                
+                                <p style="color: #555555; font-size: 16px; line-height: 1.6;">
+                                    Cảm ơn bạn đã sử dụng dịch vụ thuê xe của chúng tôi! 
+                                    Đơn hàng <strong>#${orderId}</strong> của bạn đã được hoàn tất.
+                                </p>
+
+                                <div style="background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0;">
+                                    <p style="margin: 0; color: #166534; font-weight: bold;">✅ Thanh toán đã được xác nhận</p>
+                                    <p style="margin: 5px 0 0 0; color: #166534; font-size: 14px;">Chúng tôi đã nhận đủ số tiền thanh toán từ bạn.</p>
+                                </div>
+
+                                <h3 style="color: #333333; margin-top: 30px; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px;">📋 Thông tin chuyến thuê</h3>
+                                
+                                <table width="100%" style="border-collapse: collapse; margin-top: 15px; font-size: 15px;">
+                                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                                        <td style="padding: 12px 0; color: #666666;">Phương tiện:</td>
+                                        <td style="padding: 12px 0; color: #333333; text-align: right; font-weight: bold;">
+                                            ${orderData.ten_phuong_tien}<br>
+                                            <span style="font-size: 13px; color: #888888;">${orderData.bien_so}</span>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                                        <td style="padding: 12px 0; color: #666666;">Thời gian thuê:</td>
+                                        <td style="padding: 12px 0; color: #333333; text-align: right;">
+                                            ${d1.toLocaleDateString('vi-VN')} - ${d2.toLocaleDateString('vi-VN')}<br>
+                                            <span style="font-size: 13px; color: #888888;">(${soNgay} ngày)</span>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                                        <td style="padding: 12px 0; color: #666666;">Tiền cọc đã trả:</td>
+                                        <td style="padding: 12px 0; color: #333333; text-align: right;">${fmt(orderData.tien_coc_yeu_cau)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0; color: #333333; font-weight: bold; font-size: 16px;">Tổng thanh toán:</td>
+                                        <td style="padding: 12px 0; color: #10b981; text-align: right; font-weight: bold; font-size: 18px;">${fmt(orderData.tong_tien - orderData.tien_coc_yeu_cau)}</td>
+                                    </tr>
+                                </table>
+
+                                ${orderData.hop_dong_url ? `
+                                <p style="text-align: center; margin-top: 35px;">
+                                    <a href="${orderData.hop_dong_url}" style="background-color: #3b82f6; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; display: inline-block;">
+                                        📄 Xem Hợp Đồng
+                                    </a>
+                                </p>
+                                ` : ''}
+
+                                <div style="background-color: #fef3c7; border-radius: 8px; padding: 20px; margin-top: 30px; text-align: center;">
+                                    <h3 style="color: #92400e; margin: 0 0 10px 0;">⭐ Đánh giá trải nghiệm của bạn</h3>
+                                    <p style="color: #78350f; margin: 0 0 15px 0; font-size: 14px;">
+                                        Ý kiến của bạn rất quan trọng với chúng tôi!
+                                    </p>
+                                    <a href="/" style="background-color: #fbbf24; color: #78350f; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
+                                        Viết đánh giá
+                                    </a>
+                                </div>
+
+                                <p style="color: #555555; font-size: 15px; line-height: 1.6; margin-top: 30px;">
+                                    Cảm ơn bạn đã tin tưởng và sử dụng dịch vụ của chúng tôi. 
+                                    Rất mong được phục vụ bạn trong những chuyến đi tiếp theo! 🚗
+                                </p>
+
+                                <p style="color: #888888; font-size: 13px; margin-top: 20px;">
+                                    Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:<br>
+                                    📞 Hotline: <strong>1900-xxxx</strong><br>
+                                    📧 Email: <strong>support@thuexe.vn</strong>
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td bgcolor="#f9fafb" style="padding: 20px 30px; text-align: center; border-top: 1px solid #e0e0e0;">
+                                <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                                    &copy; ${new Date().getFullYear()} Dịch vụ cho thuê đa phương tiện. All rights reserved.
+                                </p>
+                                <p style="margin: 5px 0 0 0; color: #9ca3af; font-size: 11px;">
+                                    Email này được gửi tự động, vui lòng không trả lời.
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+                `
+            };
+
+            console.log("📤 Sending to Resend API...");
+            console.log("📧 Email body:", JSON.stringify(emailBody).substring(0, 200));
+
+            const emailRes = await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(emailBody)
+            });
+
+            console.log("📬 Response status:", emailRes.status);
+            const responseText = await emailRes.text();
+            console.log("📬 Response body:", responseText);
+
+            if (emailRes.ok) {
+                console.log("✅ Đã gửi email hoàn thành thành công!");
+            } else {
+                console.error("❌ Lỗi gửi email:", responseText);
+            }
+        } else {
+            console.log("⚠️ KHÔNG GỬI EMAIL - Điều kiện không thỏa:");
+            console.log("  - RESEND_API_KEY:", env.RESEND_API_KEY ? "OK" : "MISSING");
+            console.log("  - orderData.email:", orderData.email || "MISSING");
+        }
+
+        return jsonResponse({ 
+            success: true, 
+            message: "Đã xác nhận thanh toán. Đơn hàng HOÀN TẤT." 
+        });
+
     } catch (e: any) {
+        console.error("❌ Error:", e);
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
