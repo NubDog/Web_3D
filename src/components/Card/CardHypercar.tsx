@@ -9,7 +9,7 @@ interface PhuongTien {
     phuong_tien_id: number;
     ten_phuong_tien: string;
     trang_thai: string;
-    gia_thue: number; // Thay gia_co_ban thành gia_thue
+    gia_thue: number;
     chinh_sach_id: number;
     danh_muc_id: number;
     loai: string;
@@ -32,7 +32,6 @@ const Card = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Thêm gia_thue vào danh sách fields cần lấy
                 const fieldsPhuongTien = 'phuong_tien_id,ten_phuong_tien,trang_thai,gia_thue,loai,img,danh_muc_id';
                 const response = await fetch(`${API_URL}?fields=${fieldsPhuongTien}`);
 
@@ -65,7 +64,6 @@ const Card = () => {
         img: pt.img,
         product_name: pt.ten_phuong_tien,
         product_category: pt.loai,
-        // Sử dụng trực tiếp giá thuê từ bảng PhuongTien
         product_price: pt.gia_thue,
     }));
 
