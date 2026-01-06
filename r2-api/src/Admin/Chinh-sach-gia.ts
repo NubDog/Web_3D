@@ -2,25 +2,34 @@ export interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
 }
+function withCORS(body: any, status: number = 200) {
+	return new Response(JSON.stringify(body), {
+		status,
+		headers: {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+		},
+	});
+}
 // hiện tất cả chính sách giá
 export async function getChinhSachGias(request: Request, env: Env): Promise<Response> {
-	const url = new URL(request.url);
-	const path = url.pathname;
 	if (request.method === 'GET') {
 		try {
 			const result = await env.DB.prepare('SELECT * FROM ChinhSachGia;').all();
-			return Response.json({ success: true, data: result.results });
+			return withCORS({ success: true, data: result.results });
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
-			return Response.json({ success: false, error: 'Query thất bại ❌: ' + errorMessage });
+			return withCORS({ success: false, error: 'Query thất bại ❌: ' + errorMessage });
 		}
 	}
-	return Response.json({ success: false, error: 'Method not allowed' });
+	return withCORS({ success: false, error: 'Method not allowed' });
 }
 // Thêm mới chính sách giá
 export async function addChinhSachGia(request: Request, env: Env): Promise<Response> {
 	if (request.method !== 'POST') {
-		return Response.json({ success: false, error: 'Chỉ hỗ trợ POST' }, { status: 405 });
+		return withCORS(Response.json({ success: false, error: 'Chỉ hỗ trợ POST' }, { status: 405 }));
 	}
 
 	try {
@@ -35,10 +44,9 @@ export async function addChinhSachGia(request: Request, env: Env): Promise<Respo
 		const { TenChinhSach, GiaCoBan, TienCocMacDinh, PhiPhatCoBan, TyLeGiam } = data;
 
 		if (!TenChinhSach || GiaCoBan == null || TienCocMacDinh == null || PhiPhatCoBan == null) {
-			return Response.json({ success: false, error: 'Thiếu thông tin bắt buộc' }, { status: 400 });
+			return withCORS(Response.json({ success: false, error: 'Thiếu thông tin bắt buộc' }, { status: 400 }));
 		}
 
-		// Query thêm dữ liệu
 		const insertQuery = `
             INSERT INTO ChinhSachGia 
             (ten_chinh_sach, gia_co_ban, tien_coc_mac_dinh, phi_phat_co_ban, ty_le_giam, ngay_tao, ngay_cap_nhat) 
@@ -49,21 +57,21 @@ export async function addChinhSachGia(request: Request, env: Env): Promise<Respo
 			.bind(TenChinhSach, GiaCoBan, TienCocMacDinh, PhiPhatCoBan, TyLeGiam ?? null)
 			.run();
 
-		return Response.json({
+		return withCORS({
 			success: true,
 			message: 'Thêm chính sách giá thành công ✅',
 			data: { id: result.meta.last_row_id },
 		});
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
-		return Response.json({ success: false, error: 'Thêm thất bại ❌: ' + errorMessage }, { status: 500 });
+		return withCORS(Response.json({ success: false, error: 'Thêm thất bại ❌: ' + errorMessage }, { status: 500 }));
 	}
 }
 
 // Cập nhật chính sách giá
 export async function updateChinhSachGia(request: Request, env: Env, id: string): Promise<Response> {
 	if (request.method !== 'PUT') {
-		return Response.json({ success: false, error: 'Method not allowed' }, { status: 405 });
+		return withCORS(Response.json({ success: false, error: 'Method not allowed' }, { status: 405 }));
 	}
 
 	try {
@@ -76,14 +84,13 @@ export async function updateChinhSachGia(request: Request, env: Env, id: string)
 		};
 
 		if (!id) {
-			return Response.json({ success: false, error: 'Thiếu ID chính sách giá' }, { status: 400 });
+			return withCORS(Response.json({ success: false, error: 'Thiếu ID chính sách giá' }, { status: 400 }));
 		}
 
-		// Kiểm tra chính sách giá tồn tại
 		const existing = await env.DB.prepare('SELECT * FROM ChinhSachGia WHERE chinh_sach_id = ?;').bind(id).first();
 
 		if (!existing) {
-			return Response.json({ success: false, error: 'Chính sách giá không tồn tại' }, { status: 404 });
+			return withCORS(Response.json({ success: false, error: 'Chính sách giá không tồn tại' }, { status: 404 }));
 		}
 
 		const fields: string[] = [];
@@ -111,7 +118,7 @@ export async function updateChinhSachGia(request: Request, env: Env, id: string)
 		}
 
 		if (fields.length === 0) {
-			return Response.json({ success: false, error: 'Không có trường nào để cập nhật' }, { status: 400 });
+			return withCORS(Response.json({ success: false, error: 'Không có trường nào để cập nhật' }, { status: 400 }));
 		}
 
 		// Cập nhật ngày
@@ -124,33 +131,31 @@ export async function updateChinhSachGia(request: Request, env: Env, id: string)
 			.bind(...values)
 			.run();
 
-		return Response.json({ success: true, message: 'Cập nhật chính sách giá thành công ✅' });
+		return withCORS(Response.json({ success: true, message: 'Cập nhật chính sách giá thành công ✅' }));
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
-		return Response.json({ success: false, error: 'Cập nhật thất bại ❌: ' + errorMessage }, { status: 500 });
+		return withCORS(Response.json({ success: false, error: 'Cập nhật thất bại ❌: ' + errorMessage }, { status: 500 }));
 	}
 }
 
 // Xóa chính sách giá
 export async function deleteChinhSachGia(request: Request, env: Env, id: string): Promise<Response> {
 	if (request.method !== 'DELETE') {
-		return Response.json({ success: false, error: 'Method not allowed' }, { status: 405 });
+		return withCORS(Response.json({ success: false, error: 'Method not allowed' }, { status: 405 }));
 	}
 	try {
-		// Kiểm tra tồn tại
 		const existingResult = await env.DB.prepare('SELECT COUNT(*) as count FROM ChinhSachGia WHERE chinh_sach_id = ?;').bind(id).all();
 
 		const exists = Number(existingResult.results[0].count);
 		if (exists === 0) {
-			return Response.json({ success: false, error: `Không tìm thấy chính sách giá với ID ${id}` }, { status: 404 });
+			return withCORS(Response.json({ success: false, error: `Không tìm thấy chính sách giá với ID ${id}` }, { status: 404 }));
 		}
 
-		// Xóa bản ghi
 		await env.DB.prepare('DELETE FROM ChinhSachGia WHERE chinh_sach_id = ?;').bind(id).run();
 
-		return Response.json({ success: true, message: 'Xóa chính sách giá thành công ✅' });
+		return withCORS(Response.json({ success: true, message: 'Xóa chính sách giá thành công ✅' }));
 	} catch (err: any) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
-		return Response.json({ success: false, error: 'Xóa chính sách giá thất bại ❌: ' + errorMessage }, { status: 500 });
+		return withCORS({ success: false, error: 'Xóa chính sách giá thất bại ❌: ' + errorMessage }, 500);
 	}
 }

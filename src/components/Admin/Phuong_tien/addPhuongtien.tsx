@@ -114,7 +114,7 @@ const PhuongTienModal: React.FC = () => {
   useEffect(() => {
     const loadLists = async () => {
       try {
-        const r1 = await fetchWithFallback("/Admin/danh-muc-phuong-tien");
+        const r1 = await fetchWithFallback("/api/danh-muc-phuong-tien");
         setDanhMucList(Array.isArray(r1.data) ? r1.data : []);
       } catch {}
     };

@@ -25,11 +25,12 @@ const BaoTritrangthai: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const pageTitles: { [key: string]: string } = {
+    all: "Tất Cả Bảo Trì",
     cho_duyet: "Bảo Trì Chờ Duyệt",
     da_duyet: "Bảo Trì Đã Duyệt",
-    dang_len_lich: "Bảo Trì Đang Lên Lịch",
-    dang_bao_tri: "Bảo Trì Đang Thực Hiện",
-    cho_kiem_tra_ban_giao: "Bảo Trì Chờ Kiểm Tra/Bàn Giao",
+    // dang_len_lich: "Bảo Trì Đang Lên Lịch",
+    // dang_bao_tri: "Bảo Trì Đang Thực Hiện",
+    // cho_kiem_tra_ban_giao: "Bảo Trì Chờ Kiểm Tra/Bàn Giao",
     da_hoan_thanh: "Bảo Trì Đã Hoàn Thành",
     da_huy: "Bảo Trì Đã Hủy",
   };

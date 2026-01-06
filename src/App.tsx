@@ -41,6 +41,8 @@ import AdminReportingFinance from "./components/Admin/admin_dashboard/admin_dash
 import AdminRoute from "./components/Admin/AdminRoute";
 import BaoTriChiTiet from "./components/Admin/Bao_tri/Bao_tri_chitiet";
 import BaoTritrangthai from "./components/Admin/Bao_tri/Bao_tri_List";
+import HieuPhuongTienList from "./components/Admin/Hieu_phuong_tien/addHieupt";
+import HanBaoTri from "./components/Admin/Bao_tri/Han_Bao_Tri";
 
 function App() {
   return (
@@ -111,6 +113,7 @@ function App() {
                 path="danh-muc-phuong-tien"
                 element={<DanhMucPhuongTienList />}
               />
+              <Route path="hieu-phuong-tien" element={<HieuPhuongTienList />} />
               <Route path="chinh-sach-gia" element={<ChinhSachGiaList />} />
 
               <Route path="orders/:status" element={<OrderList />} />
@@ -119,6 +122,7 @@ function App() {
               <Route path="bao_tri" element={<BaoTriList />} />
               <Route path="bao_tri/chitiet/:id" element={<BaoTriChiTiet />} />
               <Route path="bao_tri/:status" element={<BaoTritrangthai />} />
+              <Route path="han_bao_tri" element={<HanBaoTri />} />
             </Route>
           </Route>
           //{" "}

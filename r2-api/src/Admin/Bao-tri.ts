@@ -2,7 +2,11 @@ export interface Env {
 	r2: R2Bucket;
 	DB: D1Database;
 }
-
+function getNowVN(): string {
+	const now = new Date();
+	const vnTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+	return vnTime.toISOString().slice(0, 19).replace('T', ' ');
+}
 // Hàm hỗ trợ CORS
 function withCORS(body: any, status: number = 200) {
 	return new Response(JSON.stringify(body), {
@@ -16,139 +20,131 @@ function withCORS(body: any, status: number = 200) {
 	});
 }
 
-/* ======================
-   API BẢO TRÌ
-====================== */
-
 // Lấy danh sách tổng hợp bảo trì theo phương tiện
-export async function getBaotriTongHop(request: Request, env: Env): Promise<Response> {
-	try {
-		const query = `
-      SELECT 
-        p.phuong_tien_id,
-        p.ten_phuong_tien,
-        COUNT(b.bao_tri_id) AS tong_so_bao_tri,
-        SUM(b.chi_phi) AS tong_chi_phi,
-        MAX(b.ngay_tao) AS ngay_tao_moi_nhat
-      FROM BaoTri b
-      JOIN PhuongTien p ON p.phuong_tien_id = b.phuong_tien_id
-      GROUP BY p.phuong_tien_id, p.ten_phuong_tien
-      ORDER BY ngay_tao_moi_nhat DESC
-    `;
-		const result = await env.DB.prepare(query).all();
-		return withCORS({ success: true, data: result.results });
-	} catch (error) {
-		return withCORS({ success: false, error: 'Lỗi kết nối database' }, 500);
-	}
-}
+// export async function getBaotriTongHop(request: Request, env: Env): Promise<Response> {
+// 	try {
+// 		const query = `
+//       SELECT
+//         p.phuong_tien_id,
+//         p.ten_phuong_tien,
+//         COUNT(b.bao_tri_id) AS tong_so_bao_tri,
+//         SUM(b.chi_phi) AS tong_chi_phi,
+//         MAX(b.ngay_tao) AS ngay_tao_moi_nhat
+//       FROM BaoTri b
+//       JOIN PhuongTien p ON p.phuong_tien_id = b.phuong_tien_id
+//       GROUP BY p.phuong_tien_id, p.ten_phuong_tien
+//       ORDER BY ngay_tao_moi_nhat DESC
+//     `;
+// 		const result = await env.DB.prepare(query).all();
+// 		return withCORS({ success: true, data: result.results });
+// 	} catch (error) {
+// 		return withCORS({ success: false, error: 'Lỗi kết nối database' }, 500);
+// 	}
+// }
 
-// Lấy chi tiết bảo trì theo phương tiện
-export async function getBaotriChiTiet(request: Request, env: Env, phuongTienId: number): Promise<Response> {
-	try {
-		const query = `
-     SELECT 
-  b.*,
-  u.ho_ten AS ten_nguoi_tao,
-  u.nguoi_dung_id AS nhan_vien_tao,  
-  p.ten_phuong_tien
-FROM BaoTri b
-LEFT JOIN NguoiDung u ON b.nhan_vien_tao = u.nguoi_dung_id
-LEFT JOIN PhuongTien p ON b.phuong_tien_id = p.phuong_tien_id
-WHERE b.phuong_tien_id = ?
-ORDER BY b.ngay_tao DESC
+// // Lấy danh sách đơn thuê theo phương tiện
+// export async function getDonThueByPhuongTien(request: Request, env: Env, phuongTienId: number): Promise<Response> {
+// 	try {
+// 		const query = `
+//       SELECT
+//         d.don_thue_id,
+//         d.ngay_bat_dau,
+//         d.ngay_ket_thuc,
+//         d.trang_thai,
+//         nd.ho_ten AS ten_khach_hang
+//       FROM DonThue d
+//       LEFT JOIN NguoiDung nd ON nd.nguoi_dung_id = d.khach_hang_id
+//       WHERE d.phuong_tien_id = ?
+//       ORDER BY d.ngay_bat_dau DESC
+//     `;
+// 		const result = await env.DB.prepare(query).bind(phuongTienId).all();
+// 		return withCORS({ success: true, data: result.results });
+// 	} catch (error) {
+// 		return withCORS({ success: false, error: 'Lỗi khi lấy đơn thuê' }, 500);
+// 	}
+// }
 
-    `;
-		const result = await env.DB.prepare(query).bind(phuongTienId).all();
-		return withCORS({ success: true, data: result.results });
-	} catch (error) {
-		return withCORS({ success: false, error: 'Lỗi kết nối database' }, 500);
-	}
-}
+// // Lấy chi tiết bảo trì theo phương tiện
+// export async function getBaotriChiTiet(request: Request, env: Env, phuongTienId: number): Promise<Response> {
+// 	try {
+// 		const query = `
+//      SELECT
+//   b.*,
+//   u.ho_ten AS ten_nguoi_tao,
+//   u.nguoi_dung_id AS nhan_vien_tao,
+//   p.ten_phuong_tien
+// FROM BaoTri b
+// LEFT JOIN NguoiDung u ON b.nhan_vien_tao = u.nguoi_dung_id
+// LEFT JOIN PhuongTien p ON b.phuong_tien_id = p.phuong_tien_id
+// WHERE b.phuong_tien_id = ?
+// ORDER BY b.ngay_tao DESC
+
+//     `;
+// 		const result = await env.DB.prepare(query).bind(phuongTienId).all();
+// 		return withCORS({ success: true, data: result.results });
+// 	} catch (error) {
+// 		return withCORS({ success: false, error: 'Lỗi kết nối database' }, 500);
+// 	}
+// }
 //
-// Lấy danh sách đơn thuê theo phương tiện
-export async function getDonThueByPhuongTien(request: Request, env: Env, phuongTienId: number): Promise<Response> {
-	try {
-		const query = `
-      SELECT 
-        d.don_thue_id,
-        d.ngay_bat_dau,
-        d.ngay_ket_thuc,
-        d.trang_thai,
-        nd.ho_ten AS ten_khach_hang
-      FROM DonThue d
-      LEFT JOIN NguoiDung nd ON nd.nguoi_dung_id = d.khach_hang_id
-      WHERE d.phuong_tien_id = ?
-      ORDER BY d.ngay_bat_dau DESC
-    `;
-		const result = await env.DB.prepare(query).bind(phuongTienId).all();
-		return withCORS({ success: true, data: result.results });
-	} catch (error) {
-		return withCORS({ success: false, error: 'Lỗi khi lấy đơn thuê' }, 500);
-	}
-}
 
-// Thêm bảo trì
 export async function addBaoTri(request: Request, env: Env): Promise<Response> {
-	if (request.method !== 'POST') {
-		return withCORS({ success: false, error: 'Method not allowed' }, 405);
-	}
-
 	try {
-		const data: {
-			phuong_tien_id: number;
-			don_thue_id_lien_quan: number; // bắt buộc có
-			mo_ta?: string;
-			chi_phi?: number;
-			trang_thai?: string;
-			nhan_vien_tao: number;
-		} = await request.json();
+		const data = (await request.json()) as any;
 
-		const { phuong_tien_id, don_thue_id_lien_quan, mo_ta, chi_phi, trang_thai, nhan_vien_tao } = data;
+		// --- TRÍCH XUẤT VÀ KIỂM TRA DỮ LIỆU ĐẦU VÀO ---
+		// Ép kiểu về null hoặc giá trị mặc định ngay lập tức để tránh undefined
+		const phuong_tien_id = data.phuong_tien_id ?? null;
+		const nhan_vien_tao = data.nhan_vien_tao ?? null;
+		const mo_ta = data.mo_ta ?? 'Bảo trì định kỳ';
+		const chi_phi = Number(data.chi_phi) || 0;
+		const trang_thai = data.trang_thai ?? 'CHO_DUYET';
+		const ngay_hien_tai = getNowVN(); // Đảm bảo hàm này trả về string, không phải undefined
 
-		// Validate
-		if (!don_thue_id_lien_quan) {
-			return withCORS({ success: false, error: 'Đơn thuê liên quan là bắt buộc' }, 400);
+		// Kiểm tra các trường bắt buộc
+		if (!phuong_tien_id || !nhan_vien_tao) {
+			return withCORS({ success: false, error: 'Thiếu ID phương tiện hoặc ID nhân viên' }, 400);
 		}
 
-		// Kiểm tra phương tiện
-		const checkPhuongTien = await env.DB.prepare('SELECT phuong_tien_id FROM PhuongTien WHERE phuong_tien_id = ?')
+		// 1. Kiểm tra trạng thái xe
+		const checkPhuongTien = await env.DB.prepare('SELECT trang_thai FROM PhuongTien WHERE phuong_tien_id = ?')
 			.bind(phuong_tien_id)
-			.first();
+			.first<{ trang_thai: string }>();
 
-		if (!checkPhuongTien) {
-			return withCORS({ success: false, error: 'Phương tiện không tồn tại' }, 400);
+		if (!checkPhuongTien) return withCORS({ success: false, error: 'Xe không tồn tại' }, 404);
+		if (checkPhuongTien.trang_thai !== 'SAN_SANG') {
+			return withCORS({ success: false, error: `Xe đang ở trạng thái: ${checkPhuongTien.trang_thai}` }, 400);
 		}
 
-		// Kiểm tra đơn thuê
-		const checkDonThue = await env.DB.prepare('SELECT don_thue_id FROM DonThue WHERE don_thue_id = ?').bind(don_thue_id_lien_quan).first();
+		// --- CHUẨN BỊ LỆNH SQL ---
+		// Đảm bảo số lượng dấu ? khớp với bảng (Trong hình của bạn là 8 cột)
+		const sqlInsert = `
+            INSERT INTO BaoTri 
+            (phuong_tien_id, ngay_lich, mo_ta, chi_phi, trang_thai, nhan_vien_tao, ngay_tao, don_thue_id_lien_quan)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
 
-		if (!checkDonThue) {
-			return withCORS({ success: false, error: 'Đơn thuê liên quan không tồn tại' }, 400);
-		}
+		const insertStmt = env.DB.prepare(sqlInsert).bind(
+			phuong_tien_id, // 1
+			ngay_hien_tai, // 2
+			mo_ta, // 3
+			chi_phi, // 4
+			trang_thai, // 5
+			nhan_vien_tao, // 6
+			ngay_hien_tai, // 7
+			null // 8: don_thue_id_lien_quan luôn là null nếu không dùng
+		);
 
-		// Kiểm tra nhân viên
-		const checkNhanVien = await env.DB.prepare('SELECT nguoi_dung_id FROM NguoiDung WHERE nguoi_dung_id = ?').bind(nhan_vien_tao).first();
+		const updateStmt = env.DB.prepare("UPDATE PhuongTien SET trang_thai = 'BAO_TRI' WHERE phuong_tien_id = ?").bind(phuong_tien_id);
 
-		if (!checkNhanVien) {
-			return withCORS({ success: false, error: 'Nhân viên tạo không tồn tại trong bảng NguoiDung' }, 400);
-		}
+		// Chạy Batch
+		await env.DB.batch([insertStmt, updateStmt]);
 
-		// Thêm bản ghi
-		const result = await env.DB.prepare(
-			`INSERT INTO BaoTri 
-			 (phuong_tien_id, don_thue_id_lien_quan, ngay_lich, mo_ta, chi_phi, trang_thai, nhan_vien_tao, ngay_tao, ngay_cap_nhat)
-			 VALUES (?, ?, datetime('now'), ?, ?, ?, ?, datetime('now'), datetime('now'))`
-		)
-			.bind(phuong_tien_id, don_thue_id_lien_quan, mo_ta || '', chi_phi || 0, trang_thai || 'CHO_DUYET', nhan_vien_tao)
-			.run();
-
-		return withCORS({
-			success: true,
-			message: 'Thêm bảo trì thành công',
-			bao_tri_id: result.meta.last_row_id,
-		});
+		return withCORS({ success: true, message: 'Thành công' });
 	} catch (error: any) {
-		return withCORS({ success: false, error: 'Lỗi khi thêm: ' + error.message }, 500);
+		// Log lỗi chi tiết ra console của Cloudflare để bạn debug
+		console.error('D1 Error details:', error);
+		return withCORS({ success: false, error: 'D1 Error: ' + error.message }, 500);
 	}
 }
 
@@ -173,26 +169,30 @@ export async function updateBaotri(request: Request, env: Env, id: number): Prom
 		const mo_ta = body.mo_ta ?? existing.mo_ta;
 		const chi_phi = body.chi_phi ?? existing.chi_phi;
 		const trang_thai = body.trang_thai ?? existing.trang_thai;
+		const thoiGianHienTai = getNowVN();
 
-		if (trang_thai === 'HOÀN_THÀNH' && existing.trang_thai !== 'HOÀN_THÀNH') {
+		if (trang_thai === 'DA_HOAN_THANH' && existing.trang_thai !== 'DA_HOAN_THANH') {
 			const updateBaoTriStmt = env.DB.prepare(
 				`UPDATE BaoTri 
-                 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = CURRENT_TIMESTAMP 
+                 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = ? 
                  WHERE bao_tri_id = ?`
-			).bind(mo_ta, chi_phi, trang_thai, id);
+			).bind(mo_ta, chi_phi, trang_thai, thoiGianHienTai, id);
 
-			const updatePhuongTienStmt = env.DB.prepare(`UPDATE PhuongTien SET trang_thai = 'SAN_SANG' WHERE phuong_tien_id = ?`).bind(
-				phuongTienId
-			);
+			const updatePhuongTienStmt = env.DB.prepare(
+				`UPDATE PhuongTien 
+                 SET trang_thai = 'SAN_SANG', 
+                     hanBaoTri = date(hanBaoTri, '+4 months') 
+                 WHERE phuong_tien_id = ?`
+			).bind(phuongTienId);
 
 			await env.DB.batch([updateBaoTriStmt, updatePhuongTienStmt]);
 		} else {
 			await env.DB.prepare(
 				`UPDATE BaoTri 
-                 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = CURRENT_TIMESTAMP 
+                 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = ? 
                  WHERE bao_tri_id = ?`
 			)
-				.bind(mo_ta, chi_phi, trang_thai, id)
+				.bind(mo_ta, chi_phi, trang_thai, thoiGianHienTai, id)
 				.run();
 		}
 
@@ -242,7 +242,7 @@ export async function getBaotri(request: Request, env: Env): Promise<Response> {
 		const status = url.searchParams.get('status');
 
 		// Các trạng thái hợp lệ
-		const validStatuses = ['CHO_DUYET', 'DA_DUYET', 'DANG_LEN_LICH', 'DANG_BAO_TRI', 'CHO_KIEM_TRA_BAN_GIAO', 'DA_HOAN_THANH', 'DA_HUY'];
+		const validStatuses = ['CHO_DUYET', 'DA_DUYET', 'DA_HOAN_THANH', 'DA_HUY'];
 
 		// Câu SQL cơ bản
 		let query = `
@@ -279,6 +279,32 @@ export async function getBaotri(request: Request, env: Env): Promise<Response> {
 			{
 				success: false,
 				error: 'Lỗi khi lấy danh sách bảo trì: ' + error.message,
+			},
+			500
+		);
+	}
+}
+// Các phương tiện tới hạn bảo trì
+export async function getPhuongTienToiHanBaoTri(request: Request, env: Env): Promise<Response> {
+	try {
+		const query = `
+			SELECT *
+			FROM PhuongTien
+			WHERE hanBaoTri IS NOT NULL
+			  AND trang_thai != 'BAO_TRI' 
+			  AND trang_thai != 'CHO_THUE'
+			  AND hanBaoTri BETWEEN date('now') AND date('now', '+7 days')
+			ORDER BY hanBaoTri ASC
+		`;
+
+		const { results } = await env.DB.prepare(query).all();
+
+		return withCORS({ success: true, data: results });
+	} catch (err: any) {
+		return withCORS(
+			{
+				success: false,
+				error: 'Lỗi khi lấy danh sách phương tiện gần tới hạn bảo trì: ' + err.message,
 			},
 			500
 		);

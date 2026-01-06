@@ -81,7 +81,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
               </li>
               <li>
                 <NavLink to="/admin/danh-muc-phuong-tien" className="nav-link">
-                  - Danh mục Phương tiện
+                  - Quản lý Danh mục Phương tiện
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/hieu-phuong-tien" className="nav-link">
+                  - Quản lý Hiệu phương tiện
                 </NavLink>
               </li>
               <li>
@@ -178,7 +183,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
               }`}
             >
               <li>
-                <NavLink to="/admin/bao_tri" end className="nav-link">
+                <NavLink to="/admin/han_bao_tri" end className="nav-link">
+                  - Phương Tiện Đến Hạn Bảo Trì
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/admin/bao_tri/all" className="nav-link">
                   - Tất cả bảo trì
                 </NavLink>
               </li>
@@ -192,7 +202,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                   - Đã Duyệt
                 </NavLink>
               </li>
-              <li>
+              {/* <li>
                 <NavLink to="/admin/bao_tri/dang_len_lich" className="nav-link">
                   - Đang Lên Lịch
                 </NavLink>
@@ -209,7 +219,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                 >
                   - Cho Kiểm Tra Bàn Giao
                 </NavLink>
-              </li>
+              </li> */}
               <li>
                 <NavLink to="/admin/bao_tri/da_hoan_thanh" className="nav-link">
                   - Đã Hoàn Thành

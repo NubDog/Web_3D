@@ -35,24 +35,22 @@ interface BaoTriChiTiet {
   trang_thai_phuong_tien?: string;
 }
 
-// 👈 Cập nhật: Mapping trạng thái thân thiện (hiển thị) sang DB (lưu)
 const STATUS_MAP: { [key: string]: string } = {
   "Chờ duyệt": "CHO_DUYET",
   "Đã duyệt": "DA_DUYET",
-  "Đang lên lịch": "DANG_LEN_LICH",
-  "Đang bảo trì": "DANG_BAO_TRI",
-  "Chờ kiểm tra/Bàn giao": "CHO_KIEM_TRA_BAN_GIAO",
+  // "Đang lên lịch": "DANG_LEN_LICH",
+  // "Đang bảo trì": "DANG_BAO_TRI",
+  // "Chờ kiểm tra/Bàn giao": "CHO_KIEM_TRA_BAN_GIAO",
   "Đã hoàn thành": "DA_HOAN_THANH",
   "Đã hủy": "DA_HUY",
 };
 
-// Sử dụng mảng này để duy trì thứ tự hiển thị trên Timeline
 const STATUS_STEPS_DISPLAY = [
   "Chờ duyệt",
   "Đã duyệt",
-  "Đang lên lịch",
-  "Đang bảo trì",
-  "Chờ kiểm tra/Bàn giao",
+  // "Đang lên lịch",
+  // "Đang bảo trì",
+  // "Chờ kiểm tra/Bàn giao",
   "Đã hoàn thành",
   // 'Đã hủy' được xử lý riêng
 ];
@@ -216,34 +214,34 @@ const BaoTriChiTiet: React.FC = () => {
             </button>
           </>
         );
+      // case STATUS_MAP[""]:
+      //   return (
+      //     <button
+      //       onClick={() => handleUpdateStatus("Đang lên lịch")}
+      //       className="button button-primary"
+      //     >
+      //       🗓️ Lên lịch Bảo trì
+      //     </button>
+      //   );
+      // case STATUS_MAP["Đang lên lịch"]:
+      //   return (
+      //     <button
+      //       onClick={() => handleUpdateStatus("Đang bảo trì")}
+      //       className="button button-warning"
+      //     >
+      //       🔧 Bắt đầu Bảo trì
+      //     </button>
+      //   );
+      // case STATUS_MAP["Đang bảo trì"]:
+      //   return (
+      //     <button
+      //       onClick={() => handleUpdateStatus("Chờ kiểm tra/Bàn giao")}
+      //       className="button button-primary"
+      //     >
+      //       🔍 Hoàn thành Bảo trì (Chờ KT)
+      //     </button>
+      //   );
       case STATUS_MAP["Đã duyệt"]:
-        return (
-          <button
-            onClick={() => handleUpdateStatus("Đang lên lịch")}
-            className="button button-primary"
-          >
-            🗓️ Lên lịch Bảo trì
-          </button>
-        );
-      case STATUS_MAP["Đang lên lịch"]:
-        return (
-          <button
-            onClick={() => handleUpdateStatus("Đang bảo trì")}
-            className="button button-warning"
-          >
-            🔧 Bắt đầu Bảo trì
-          </button>
-        );
-      case STATUS_MAP["Đang bảo trì"]:
-        return (
-          <button
-            onClick={() => handleUpdateStatus("Chờ kiểm tra/Bàn giao")}
-            className="button button-primary"
-          >
-            🔍 Hoàn thành Bảo trì (Chờ KT)
-          </button>
-        );
-      case STATUS_MAP["Chờ kiểm tra/Bàn giao"]:
         return (
           <button
             onClick={() => handleUpdateStatus("Đã hoàn thành")}
@@ -253,9 +251,8 @@ const BaoTriChiTiet: React.FC = () => {
           </button>
         );
       case STATUS_MAP["Đã hoàn thành"]:
-      // return <p className="status-message">Bảo Trì Đã Hoàn Thành</p>;
       case STATUS_MAP["Đã hủy"]:
-      // return <p className="status-message">Đã Hủy Bảo Trì</p>;
+
       default:
         return null;
     }
@@ -274,8 +271,8 @@ const BaoTriChiTiet: React.FC = () => {
     const s = status.toUpperCase();
     if (s === STATUS_MAP["Chờ duyệt"]) return "badge-pending";
     if (s === STATUS_MAP["Đã duyệt"]) return "badge-approved";
-    if (s === STATUS_MAP["Đang lên lịch"]) return "badge-scheduled";
-    if (s === STATUS_MAP["Đang bảo trì"]) return "badge-in-progress";
+    // if (s === STATUS_MAP["Đang lên lịch"]) return "badge-scheduled";
+    // if (s === STATUS_MAP["Đang bảo trì"]) return "badge-in-progress";
     if (s === STATUS_MAP["Đã hoàn thành"]) return "badge-completed";
     if (s === STATUS_MAP["Đã hủy"]) return "badge-cancelled";
     return "badge-default";
@@ -313,7 +310,7 @@ const BaoTriChiTiet: React.FC = () => {
           <p>
             <b>Chi phí dự kiến:</b>{" "}
             <span className="cost-text">
-              {baotrichitiet.chi_phi.toLocaleString("vi-VN")} VND
+              {(baotrichitiet.chi_phi || 0).toLocaleString("vi-VN")} VND
             </span>
           </p>
           <p>
@@ -371,13 +368,20 @@ const BaoTriChiTiet: React.FC = () => {
 
       {/* 3. KHU VỰC HÀNH ĐỘNG (DƯỚI CÙNG) */}
       <hr className="divider" />
-      <div className="action-section">
-        <h3 className="sub-header">🛠️ Chuyển đổi Trạng thái</h3>
-        <div className="button-group">{renderActionButtons()}</div>
-      </div>
+      {baotrichitiet.trang_thai_baotri === STATUS_MAP["Đã hoàn thành"] ||
+      baotrichitiet.trang_thai_baotri === STATUS_MAP["Đã hủy"] ? (
+        <></>
+      ) : (
+        <>
+          <div className="action-section">
+            <h3 className="sub-header">🛠️ Chuyển đổi Trạng thái</h3>
+            <div className="button-group">{renderActionButtons()}</div>
+          </div>
+        </>
+      )}
       <div className="back-button-container">
         <button className="button-back">
-          <Link to="/admin/bao_tri">
+          <Link to="/admin/bao_tri/all">
             <span className="icon">←</span>Quay lại Danh sách Bảo trì
           </Link>
         </button>

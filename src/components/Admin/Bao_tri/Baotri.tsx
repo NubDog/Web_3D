@@ -58,7 +58,7 @@ const BaoTriList: React.FC = () => {
     mo_ta: "",
     chi_phi: "",
     trang_thai: "CHO_DUYET",
-    nhan_vien_tao: currentUser?.nguoi_dung_id || 0,
+    nhan_vien_tao: currentUser?.nguoi_dung_id || 1,
   });
 
   // form sửa

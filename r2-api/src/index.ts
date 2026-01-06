@@ -17,7 +17,7 @@ import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/Ng
 import { handleGetDonThue } from './API/DonThue_API';
 import { handleGetKhachHang } from './API/KhachHang_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
-import { handleGetKycDocumentsByNguoiDungId,handleCheckStatusKYC } from './API/KYC_User';
+import { handleGetKycDocumentsByNguoiDungId, handleCheckStatusKYC } from './API/KYC_User';
 import { handleGetUserOrders } from './API/UserOrder_API';
 import { handleGetUserContract } from './API/UserContract';
 import { handleGetFile, handleUploadFile, handleListFiles, handleDeleteFile, handleGetProductImage } from './r2-handler';
@@ -37,6 +37,7 @@ import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
 import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation } from './Admin/vi-pham';
+import { addhieupt, deletehieupt, gethieupt, updatehieupt } from './Admin/Hieu-phuong-tien';
 import {
 	addBaoTri,
 	deleteBaotri,
@@ -46,6 +47,7 @@ import {
 	// getBaotrichoduyet,
 	getBaotriTongHop,
 	getDonThueByPhuongTien,
+	getPhuongTienToiHanBaoTri,
 	updateBaotri,
 } from './Admin/Bao-tri';
 
@@ -218,6 +220,22 @@ export default {
 				return PhuongTien.getPhuongTiens(request, env);
 			}
 
+			// ------------------- Hiệu Phương Tiện ------------
+			if (path === '/api/hieu-phuong-tien' && method === 'GET') {
+				return gethieupt(request, env);
+			}
+			if (path === '/api/hieu-phuong-tien' && method === 'POST') {
+				return addhieupt(request, env);
+			}
+			if (path.match(/^\/api\/hieu-phuong-tien\/\d+$/) && method === 'PUT') {
+				const id = path.split('/')[3];
+				return updatehieupt(request, env, Number(id));
+			}
+			if (path.match(/^\/api\/hieu-phuong-tien\/\d+$/) && method === 'DELETE') {
+				const id = path.split('/')[3];
+				return deletehieupt(request, env, Number(id));
+			}
+
 			// ------------------- Customers -------------------
 			if (path.startsWith('/api/customers')) {
 				const byUserMatch = path.match(/^\/api\/customers\/by-user\/([^\/]+)/);
@@ -237,13 +255,13 @@ export default {
 			}
 
 			// ------------------- Danh mục phương tiện -------------------
-			const danhMucIdMatch = path.match(/^\/Admin\/danh-muc-phuong-tien\/(\d+)$/);
+			const danhMucIdMatch = path.match(/^\/api\/danh-muc-phuong-tien\/(\d+)$/);
 			if (danhMucIdMatch) {
 				const id = danhMucIdMatch[1];
 				if (method === 'GET') return getDanhmucphuongtienid(request, env, id);
 				if (method === 'DELETE') return deleteDanhmucphuongtien(request, env, id);
 				if (method === 'PUT') return putDanhmucphuongtien(request, env, id);
-			} else if (path === '/Admin/danh-muc-phuong-tien') {
+			} else if (path === '/api/danh-muc-phuong-tien') {
 				if (method === 'GET') return getDanhmucphuongtiens(request, env);
 				if (method === 'POST') return Adddanhmucphuongtien(request, env);
 			}
@@ -370,16 +388,16 @@ export default {
 			}
 
 			// ------------------- Bảo trì -------------------
-			if (path === '/api/baotri/tonghop' && method === 'GET') {
-				return getBaotriTongHop(request, env);
-			}
-			if (path.startsWith('/api/baotri/chitiet/') && method === 'GET') {
-				const phuongTienId = parseInt(path.split('/').pop() || '0', 10);
-				return getBaotriChiTiet(request, env, phuongTienId);
-			}
-			if (path === '/api/baotri' && method === 'POST') {
-				return addBaoTri(request, env);
-			}
+			// if (path === '/api/baotri/tonghop' && method === 'GET') {
+			// 	return getBaotriTongHop(request, env);
+			// }
+			// if (path.startsWith('/api/baotri/chitiet/') && method === 'GET') {
+			// 	const phuongTienId = parseInt(path.split('/').pop() || '0', 10);
+			// 	return getBaotriChiTiet(request, env, phuongTienId);
+			// }
+			// if (path === '/api/baotri' && method === 'POST') {
+			// 	return addBaoTri(request, env);
+			// }
 			if (path.startsWith('/api/baotri/') && method === 'PUT') {
 				const id = parseInt(path.split('/').pop() || '0', 10);
 				return updateBaotri(request, env, id);
@@ -388,11 +406,11 @@ export default {
 				const id = parseInt(path.split('/').pop() || '0', 10);
 				return deleteBaotri(request, env, id);
 			}
-			if (path.startsWith('/Admin/don-thue') && method === 'GET') {
-				const url = new URL(request.url);
-				const phuongTienId = url.searchParams.get('phuong_tien_id');
-				return getDonThueByPhuongTien(request, env, phuongTienId ? parseInt(phuongTienId, 10) : 0);
-			}
+			// if (path.startsWith('/Admin/don-thue') && method === 'GET') {
+			// 	const url = new URL(request.url);
+			// 	const phuongTienId = url.searchParams.get('phuong_tien_id');
+			// 	return getDonThueByPhuongTien(request, env, phuongTienId ? parseInt(phuongTienId, 10) : 0);
+			// }
 			const baotrichitiet = path.match(/^\/Admin\/baotri\/chitiet\/(\d+)$/);
 			if (baotrichitiet && method === 'POST') {
 				const baoTriId = parseInt(baotrichitiet[1], 10);
@@ -400,6 +418,12 @@ export default {
 			}
 			if (path === '/Admin/baotri' && method === 'GET') {
 				return getBaotri(request, env);
+			}
+			if (path === '/api/baotri/hanbaotri' && method === 'GET') {
+				return getPhuongTienToiHanBaoTri(request, env);
+			}
+			if (path === '/api/baotri/addbaotri' && method === 'POST') {
+				return addBaoTri(request, env);
 			}
 
 			// ------------------- Default -------------------
