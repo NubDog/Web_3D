@@ -220,7 +220,7 @@ async function sendCancellationEmail(
                     <tr>
                         <td bgcolor="#f4f4f4" style="padding: 20px 30px; text-align: center; border-top: 1px solid #cccccc;">
                             <p style="margin: 0; color: #888888; font-size: 12px;">
-                                &copy; ${new Date().getFullYear()} Dịch vụ cho thuê xe tự lái
+                                &copy; ${new Date().getFullYear()} Dịch vụ cho thuê đa phương tiện
                             </p>
                         </td>
                     </tr>
