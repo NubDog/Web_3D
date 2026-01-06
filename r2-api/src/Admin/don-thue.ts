@@ -291,7 +291,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
 
         await env.DB.batch([
             // Cập nhật trạng thái đơn
-            env.DB.prepare("UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ? WHERE don_thue_id = ?")
+            env.DB.prepare("UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ?, ngay_cap_nhat = datetime('now', '+7 hours') WHERE don_thue_id = ?")
                 .bind(nhan_vien_id, orderId),
 
             // Tạo hợp đồng 
@@ -300,8 +300,10 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                 VALUES (?, ?,?, datetime('now','+7 hours'), ?, 'CHO_KY', ?)
             `).bind(orderId, so_hop_dong, orderInfo.khach_hang_id, nhan_vien_id, publicUrl),
             // Tạo phiếu thu tiền cọc
-            env.DB.prepare("INSERT INTO TienCoc (don_thue_id, so_tien, phuong_thuc, trang_thai) VALUES (?, ?, 'TIEN_MAT','CHO_THANH_TOAN')")
-                .bind(orderId, orderInfo.tien_coc_yeu_cau)
+            env.DB.prepare(`
+                INSERT INTO TienCoc (don_thue_id, so_tien, phuong_thuc, trang_thai, ngay_giu, ngay_tao, ngay_cap_nhat) 
+                VALUES (?, ?, 'TIEN_MAT', 'CHO_THANH_TOAN', datetime('now', '+7 hours'), datetime('now', '+7 hours'), datetime('now', '+7 hours'))
+            `).bind(orderId, orderInfo.tien_coc_yeu_cau)
         ]);
 
         if (env.RESEND_API_KEY) {
@@ -471,6 +473,9 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
                 pt.ten_phuong_tien, pt.bien_so, pt.gia_thue,
                 cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh,
                 tc.trang_thai AS trang_thai_coc,
+                tc.tien_coc_id,
+                tc.ngay_giu as ngay_duyet_coc,
+
                 pt.so_km AS so_km_xe,
                 hd.duong_dan_file,
 
