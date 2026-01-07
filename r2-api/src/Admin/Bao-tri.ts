@@ -151,11 +151,19 @@ export async function addBaoTri(request: Request, env: Env): Promise<Response> {
 // Cập nhật bảo trì
 export async function updateBaotri(request: Request, env: Env, id: number): Promise<Response> {
 	try {
-		const body = (await request.json()) as { mo_ta?: string; chi_phi?: number; trang_thai?: string };
+		const body = (await request.json()) as {
+			mo_ta?: string;
+			chi_phi?: number;
+			trang_thai?: string;
+		};
 
-		const existing = await env.DB.prepare(`SELECT * FROM BaoTri WHERE bao_tri_id = ?`)
-			.bind(id)
-			.first<{ bao_tri_id: number; phuong_tien_id: number; trang_thai: string; mo_ta: string; chi_phi: number }>();
+		const existing = await env.DB.prepare(`SELECT * FROM BaoTri WHERE bao_tri_id = ?`).bind(id).first<{
+			bao_tri_id: number;
+			phuong_tien_id: number;
+			trang_thai: string;
+			mo_ta: string;
+			chi_phi: number;
+		}>();
 
 		if (!existing) {
 			return withCORS({ success: false, error: 'Không tìm thấy bản ghi bảo trì' }, 404);
@@ -163,7 +171,13 @@ export async function updateBaotri(request: Request, env: Env, id: number): Prom
 
 		const phuongTienId = existing.phuong_tien_id;
 		if (!phuongTienId) {
-			return withCORS({ success: false, error: 'Bản ghi bảo trì không liên kết với phương tiện nào.' }, 400);
+			return withCORS(
+				{
+					success: false,
+					error: 'Bản ghi bảo trì không liên kết với phương tiện nào.',
+				},
+				400
+			);
 		}
 
 		const mo_ta = body.mo_ta ?? existing.mo_ta;
@@ -173,34 +187,58 @@ export async function updateBaotri(request: Request, env: Env, id: number): Prom
 
 		if (trang_thai === 'DA_HOAN_THANH' && existing.trang_thai !== 'DA_HOAN_THANH') {
 			const updateBaoTriStmt = env.DB.prepare(
-				`UPDATE BaoTri 
-                 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = ? 
-                 WHERE bao_tri_id = ?`
+				`UPDATE BaoTri
+				 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = ?
+				 WHERE bao_tri_id = ?`
 			).bind(mo_ta, chi_phi, trang_thai, thoiGianHienTai, id);
 
 			const updatePhuongTienStmt = env.DB.prepare(
-				`UPDATE PhuongTien 
-                 SET trang_thai = 'SAN_SANG', 
-                     hanBaoTri = date(hanBaoTri, '+4 months') 
-                 WHERE phuong_tien_id = ?`
+				`UPDATE PhuongTien
+				 SET trang_thai = 'SAN_SANG',
+				     hanBaoTri = date(hanBaoTri, '+4 months')
+				 WHERE phuong_tien_id = ?`
+			).bind(phuongTienId);
+
+			await env.DB.batch([updateBaoTriStmt, updatePhuongTienStmt]);
+		} else if (trang_thai === 'DA_HUY' && existing.trang_thai !== 'DA_HUY') {
+			const updateBaoTriStmt = env.DB.prepare(
+				`UPDATE BaoTri
+				 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = ?
+				 WHERE bao_tri_id = ?`
+			).bind(mo_ta, chi_phi, trang_thai, thoiGianHienTai, id);
+
+			const updatePhuongTienStmt = env.DB.prepare(
+				`UPDATE PhuongTien
+				 SET trang_thai = 'SAN_SANG'
+				 WHERE phuong_tien_id = ?`
 			).bind(phuongTienId);
 
 			await env.DB.batch([updateBaoTriStmt, updatePhuongTienStmt]);
 		} else {
 			await env.DB.prepare(
-				`UPDATE BaoTri 
-                 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = ? 
-                 WHERE bao_tri_id = ?`
+				`UPDATE BaoTri
+				 SET mo_ta = ?, chi_phi = ?, trang_thai = ?, ngay_cap_nhat = ?
+				 WHERE bao_tri_id = ?`
 			)
 				.bind(mo_ta, chi_phi, trang_thai, thoiGianHienTai, id)
 				.run();
 		}
 
-		return withCORS({ success: true, message: 'Cập nhật bảo trì thành công' });
+		return withCORS({
+			success: true,
+			message: 'Cập nhật bảo trì thành công',
+		});
 	} catch (error: any) {
-		return withCORS({ success: false, error: 'Lỗi khi cập nhật bảo trì: ' + error.message }, 500);
+		return withCORS(
+			{
+				success: false,
+				error: 'Lỗi khi cập nhật bảo trì: ' + error.message,
+			},
+			500
+		);
 	}
 }
+
 // Xóa bảo trì
 export async function deleteBaotri(request: Request, env: Env, id: number): Promise<Response> {
 	try {
@@ -288,23 +326,54 @@ export async function getBaotri(request: Request, env: Env): Promise<Response> {
 export async function getPhuongTienToiHanBaoTri(request: Request, env: Env): Promise<Response> {
 	try {
 		const query = `
-			SELECT *
+			SELECT
+				*,
+				CASE
+					WHEN hanBaoTri < date('now') THEN 'QUA_HAN'
+					ELSE 'SAP_TOI_HAN'
+				END AS tinh_trang_bao_tri
 			FROM PhuongTien
 			WHERE hanBaoTri IS NOT NULL
-			  AND trang_thai != 'BAO_TRI' 
-			  AND trang_thai != 'CHO_THUE'
-			  AND hanBaoTri BETWEEN date('now') AND date('now', '+7 days')
+			  AND trang_thai NOT IN ('BAO_TRI', 'CHO_THUE')
+			  AND hanBaoTri <= date('now', '+7 days')
 			ORDER BY hanBaoTri ASC
 		`;
 
 		const { results } = await env.DB.prepare(query).all();
 
-		return withCORS({ success: true, data: results });
+		return withCORS({
+			success: true,
+			data: results,
+		});
 	} catch (err: any) {
 		return withCORS(
 			{
 				success: false,
-				error: 'Lỗi khi lấy danh sách phương tiện gần tới hạn bảo trì: ' + err.message,
+				error: 'Lỗi khi lấy danh sách phương tiện quá hạn / sắp tới hạn bảo trì: ' + err.message,
+			},
+			500
+		);
+	}
+}
+// hiện phương tiện ở trạng thái sẳng sàng để bảo trì
+export async function getPhuongTienSanSang(request: Request, env: Env): Promise<Response> {
+	try {
+		const query = `
+			SELECT *
+			FROM PhuongTien
+			WHERE trang_thai = 'SAN_SANG'
+			ORDER BY phuong_tien_id ASC
+		`;
+		const { results } = await env.DB.prepare(query).all();
+		return withCORS({
+			success: true,
+			data: results,
+		});
+	} catch (err: any) {
+		return withCORS(
+			{
+				success: false,
+				error: 'Lỗi khi lấy danh sách phương tiện sẵn sàng: ' + err.message,
 			},
 			500
 		);
