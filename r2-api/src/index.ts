@@ -47,6 +47,7 @@ import {
 	// getBaotrichoduyet,
 	getBaotriTongHop,
 	getDonThueByPhuongTien,
+	getPhuongTienSanSang,
 	getPhuongTienToiHanBaoTri,
 	updateBaotri,
 } from './Admin/Bao-tri';
@@ -426,6 +427,9 @@ export default {
 			}
 			if (path === '/api/baotri/addbaotri' && method === 'POST') {
 				return addBaoTri(request, env);
+			}
+			if (path === '/api/baotri/getdsptsangsang' && method === 'GET') {
+				return getPhuongTienSanSang(request, env);
 			}
 
 			// ------------------- Default -------------------
