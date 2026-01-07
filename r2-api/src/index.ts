@@ -43,15 +43,15 @@ import {
 	deleteBaotri,
 	getBaotri,
 	getBaotrichitiet,
-	getBaotriChiTiet,
+	// getBaotriChiTiet,
 	// getBaotrichoduyet,
-	getBaotriTongHop,
-	getDonThueByPhuongTien,
-	getPhuongTienSanSang,
+	// getBaotriTongHop,
+	// getDonThueByPhuongTien,
 	getPhuongTienToiHanBaoTri,
 	updateBaotri,
 } from './Admin/Bao-tri';
-import { handleFetch, handleScheduled } from './worker';
+import { handleScheduled } from './worker';
+import { getToken, getUserWEmail, verifyTokenAndUpdatePassword } from './API/Forgot_password_API';
 
 
 interface Env {
@@ -87,6 +87,7 @@ export default {
 		const method = request.method;
 
 		try {
+			
 			// ------------------- Upload & File -------------------
 			if (path === '/upload' && method === 'POST') {
 				return handleUploadFile(request, env);
@@ -181,6 +182,28 @@ export default {
 			if (path === '/api/kyc' && method === 'POST') {
 				return handleAddKycDocument(request, env);
 			}
+			const emailMatch = path.match(/^\/api\/quen-mat-khau\/([^/]+)$/);
+			if (emailMatch && method === 'GET') {
+				const email = decodeURIComponent(emailMatch[1]);
+				return getUserWEmail(request, env, email);
+			}
+
+			if (path === '/api/yeu-cau-reset' && method === 'POST') {
+				try {
+					const body: any = await request.json(); 
+					const email = body.email; 
+					if (!email) {
+						return new Response("Thiếu email gửi lên", { status: 400 });
+					}
+					return getToken(request, env, email);
+				} catch (e) {
+					return new Response("Lỗi đọc JSON", { status: 400 });
+				}
+			}
+			if (path === '/api/xac-nhan-doi-mat-khau' && method === 'POST') {
+				return verifyTokenAndUpdatePassword(request, env);
+			}
+    
 
 			// ------------------- User -------------------
 			if (path === '/api/users/upload-avatar' && method === 'POST') {
@@ -332,12 +355,10 @@ export default {
 				return handleConfirmDeposit(request, env, orderId);
 			}
 			if (request.method === 'POST' && url.pathname.match(/^\/api\/don-thue\/\d+\/settle$/)) {
-				const id = url.pathname.split('/')[3]; // Lấy ID đơn hàng (số 7 trong log)
+				const id = url.pathname.split('/')[3]; 
 				return handleSettleOrder(request, env, id);
 			}
 
-			// 2. Route cho bước Xác nhận thu tiền (Hoàn tất)
-			// Frontend gọi: /api/don-thue/:id/confirm-payment
 			if (request.method === 'POST' && url.pathname.match(/^\/api\/don-thue\/\d+\/confirm-payment$/)) {
 				const id = url.pathname.split('/')[3];
 				return handleConfirmPayment(request, env, id);
@@ -428,12 +449,13 @@ export default {
 			if (path === '/api/baotri/addbaotri' && method === 'POST') {
 				return addBaoTri(request, env);
 			}
-			if (path === '/api/baotri/getdsptsangsang' && method === 'GET') {
-				return getPhuongTienSanSang(request, env);
-			}
+			
+			
 
 			// ------------------- Default -------------------
 			return jsonResponse({ success: false, error: 'Route not found' }, 404);
+		
+			
 		} catch (e: any) {
 			console.error('API Error:', e);
 			return jsonResponse({ success: false, error: e.message || 'Internal Server Error' }, 500);

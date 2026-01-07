@@ -119,7 +119,7 @@ const SignIn: React.FC<{ onSwitchToSignUp: () => void }> = ({ onSwitchToSignUp }
           </label>
 
           <button type="button" className="signin-signup-link">
-            Quên mật khẩu?
+            <a href="/forgot_password" style={{color: 'black'}}> Quên mật khẩu?</a>
           </button>
         </div>
 

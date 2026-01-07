@@ -48,6 +48,16 @@ export async function handleScheduled(
     env: Env, 
     ctx: ExecutionContext
 ): Promise<void> {
+    const DeleteForgotPassword_Token = await env.DB.prepare(
+            `DELETE FROM ForgotPassword_Token 
+             WHERE expires_at < datetime('now')`
+    ).run();
+    if(!DeleteForgotPassword_Token.results || DeleteForgotPassword_Token.results.length === 0){
+        console.log("✅ [CRON] Không có token quá hạn");
+    }else{
+        console.log("🧹 Đã dọn dẹp token hết hạn");
+    }
+    
     console.log("🕐 [CRON] Bắt đầu kiểm tra đơn quá hạn cọc...");
     const nowUTC = new Date(event.scheduledTime);
     const nowVN = new Date(nowUTC.getTime() + 7 * 60 * 60 * 1000);

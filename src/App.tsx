@@ -43,6 +43,7 @@ import BaoTriChiTiet from "./components/Admin/Bao_tri/Bao_tri_chitiet";
 import BaoTritrangthai from "./components/Admin/Bao_tri/Bao_tri_List";
 import HieuPhuongTienList from "./components/Admin/Hieu_phuong_tien/addHieupt";
 import HanBaoTri from "./components/Admin/Bao_tri/Han_Bao_Tri";
+import Forgot_password from "./pages/Forgot_password";
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
           <Route path="/user/contract" element={<UserContract />} />
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/account_home" element={<AccountHome />} />
+          <Route path="/forgot_password" element={<Forgot_password />}/>
           <Route
             path="/account_home/account_home_kyc"
             element={<AccountHome_KYC />}
