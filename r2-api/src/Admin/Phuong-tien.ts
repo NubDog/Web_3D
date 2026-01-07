@@ -390,17 +390,57 @@ export async function deletePhuongTien(request: Request, env: Env, id: string): 
 	if (request.method !== 'DELETE') {
 		return withCors(Response.json({ success: false, error: 'Method not allowed' }, { status: 405 }));
 	}
-	try {
-		const existing = await env.DB.prepare('SELECT phuong_tien_id FROM PhuongTien WHERE phuong_tien_id = ?').bind(id).first();
 
-		if (!existing) {
+	try {
+		const numericId = Number(id);
+		if (isNaN(numericId)) {
+			return withCors(Response.json({ success: false, error: 'ID không hợp lệ' }, { status: 400 }));
+		}
+
+		// 1. Kiểm tra tồn tại + trạng thái
+		const phuongTien = await env.DB.prepare(
+			`SELECT phuong_tien_id, trang_thai
+				 FROM PhuongTien
+				 WHERE phuong_tien_id = ?`
+		)
+			.bind(numericId)
+			.first<{
+				phuong_tien_id: number;
+				trang_thai: string;
+			}>();
+
+		if (!phuongTien) {
 			return withCors(Response.json({ success: false, error: 'Không tìm thấy phương tiện' }, { status: 404 }));
 		}
 
-		await env.DB.prepare('DELETE FROM PhuongTien WHERE phuong_tien_id = ?').bind(id).run();
+		// 2. Chặn xoá theo trạng thái
+		if (phuongTien.trang_thai === 'DA_DAT' || phuongTien.trang_thai === 'BAO_TRI') {
+			return withCors(
+				Response.json(
+					{
+						success: false,
+						error: 'Không thể xoá phương tiện khi đang Đã đặt hoặc Bảo trì',
+					},
+					{ status: 400 }
+				)
+			);
+		}
+
+		// 3. Thực hiện xoá
+		await env.DB.prepare('DELETE FROM PhuongTien WHERE phuong_tien_id = ?').bind(numericId).run();
 
 		return withCors(Response.json({ success: true, message: 'Xoá phương tiện thành công' }));
 	} catch (err: any) {
-		return withCors(Response.json({ success: false, error: 'Lỗi khi xoá phương tiện', details: err.message }, { status: 500 }));
+		console.error('DELETE PHUONG TIEN ERROR:', err);
+		return withCors(
+			Response.json(
+				{
+					success: false,
+					error: 'Lỗi khi xoá phương tiện',
+					details: err.message,
+				},
+				{ status: 500 }
+			)
+		);
 	}
 }

@@ -32,7 +32,6 @@ const HanBaoTri: React.FC = () => {
   });
 
   const { currentUser } = useAuth();
-  const navigate = useNavigate();
   const API_URL = "https://r2-api.sharkeatrice.workers.dev";
 
   // Fetch danh sách đến hạn
@@ -235,7 +234,7 @@ const HanBaoTri: React.FC = () => {
       {showAddManualModal && (
         <div style={modalOverlayStyle}>
           <div style={{ ...modalContentStyle, width: "900px" }}>
-            <h2>Chọn phương tiện bảo trì</h2>
+            <h2 style={{ color: "black" }}>Chọn phương tiện bảo trì</h2>
             <div
               style={{
                 maxHeight: "400px",
@@ -265,7 +264,7 @@ const HanBaoTri: React.FC = () => {
                           onClick={() => {
                             setSelectedPT(pt);
                             setFormData({
-                              mo_ta: "Bảo trì chủ động",
+                              mo_ta: "",
                               chi_phi: 0,
                             });
                             setShowAddManualModal(false);
@@ -301,14 +300,14 @@ const HanBaoTri: React.FC = () => {
       {showModal && (
         <div style={modalOverlayStyle}>
           <div style={modalContentStyle}>
-            <h2>Lập Phiếu Bảo Trì</h2>
+            <h2 style={{ color: "black" }}>Lập Phiếu Bảo Trì</h2>
             <p>
               Xe: <strong>{selectedPT?.ten_phuong_tien}</strong> -{" "}
               {selectedPT?.bien_so}
             </p>
             <hr />
             <div style={{ marginBottom: "15px" }}>
-              <label>Nội dung bảo trì:</label>
+              <label style={{ color: "black" }}>Nội dung bảo trì:</label>
               <textarea
                 style={{ width: "100%", padding: "8px", marginTop: "5px" }}
                 rows={3}
@@ -319,7 +318,7 @@ const HanBaoTri: React.FC = () => {
               />
             </div>
             <div style={{ marginBottom: "20px" }}>
-              <label>Chi phí dự kiến (VNĐ):</label>
+              <label style={{ color: "black" }}>Chi phí dự kiến (VNĐ):</label>
               <input
                 type="number"
                 style={{ width: "100%", padding: "8px", marginTop: "5px" }}

@@ -11,7 +11,7 @@ function withCORS(body: any, status: number = 200) {
 			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 			'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 		},
-	});
+	});//
 }
 // hiện tất cả chính sách giá
 export async function getChinhSachGias(request: Request, env: Env): Promise<Response> {

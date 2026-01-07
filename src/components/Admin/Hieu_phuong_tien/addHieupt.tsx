@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import "../css/DanhMucPhuongTienList.css";
 
 export interface Hieupt {
-  id: number;
-  ten_hieu: string;
+  hieu_xe_id: number;
+  ten_hieu_xe: string;
 }
 
 interface ApiResponse {
@@ -38,7 +38,6 @@ const HieuPhuongTienList: React.FC = () => {
     );
   };
 
-  // ================= FETCH =================
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -59,18 +58,19 @@ const HieuPhuongTienList: React.FC = () => {
     fetchData();
   }, []);
 
-  // ================= SAVE =================
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const ten_hieu = new FormData(e.currentTarget).get("ten_hieu") as string;
+    const ten_hieu_xe = new FormData(e.currentTarget).get(
+      "ten_hieu_xe"
+    ) as string;
 
-    if (!ten_hieu) {
+    if (!ten_hieu_xe) {
       showToast("Tên hiệu không được để trống", true);
       return;
     }
 
     const url = editItem
-      ? `https://r2-api.sharkeatrice.workers.dev/api/hieu-phuong-tien/${editItem.id}`
+      ? `https://r2-api.sharkeatrice.workers.dev/api/hieu-phuong-tien/${editItem.hieu_xe_id}`
       : "https://r2-api.sharkeatrice.workers.dev/api/hieu-phuong-tien";
 
     const method = editItem ? "PUT" : "POST";
@@ -78,7 +78,7 @@ const HieuPhuongTienList: React.FC = () => {
     const res = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ten_hieu }),
+      body: JSON.stringify({ ten_hieu_xe }),
     });
 
     const result = await res.json();
@@ -92,15 +92,12 @@ const HieuPhuongTienList: React.FC = () => {
     }
   };
 
-  // ================= DELETE =================
   const confirmDelete = async () => {
     if (!deleteId) return;
-
     const res = await fetch(
       `https://r2-api.sharkeatrice.workers.dev/api/hieu-phuong-tien/${deleteId}`,
       { method: "DELETE" }
     );
-
     const result = await res.json();
 
     if (res.ok && result.success) {
@@ -109,19 +106,17 @@ const HieuPhuongTienList: React.FC = () => {
     } else {
       showToast(result.error || "Xóa thất bại", true);
     }
-
     setIsDeleteModalOpen(false);
     setDeleteId(null);
   };
 
-  // ================= UI =================
   if (loading) return <div className="dm-container">Đang tải...</div>;
   if (error) return <div className="dm-container">Lỗi: {error}</div>;
 
   return (
     <div className="dm-container">
       <div className="dm-header">
-        <h2>Hiệu phương tiện</h2>
+        <h2 className="text">Hiệu phương tiện</h2>
         <button
           className="btn btn-add"
           onClick={() => {
@@ -133,78 +128,104 @@ const HieuPhuongTienList: React.FC = () => {
         </button>
       </div>
 
-      <table className="dm-table">
-        <thead>
-          <tr>
-            <th>STT</th>
-            <th>Tên hiệu</th>
-            <th>Chức năng</th>
-          </tr>
-        </thead>
-        <tbody>
-          {list.map((item, index) => (
-            <tr key={item.id}>
-              <td>{index + 1}</td>
-              <td>{item.ten_hieu}</td>
-              <td>
-                <button
-                  className="btn btn-edit"
-                  onClick={() => {
-                    setEditItem(item);
-                    setIsModalOpen(true);
-                  }}
-                >
-                  Sửa
-                </button>
-                <button
-                  className="btn btn-delete"
-                  onClick={() => {
-                    setDeleteId(item.id);
-                    setIsDeleteModalOpen(true);
-                  }}
-                >
-                  Xóa
-                </button>
-              </td>
+      <div className="dm-table-wrapper">
+        <table className="dm-table">
+          <thead>
+            <tr>
+              <th>STT</th>
+              <th>Tên hiệu</th>
+              <th>Chức năng</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {list.map((item, index) => (
+              <tr key={item.hieu_xe_id}>
+                <td>{index + 1}</td>
+                <td>{item.ten_hieu_xe}</td>
+                <td>
+                  <button
+                    className="btn btn-edit"
+                    onClick={() => {
+                      setEditItem(item);
+                      setIsModalOpen(true);
+                    }}
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    className="btn btn-delete"
+                    onClick={() => {
+                      setDeleteId(item.hieu_xe_id);
+                      setIsDeleteModalOpen(true);
+                    }}
+                  >
+                    Xóa
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      {/* MODAL ADD / EDIT */}
+      {/* Modal Thêm/Sửa */}
       {isModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h3>{editItem ? "Sửa hiệu" : "Thêm hiệu"}</h3>
-            <form onSubmit={handleSave}>
-              <input
-                name="ten_hieu"
-                defaultValue={editItem?.ten_hieu || ""}
-                placeholder="Tên hiệu"
-                required
-              />
+            <h2 className="text">
+              {editItem ? "Sửa hiệu xe" : "Thêm hiệu xe"}
+            </h2>
+            <form onSubmit={handleSave} className="modal-form">
+              <label className="text">
+                Tên hiệu phương tiện:
+                <input
+                  type="text"
+                  name="ten_hieu_xe"
+                  className="text"
+                  defaultValue={editItem?.ten_hieu_xe || ""}
+                  required
+                  autoFocus
+                />
+              </label>
               <div className="modal-actions">
-                <button type="button" onClick={() => setIsModalOpen(false)}>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="btn btn-cancel"
+                >
                   Hủy
                 </button>
-                <button type="submit">Lưu</button>
+                <button type="submit" className="btn btn-save">
+                  Lưu
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* DELETE */}
+      {/* Modal Xóa */}
       {isDeleteModalOpen && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <p>Bạn chắc chắn muốn xóa?</p>
-            <button onClick={confirmDelete}>Xóa</button>
-            <button onClick={() => setIsDeleteModalOpen(false)}>Hủy</button>
+            <h2 className="text">Xác nhận xóa</h2>
+            <p>Bạn có chắc chắn muốn xóa hiệu xe này không?</p>
+            <div className="modal-actions">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="btn btn-cancel"
+              >
+                Hủy
+              </button>
+              <button onClick={confirmDelete} className="btn btn-delete">
+                Xóa
+              </button>
+            </div>
           </div>
         </div>
       )}
 
+      {/* Toast */}
       {toast.show && (
         <div
           className={`toast ${toast.isError ? "toast-error" : "toast-success"}`}

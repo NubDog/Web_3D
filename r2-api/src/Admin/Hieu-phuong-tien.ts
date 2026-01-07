@@ -30,20 +30,24 @@ export async function addhieupt(request: Request, env: Env): Promise<Response> {
 	}
 	try {
 		const data = (await request.json()) as {
-			ten_hieu: string;
+			ten_hieu_xe: string;
 		};
-		const { ten_hieu } = data;
-		if (!ten_hieu) {
+		const { ten_hieu_xe } = data;
+		if (!ten_hieu_xe) {
 			return withCors(Response.json({ success: false, error: 'Thiếu thông tin bắt buộc' }, { status: 400 }));
 		}
 		const insertQuery = `
             INSERT INTO HieuXe 
-            (ten_hieu)
+            (ten_hieu_xe)
             VALUES (?)
         `;
-		const result = await env.DB.prepare(insertQuery).bind(ten_hieu).run();
+		const result = await env.DB.prepare(insertQuery).bind(ten_hieu_xe).run();
 		return withCors(
-			Response.json({ success: true, message: 'Thêm hiệu phương tiện thành công!', data: { id: result.lastInsertRowid, ten_hieu } })
+			Response.json({
+				success: true,
+				message: 'Thêm hiệu phương tiện thành công!',
+				data: { hieu_xe_id: result.meta.last_row_id, ten_hieu_xe },
+			})
 		);
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
@@ -57,18 +61,18 @@ export async function updatehieupt(request: Request, env: Env, id: number): Prom
 	}
 	try {
 		const data = (await request.json()) as {
-			ten_hieu: string;
+			ten_hieu_xe: string;
 		};
-		const { ten_hieu } = data;
-		if (!ten_hieu) {
+		const { ten_hieu_xe } = data;
+		if (!ten_hieu_xe) {
 			return withCors(Response.json({ success: false, error: 'Thiếu thông tin bắt buộc' }, { status: 400 }));
 		}
 		const updateQuery = `
             UPDATE HieuXe   
-            SET ten_hieu = ?
-            WHERE id = ?
+            SET ten_hieu_xe = ?
+            WHERE hieu_xe_id = ?
         `;
-		await env.DB.prepare(updateQuery).bind(ten_hieu, id).run();
+		await env.DB.prepare(updateQuery).bind(ten_hieu_xe, id).run();
 		return withCors(Response.json({ success: true, message: 'Cập nhật hiệu phương tiện thành công!' }));
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
@@ -83,7 +87,7 @@ export async function deletehieupt(request: Request, env: Env, id: number): Prom
 	try {
 		const deleteQuery = `
             DELETE FROM HieuXe
-            WHERE id = ?
+            WHERE hieu_xe_id = ?
         `;
 		await env.DB.prepare(deleteQuery).bind(id).run();
 		return withCors(Response.json({ success: true, message: 'Xóa hiệu phương tiện thành công!' }));
