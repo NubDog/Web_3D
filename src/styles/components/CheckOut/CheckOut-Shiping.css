@@ -38,3 +38,31 @@
     color: var(--text-gray);
     font-weight: 600;
 }
+
+.date-selection-group {
+    margin-bottom: 20px;
+}
+
+.date-field {
+    margin-bottom: 10px;
+}
+
+.field-label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.rental-info-box {
+    padding: 15px;
+    background-color: #e3f2fd;
+    border-radius: 8px;
+    margin: 10px 0 20px 0;
+    border: 1px solid #90caf9;
+    text-align: center;
+}
+
+.rental-info-text {
+    margin: 0;
+    color: #1565c0;
+    font-weight: bold;
+}

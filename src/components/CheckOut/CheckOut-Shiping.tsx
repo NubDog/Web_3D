@@ -19,8 +19,7 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
     const [soDienThoai, setSoDienThoai] = useState(currentUser?.so_dien_thoai || '');
     const [email, setEmail] = useState(currentUser?.email || '');
 
-    const [diaDiemNhan, setDiaDiemNhan] = useState('');
-    const [diaDiemTra, setDiaDiemTra] = useState('');
+
 
     useEffect(() => {
         if (currentUser) {
@@ -44,12 +43,11 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
     const handleChangeNgayTra = (e: React.ChangeEvent<HTMLInputElement>) => setNgayTra(e.target.value);
     const handleChangeSDT = (e: React.ChangeEvent<HTMLInputElement>) => setSoDienThoai(e.target.value);
     const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
-    const handleChangeDiaDiemNhan = (e: React.ChangeEvent<HTMLInputElement>) => setDiaDiemNhan(e.target.value);
-    const handleChangeDiaDiemTra = (e: React.ChangeEvent<HTMLInputElement>) => setDiaDiemTra(e.target.value);
+
 
     const handleSubmit = () => {
-        if (!ngayMuon || !ngayTra || !soDienThoai || !email || !diaDiemNhan || !diaDiemTra) {
-            alert('Vui lòng điền đầy đủ thông tin: ngày thuê, liên hệ, và địa điểm nhận/trả xe.');
+        if (!ngayMuon || !ngayTra || !soDienThoai || !email) {
+            alert('Vui lòng điền đầy đủ thông tin: ngày thuê và liên hệ.');
             return;
         }
 
@@ -63,8 +61,7 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
             ngayTra,
             soDienThoai,
             email,
-            diaDiemNhan,
-            diaDiemTra,
+
             rentalDays,
             tongTienDuKien: rentalDays * (checkoutData?.product?.price || 0)
         });
@@ -82,9 +79,9 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
 
             <form className='checkOut-shiping-form'>
 
-                <div className="date-selection-group" style={{ marginBottom: '20px' }}>
-                    <div style={{ marginBottom: '10px' }}>
-                        <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Ngày nhận xe:</p>
+                <div className="date-selection-group">
+                    <div className="date-field">
+                        <p className="field-label">Ngày nhận xe:</p>
                         <Input
                             placeholder=''
                             value={ngayMuon}
@@ -93,8 +90,8 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                         />
                     </div>
 
-                    <div>
-                        <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Ngày trả xe:</p>
+                    <div className="date-field">
+                        <p className="field-label">Ngày trả xe:</p>
                         <Input
                             placeholder=''
                             value={ngayTra}
@@ -105,15 +102,8 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                 </div>
 
                 {rentalDays > 0 && (
-                    <div style={{
-                        padding: '15px',
-                        backgroundColor: '#e3f2fd',
-                        borderRadius: '8px',
-                        margin: '10px 0 20px 0',
-                        border: '1px solid #90caf9',
-                        textAlign: 'center'
-                    }}>
-                        <p style={{ margin: 0, color: '#1565c0', fontWeight: 'bold' }}>
+                    <div className="rental-info-box">
+                        <p className="rental-info-text">
                             <i className="fa-regular fa-clock"></i> Tổng thời gian thuê: {rentalDays} ngày
                         </p>
                     </div>
@@ -133,19 +123,7 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                     type='text'
                 />
 
-                <h3>Nhập địa điểm nhận và trả xe:</h3>
-                <Input
-                    placeholder='Địa điểm nhận xe'
-                    value={diaDiemNhan}
-                    onChange={handleChangeDiaDiemNhan}
-                    type='text'
-                />
-                <Input
-                    placeholder='Địa điểm trả xe'
-                    value={diaDiemTra}
-                    onChange={handleChangeDiaDiemTra}
-                    type='text'
-                />
+
 
 
                 <Sub_Button

@@ -20,7 +20,8 @@
     margin-bottom: 20px;
 }
 
-.checkOut-payment-option-card-group, .checkOut-payment-option-cash-card {
+.checkOut-payment-option-card-group,
+.checkOut-payment-option-cash-card {
     min-width: 300px;
     width: fit-content;
     margin-bottom: 40px;
@@ -52,7 +53,8 @@
     box-shadow: 0 0 0 3px rgba(6, 204, 204, 0.1);
 }
 
-.checkOut-payment-option-card-button, .checkOut-payment-option-cash-card {
+.checkOut-payment-option-card-button,
+.checkOut-payment-option-cash-card {
     padding: 10px;
     margin-top: 20px;
 }
@@ -271,4 +273,40 @@
 
 .payment-notice-item.warning i {
     color: #f44336;
+}
+
+/* New specific styles for rental summary */
+.rental-summary-discount {
+    /* Style for discount rows */
+    background-color: #f0fff4;
+    /* Light green background */
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+.rental-summary-discount .rental-summary-label,
+.rental-summary-discount .rental-summary-value {
+    color: #28a745;
+    /* Success green */
+    font-weight: 600;
+}
+
+.rental-summary-final-total {
+    /* Style for "Tổng tiền thuê" (Final amount) */
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 2px dashed #e5e7eb;
+}
+
+.rental-summary-final-total .rental-summary-label {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-gray);
+}
+
+.rental-summary-final-total .rental-summary-value {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-blue);
 }

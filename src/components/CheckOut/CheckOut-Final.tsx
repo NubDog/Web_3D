@@ -22,10 +22,10 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                 <div className='checkOut-final-icon'>
                     <i className="fa-solid fa-circle-check"></i>
                 </div>
-                
+
                 <h1>Yêu cầu thuê xe đã được gửi!</h1>
                 <p className='checkOut-final-message'>
-                    Cảm ơn bạn đã tin tưởng Shark Eat Rice. 
+                    Cảm ơn bạn đã tin tưởng Shark Eat Rice.
                     Chúng tôi đã nhận được yêu cầu của bạn và đang tiến hành xử lý hồ sơ.
                 </p>
 
@@ -36,10 +36,10 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                             <span className='detail-label'>Phương tiện:</span>
                             <span className='detail-value'>{checkoutData.product?.product_name || 'N/A'}</span>
                         </div>
-                        
+
                         <div className='detail-row'>
                             <span className='detail-label'>Địa điểm nhận xe:</span>
-                            <span className='detail-value'>Tại cửa hàng (Chi nhánh Đà Nẵng)</span>
+                            <span className='detail-value'>Tại cửa hàng (Chi nhánh Đà Nẵng 99 Tô Hiến Thành)</span>
                         </div>
 
                         <div className='detail-row'>
@@ -48,7 +48,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                                 {checkoutData.ngayMuon} - {checkoutData.ngayTra}
                             </span>
                         </div>
-                        
+
                         <div className='detail-row'>
                             <span className='detail-label'>Số ngày thuê:</span>
                             <span className='detail-value'>{checkoutData.rentalDays || 1} ngày</span>
@@ -56,7 +56,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
 
                         <div className='detail-row'>
                             <span className='detail-label'>Hình thức thanh toán:</span>
-                            <span className='detail-value' style={{color: '#28a745', fontWeight: 'bold'}}>
+                            <span className='detail-value' style={{ color: '#28a745', fontWeight: 'bold' }}>
                                 Thanh toán sau khi ký hợp đồng
                             </span>
                         </div>
@@ -96,9 +96,9 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                 </div>
 
                 <div className='checkOut-final-buttons'>
-                    <Sub_Button 
-                        content='Về trang chủ' 
-                        onClick={handleGoHome} 
+                    <Sub_Button
+                        content='Về trang chủ'
+                        onClick={handleGoHome}
                     />
                 </div>
             </div>

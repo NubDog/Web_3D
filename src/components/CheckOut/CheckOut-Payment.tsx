@@ -12,6 +12,10 @@ interface CheckOutPaymentProps {
 const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack, onNext }) => {
     const { currentUser } = useAuth();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [dailyPrice, setDailyPrice] = useState(0);
+    const [discountRate, setDiscountRate] = useState(0);
+
+    const vehicleId = checkoutData.product?.id || checkoutData.product?.product_id;
 
     if (!currentUser) {
         return (
@@ -21,10 +25,48 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
         )
     }
 
-    const dailyPrice = checkoutData.product?.product_totalPrice || 0;
+    React.useEffect(() => {
+        const fetchData = async () => {
+            if (vehicleId) {
+                try {
+
+                    const vehicleResponse = await fetch('https://r2-api.sharkeatrice.workers.dev/api/phuong-tien');
+                    const vehicleResult = await vehicleResponse.json();
+                    let currentChinhSachId = null;
+
+                    if (vehicleResult.success) {
+                        const vehicle = vehicleResult.data.find((v: any) => v.phuong_tien_id === vehicleId);
+                        if (vehicle) {
+                            setDailyPrice(vehicle.gia_thue);
+                            currentChinhSachId = vehicle.chinh_sach_id;
+                        }
+                    }
+
+
+                    if (currentChinhSachId) {
+                        const policyResponse = await fetch('https://r2-api.sharkeatrice.workers.dev/api/chinh-sach-gia');
+                        const policyResult = await policyResponse.json();
+
+                        if (policyResult.success) {
+                            const policy = policyResult.data.find((p: any) => p.chinh_sach_id === currentChinhSachId);
+                            if (policy && policy.ty_le_giam) {
+                                setDiscountRate(policy.ty_le_giam);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch data", error);
+                }
+            }
+        };
+        fetchData();
+    }, [vehicleId]);
+
     const rentalDays = checkoutData.rentalDays || 1;
     const totalRentalPrice = dailyPrice * rentalDays;
-    const depositAmount = totalRentalPrice * 5;
+    const discountAmount = totalRentalPrice * (discountRate / 100);
+    const finalRentalPrice = totalRentalPrice - discountAmount;
+    const depositAmount = finalRentalPrice * 0.5;
 
     const handleConfirmBooking = async () => {
         if (!currentUser || !currentUser.nguoi_dung_id) {
@@ -34,7 +76,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
 
         setIsProcessing(true);
         try {
-            // Lấy thông tin khách hàng
+
             let khachHangId = null;
             try {
                 const customerResponse = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/customers/by-user/${currentUser.nguoi_dung_id}`);
@@ -56,11 +98,11 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 phuong_tien_id: checkoutData.product?.product_id || checkoutData.product?.id,
                 ngay_bat_dau: checkoutData.ngayMuon,
                 ngay_ket_thuc: checkoutData.ngayTra,
-                dia_diem_nhan: checkoutData.diaDiemNhan,
-                dia_diem_tra: checkoutData.diaDiemTra
+                dia_diem_nhan: "99 Tô Hiến Thành",
+                dia_diem_tra: "99 Tô Hiến Thành"
             };
 
-            // Gọi API tạo đơn
+
             const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/don-thue', {
                 method: 'POST',
                 headers: {
@@ -77,8 +119,8 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 onNext({
                     ...checkoutData,
                     paymentMethod: 'pay_later',
-                    totalAmount: totalRentalPrice + depositAmount,
-                    rentalAmount: totalRentalPrice,
+                    totalAmount: finalRentalPrice + depositAmount,
+                    rentalAmount: finalRentalPrice,
                     depositAmount: depositAmount
                 });
             } else {
@@ -104,7 +146,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
 
                 <div className='rental-summary-content'>
                     <div className='rental-summary-row'>
-                        <span className='rental-summary-label'>Giá thuê xe (1 ngày):</span>
+                        <span className='rental-summary-label'>Giá thuê xe 1 ngày:</span>
                         <span className='rental-summary-value'>{dailyPrice.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
 
@@ -114,8 +156,27 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                     </div>
 
                     <div className='rental-summary-row rental-summary-subtotal'>
-                        <span className='rental-summary-label'>Tổng tiền thuê:</span>
+                        <span className='rental-summary-label'>Thành tiền:</span>
                         <span className='rental-summary-value'>{totalRentalPrice.toLocaleString('vi-VN')} VNĐ</span>
+                    </div>
+
+                    {discountRate > 0 && (
+                        <>
+                            <div className='rental-summary-row rental-summary-discount'>
+                                <span className='rental-summary-label'>Ưu đãi giảm giá ({discountRate}%):</span>
+                                <span className='rental-summary-value'>Tiết kiệm</span>
+                            </div>
+
+                            <div className='rental-summary-row rental-summary-discount'>
+                                <span className='rental-summary-label'>Số tiền được giảm:</span>
+                                <span className='rental-summary-value'>-{discountAmount.toLocaleString('vi-VN')} VNĐ</span>
+                            </div>
+                        </>
+                    )}
+
+                    <div className='rental-summary-row rental-summary-final-total'>
+                        <span className='rental-summary-label'>Tổng tiền thuê:</span>
+                        <span className='rental-summary-value'>{finalRentalPrice.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
 
                     <div className='rental-summary-row rental-summary-deposit'>
@@ -126,7 +187,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                     <div className='rental-summary-total'>
                         <div className='rental-summary-row'>
                             <span className='rental-summary-label'>Tổng thanh toán khi nhận xe:</span>
-                            <span className='rental-summary-value'>{(totalRentalPrice + depositAmount).toLocaleString('vi-VN')} VNĐ</span>
+                            <span className='rental-summary-value'>{(finalRentalPrice + depositAmount).toLocaleString('vi-VN')} VNĐ</span>
                         </div>
                     </div>
 
@@ -142,12 +203,12 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 <div className='rental-summary-content'>
                     <div className='rental-summary-row'>
                         <span className='rental-summary-label'>Địa điểm nhận xe:</span>
-                        <span className='rental-summary-value'>{dailyPrice.toLocaleString('vi-VN')} VNĐ</span>
+                        <span className='rental-summary-value'>99 Tô Hiến Thành</span>
                     </div>
 
                     <div className='rental-summary-row'>
                         <span className='rental-summary-label'>Địa điểm trả xe:</span>
-                        <span className='rental-summary-value'>{rentalDays} ngày</span>
+                        <span className='rental-summary-value'>99 Tô Hiến Thành</span>
                     </div>
                 </div>
             </div>
