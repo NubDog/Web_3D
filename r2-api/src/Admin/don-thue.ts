@@ -247,7 +247,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
         const tyLeGiam = Number(orderInfo.ty_le_giam || 0);
 
         const tamTinh = donGia * soNgay;
-        const tienGiam = tamTinh * tyLeGiam;
+        const tienGiam = Math.round(tamTinh * (tyLeGiam / 100));
         const tongTien = tamTinh - tienGiam;
         const tienCoc = Number(orderInfo.tien_coc_yeu_cau);
 
@@ -270,11 +270,18 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
 
             ngay_bat_dau: orderInfo.ngay_bat_dau,
             ngay_ket_thuc: orderInfo.ngay_ket_thuc,
-
             don_gia: donGia,
+            
+            giathue: donGia,                          
+            ty_le_giam: tyLeGiam,                     
+            tylegiam: tyLeGiam,                       
+            giam_gia: tienGiam,                       
+            ten_chinh_sach: orderInfo.ten_chinh_sach || '', 
+
+            
             tong_tien: tongTien,
             tien_coc_yeu_cau: tienCoc,
-            giam_gia: tienGiam,
+            
 
             cccd_anh_truoc: orderInfo.anh_truoc,
             cccd_anh_sau: orderInfo.anh_sau
@@ -487,7 +494,16 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
                 bbgn_tra.so_km AS tra_so_km,
                 bbgn_tra.muc_xang AS tra_muc_xang,
                 bbgn_tra.ghi_chu_hu_hong AS tra_ghi_chu,
-                bbgn_tra.duong_dan_anh AS tra_anh
+                bbgn_tra.duong_dan_anh AS tra_anh,
+                
+                COALESCE(
+                    (SELECT SUM(so_tien) 
+                     FROM ThanhToan 
+                     WHERE don_thue_id = dt.don_thue_id 
+                     AND muc_dich = 'PHU_PHI'
+                     AND trang_thai IN ('CHO_THANH_TOAN', 'DA_THANH_TOAN')), 
+                    0
+                ) as tong_phi_phat
 
               FROM DonThue AS dt
             JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id

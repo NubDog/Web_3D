@@ -26,6 +26,73 @@ const calculateDays = (start: string, end: string) => {
     } catch (e) { return 1; }
 };
 
+const sanitizeAmount = (value: any, defaultValue: number = 0): number => {
+    if (value === null || value === undefined) return defaultValue;
+    
+    const num = Number(value);
+    
+    if (isNaN(num) || num < 0) return defaultValue;
+    
+    if (num > 10_000_000_000) return defaultValue;
+    
+    return Math.round(num); 
+};
+
+const calculateSafeCosts = (data: any) => {
+    const soNgay = calculateDays(data.ngay_bat_dau, data.ngay_ket_thuc);
+    
+    const donGia = sanitizeAmount(data.giathue || data.gia_thue || data.don_gia, 0);
+    
+    const tamTinh = donGia * soNgay;
+    
+    const tyLeGiam = sanitizeAmount(
+        data.tylegiam || 
+        data.ty_le_giam || 
+        data.tyLeGiam || 
+        0, 
+        0
+    );
+    
+    const giamGia = Math.round((tamTinh * tyLeGiam) / 100);
+    
+    const tongTien = tamTinh - giamGia;
+    
+    let tienCoc = sanitizeAmount(
+        data.tien_coc_yeu_cau || 
+        data.tiencocyeucau || 
+        data.tienCocYeuCau || 
+        0, 
+        0
+    );
+    let phanTramCoc = 40; 
+    
+    if (tienCoc > 100) {
+        if (tienCoc > tongTien) {
+            phanTramCoc = Math.min(tienCoc, 100);
+            tienCoc = Math.round((tongTien * phanTramCoc) / 100);
+        } else {
+            phanTramCoc = Math.round((tienCoc / tongTien) * 100);
+        }
+    } else if (tienCoc > 0) {
+        phanTramCoc = tienCoc;
+        tienCoc = Math.round((tongTien * phanTramCoc) / 100);
+    } else {
+        phanTramCoc = 40;
+        tienCoc = Math.round((tongTien * 40) / 100);
+    }
+    
+    return { 
+        soNgay, 
+        donGia, 
+        tamTinh, 
+        tyLeGiam,  
+        giamGia, 
+        tongTien, 
+        tienCoc, 
+        phanTramCoc 
+    };
+};
+
 const embedImageFromUrl = async (pdfDoc: PDFDocument, imageUrl: string) => {
     try {
         if (!imageUrl) return null;
@@ -74,9 +141,7 @@ export const generateContractPDF = async (data: any) => {
 
         const drawField = (label: string, value: any, x: number, yPos: number) => {
             page.drawText(label, { x, y: yPos, size: 10, font: fontReg, color: grayColor });
-            
             const safeValue = (value === null || value === undefined) ? "" : String(value);
-            
             page.drawText(safeValue, { x, y: yPos - 14, size: 11, font: fontBold, color: rgb(0,0,0) });
         };
  
@@ -119,12 +184,16 @@ export const generateContractPDF = async (data: any) => {
         y -= 40;
         y = drawSectionHeader('III. CHI PHÍ & THANH TOÁN', y);
 
-        const soNgay = calculateDays(data.ngay_bat_dau, data.ngay_ket_thuc);
-        const donGia = Number(data.don_gia || 0);
-        const tamTinh = donGia * soNgay;
-        const giamGia = Number(data.giam_gia || 0);
-        const tongTien = Number(data.tong_tien || 0);
-        const tienCoc = Number(data.tien_coc_yeu_cau || 0);
+        const { 
+            soNgay, 
+            donGia, 
+            tamTinh, 
+            tyLeGiam, 
+            giamGia, 
+            tongTien, 
+            tienCoc, 
+            phanTramCoc 
+        } = calculateSafeCosts(data);
 
         const colLeft = margin + 10;
         const colRight = width - margin - 100;
@@ -147,15 +216,25 @@ export const generateContractPDF = async (data: any) => {
         };
 
         drawRowMoney(`Giá thuê:`, `${formatMoney(donGia)} x ${soNgay} ngày`);
+
         drawRowMoney('Tạm tính:', formatMoney(tamTinh));
 
-        if (giamGia > 0) {
-            drawRowMoney('Khuyến mãi:', `-${formatMoney(giamGia)}`, { isBold: true, color: greenColor });
+        
+        const tenCS = data.ten_chinh_sach || data.tenchinhsach || data.tenChinhSach || '';
+
+        if (tyLeGiam > 0 || giamGia > 0) {
+            const labelKM = tenCS 
+                ? `Khuyến mãi (${tenCS} -${tyLeGiam}%):` 
+                : `Khuyến mãi (-${tyLeGiam}%):`;
+            
+            drawRowMoney(labelKM, `-${formatMoney(giamGia)}`, { isBold: true, color: greenColor });
         }
 
         y -= 5; 
-        drawRowMoney('Tổng tiền thuê:', formatMoney(tongTien), { isBold: true, color: blueColor, fontSize: 13 });
-        drawRowMoney('Tiền cọc yêu cầu:', formatMoney(tienCoc), { color: grayColor });
+
+        drawRowMoney('Tổng tiền thuê (chưa tính cọc):', formatMoney(tongTien), { isBold: true, color: blueColor, fontSize: 13 });
+
+        drawRowMoney(`Tiền cọc yêu cầu (${phanTramCoc}%):`, formatMoney(tienCoc), { color: grayColor });
 
         if (y < 250) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
         
@@ -180,7 +259,6 @@ export const generateContractPDF = async (data: any) => {
              y = imgY - 40;
         }
 
-        // --- V. CHỮ KÝ ---
         if (y < 120) { page = pdfDoc.addPage([595.28, 841.89]); y = height - 50; }
         
         page.drawText('ĐẠI DIỆN BÊN A', { x: margin + 40, y, size: 11, font: fontBold });
