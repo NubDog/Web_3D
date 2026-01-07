@@ -1,5 +1,3 @@
-
-
 * {
   box-sizing: border-box;
 }
@@ -31,7 +29,7 @@
   --background-white: #f5f5f7;
 
   margin: 0;
-  padding: 0; 
+  padding: 0;
 }
 
 a {
@@ -54,7 +52,7 @@ a:hover {
 } */
 
 h1 {
-  font-size: 3.2em;
+  font-size: 3.2em !important;
   line-height: 1.1;
 }
 
@@ -62,7 +60,7 @@ button {
   background-color: transparent;
   border: none;
   font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 14px;
+  font-size: 14px !important;
   font-weight: 500;
   color: var(--text-gray);
 }
@@ -72,9 +70,11 @@ button {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
@@ -84,9 +84,11 @@ button {
   0% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(20px);
   }
+
   100% {
     transform: translateY(0);
   }
@@ -97,6 +99,7 @@ button {
     transform: translateY(40px);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0);
     opacity: 1;
@@ -107,6 +110,7 @@ button {
   0% {
     transform: scale(1);
   }
+
   100% {
     transform: scale(1.03);
   }
@@ -136,6 +140,7 @@ button {
 .animation-zoom:hover {
   transform: translateZ(0) scale(1.03);
 }
+
 .col-1617 {
   max-width: 1617px;
   width: 100%;
@@ -159,23 +164,23 @@ button {
 }
 
 .h2-title {
-  font-size: 56px;
+  font-size: 56px !important;
   font-weight: 600;
 }
 
 .text-font-28 {
-  font-size: 28px;
+  font-size: 28px !important;
   font-weight: 600;
 }
 
 .text-font-17 {
-  font-size: 17px;
+  font-size: 17px !important;
   font-weight: 600;
   color: var(--text-gray);
 }
 
 .header-line {
-  font-size: 56px;
+  font-size: 56px !important;
   font-weight: 600;
   color: var(--text-gray);
 }

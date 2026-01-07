@@ -24,7 +24,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
     const dailyPrice = checkoutData.product?.product_totalPrice || 0;
     const rentalDays = checkoutData.rentalDays || 1;
     const totalRentalPrice = dailyPrice * rentalDays;
-    const depositAmount = totalRentalPrice * 5; 
+    const depositAmount = totalRentalPrice * 5;
 
     const handleConfirmBooking = async () => {
         if (!currentUser || !currentUser.nguoi_dung_id) {
@@ -39,7 +39,7 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
             try {
                 const customerResponse = await fetch(`https://r2-api.sharkeatrice.workers.dev/api/customers/by-user/${currentUser.nguoi_dung_id}`);
                 const customerResult = await customerResponse.json();
-                
+
                 if (customerResult.success && customerResult.data) {
                     khachHangId = customerResult.data.khach_hang_id;
                 } else {
@@ -55,9 +55,9 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 khach_hang_id: khachHangId,
                 phuong_tien_id: checkoutData.product?.product_id || checkoutData.product?.id,
                 ngay_bat_dau: checkoutData.ngayMuon,
-                ngay_ket_thuc: checkoutData.ngayTra,  
-                dia_diem_nhan: `${checkoutData.diaChiChiTiet || ''}, ${checkoutData.quanHuyen || ''}`.trim(), 
-                dia_diem_tra: `${checkoutData.diaChiChiTiet || ''}, ${checkoutData.quanHuyen || ''}`.trim()
+                ngay_ket_thuc: checkoutData.ngayTra,
+                dia_diem_nhan: checkoutData.diaDiemNhan,
+                dia_diem_tra: checkoutData.diaDiemTra
             };
 
             // Gọi API tạo đơn
@@ -73,10 +73,10 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
 
             if (result.success) {
                 console.log('Tạo đơn thuê thành công:', result);
-                
-                onNext({ 
-                    ...checkoutData, 
-                    paymentMethod: 'pay_later', 
+
+                onNext({
+                    ...checkoutData,
+                    paymentMethod: 'pay_later',
                     totalAmount: totalRentalPrice + depositAmount,
                     rentalAmount: totalRentalPrice,
                     depositAmount: depositAmount
@@ -94,51 +94,67 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
 
     return (
         <div className='checkOut-payment col-980'>
-             <div className='checkout-back-button' onClick={onBack}>
+            <div className='checkout-back-button' onClick={onBack}>
                 <i className="fa-solid fa-arrow-left"></i>
                 <p>Quay lại</p>
             </div>
 
             <div className='checkOut-rental-summary'>
                 <h2>Chi tiết hóa đơn dự kiến</h2>
-                
+
                 <div className='rental-summary-content'>
                     <div className='rental-summary-row'>
                         <span className='rental-summary-label'>Giá thuê xe (1 ngày):</span>
                         <span className='rental-summary-value'>{dailyPrice.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
-                    
+
                     <div className='rental-summary-row'>
                         <span className='rental-summary-label'>Số ngày thuê:</span>
                         <span className='rental-summary-value'>{rentalDays} ngày</span>
                     </div>
-                    
+
                     <div className='rental-summary-row rental-summary-subtotal'>
                         <span className='rental-summary-label'>Tổng tiền thuê:</span>
                         <span className='rental-summary-value'>{totalRentalPrice.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
-                    
+
                     <div className='rental-summary-row rental-summary-deposit'>
                         <span className='rental-summary-label'>Tiền đặt cọc (ước tính):</span>
                         <span className='rental-summary-value'>{depositAmount.toLocaleString('vi-VN')} VNĐ</span>
                     </div>
-                    
+
                     <div className='rental-summary-total'>
                         <div className='rental-summary-row'>
                             <span className='rental-summary-label'>Tổng thanh toán khi nhận xe:</span>
                             <span className='rental-summary-value'>{(totalRentalPrice + depositAmount).toLocaleString('vi-VN')} VNĐ</span>
                         </div>
                     </div>
-                    
+
                     <div className='rental-summary-note'>
                         <p>* Số tiền đặt cọc sẽ được hoàn trả lại sau khi bạn trả xe nguyên vẹn.</p>
                     </div>
                 </div>
             </div>
-            
+
+            <div className='checkOut-rental-summary'>
+                <h2>Địa điểm nhận và trả xe</h2>
+
+                <div className='rental-summary-content'>
+                    <div className='rental-summary-row'>
+                        <span className='rental-summary-label'>Địa điểm nhận xe:</span>
+                        <span className='rental-summary-value'>{dailyPrice.toLocaleString('vi-VN')} VNĐ</span>
+                    </div>
+
+                    <div className='rental-summary-row'>
+                        <span className='rental-summary-label'>Địa điểm trả xe:</span>
+                        <span className='rental-summary-value'>{rentalDays} ngày</span>
+                    </div>
+                </div>
+            </div>
+
             <h1>Thông tin thanh toán & Hợp đồng</h1>
-            
-            <div className='payment-notice' style={{marginTop: '20px', marginBottom: '30px'}}>
+
+            <div className='payment-notice' style={{ marginTop: '20px', marginBottom: '30px' }}>
                 <div className='payment-notice-header'>
                     <i className="fa-solid fa-file-contract"></i>
                     <span>Quy trình thanh toán</span>
@@ -163,10 +179,10 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 </div>
             </div>
 
-            <div className='checkOut-payment-confirm-button' style={{textAlign: 'center', marginTop: '20px'}}>
-                <Sub_Button 
-                    content={isProcessing ? "Đang xử lý đơn..." : "Xác Nhận Đặt Thuê Xe"} 
-                    onClick={handleConfirmBooking} 
+            <div className='checkOut-payment-confirm-button' style={{ textAlign: 'center', marginTop: '20px' }}>
+                <Sub_Button
+                    content={isProcessing ? "Đang xử lý đơn..." : "Xác Nhận Đặt Thuê Xe"}
+                    onClick={handleConfirmBooking}
                 />
             </div>
 

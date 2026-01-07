@@ -199,10 +199,6 @@ const ProductDetailPage = () => {
                             state={{
                                 product: {
                                     id: vehicleDetail.phuong_tien_id,
-                                    product_name: vehicleDetail.ten_phuong_tien,
-                                    product_category: vehicleDetail.loai,
-                                    product_totalPrice: totalPrice,
-                                    img: vehicleDetail.img
                                 }
                             }}
                         >

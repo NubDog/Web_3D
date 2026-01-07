@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './../../styles/components/CheckOut/CheckOut-Shiping.css';
 import Input from '../Input/input';
 import Sub_Button from '../Button/Sub-Button/Sub-Button';
-import { useAuth } from '../../contexts/AuthContext'; 
+import { useAuth } from '../../contexts/AuthContext';
 
 interface CheckOutShipingProps {
     onNext: (data: any) => void;
@@ -15,9 +15,12 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
 
     const [ngayMuon, setNgayMuon] = useState('');
     const [ngayTra, setNgayTra] = useState('');
-    
+
     const [soDienThoai, setSoDienThoai] = useState(currentUser?.so_dien_thoai || '');
     const [email, setEmail] = useState(currentUser?.email || '');
+
+    const [diaDiemNhan, setDiaDiemNhan] = useState('');
+    const [diaDiemTra, setDiaDiemTra] = useState('');
 
     useEffect(() => {
         if (currentUser) {
@@ -41,10 +44,12 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
     const handleChangeNgayTra = (e: React.ChangeEvent<HTMLInputElement>) => setNgayTra(e.target.value);
     const handleChangeSDT = (e: React.ChangeEvent<HTMLInputElement>) => setSoDienThoai(e.target.value);
     const handleChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
+    const handleChangeDiaDiemNhan = (e: React.ChangeEvent<HTMLInputElement>) => setDiaDiemNhan(e.target.value);
+    const handleChangeDiaDiemTra = (e: React.ChangeEvent<HTMLInputElement>) => setDiaDiemTra(e.target.value);
 
     const handleSubmit = () => {
-        if (!ngayMuon || !ngayTra || !soDienThoai || !email) {
-            alert('Vui lòng điền đầy đủ thông tin ngày thuê và liên hệ.');
+        if (!ngayMuon || !ngayTra || !soDienThoai || !email || !diaDiemNhan || !diaDiemTra) {
+            alert('Vui lòng điền đầy đủ thông tin: ngày thuê, liên hệ, và địa điểm nhận/trả xe.');
             return;
         }
 
@@ -53,13 +58,15 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
             return;
         }
 
-        onNext({ 
-            ngayMuon, 
-            ngayTra, 
-            soDienThoai, 
+        onNext({
+            ngayMuon,
+            ngayTra,
+            soDienThoai,
             email,
+            diaDiemNhan,
+            diaDiemTra,
             rentalDays,
-            tongTienDuKien: rentalDays * (checkoutData?.product?.price || 0) 
+            tongTienDuKien: rentalDays * (checkoutData?.product?.price || 0)
         });
     };
 
@@ -69,26 +76,26 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                 <i className="fa-solid fa-arrow-left"></i>
                 <p>Quay lại</p>
             </div>
-            
+
             <h1>Thông tin thuê xe</h1>
             <h2>Vui lòng chọn thời gian và xác nhận thông tin liên hệ:</h2>
 
             <form className='checkOut-shiping-form'>
-                
-                <div className="date-selection-group" style={{marginBottom: '20px'}}>
-                    <div style={{marginBottom: '10px'}}>
-                        <p style={{fontWeight: 'bold', marginBottom: '5px'}}>Ngày nhận xe:</p>
-                        <Input 
+
+                <div className="date-selection-group" style={{ marginBottom: '20px' }}>
+                    <div style={{ marginBottom: '10px' }}>
+                        <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Ngày nhận xe:</p>
+                        <Input
                             placeholder=''
                             value={ngayMuon}
                             onChange={handleChangeNgayMuon}
                             type='date'
                         />
                     </div>
-                    
+
                     <div>
-                        <p style={{fontWeight: 'bold', marginBottom: '5px'}}>Ngày trả xe:</p>
-                        <Input 
+                        <p style={{ fontWeight: 'bold', marginBottom: '5px' }}>Ngày trả xe:</p>
+                        <Input
                             placeholder=''
                             value={ngayTra}
                             onChange={handleChangeNgayTra}
@@ -98,10 +105,10 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                 </div>
 
                 {rentalDays > 0 && (
-                    <div style={{ 
-                        padding: '15px', 
-                        backgroundColor: '#e3f2fd', 
-                        borderRadius: '8px', 
+                    <div style={{
+                        padding: '15px',
+                        backgroundColor: '#e3f2fd',
+                        borderRadius: '8px',
                         margin: '10px 0 20px 0',
                         border: '1px solid #90caf9',
                         textAlign: 'center'
@@ -113,24 +120,38 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                 )}
 
                 <h3>Thông tin liên hệ (Để nhân viên xác nhận):</h3>
-                <Input 
+                <Input
                     placeholder='Số điện thoại'
                     value={soDienThoai}
                     onChange={handleChangeSDT}
                     type='text'
                 />
-                <Input 
+                <Input
                     placeholder='Email'
                     value={email}
                     onChange={handleChangeEmail}
                     type='text'
                 />
 
-                
-                    <Sub_Button 
-                        content='Gửi Yêu Cầu Thuê Xe' 
-                        onClick={handleSubmit} 
-                    />
+                <h3>Nhập địa điểm nhận và trả xe:</h3>
+                <Input
+                    placeholder='Địa điểm nhận xe'
+                    value={diaDiemNhan}
+                    onChange={handleChangeDiaDiemNhan}
+                    type='text'
+                />
+                <Input
+                    placeholder='Địa điểm trả xe'
+                    value={diaDiemTra}
+                    onChange={handleChangeDiaDiemTra}
+                    type='text'
+                />
+
+
+                <Sub_Button
+                    content='Gửi Yêu Cầu Thuê Xe'
+                    onClick={handleSubmit}
+                />
             </form>
         </div>
     )

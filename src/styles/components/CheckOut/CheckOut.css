@@ -129,7 +129,7 @@ checkOut-product-shipment-option-time-item {
     gap: 40px;
 }
 
-.checkOut-product-shipment-option-time-item > p {
+.checkOut-product-shipment-option-time-item>p {
     display: flex;
     margin-bottom: 20px;
     align-items: center;
@@ -145,7 +145,7 @@ checkOut-product-shipment-option-time-item {
     cursor: pointer;
 }
 
-.checkOut-product-shipment-option-time-item > p:focus {
+.checkOut-product-shipment-option-time-item>p:focus {
     border: 2px solid var(--text-blue);
 }
 
