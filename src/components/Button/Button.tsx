@@ -3,10 +3,10 @@ import './Button.css';
 
 const Button = ({ conttent, onClick }: { conttent: string, onClick?: () => void }) => {
     return (
-        <button className="main-button1" onClick={onClick}>
+        <button className="main-button" onClick={onClick}>
             {conttent}
             <div className="arrow-wrapper">
-                <div className="arrow"></div>   
+                <div className="arrow"></div>
             </div>
         </button>
     )
