@@ -69,7 +69,8 @@ export async function handleGetPhuongTien(request: Request, env: Env): Promise<R
 
     if (danh_muc_id) {
         conditions.push("danh_muc_id = ?");
-        params.push(parseInt(danh_muc_id));
+        // Ensure decimal request is safe
+        params.push(Number(danh_muc_id));
     }
 
     if (trang_thai) {
@@ -81,8 +82,13 @@ export async function handleGetPhuongTien(request: Request, env: Env): Promise<R
         query += " WHERE " + conditions.join(" AND ");
     }
 
+    // Debug log (remove in production if needed)
+    console.log("Executing Query:", query);
+    console.log("Params:", params);
+
     try {
-        const { results } = await env.DB.prepare(query).bind(...params).all();
+        const stmt = env.DB.prepare(query).bind(...params);
+        const { results } = await stmt.all();
         return jsonResponse({
             success: true,
             data: results,
