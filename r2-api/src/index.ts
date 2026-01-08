@@ -53,6 +53,7 @@ import {
 } from './Admin/Bao-tri';
 import { handleScheduled } from './worker';
 import { getToken, getUserWEmail, verifyTokenAndUpdatePassword } from './API/Forgot_password_API';
+import { addPhanloaihieuxe, deletePhanloaihieuxe, getPhanloaihieuxe, updatePhanloaihieuxe } from './Admin/Phan_loai_hieu_xe';
 
 interface Env {
 	ua: R2Bucket;
@@ -258,6 +259,22 @@ export default {
 			if (path.match(/^\/api\/hieu-phuong-tien\/\d+$/) && method === 'DELETE') {
 				const id = path.split('/')[3];
 				return deletehieupt(request, env, Number(id));
+			}
+
+			// ------------------- Phân loại hiệu xe -------------------
+			if (path === '/api/phan-loai-hieu-xe' && method === 'GET') {
+				return getPhanloaihieuxe(request, env);
+			}
+			if (path === '/api/phan-loai-hieu-xe' && method === 'POST') {
+				return addPhanloaihieuxe(request, env);
+			}
+			if (path.match(/^\/api\/phan-loai-hieu-xe\/\d+$/) && method === 'PUT') {
+				const id = path.split('/')[3];
+				return updatePhanloaihieuxe(request, env, Number(id));
+			}
+			if (path.match(/^\/api\/phan-loai-hieu-xe\/\d+$/) && method === 'DELETE') {
+				const id = path.split('/')[3];
+				return deletePhanloaihieuxe(request, env, Number(id));
 			}
 
 			// ------------------- Customers -------------------

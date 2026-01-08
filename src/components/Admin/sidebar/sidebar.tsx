@@ -90,6 +90,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/admin/phan_loai_hieu_xe" className="nav-link">
+                  - Quản lý Phân loại Hiệu phương tiện
+                </NavLink>
+              </li>
+              <li>
                 <NavLink to="/admin/chinh-sach-gia" className="nav-link">
                   - Chính sách giá
                 </NavLink>
