@@ -29,6 +29,7 @@ import AccountHome from "./pages/AccountHome";
 import AccountHome_KYC from "./pages/AccountHome_KYC";
 import BaoTriList from "./components/Admin/Bao_tri/Baotri";
 import StoreBike from "./pages/StoreBike";
+import StoreHypercar from "./pages/StoreHypercar";
 import AccountOrder from "./pages/AccountOrder";
 import UserContract from "./pages/UserContract";
 import AdminDashboardReportRental from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_dashboard_report-rental";
@@ -54,6 +55,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/store" element={<Store />} />
           <Route path="/store/store-bike" element={<StoreBike />} />
+          <Route path="/store/store-hypercar" element={<StoreHypercar />} />
           <Route path="/user/order" element={<AccountOrder />} />
           <Route path="/user/contract" element={<UserContract />} />
           <Route path="/signin" element={<SignInPage />} />

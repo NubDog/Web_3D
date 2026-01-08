@@ -249,7 +249,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
         const tamTinh = donGia * soNgay;
         const tienGiam = Math.round(tamTinh * (tyLeGiam / 100));
         const tongTien = tamTinh - tienGiam;
-        const tienCoc = Number(orderInfo.tien_coc_yeu_cau);
+        const tienCoc = tongTien * (orderInfo.tien_coc_yeu_cau/100) ;
 
         const fmt = (t: number) => t.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
@@ -348,7 +348,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                     
                                     ${tienGiam > 0 ? `
                                     <tr style="border-bottom: 1px solid #eeeeee;">
-                                        <td style="padding: 12px 0; color: #555555;">Khuyến mãi (-${tyLeGiam * 100}%):<br><span style="font-size:12px;color:#888">${orderInfo.ten_chinh_sach || ''}</span></td>
+                                        <td style="padding: 12px 0; color: #555555;">Khuyến mãi (${tyLeGiam}%):<br><span style="font-size:12px;color:#888">${orderInfo.ten_chinh_sach || ''}</span></td>
                                         <td style="padding: 12px 0; color: #28a745; text-align: right; font-weight: bold;">-${fmt(tienGiam)}</td>
                                     </tr>` : ''}
 
@@ -690,6 +690,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
                 
                 pt.ten_phuong_tien,
                 pt.bien_so,
+                pt.gia_thue,
                 
                 cs.ty_le_giam,
                 
@@ -716,6 +717,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
             bien_so: string;
             ty_le_giam: number;
             hop_dong_url: string;
+            gia_thue: number
         }>();
 
         if (!orderData) {
@@ -748,6 +750,10 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
             const d2 = new Date(orderData.ngay_ket_thuc);
             const soNgay = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) || 1;
 
+            const tamTinh = soNgay * orderData.gia_thue
+            const tienGiam = Math.round(tamTinh * (orderData.ty_le_giam / 100));
+            const tongTien = tamTinh - tienGiam;
+            const tiencocthucte = tongTien * (orderData.tien_coc_yeu_cau/100)
             const emailBody = {
                 from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
                 to: ['khoatran3123@gmail.com'], 
@@ -798,11 +804,11 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
                                     </tr>
                                     <tr style="border-bottom: 1px solid #f0f0f0;">
                                         <td style="padding: 12px 0; color: #666666;">Tiền cọc đã trả:</td>
-                                        <td style="padding: 12px 0; color: #333333; text-align: right;">${fmt(orderData.tien_coc_yeu_cau)}</td>
+                                        <td style="padding: 12px 0; color: #333333; text-align: right;">${ fmt(tiencocthucte) }</td>
                                     </tr>
                                     <tr>
-                                        <td style="padding: 12px 0; color: #333333; font-weight: bold; font-size: 16px;">Tổng thanh toán:</td>
-                                        <td style="padding: 12px 0; color: #10b981; text-align: right; font-weight: bold; font-size: 18px;">${fmt(orderData.tong_tien - orderData.tien_coc_yeu_cau)}</td>
+                                        <td style="padding: 12px 0; color: #333333; font-weight: bold; font-size: 16px;">Tổng thanh toán (đã tính cọc): </td>
+                                        <td style="padding: 12px 0; color: #10b981; text-align: right; font-weight: bold; font-size: 18px;">${fmt(orderData.tong_tien - tiencocthucte)}</td>
                                     </tr>
                                 </table>
 

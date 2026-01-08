@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({ id }) => {
             <ul className="header-menu">
                 <li className="header-menu_items"><a href="/store">Cửa hàng</a></li>
                 <li className="header-menu_items"><a href="/store/store-bike">Xe máy</a></li>
-                <li className="header-menu_items"><a href="/store">Siêu xe</a></li>
+                <li className="header-menu_items"><a href="/store/store-hypercar">Siêu xe</a></li>
                 <li className="header-menu_items"><a href="/store">SUV</a></li>
                 <li className="header-menu_items"><a href="/store">Trực Thăng</a></li>
                 <li className="header-menu_items"><a href="/store">Xe đạp</a></li>

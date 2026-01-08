@@ -40,13 +40,15 @@ const jsonResponse = (data: any, status = 200, headers = {}) => {
 export async function handleGetPhuongTien(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     const fieldsParam = url.searchParams.get('fields');
+    const danh_muc_id = url.searchParams.get('danh_muc_id');
+    const trang_thai = url.searchParams.get('trang_thai');
 
     let columnsToSelect = '*'; // Mặc định lấy tất cả các cột
 
     // Nếu có tham số 'fields', xử lý để chỉ lấy các cột được yêu cầu
     if (fieldsParam) {
         const requestedFields = fieldsParam.split(',').map(f => f.trim());
-        
+
         // Lọc ra các cột hợp lệ để tránh SQL injection
         const validFields = requestedFields.filter(field => ALL_COLUMNS.includes(field));
 
@@ -61,10 +63,32 @@ export async function handleGetPhuongTien(request: Request, env: Env): Promise<R
         }
     }
 
-    const query = `SELECT ${columnsToSelect} FROM PhuongTien`;
+    let query = `SELECT ${columnsToSelect} FROM PhuongTien`;
+    const conditions: string[] = [];
+    const params: any[] = [];
+
+    if (danh_muc_id) {
+        conditions.push("danh_muc_id = ?");
+        // Ensure decimal request is safe
+        params.push(Number(danh_muc_id));
+    }
+
+    if (trang_thai) {
+        conditions.push("trang_thai = ?");
+        params.push(trang_thai);
+    }
+
+    if (conditions.length > 0) {
+        query += " WHERE " + conditions.join(" AND ");
+    }
+
+    // Debug log (remove in production if needed)
+    console.log("Executing Query:", query);
+    console.log("Params:", params);
 
     try {
-        const { results } = await env.DB.prepare(query).all();
+        const stmt = env.DB.prepare(query).bind(...params);
+        const { results } = await stmt.all();
         return jsonResponse({
             success: true,
             data: results,
