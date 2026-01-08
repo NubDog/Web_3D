@@ -16,7 +16,7 @@ function withCors(response: Response) {
 // Hiện tất cả hiệu phương tiện
 export async function gethieupt(request: Request, env: Env): Promise<Response> {
 	try {
-		const result = await env.DB.prepare('SELECT * FROM HieuXe;').all();
+		const result = await env.DB.prepare('SELECT * FROM HieuXe ORDER BY ten_hieu_xe ASC;').all();
 		return withCors(Response.json({ success: true, data: result.results }));
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);

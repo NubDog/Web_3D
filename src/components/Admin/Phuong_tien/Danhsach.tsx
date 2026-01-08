@@ -20,6 +20,8 @@ export interface PhuongTien {
   ngay_tao: string;
   ngay_cap_nhat: string;
   gia_thue: number;
+  phan_loai_id: number;
+  ten_phan_loai?: string;
 }
 
 export interface ApiResponse {
@@ -343,6 +345,7 @@ const PhuongTienList: React.FC = () => {
               <th className="py-3 px-6 text-left">Biển số</th>
               <th className="py-3 px-6 text-left">Trạng thái</th>
               <th className="py-3 px-6 text-left">Danh mục</th>
+              <th className="py-3 px-6 text-left">Phân loại</th>
               <th className="py-3 px-6 text-left">Chính sách</th>
               <th className="py-3 px-6 text-left">Số khung</th>
               <th className="py-3 px-6 text-left">Số Km đã đi</th>
@@ -387,6 +390,7 @@ const PhuongTienList: React.FC = () => {
                 </td>
 
                 <td className="py-3 px-6 text-left">{item.ten_danh_muc}</td>
+                <td className="py-3 px-6 text-left">{item.ten_phan_loai}</td>
                 <td className="py-3 px-6 text-left">{item.ten_chinh_sach}</td>
                 <td className="py-3 px-6 text-left">{item.so_khung}</td>
                 <td className="py-3 px-6 text-left">{item.so_km}</td>

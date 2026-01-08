@@ -35,10 +35,11 @@ export async function getPhuongTiens(request: Request, env: Env): Promise<Respon
 
 			let query = `
                 SELECT 
-                    ${fields || `p.*, d.ten_danh_muc, c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh`}
+                    ${fields || `p.*, d.ten_danh_muc, c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh, pl.ten_phan_loai`}
                 FROM PhuongTien p
                 LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
                 LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
+				LEFT JOIN PhanLoaiHieuXe pl ON p.phan_loai_id = pl.phan_loai_id
             `;
 
 			const queryParams: (string | number)[] = [];
@@ -89,13 +90,16 @@ export async function getPhuongTienById(request: Request, env: Env, id: string):
 				p.model,
 				p.ngay_tao,
 				p.ngay_cap_nhat,
+				p.phan_loai_id,
 				d.ten_danh_muc,
 				c.ten_chinh_sach,
 				c.gia_co_ban,
-				c.tien_coc_mac_dinh
+				c.tien_coc_mac_dinh,
+				pl.ten_phan_loai
 			FROM PhuongTien p
 			LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
 			LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
+			LEFT JOIN PhanLoaiHieuXe pl ON p.phan_loai_id = pl.phan_loai_id
 			WHERE p.phuong_tien_id = ?
 			`
 		)
@@ -140,12 +144,13 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		const gia_thue = Number(formData.get('gia_thue'));
 		const ngay_cap_nhat = null;
 		const ngay_tao = getNowVN();
+		const phan_loai_id = Number(formData.get('phan_loai_id'));
 
 		const now = new Date();
 		now.setMonth(now.getMonth() + 4);
 		const hanbaotri = now.toISOString().slice(0, 10);
 
-		if (!ten_phuong_tien || !loai || !danh_muc_id || !trang_thai || !bien_so || !so_khung || !gia_thue) {
+		if (!ten_phuong_tien || !loai || !danh_muc_id || !trang_thai || !bien_so || !so_khung || !gia_thue || !phan_loai_id) {
 			return withCors(Response.json({ success: false, error: 'Thiếu dữ liệu bắt buộc' }, { status: 400 }));
 		}
 
@@ -163,8 +168,8 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 				return withCors(Response.json({ success: false, error: 'File ảnh không hợp lệ' }, { status: 400 }));
 			}
 
-			const ext = imgFile.name.split('.').pop() || 'jpg';
-			imgKey = `Product-img/${crypto.randomUUID()}.${ext}`;
+			const ext = imgFile.name;
+			imgKey = `Product-img/${ext}`;
 
 			uploadTasks.push(
 				env.product
@@ -179,12 +184,13 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 
 		// -------- Upload Model ----------
 		if (modelFile && modelFile.size > 0) {
+			const modelExtension = modelFile.name;
 			const ext = modelFile.name.split('.').pop()?.toLowerCase();
 			if (!ext || !['glb', 'gltf', 'fbx', 'obj', 'zip'].includes(ext)) {
 				return withCors(Response.json({ success: false, error: 'Model 3D không hợp lệ' }, { status: 400 }));
 			}
 
-			modelKey = `Model Product/${crypto.randomUUID()}.${ext}`;
+			modelKey = `Model Product/${modelExtension}`;
 
 			uploadTasks.push(
 				env.r2
@@ -204,8 +210,8 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		const result = await env.DB.prepare(
 			`
       INSERT INTO PhuongTien
-      (ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao, phan_loai_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 		)
 			.bind(
@@ -222,7 +228,8 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 				modelUrl,
 				hanbaotri,
 				ngay_cap_nhat,
-				ngay_tao
+				ngay_tao,
+				phan_loai_id
 			)
 			.run();
 
@@ -279,6 +286,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		let chinh_sach_id = Number(getFormValue('chinh_sach_id'));
 		const so_khung = getFormValue('so_khung');
 		const gia_thue = Number(getFormValue('gia_thue'));
+		const phan_loai_id = Number(getFormValue('phan_loai_id'));
 
 		const file = formData.get('file_anh') as File | null;
 		const models = formData.get('models_3d') as File | null;
@@ -358,6 +366,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 			img: final_img_url,
 			model: final_model_url,
 			ngay_cap_nhat: getNowVN(),
+			phan_loai_id: phan_loai_id || existing.phan_loai_id,
 		};
 
 		const updateKeys = Object.keys(finalValues).join(' = ?, ') + ' = ?'; // Tạo chuỗi SET key = ?, key2 = ?...

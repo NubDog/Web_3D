@@ -24,7 +24,9 @@ export async function getPhanloaihieuxe(request: Request, env: Env): Promise<Res
                     pl.hieu_xe_id, 
                     h.ten_hieu_xe 
                 FROM PhanLoaiHieuXe pl
-                LEFT JOIN HieuXe h ON pl.hieu_xe_id = h.hieu_xe_id;
+                LEFT JOIN HieuXe h ON pl.hieu_xe_id = h.hieu_xe_id
+				ORDER BY pl.ten_phan_loai ASC
+				;
             `;
 
 			const result = await env.DB.prepare(query).all();

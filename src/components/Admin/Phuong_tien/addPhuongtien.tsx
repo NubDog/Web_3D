@@ -20,11 +20,19 @@ export interface PhuongTien {
   gia_thue: number;
   img?: string; // Đường dẫn ảnh
   model_url?: string; // ✅ ĐÃ THÊM: Đường dẫn Models 3D
+  phan_loai_id: number;
+  ten_phan_loai?: string;
 }
 
 interface DanhMuc {
   danh_muc_id: number;
   ten_danh_muc: string;
+}
+
+interface PhanLoai {
+  phan_loai_id: number;
+  hieu_xe_id: number;
+  ten_phan_loai: string;
 }
 
 const API_BASE_URL = "https://r2-api.sharkeatrice.workers.dev";
@@ -42,6 +50,7 @@ const PhuongTienModal: React.FC = () => {
   const isEditing = !!id;
 
   const [danhMucList, setDanhMucList] = useState<DanhMuc[]>([]);
+  const [phanLoaiList, setPhanLoaiList] = useState<PhanLoai[]>([]);
 
   // Hàm hỗ trợ tạo URL cho API (Giữ nguyên)
   const buildCandidateUrls = (path: string) => {
@@ -116,6 +125,8 @@ const PhuongTienModal: React.FC = () => {
       try {
         const r1 = await fetchWithFallback("/api/danh-muc-phuong-tien");
         setDanhMucList(Array.isArray(r1.data) ? r1.data : []);
+        const r2 = await fetchWithFallback("/api/phan-loai-hieu-xe");
+        setPhanLoaiList(Array.isArray(r2.data) ? r2.data : []);
       } catch {}
     };
     loadLists();
@@ -145,6 +156,10 @@ const PhuongTienModal: React.FC = () => {
     if (data.gia_thue !== undefined && data.gia_thue < 100000) {
       errors.gia_thue = "Giá thuê phải lớn hơn 100k";
     }
+    if (!data.phan_loai_id || data.phan_loai_id <= 0) {
+      errors.phan_loai_id = "Vui lòng chọn phân loại phương tiện";
+    }
+
     return errors;
   };
 
@@ -181,6 +196,7 @@ const PhuongTienModal: React.FC = () => {
       danh_muc_id: Number(formData.get("danh_muc_id")) || 0,
       so_khung: (formData.get("so_khung") as string) || "",
       gia_thue: gia_thue,
+      phan_loai_id: Number(formData.get("phan_loai_id")) || 0,
     };
 
     const errors = validateForm(payloadForValidation);
@@ -304,6 +320,25 @@ const PhuongTienModal: React.FC = () => {
             </select>
             {formErrors.danh_muc_id && (
               <span className="error-text">{formErrors.danh_muc_id}</span>
+            )}
+          </div>
+
+          {/* Phân loại phương tiện */}
+          <div className="form-group">
+            <label>Phân loại phương tiện:</label>
+            <select
+              name="phan_loai_id"
+              defaultValue={phuongTien?.phan_loai_id ?? ""}
+            >
+              <option value="">-- Chọn phân loại --</option>
+              {phanLoaiList.map((pl) => (
+                <option key={pl.phan_loai_id} value={pl.phan_loai_id}>
+                  {pl.ten_phan_loai}
+                </option>
+              ))}
+            </select>
+            {formErrors.phan_loai_id && (
+              <span className="error-text">{formErrors.phan_loai_id}</span>
             )}
           </div>
 
