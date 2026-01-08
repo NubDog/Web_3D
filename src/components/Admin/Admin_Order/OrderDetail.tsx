@@ -45,6 +45,7 @@ interface OrderDetail {
     tra_anh: string | null; 
     ghi_chu: string | null;
     duong_dan_file?: string; 
+    tong_phi_phat: number
 }
 
 interface RecordData {
@@ -434,10 +435,12 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
     const soNgay = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) || 1;
     
     const tamTinh = order.gia_thue * soNgay;
-    const tienGiam = tamTinh * order.ty_le_giam;
+    const tienGiam = tamTinh * (order.ty_le_giam/100);
     const tienThueGoc = tamTinh - tienGiam;
 
-    const tong_tien_cuoi_cung = tienThueGoc + tong_phu_phi - order.tien_coc_yeu_cau;
+    const tienCocThucTe = order.tien_coc_yeu_cau/100;
+
+    const tong_tien_cuoi_cung = tienThueGoc + tong_phu_phi;
 
     const ghiChuChiTiet = [
         data.ghi_chu_quyet_toan,
@@ -546,6 +549,15 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                  );
             case 'DA_TRA':
         case 'CHO_QUYET_TOAN': 
+            // const d1 = new Date(order.ngay_bat_dau);
+            // const d2 = new Date(order.ngay_ket_thuc);
+            // const soNgay = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) || 1;
+            // const tamTinh = order.gia_thue * soNgay;
+            const tienGiam = tamTinh * (order.ty_le_giam / 100);
+            const tienThueGoc = tamTinh - tienGiam;
+            const tienCocThucTe = tienThueGoc * (order.tien_coc_yeu_cau / 100);
+            const tienConLai = order.tong_tien - tienCocThucTe;
+
             if (isWaitingPayment) {
                 return (
                     <div style={{display: 'flex', flexDirection: 'column', gap: '10px', width: '100%'}}>
@@ -553,7 +565,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                             padding: '10px', background: '#fff7e6', border: '1px solid #ffa940', 
                             borderRadius: '4px', color: '#d46b08', textAlign: 'center', fontWeight: 'bold'
                         }}>
-                            ⚠️ Đang chờ khách thanh toán: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.tong_tien -order.tien_coc_yeu_cau)}
+                            ⚠️ Đang chờ khách thanh toán: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(tienConLai)}
                         </div>
                         <button 
                             className="button-primary" 
@@ -595,16 +607,21 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
     const ngayKetThuc = new Date(order.ngay_ket_thuc);
     const soNgayThue = Math.ceil((ngayKetThuc.getTime() - ngayBatDau.getTime()) / (1000 * 60 * 60 * 24));
 
-    const tamTinh = order.gia_thue* soNgayThue;
-    const tienGiamGia = tamTinh * order.ty_le_giam;
+    const tamTinh = order.gia_thue * soNgayThue;
+    const tienGiamGia = tamTinh * (order.ty_le_giam / 100);
     const tienThueDuKien = tamTinh - tienGiamGia;
 
-    const phuPhi = order.tong_tien - tienThueDuKien;
-    const coPhatSinh = Math.abs(phuPhi) > 1000 && trangThaiDaKetThuc.includes(order.trang_thai);
+    const tienCocThucTe = tienThueDuKien * (order.tien_coc_yeu_cau/100);
 
-    const tongTienHienThi = coPhatSinh ? order.tong_tien : tienThueDuKien;
+    const phuPhi = order.tong_phi_phat || 0;
+    const coPhatSinh = phuPhi > 0 && trangThaiDaKetThuc.includes(order.trang_thai);
+
+    const tongTienHienThi = (coPhatSinh ? (tienThueDuKien + phuPhi) : tienThueDuKien) - tienCocThucTe;
+
+    const phanTramCoc = order.tien_coc_yeu_cau;
+
     const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
 
     const formatDateTime = (dateString: string) => {
@@ -649,7 +666,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                             {/* 3. KHUYẾN MÃI */}
                             {tienGiamGia > 0 && (
                                 <div className="fi-row discount">
-                                    <span>Khuyến mãi ({order.ten_chinh_sach} -{order.ty_le_giam * 100}%):</span>
+                                    <span>Khuyến mãi ({order.ten_chinh_sach} -{order.ty_le_giam}%):</span>
                                     <span>-{formatCurrency(tienGiamGia)}</span>
                                 </div>
                             )}
@@ -663,9 +680,9 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
 
                             {/* 4. PHỤ PHÍ / HƯ HỎNG / TRỄ (MỚI THÊM) */}
                             {coPhatSinh && (
-                                <div className="fi-row surcharge" style={{color: phuPhi > 0 ? '#dc3545' : '#28a745', fontWeight: 'bold'}}>
+                                <div className="fi-row surcharge" style={{color: '#dc3545', fontWeight: 'bold'}}>
                                     <span>Phí phát sinh (Hư hỏng/Trễ):</span>
-                                    <span>{phuPhi > 0 ? '+' : ''}{formatCurrency(phuPhi)}</span>
+                                    <span>+{formatCurrency(phuPhi)}</span>
                                 </div>
                             )}
 
@@ -673,15 +690,13 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
 
                             {/* 5. TỔNG TIỀN */}
                             <div className="fi-row total">
-                            <span>
-                                {/* Đổi nhãn hiển thị cho hợp lý */}
-                                {trangThaiDaKetThuc.includes(order.trang_thai) ? 'Tổng quyết toán:' : 'Tổng tiền thuê dự kiến:'} (đã trừ {formatCurrency(order.tien_coc_yeu_cau)} tiền cọc)
-                            </span>
-                            <span style={{fontSize: '1.4rem', color: '#007bff'}}>
-                                {formatCurrency(tongTienHienThi - order.tien_coc_yeu_cau)}
-                            </span>
-                        </div>
-
+                                <span>
+                                    {trangThaiDaKetThuc.includes(order.trang_thai) ? 'Tổng quyết toán:' : 'Tổng tiền thuê dự kiến:'} (đã trừ {formatCurrency(tienCocThucTe)} tiền cọc)
+                                </span>
+                                <span style={{fontSize: '1.4rem', color: '#007bff'}}>
+                                    {formatCurrency(tongTienHienThi)}
+                                </span>
+                            </div>
 
                             {coPhatSinh && order.ghi_chu && (
                                 <div style={{marginTop: '10px', padding: '8px', backgroundColor: '#fff3cd', borderRadius: '4px', fontSize: '0.85rem', color: '#856404'}}>
@@ -689,9 +704,10 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                                 </div>
                             )}
 
+                            {/* 🔥 ĐÃ SỬA: Hiển thị tiền cọc với % tính ra */}
                             <div className="fi-row" style={{marginTop: '15px'}}>
-                                <span>Tiền cọc đã giữ:</span>
-                                <span>{formatCurrency(order.tien_coc_yeu_cau)}</span>
+                                <span>Tiền cọc đã giữ ({phanTramCoc}%):</span>
+                                <span>{formatCurrency(tienCocThucTe)}</span>
                             </div>
                         </div>
                     </div>

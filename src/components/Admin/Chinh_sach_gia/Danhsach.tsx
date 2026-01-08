@@ -88,55 +88,75 @@ const ChinhSachGiaList: React.FC = () => {
   };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
+  e.preventDefault();
+  const formData = new FormData(e.currentTarget);
 
-    const payload = {
-      TenChinhSach: formData.get("ten_chinh_sach") as string,
-      GiaCoBan: Number(formData.get("gia_co_ban")),
-      TienCocMacDinh: Number(formData.get("tien_coc_mac_dinh")),
-      PhiPhatCoBan: Number(formData.get("phi_phat_co_ban")),
-      TyLeGiam: formData.get("ty_le_giam")
-        ? Number(formData.get("ty_le_giam"))
-        : null,
-    };
+  const tienCocPhanTram = Number(formData.get("tien_coc_mac_dinh"));
+  const tyLeGiam = formData.get("ty_le_giam") ? Number(formData.get("ty_le_giam")) : null;
 
-    try {
-      let res, result;
-      if (editItem) {
-        res = await fetch(
-          `https://r2-api.sharkeatrice.workers.dev/Admin/chinh-sach-gia/${editItem.chinh_sach_id}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
-      } else {
-        res = await fetch(
-          "https://r2-api.sharkeatrice.workers.dev/Admin/chinh-sach-gia",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }
-        );
-      }
-      result = await res.json();
-      if (res.ok && result.success) {
-        showToast(
-          result.message ||
-            (editItem ? "Cập nhật thành công" : "Thêm thành công")
-        );
-        fetchData();
-        setIsModalOpen(false);
-      } else {
-        throw new Error(result.error || "Thao tác thất bại");
-      }
-    } catch (err: any) {
-      showToast(`Lỗi: ${err.message}`, true);
-    }
+  if (tienCocPhanTram < 0 || tienCocPhanTram > 100) {
+    showToast("Tiền cọc phải từ 0% đến 100%", true);
+    return;
+  }
+
+  if (tyLeGiam !== null && (tyLeGiam < 0 || tyLeGiam > 100)) {
+    showToast("Tỷ lệ giảm phải từ 0% đến 100%", true);
+    return;
+  }
+
+  const payload = {
+    TenChinhSach: formData.get("ten_chinh_sach") as string,
+    GiaCoBan: Number(formData.get("gia_co_ban")),
+    TienCocMacDinh: tienCocPhanTram,
+    PhiPhatCoBan: Number(formData.get("phi_phat_co_ban")),
+    TyLeGiam: tyLeGiam,
   };
+
+  console.log("📤 Payload:", payload);
+
+  try {
+    const url = editItem 
+      ? `https://r2-api.sharkeatrice.workers.dev/Admin/chinh-sach-gia/${editItem.chinh_sach_id}`
+      : "https://r2-api.sharkeatrice.workers.dev/Admin/chinh-sach-gia";
+    
+    const method = editItem ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method: method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    console.log("📥 Status:", res.status, res.statusText);
+
+    const responseText = await res.text();
+    console.log("📥 Raw response:", responseText);
+
+    let result;
+    try {
+      result = responseText ? JSON.parse(responseText) : {};
+    } catch {
+      result = {};
+    }
+
+    console.log("📥 Parsed:", result);
+
+    // ✅ FIX: Nếu status 200 và không có error → coi như thành công
+    if (res.ok && !result.error) {
+      showToast(
+        result.message || (editItem ? "Cập nhật thành công!" : "Thêm thành công!")
+      );
+      fetchData();
+      setIsModalOpen(false);
+    } else {
+      throw new Error(result.error || result.message || `Lỗi HTTP ${res.status}`);
+    }
+  } catch (err: any) {
+    console.error("❌ Error:", err);
+    showToast(`Lỗi: ${err.message}`, true);
+  }
+};
+
 
   // Xóa
   const handleDeleteClick = (id: number) => {
@@ -187,7 +207,7 @@ const ChinhSachGiaList: React.FC = () => {
               <th>STT</th>
               <th>Tên chính sách</th>
               {/* <th>Giá cơ bản</th> */}
-              <th>Tiền cọc mặc định</th>
+              <th>Tiền cọc mặc định (%)</th>
               {/* <th>Phí phạt cơ bản</th> */}
               <th>Tỷ lệ giảm</th>
               {/* <th>Ngày tạo</th>
@@ -201,9 +221,9 @@ const ChinhSachGiaList: React.FC = () => {
                 <td>{idx + 1}</td>
                 <td>{item.ten_chinh_sach}</td>
                 {/* <td>{item.gia_co_ban}</td> */}
-                <td>{item.tien_coc_mac_dinh}</td>
+                <td>{item.tien_coc_mac_dinh}%</td>
                 {/* <td>{item.phi_phat_co_ban}</td> */}
-                <td>{item.ty_le_giam ?? "—"}</td>
+                <td>{item.ty_le_giam ?? "—"}%</td>
                 {/* <td>{item.ngay_tao}</td>
                 <td>{item.ngay_cap_nhat}</td> */}
                 <td>
@@ -255,15 +275,23 @@ const ChinhSachGiaList: React.FC = () => {
                 />
               </label>
               <label className="caa">
-                Tiền cọc mặc định:
+                Tiền cọc mặc định (%):
                 <input
                   type="number"
                   name="tien_coc_mac_dinh"
                   className="caa"
                   defaultValue={editItem?.tien_coc_mac_dinh || ""}
+                  min="0"
+                  max="100"
+                  step="1"
+                  placeholder="VD: 5 (nghĩa là 5% của giá thuê)"
                   required
                 />
+                <small style={{color: '#718096', fontSize: '12px', marginTop: '4px', display: 'block'}}>
+                  Nhập % cọc trên giá thuê (0-100)
+                </small>
               </label>
+              
               <label className="caa">
                 Phí phạt cơ bản:
                 <input
@@ -275,14 +303,20 @@ const ChinhSachGiaList: React.FC = () => {
                 />
               </label>
               <label className="caa">
-                Tỷ lệ giảm:
+                Tỷ lệ giảm (%):
                 <input
                   type="number"
                   step="0.01"
                   name="ty_le_giam"
                   className="caa"
                   defaultValue={editItem?.ty_le_giam ?? ""}
+                  min="0"
+                  max="100"
+                  placeholder="VD: 10 (nghĩa là giảm 10%)"
                 />
+                <small style={{color: '#718096', fontSize: '12px', marginTop: '4px', display: 'block'}}>
+                  Để trống nếu không có giảm giá
+                </small>
               </label>
               <div className="modal-actions">
                 <button
