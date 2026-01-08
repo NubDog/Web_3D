@@ -69,13 +69,13 @@ const calculateSafeCosts = (data: any) => {
     if (tienCoc > 100) {
         if (tienCoc > tongTien) {
             phanTramCoc = Math.min(tienCoc, 100);
-            tienCoc = Math.round((tongTien * phanTramCoc) / 100);
+            tienCoc = Math.round((tongTien * (phanTramCoc / 100)));
         } else {
             phanTramCoc = Math.round((tienCoc / tongTien) * 100);
         }
     } else if (tienCoc > 0) {
         phanTramCoc = tienCoc;
-        tienCoc = Math.round((tongTien * phanTramCoc) / 100);
+        tienCoc = Math.round((tongTien * (phanTramCoc / 100)));
     } else {
         phanTramCoc = 40;
         tienCoc = Math.round((tongTien * 40) / 100);
