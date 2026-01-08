@@ -249,7 +249,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
         const tamTinh = donGia * soNgay;
         const tienGiam = Math.round(tamTinh * (tyLeGiam / 100));
         const tongTien = tamTinh - tienGiam;
-        const tienCoc = Number(orderInfo.tien_coc_yeu_cau);
+        const tienCoc = tongTien * (orderInfo.tien_coc_yeu_cau/100);
 
         const fmt = (t: number) => t.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
@@ -348,7 +348,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                     
                                     ${tienGiam > 0 ? `
                                     <tr style="border-bottom: 1px solid #eeeeee;">
-                                        <td style="padding: 12px 0; color: #555555;">Khuyến mãi (-${tyLeGiam * 100}%):<br><span style="font-size:12px;color:#888">${orderInfo.ten_chinh_sach || ''}</span></td>
+                                        <td style="padding: 12px 0; color: #555555;">Khuyến mãi (${tyLeGiam}%):<br><span style="font-size:12px;color:#888">${orderInfo.ten_chinh_sach || ''}</span></td>
                                         <td style="padding: 12px 0; color: #28a745; text-align: right; font-weight: bold;">-${fmt(tienGiam)}</td>
                                     </tr>` : ''}
 
