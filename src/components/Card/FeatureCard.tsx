@@ -9,19 +9,19 @@ interface FeatureCardProps {
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ iconName, title, description }) => {
     return (
-        <div className="feature-card">
-            <div className="feature-icon-wrapper">
-                <div className="feature-icon">
+        <div className="FeatureCard-container">
+            <div className="FeatureCard-icon-wrapper">
+                <div className="FeatureCard-icon">
                     <i className={iconName}></i>
                 </div>
             </div>
 
-            <div className="feature-content">
-                <h3 className="feature-title">{title}</h3>
-                <p className="feature-description">{description}</p>
+            <div className="FeatureCard-content">
+                <h3 className="FeatureCard-title">{title}</h3>
+                <p className="FeatureCard-description">{description}</p>
             </div>
 
-            <div className="feature-plus-btn">
+            <div className="FeatureCard-plus-btn">
                 <i className="fa-solid fa-plus"></i>
             </div>
         </div>

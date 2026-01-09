@@ -89,18 +89,18 @@ const StoreHypercar: React.FC = () => {
     }, []);
 
     return (
-        <div className="store-hypercar-container">
+        <div className="StoreHypercar-container">
             <Header />
-            <div className="store-hypercar-content">
-                <div className="store-header">
-                    <h1 className="store-title">Siêu xe Hypercar</h1>
-                    <p className="store-subtitle">Khám phá bộ sưu tập những siêu xe đẳng cấp thế giới.</p>
+            <div className="StoreHypercar-content">
+                <div className="StoreHypercar-header">
+                    <h1 className="StoreHypercar-title">Siêu xe Hypercar</h1>
+                    <p className="StoreHypercar-subtitle">Khám phá bộ sưu tập những siêu xe đẳng cấp thế giới.</p>
                 </div>
 
                 {loading ? (
                     <div style={{ textAlign: 'center', padding: '50px' }}>Loading...</div>
                 ) : (
-                    <div className="hypercar-grid">
+                    <div className="StoreHypercar-grid">
                         {vehicles.map((item) => (
                             <HypercarCard2
                                 key={item.phuong_tien_id}
@@ -117,11 +117,11 @@ const StoreHypercar: React.FC = () => {
             </div>
 
             {/* Feature Section */}
-            <div className="feature-section">
-                <div className="feature-header">
-                    <h2 className="feature-title">Vì sao chọn chúng tôi?</h2>
+            <div className="StoreHypercar-feature-section">
+                <div className="StoreHypercar-feature-header">
+                    <h2 className="StoreHypercar-feature-title">Vì sao chọn chúng tôi?</h2>
                 </div>
-                <div className="feature-grid">
+                <div className="StoreHypercar-feature-grid">
                     {featureCards.map((card, index) => (
                         <FeatureCard
                             key={index}

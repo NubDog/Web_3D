@@ -35,28 +35,28 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
     };
 
     return (
-        <div className="hypercar-card-invisible">
-            <div className="card-image-wrapper">
+        <div className="HypercarCard2-invisible">
+            <div className="HypercarCard2-image-wrapper">
                 <img
                     src={imageUrl}
                     alt={name}
-                    className="card-image"
+                    className="HypercarCard2-image"
                     loading="lazy"
                 />
             </div>
 
-            <div className="card-content">
-                <h3 className="card-title">{name}</h3>
+            <div className="HypercarCard2-content">
+                <h3 className="HypercarCard2-title">{name}</h3>
 
-                <p className="card-description">
+                <p className="HypercarCard2-description">
                     {description || (status === 'SAN_SANG' ? 'Sẵn sàng trải nghiệm' : status)}
                 </p>
 
-                <p className="card-price">
+                <p className="HypercarCard2-price">
                     Từ {formatCurrency(price)}/ngày
                 </p>
 
-                <div className="card-actions">
+                <div className="HypercarCard2-actions">
                     <Button
                         conttent="Thuê xe"
                         onClick={handleRentClick}
@@ -65,11 +65,11 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
                     />
 
                     <button
-                        className="btn-secondary"
+                        className="HypercarCard2-btn-secondary"
                         onClick={() => console.log(`View details ${id}`)}
                     >
                         Tìm hiểu thêm
-                        <span className="icon-arrow">
+                        <span className="HypercarCard2-icon-arrow">
                             <i className="fa-solid fa-chevron-right"></i>
                         </span>
                     </button>

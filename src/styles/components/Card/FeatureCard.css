@@ -5,7 +5,7 @@
     --card-radius: 20px;
 }
 
-.feature-card {
+.FeatureCard-container {
     background-color: var(--apple-bg);
     border-radius: var(--card-radius);
     padding: 30px 30px 50px 30px;
@@ -21,34 +21,34 @@
     box-sizing: border-box;
 }
 
-.feature-card:hover {
+.FeatureCard-container:hover {
     transform: scale(1.02);
     box-shadow: 0 14px 40px rgba(0, 0, 0, 0.08);
 }
 
-.feature-icon-wrapper {
+.FeatureCard-icon-wrapper {
     margin-bottom: 24px;
 }
 
-.feature-icon {
+.FeatureCard-icon {
     font-size: 36px;
     color: var(--apple-black);
     -webkit-text-stroke: 0.5px white;
 }
 
-.feature-icon i {
+.FeatureCard-icon i {
     font-weight: 300;
     opacity: 0.9;
 }
 
 
-.feature-content {
+.FeatureCard-content {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.feature-title {
+.FeatureCard-title {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 24px;
     font-weight: 600;
@@ -58,7 +58,7 @@
     letter-spacing: 0.01em;
 }
 
-.feature-description {
+.FeatureCard-description {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 16px;
     font-weight: 400;
@@ -67,7 +67,7 @@
     line-height: 1.4;
 }
 
-.feature-plus-btn {
+.FeatureCard-plus-btn {
     position: absolute;
     bottom: 30px;
     right: 30px;
@@ -84,7 +84,7 @@
     z-index: 2;
 }
 
-.feature-card:hover .feature-plus-btn {
+.FeatureCard-container:hover .FeatureCard-plus-btn {
     transform: scale(1.1);
     background-color: black;
 }
