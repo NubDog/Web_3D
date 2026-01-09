@@ -74,3 +74,55 @@
         font-size: 19px;
     }
 }
+
+/* Feature Section */
+.feature-section {
+    width: 100%;
+    max-width: 1690px;
+    margin: 80px auto;
+    padding: 0;
+}
+
+.feature-header {
+    margin-bottom: 40px;
+}
+
+.feature-title {
+    font-size: 40px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 10px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .feature-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .feature-title {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 600px) {
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-title {
+        font-size: 28px;
+    }
+}
