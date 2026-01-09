@@ -1,38 +1,32 @@
-/* Apple Style Variables */
 :root {
     --apple-blue: #0071e3;
     --apple-blue-hover: #0077ed;
     --apple-text-black: #1d1d1f;
     --apple-text-gray: #6e6e73;
     --btn-radius: 980px;
-    /* Pillow shape for buttons */
 }
 
-/* Invisible Card Container */
 .hypercar-card-invisible {
     background-color: transparent;
-    /* No background */
     border: none;
-    /* No border */
     box-shadow: none;
-    /* No shadow */
     padding: 20px;
     text-align: center;
+
     display: flex;
     flex-direction: column;
+    height: 100%;
     align-items: center;
-    /* Ensure it takes up space but doesn't look like a box */
 }
 
-/* Image Wrapper */
 .card-image-wrapper {
     width: 100%;
-    aspect-ratio: 16/10;
+    height: 250px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 0;
-    /* Adjust spacing as title has margin-top */
+    overflow: hidden;
 }
 
 .card-image {
@@ -42,42 +36,41 @@
     transition: transform 0.5s ease;
 }
 
-/* Slight hover effect just for the image to make it interactive */
-.hypercar-card-invisible:hover .card-image {
+.card-image:hover {
     transform: scale(1.05);
 }
 
-/* Typography */
 .card-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 100%;
+    flex: 1;
 }
 
 .card-title {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 24px;
-    /* Requested size */
     font-weight: 700;
-    /* Bold */
     color: var(--apple-text-black);
     margin-top: 20px;
-    /* Requested margin */
     margin-bottom: 0;
     line-height: 1.1;
+    min-height: 53px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .card-description {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     font-size: 15px;
-    /* 14-16px range */
     font-weight: 400;
     color: var(--apple-text-gray);
     margin: 10px 0;
-    /* Requested margin */
     line-height: 1.4;
     max-width: 90%;
+    min-height: 42px;
 }
 
 .card-price {
@@ -85,45 +78,25 @@
     font-size: 15px;
     font-weight: 500;
     color: var(--apple-text-black);
-    /* Black color */
     margin-bottom: 15px;
+    margin-top: auto;
 }
 
-/* Buttons Container */
 .card-actions {
     display: flex;
     flex-direction: row;
-    /* Buttons on same line if space allows, or use gap */
     gap: 15px;
     align-items: center;
     justify-content: center;
     margin-top: 5px;
+    width: 100%;
+    padding-bottom: 10px;
 }
 
-/* Primary Button (Thuê xe) - Pill shape, Blue bg */
-.btn-primary {
-    background-color: var(--apple-blue);
-    color: white;
-    border: none;
-    font-size: 14px;
-    font-weight: 400;
-    padding: 8px 16px;
-    border-radius: var(--btn-radius);
-    cursor: pointer;
-    transition: background-color 0.2s;
-    text-decoration: none;
-}
-
-.btn-primary:hover {
-    background-color: var(--apple-blue-hover);
-}
-
-/* Secondary Button (Tìm hiểu thêm) - Text link style */
 .btn-secondary {
     background: none;
     border: none;
     color: var(--apple-blue);
-    /* #0066cc or closely matching variable */
     font-size: 15px;
     font-weight: 400;
     cursor: pointer;

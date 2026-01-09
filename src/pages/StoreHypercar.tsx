@@ -61,7 +61,7 @@ const StoreHypercar: React.FC = () => {
                             <HypercarCard2
                                 key={item.phuong_tien_id}
                                 id={item.phuong_tien_id}
-                                name={item.loai} // Mapping 'loai' to name as requested
+                                name={item.loai}
                                 imageUrl={item.img}
                                 price={item.gia_thue}
                                 status={item.trang_thai}

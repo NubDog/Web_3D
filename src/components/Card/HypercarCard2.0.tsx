@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from '../Button/Button';
 import '../../styles/components/Card/HypercarCard2.0.css';
 
 interface HypercarCardProps {
@@ -18,6 +20,7 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
     status,
     description
 }) => {
+    const navigate = useNavigate();
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -27,9 +30,12 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
         }).format(value);
     };
 
+    const handleRentClick = () => {
+        navigate('/product_detail', { state: { productId: id } });
+    };
+
     return (
         <div className="hypercar-card-invisible">
-            {/* Image Section - First as requested */}
             <div className="card-image-wrapper">
                 <img
                     src={imageUrl}
@@ -39,7 +45,6 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
                 />
             </div>
 
-            {/* Content Section */}
             <div className="card-content">
                 <h3 className="card-title">{name}</h3>
 
@@ -52,12 +57,12 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
                 </p>
 
                 <div className="card-actions">
-                    <button
-                        className="btn-primary"
-                        onClick={() => console.log(`Rent car ${id}`)}
-                    >
-                        Thuê xe
-                    </button>
+                    <Button
+                        conttent="Thuê xe"
+                        onClick={handleRentClick}
+                        backgroundColor='#0071e3'
+                        textColor='white'
+                    />
 
                     <button
                         className="btn-secondary"
