@@ -91,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
               </li>
               <li>
                 <NavLink to="/admin/phan_loai_hieu_xe" className="nav-link">
-                  - Quản lý Phân loại Hiệu phương tiện
+                  - Quản lý Phân loại phương tiện
                 </NavLink>
               </li>
               <li>

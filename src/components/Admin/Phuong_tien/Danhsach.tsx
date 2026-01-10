@@ -22,6 +22,7 @@ export interface PhuongTien {
   gia_thue: number;
   phan_loai_id: number;
   ten_phan_loai?: string;
+  hanBaoTri?: string;
 }
 
 export interface ApiResponse {

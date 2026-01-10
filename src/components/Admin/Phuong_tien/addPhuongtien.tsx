@@ -12,7 +12,6 @@ export interface PhuongTien {
   ten_danh_muc?: string;
   ten_chinh_sach?: string;
   loai: string;
-  danh_muc_id: number;
   chinh_sach_id: number;
   so_khung: string;
   ngay_tao: string;
@@ -22,11 +21,6 @@ export interface PhuongTien {
   model_url?: string; // ✅ ĐÃ THÊM: Đường dẫn Models 3D
   phan_loai_id: number;
   ten_phan_loai?: string;
-}
-
-interface DanhMuc {
-  danh_muc_id: number;
-  ten_danh_muc: string;
 }
 
 interface PhanLoai {
@@ -49,7 +43,6 @@ const PhuongTienModal: React.FC = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const isEditing = !!id;
 
-  const [danhMucList, setDanhMucList] = useState<DanhMuc[]>([]);
   const [phanLoaiList, setPhanLoaiList] = useState<PhanLoai[]>([]);
 
   // Hàm hỗ trợ tạo URL cho API (Giữ nguyên)
@@ -123,8 +116,6 @@ const PhuongTienModal: React.FC = () => {
   useEffect(() => {
     const loadLists = async () => {
       try {
-        const r1 = await fetchWithFallback("/api/danh-muc-phuong-tien");
-        setDanhMucList(Array.isArray(r1.data) ? r1.data : []);
         const r2 = await fetchWithFallback("/api/phan-loai-hieu-xe");
         setPhanLoaiList(Array.isArray(r2.data) ? r2.data : []);
       } catch {}
@@ -146,9 +137,6 @@ const PhuongTienModal: React.FC = () => {
     }
     if (!data.loai) {
       errors.loai = "Vui lòng nhập loại phương tiện";
-    }
-    if (!data.danh_muc_id || data.danh_muc_id <= 0) {
-      errors.danh_muc_id = "Vui lòng chọn danh mục";
     }
     if (!data.so_khung || data.so_khung.trim().length < 5) {
       errors.so_khung = "Số khung phải có ít nhất 5 ký tự";
@@ -193,7 +181,6 @@ const PhuongTienModal: React.FC = () => {
       bien_so: (formData.get("bien_so") as string) || "",
       so_km: Number(formData.get("so_km")) || 0,
       loai: (formData.get("loai") as string) || "",
-      danh_muc_id: Number(formData.get("danh_muc_id")) || 0,
       so_khung: (formData.get("so_khung") as string) || "",
       gia_thue: gia_thue,
       phan_loai_id: Number(formData.get("phan_loai_id")) || 0,
@@ -301,25 +288,6 @@ const PhuongTienModal: React.FC = () => {
             />
             {formErrors.loai && (
               <span className="error-text">{formErrors.loai}</span>
-            )}
-          </div>
-
-          {/* Danh mục */}
-          <div className="form-group">
-            <label>Danh mục:</label>
-            <select
-              name="danh_muc_id"
-              defaultValue={phuongTien?.danh_muc_id ?? ""}
-            >
-              <option value="">-- Chọn danh mục --</option>
-              {danhMucList.map((dm) => (
-                <option key={dm.danh_muc_id} value={dm.danh_muc_id}>
-                  {dm.ten_danh_muc}
-                </option>
-              ))}
-            </select>
-            {formErrors.danh_muc_id && (
-              <span className="error-text">{formErrors.danh_muc_id}</span>
             )}
           </div>
 

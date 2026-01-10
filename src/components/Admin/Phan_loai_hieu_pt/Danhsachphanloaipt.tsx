@@ -5,10 +5,15 @@ export interface Hieupt {
   hieu_xe_id: number;
   ten_hieu_xe: string;
 }
+export interface DanhMuc {
+  danh_muc_id: number;
+  ten_danh_muc: string;
+}
 export interface PhanLoai {
   phan_loai_id: number;
   ten_phan_loai: string;
   hieu_xe_id: number;
+  danh_muc_id: number;
   ten_hieu_xe?: string;
 }
 
@@ -22,6 +27,7 @@ interface ApiResponse<T> {
 const PhanLoaiHieuXeList: React.FC = () => {
   const [list, setList] = useState<PhanLoai[]>([]);
   const [hieuXeList, setHieuXeList] = useState<Hieupt[]>([]);
+  const [danhMucList, setDanhMucList] = useState<DanhMuc[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -49,16 +55,21 @@ const PhanLoaiHieuXeList: React.FC = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [resPhanLoai, resHieuXe] = await Promise.all([
+      const [resPhanLoai, resHieuXe, resDanhMuc] = await Promise.all([
         fetch("https://r2-api.sharkeatrice.workers.dev/api/phan-loai-hieu-xe"),
         fetch("https://r2-api.sharkeatrice.workers.dev/api/hieu-phuong-tien"),
+        fetch(
+          "https://r2-api.sharkeatrice.workers.dev/api/danh-muc-phuong-tien"
+        ),
       ]);
 
       const dataPhanLoai: ApiResponse<PhanLoai[]> = await resPhanLoai.json();
       const dataHieuXe: ApiResponse<Hieupt[]> = await resHieuXe.json();
+      const dataDanhMuc: ApiResponse<DanhMuc[]> = await resDanhMuc.json();
 
       if (dataPhanLoai.success) setList(dataPhanLoai.data);
       if (dataHieuXe.success) setHieuXeList(dataHieuXe.data);
+      if (dataDanhMuc.success) setDanhMucList(dataDanhMuc.data);
     } catch (err: any) {
       setError("Không thể tải dữ liệu");
     } finally {
@@ -76,6 +87,7 @@ const PhanLoaiHieuXeList: React.FC = () => {
     const payload = {
       ten_phan_loai: formData.get("ten_phan_loai") as string,
       hieu_xe_id: Number(formData.get("hieu_xe_id")),
+      danh_muc_id: Number(formData.get("danh_muc_id")),
     };
 
     // Nếu là sửa, cần gửi cả id trong body theo logic API update của bạn
@@ -127,6 +139,11 @@ const PhanLoaiHieuXeList: React.FC = () => {
   const getTenHieuXe = (id: number) => {
     return hieuXeList.find((h) => h.hieu_xe_id === id)?.ten_hieu_xe || "N/A";
   };
+  const getTenDanhMuc = (id: number) => {
+    return (
+      danhMucList.find((dm) => dm.danh_muc_id === id)?.ten_danh_muc || "N/A"
+    );
+  };
 
   if (loading) return <div className="dm-container">Đang tải...</div>;
 
@@ -152,6 +169,7 @@ const PhanLoaiHieuXeList: React.FC = () => {
               <th>STT</th>
               <th>Tên phân loại</th>
               <th>Thuộc hiệu xe</th>
+              <th>Danh mục xe</th>
               <th>Chức năng</th>
             </tr>
           </thead>
@@ -161,6 +179,7 @@ const PhanLoaiHieuXeList: React.FC = () => {
                 <td>{index + 1}</td>
                 <td>{item.ten_phan_loai}</td>
                 <td>{getTenHieuXe(item.hieu_xe_id)}</td>
+                <td>{getTenDanhMuc(item.danh_muc_id)}</td>
                 <td>
                   <button
                     className="btn btn-edit"
@@ -216,6 +235,21 @@ const PhanLoaiHieuXeList: React.FC = () => {
                   {hieuXeList.map((hxe) => (
                     <option key={hxe.hieu_xe_id} value={hxe.hieu_xe_id}>
                       {hxe.ten_hieu_xe}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text">
+                Chọn danh mục:
+                <select
+                  name="danh_muc_id"
+                  defaultValue={editItem?.danh_muc_id || ""}
+                  required
+                >
+                  <option value="">-- Chọn danh mục --</option>
+                  {danhMucList.map((dm) => (
+                    <option key={dm.danh_muc_id} value={dm.danh_muc_id}>
+                      {dm.ten_danh_muc}
                     </option>
                   ))}
                 </select>

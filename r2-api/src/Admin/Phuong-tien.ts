@@ -37,9 +37,10 @@ export async function getPhuongTiens(request: Request, env: Env): Promise<Respon
                 SELECT 
                     ${fields || `p.*, d.ten_danh_muc, c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh, pl.ten_phan_loai`}
                 FROM PhuongTien p
-                LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
+              
                 LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
-				LEFT JOIN PhanLoaiHieuXe pl ON p.phan_loai_id = pl.phan_loai_id
+				LEFT JOIN PhanLoaiPhuongTien pl ON p.phan_loai_id = pl.phan_loai_id
+				LEFT JOIN DanhMucPhuongTien d ON d.danh_muc_id = pl.danh_muc_id
             `;
 
 			const queryParams: (string | number)[] = [];
@@ -97,9 +98,10 @@ export async function getPhuongTienById(request: Request, env: Env, id: string):
 				c.tien_coc_mac_dinh,
 				pl.ten_phan_loai
 			FROM PhuongTien p
-			LEFT JOIN DanhMucPhuongTien d ON p.danh_muc_id = d.danh_muc_id
+			
 			LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
-			LEFT JOIN PhanLoaiHieuXe pl ON p.phan_loai_id = pl.phan_loai_id
+			LEFT JOIN PhanLoaiPhuongTien pl ON p.phan_loai_id = pl.phan_loai_id
+			LEFT JOIN DanhMucPhuongTien d ON pl.danh_muc_id = d.danh_muc_id
 			WHERE p.phuong_tien_id = ?
 			`
 		)
@@ -135,7 +137,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 
 		const ten_phuong_tien = formData.get('ten_phuong_tien') as string;
 		const loai = formData.get('loai') as string;
-		const danh_muc_id = Number(formData.get('danh_muc_id'));
+		// const danh_muc_id = Number(formData.get('danh_muc_id'));
 		const trang_thai = formData.get('trang_thai') as string;
 		const bien_so = formData.get('bien_so') as string;
 		const so_km = Number(formData.get('so_km'));
@@ -150,7 +152,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		now.setMonth(now.getMonth() + 4);
 		const hanbaotri = now.toISOString().slice(0, 10);
 
-		if (!ten_phuong_tien || !loai || !danh_muc_id || !trang_thai || !bien_so || !so_khung || !gia_thue || !phan_loai_id) {
+		if (!ten_phuong_tien || !loai || !trang_thai || !bien_so || !so_khung || !gia_thue || !phan_loai_id) {
 			return withCors(Response.json({ success: false, error: 'Thiếu dữ liệu bắt buộc' }, { status: 400 }));
 		}
 
@@ -210,14 +212,13 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		const result = await env.DB.prepare(
 			`
       INSERT INTO PhuongTien
-      (ten_phuong_tien, loai, danh_muc_id, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao, phan_loai_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (ten_phuong_tien, loai, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao, phan_loai_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 		)
 			.bind(
 				ten_phuong_tien,
 				loai,
-				danh_muc_id,
 				trang_thai,
 				bien_so,
 				so_km,
@@ -279,7 +280,6 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 
 		const ten_phuong_tien = getFormValue('ten_phuong_tien');
 		const loai = getFormValue('loai');
-		const danh_muc_id = Number(getFormValue('danh_muc_id'));
 		const trang_thai = getFormValue('trang_thai');
 		const bien_so = getFormValue('bien_so');
 		const so_km = Number(getFormValue('so_km'));
@@ -356,7 +356,6 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		const finalValues = {
 			ten_phuong_tien: ten_phuong_tien ?? existing.ten_phuong_tien,
 			loai: loai ?? existing.loai,
-			danh_muc_id: danh_muc_id || existing.danh_muc_id,
 			trang_thai: trang_thai ?? existing.trang_thai,
 			bien_so: bien_so ?? existing.bien_so,
 			so_km: so_km || existing.so_km,
