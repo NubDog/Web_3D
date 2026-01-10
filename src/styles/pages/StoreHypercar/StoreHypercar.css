@@ -1,28 +1,25 @@
-.store-hypercar-container {
+.StoreHypercar-container {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     background-color: #f5f5f7;
-    /* Apple's light gray background */
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-.store-hypercar-content {
+.StoreHypercar-content {
     flex: 1;
     width: 100%;
-    max-width: 1440px;
-    /* Max width for large screens */
+    max-width: 1690px;
     margin: 0 auto;
-    padding: 60px 40px;
 }
 
-/* Header Section */
-.store-header {
+.StoreHypercar-header {
+    width: 1690px;
     margin-bottom: 60px;
     text-align: left;
 }
 
-.store-title {
+.StoreHypercar-title {
     font-size: 56px;
     font-weight: 700;
     color: #1d1d1f;
@@ -30,56 +27,102 @@
     margin-bottom: 10px;
 }
 
-.store-subtitle {
+.StoreHypercar-subtitle {
     font-size: 24px;
     color: #86868b;
     font-weight: 400;
 }
 
-/* Grid Layout */
-.hypercar-grid {
+.StoreHypercar-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    /* 4 columns for desktop */
     gap: 30px;
     width: 100%;
 }
 
-/* Responsive Breakpoints */
 @media (max-width: 1200px) {
-    .hypercar-grid {
+    .StoreHypercar-grid {
         grid-template-columns: repeat(3, 1fr);
-        /* 3 columns for smaller desktops */
     }
 }
 
 @media (max-width: 900px) {
-    .hypercar-grid {
+    .StoreHypercar-grid {
         grid-template-columns: repeat(2, 1fr);
-        /* 2 columns for tablets */
         gap: 20px;
     }
 
-    .store-title {
+    .StoreHypercar-title {
         font-size: 40px;
     }
 
-    .store-hypercar-content {
+    .StoreHypercar-content {
         padding: 40px 20px;
     }
 }
 
 @media (max-width: 600px) {
-    .hypercar-grid {
+    .StoreHypercar-grid {
         grid-template-columns: 1fr;
-        /* 1 column for mobile */
     }
 
-    .store-title {
+    .StoreHypercar-title {
         font-size: 32px;
     }
 
-    .store-subtitle {
+    .StoreHypercar-subtitle {
         font-size: 19px;
+    }
+}
+
+/* Feature Section */
+.StoreHypercar-feature-section {
+    width: 100%;
+    max-width: 1690px;
+    margin: 80px auto;
+    padding: 0;
+}
+
+.StoreHypercar-feature-header {
+    margin-bottom: 40px;
+}
+
+.StoreHypercar-feature-title {
+    font-size: 40px;
+    font-weight: 700;
+    color: #1d1d1f;
+    margin-bottom: 10px;
+}
+
+.StoreHypercar-feature-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+@media (max-width: 1200px) {
+    .StoreHypercar-feature-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .StoreHypercar-feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .StoreHypercar-feature-title {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 600px) {
+    .StoreHypercar-feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .StoreHypercar-feature-title {
+        font-size: 28px;
     }
 }

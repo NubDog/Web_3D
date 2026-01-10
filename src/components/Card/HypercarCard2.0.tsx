@@ -1,4 +1,6 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from '../Button/Button';
 import '../../styles/components/Card/HypercarCard2.0.css';
 
 interface HypercarCardProps {
@@ -18,6 +20,7 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
     status,
     description
 }) => {
+    const navigate = useNavigate();
 
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -27,44 +30,46 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
         }).format(value);
     };
 
+    const handleRentClick = () => {
+        navigate('/product_detail', { state: { productId: id } });
+    };
+
     return (
-        <div className="hypercar-card-invisible">
-            {/* Image Section - First as requested */}
-            <div className="card-image-wrapper">
+        <div className="HypercarCard2-invisible">
+            <div className="HypercarCard2-image-wrapper">
                 <img
                     src={imageUrl}
                     alt={name}
-                    className="card-image"
+                    className="HypercarCard2-image"
                     loading="lazy"
                 />
             </div>
 
-            {/* Content Section */}
-            <div className="card-content">
-                <h3 className="card-title">{name}</h3>
+            <div className="HypercarCard2-content">
+                <h3 className="HypercarCard2-title">{name}</h3>
 
-                <p className="card-description">
+                <p className="HypercarCard2-description">
                     {description || (status === 'SAN_SANG' ? 'Sẵn sàng trải nghiệm' : status)}
                 </p>
 
-                <p className="card-price">
+                <p className="HypercarCard2-price">
                     Từ {formatCurrency(price)}/ngày
                 </p>
 
-                <div className="card-actions">
-                    <button
-                        className="btn-primary"
-                        onClick={() => console.log(`Rent car ${id}`)}
-                    >
-                        Thuê xe
-                    </button>
+                <div className="HypercarCard2-actions">
+                    <Button
+                        conttent="Thuê xe"
+                        onClick={handleRentClick}
+                        backgroundColor='#0071e3'
+                        textColor='white'
+                    />
 
                     <button
-                        className="btn-secondary"
+                        className="HypercarCard2-btn-secondary"
                         onClick={() => console.log(`View details ${id}`)}
                     >
                         Tìm hiểu thêm
-                        <span className="icon-arrow">
+                        <span className="HypercarCard2-icon-arrow">
                             <i className="fa-solid fa-chevron-right"></i>
                         </span>
                     </button>
