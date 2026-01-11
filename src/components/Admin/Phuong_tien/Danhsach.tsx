@@ -422,7 +422,32 @@ const PhuongTienList: React.FC = () => {
                       Xóa
                     </button>
                     <Link to={`xem/${item.phuong_tien_id}`}>
-                      <button className="btn btn-delete bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 transition-colors">
+                      <button
+                        style={{
+                          backgroundColor: "#4caf50",
+                          color: "white",
+                          padding: "6px 16px",
+                          border: "none",
+                          borderRadius: "6px",
+                          fontSize: "13px",
+                          fontWeight: "500",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+                        }}
+                        onMouseOver={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#43a047")
+                        }
+                        onMouseOut={(e) =>
+                          (e.currentTarget.style.backgroundColor = "#4caf50")
+                        }
+                        onMouseDown={(e) =>
+                          (e.currentTarget.style.transform = "scale(0.95)")
+                        }
+                        onMouseUp={(e) =>
+                          (e.currentTarget.style.transform = "scale(1)")
+                        }
+                      >
                         Xem Chi Tiết
                       </button>
                     </Link>
