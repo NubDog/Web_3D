@@ -1,7 +1,7 @@
 import React, { useState, useEffect, type FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../css/PhuongTienList.css";
-
+import BabylonScene from "../../babylon";
 // --- INTERFACE CẬP NHẬT ---
 export interface PhuongTien {
   phuong_tien_id: number;
@@ -18,7 +18,7 @@ export interface PhuongTien {
   ngay_cap_nhat: string;
   gia_thue: number;
   img?: string; // Đường dẫn ảnh
-  model_url?: string; // ✅ ĐÃ THÊM: Đường dẫn Models 3D
+  model?: string; // ✅ ĐÃ THÊM: Đường dẫn Models 3D
   phan_loai_id: number;
   ten_phan_loai?: string;
 }
@@ -371,28 +371,32 @@ const PhuongTienModal: React.FC = () => {
             <label>Models 3D (GLB/GLTF/FBX):</label>
             <input
               type="file"
-              name="models_3d" // ✅ Tên key này phải khớp với backend!
-              accept=".glb,.gltf,.fbx,.obj,.zip" // Gợi ý định dạng file 3D
+              name="models_3d"
+              accept=".glb,.gltf,.fbx,.obj,.zip"
             />
 
-            {/* Hiển thị models hiện tại khi chỉnh sửa */}
-            {isEditing && phuongTien?.model_url && (
-              <div className="mt-2 p-2 border rounded border-gray-300">
-                <p className="text-sm font-semibold mb-1">
-                  Models 3D hiện tại:
-                </p>
+            {/* Chỉ hiển thị khi đang sửa và đã có model */}
+            {isEditing && phuongTien?.model && (
+              <div className="mt-3 p-2 border rounded border-gray-300">
+                <p className="text-sm font-semibold mb-2">Preview Models 3D:</p>
+
+                {/* Viewer Babylon */}
+                <div style={{ width: "100%", height: "350px" }}>
+                  <BabylonScene modelUrl={phuongTien.model} />
+                </div>
+
+                {/* Link tải */}
                 <a
-                  href={phuongTien.model_url}
+                  href={phuongTien.model}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-500 underline text-sm block truncate"
+                  className="text-blue-500 underline text-xs block mt-2 truncate"
                 >
-                  {phuongTien.model_url.substring(
-                    phuongTien.model_url.lastIndexOf("/") + 1
-                  )}
+                  {phuongTien.model.split("/").pop()}
                 </a>
+
                 <p className="text-xs text-gray-500 mt-1">
-                  Chọn file mới để thay thế.
+                  Chọn file mới để thay thế model hiện tại.
                 </p>
               </div>
             )}

@@ -421,6 +421,11 @@ const PhuongTienList: React.FC = () => {
                     >
                       Xóa
                     </button>
+                    <Link to={`xem/${item.phuong_tien_id}`}>
+                      <button className="btn btn-delete bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 transition-colors">
+                        Xem Chi Tiết
+                      </button>
+                    </Link>
                   </div>
                 </td>
               </tr>

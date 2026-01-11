@@ -46,6 +46,7 @@ import HieuPhuongTienList from "./components/Admin/Hieu_phuong_tien/addHieupt";
 import HanBaoTri from "./components/Admin/Bao_tri/Han_Bao_Tri";
 import Forgot_password from "./pages/Forgot_password";
 import Danhsachphanloaipt from "./components/Admin/Phan_loai_hieu_pt/Danhsachphanloaipt";
+import Phuongtienchitietadmin from "./components/Admin/Phuong_tien/Phuongtienchitiet";
 
 function App() {
   return (
@@ -113,6 +114,10 @@ function App() {
               <Route
                 path="phuong-tien/them/:id?"
                 element={<PhuongTienModal />}
+              />
+              <Route
+                path="phuong-tien/xem/:id"
+                element={<Phuongtienchitietadmin />}
               />
               <Route
                 path="danh-muc-phuong-tien"
