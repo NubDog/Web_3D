@@ -46,6 +46,8 @@ interface OrderDetail {
     ghi_chu: string | null;
     duong_dan_file?: string; 
     tong_phi_phat: number
+
+    khach_hang_id: number
 }
 
 interface RecordData {
@@ -74,6 +76,30 @@ const OrderDetail: React.FC = () => {
     const [recordModalData, setRecordModalData] = useState<RecordData | null>(null);
 
     const [depositTime, setDepositTime] = useState<string | null>(null);
+
+    const [violationWarning, setViolationWarning] = useState<{
+        has_violations: boolean;
+        total_violations: number;
+        total_debt: number;
+        violations: any[];
+    } | null>(null);
+
+    const [violationInfo, setViolationInfo] = useState<{
+        level: number; // 0, 1, 2, 3
+        total_debt: number;
+        total_violations: number;
+        violations: any[];
+        message: string;
+    } | null>(null);
+
+    const [showViolationModal, setShowViolationModal] = useState(false);
+    // const [showLevel2Modal, setShowLevel2Modal] = useState(false);
+    // const [selectedCondition, setSelectedCondition] = useState<'extra_deposit' | 'pay_first'>('extra_deposit');
+
+    const [violations, setViolations] = useState<any[]>([]);
+    const [loadingViolations, setLoadingViolations] = useState(false);  
+    const [confirmingViolationPayment, setConfirmingViolationPayment] = useState(false);
+    const [violationsPaid, setViolationsPaid] = useState(false);
 
     const fetchOrder = useCallback(async () => {
         if (!orderId) return;
@@ -105,24 +131,171 @@ const OrderDetail: React.FC = () => {
     }, [orderId]);
 
     useEffect(() => {
+    if (order?.don_thue_id && order?.trang_thai === 'CHO_DUYET') {
+        fetch(`${API_BASE_URL}/api/don-thue/${order.don_thue_id}/check-violation`)
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    setViolationInfo(result.data);
+                    console.log('🚨 Violation Check:', result.data);
+                }
+            })
+            .catch(err => console.error('Error checking violations:', err));
+    }
+}, [order]);
+
+useEffect(() => {
+    console.log("🔍 Current violations:", violations);
+    console.log("🔍 Violations count:", violations.length);
+    console.log("🔍 Order ghi_chu:", order?.ghi_chu);
+    console.log("🔍 Has PAY_FIRST:", order?.ghi_chu?.includes("CONDITION: PAY_FIRST"));
+}, [violations, order]);
+   
+    useEffect(() => {
         fetchOrder();
     }, [fetchOrder]);
 
+
+   useEffect(() => {
+    if (order?.khach_hang_id) {
+        console.log('🔍 Fetching violations for customer:', order.khach_hang_id);
+        fetchViolations();
+    }
+}, [order?.khach_hang_id]);
+
+    const fetchViolations = async () => {
+    if (!order?.khach_hang_id) return;
+    
+    setLoadingViolations(true);
+    try {
+        const res = await fetch(
+            `${API_BASE_URL}/api/customers/${order.khach_hang_id}/violations?status=chua_xu_ly`
+        );
+        
+        if (!res.ok) {
+            throw new Error('Failed to fetch violations');
+        }
+        
+        const data = await res.json();
+        
+        if (data.success && Array.isArray(data.data)) {
+            setViolations(data.data);
+            console.log('✅ Fetched violations:', data.data);
+        } else {
+            console.error('❌ Invalid response format:', data);
+            setViolations([]);
+        }
+        
+    } catch (err) {
+        console.error('❌ Error fetching violations:', err);
+        setViolations([]);
+    } finally {
+        setLoadingViolations(false);
+    }
+}
+
+    
+
+    const handleConfirmViolationPayment = async () => {
+    if (violations.length === 0) return;
+    
+    const confirmed = window.confirm(
+        `Xác nhận khách hàng đã thanh toán ${violations.length} vi phạm?\n\n` +
+        `Tổng: ${new Intl.NumberFormat('vi-VN').format(
+            violations.reduce((sum, v) => sum + v.so_tien_phat, 0)
+        )} VND`
+    );
+    
+    if (!confirmed) return;
+    
+    setConfirmingViolationPayment(true);
+    
+    try {
+        const response = await fetch(
+            `${API_BASE_URL}/api/don-thue/${orderId}/confirm-violation-payment`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nhanvienid: currentUser?.nguoi_dung_id || 1
+                })
+            }
+        );
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            toast.error(result.error);
+            return;
+        }
+        
+        toast.success("✅ Đã xác nhận thanh toán vi phạm!");
+        
+        await fetchViolations();
+        await fetchOrder();
+        
+    } catch (err: any) {
+        toast.error("Lỗi: " + err.message);
+    } finally {
+        setConfirmingViolationPayment(false);
+    }
+};
+
+
     const handleApprove = async () => {
+        if (!violationInfo) {
+            await approveOrder('normal');
+            return;
+        }
+
+        if (violationInfo.level === 3) {
+            toast.error('🚫 KHÔNG THỂ DUYỆT: Khách hàng vi phạm cấp 3. Vui lòng từ chối đơn.');
+            return;
+        }
+
+        if (violationInfo.level === 2) {
+            const confirmed = window.confirm(
+                `⚠️ Khách hàng có ${violationInfo.total_violations} vi phạm.\n\n` +
+                `Tổng nợ: ${formatCurrency(violationInfo.total_debt)}\n\n` +
+                `🔴 YÊU CẦU: Khách PHẢI thanh toán vi phạm TRƯỚC KHI đặt cọc.\n\n` +
+                `Tiếp tục duyệt?`
+            );
+            if (!confirmed) return;
+        }
+
+        await approveOrder(violationInfo?.level === 2 ? 'pay_first' : 'normal');
+
+        if (violationInfo.level === 1) {
+            const confirmed = window.confirm(
+                `⚠️ Khách hàng có ${violationInfo.total_violations} vi phạm nhẹ.\n\n` +
+                `Tổng nợ: ${formatCurrency(violationInfo.total_debt)}\n\n` +
+                `Duyệt đơn sẽ gửi email nhắc nhở khách hàng. Tiếp tục?`
+            );
+            if (!confirmed) return;
+        }
+
+        await approveOrder('normal');
+    };
+
+    const approveOrder = async (conditionType: 'normal' | 'extra_deposit' | 'pay_first') => {
         setIsSubmitting(true);
         try {
             const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/approve`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nhan_vien_id: currentUser?.nguoi_dung_id }) 
+                body: JSON.stringify({
+                    nhan_vien_id: currentUser?.nguoi_dung_id || 1,
+                    condition_type: conditionType
+                })
             });
+
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
-            
-            toast.success("Duyệt đơn thành công!");
-            navigate('/admin/orders/pending'); 
+
+            toast.success('✅ Đã duyệt đơn thành công!');
+            navigate('/admin/orders/pending');
         } catch (err: any) {
-            toast.error(`Lỗi: ${err.message}`);
+            toast.error('Lỗi: ' + err.message);
         } finally {
             setIsSubmitting(false);
         }
@@ -402,27 +575,53 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
     };
 
     const handleConfirmDeposit = async () => {
-    setIsSubmitting(true);
-    try {
-  
-        const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/confirm-deposit`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nhan_vien_id: currentUser?.nguoi_dung_id || 1 })
-        });
-        const result = await response.json();
-        if (!result.success) throw new Error(result.error);
+        const totalCurrentDebt = violations.reduce((sum, v) => sum + v.so_tien_phat, 0);
+        const totalViolationCount = violations.length; 
         
-        toast.success("Đã xác nhận nhận tiền cọc!");
-        
-        fetchOrder(); 
+        const isPayFirst = order?.ghi_chu?.includes('[CONDITION: PAY_FIRST]');
+        const DEBT_LIMIT = 1000000; 
+        const COUNT_LIMIT = 2;     
 
-    } catch (err: any) {
-        toast.error(`Lỗi: ${err.message}`);
-    } finally {
-        setIsSubmitting(false);
-    }
-};
+        if (isPayFirst && (totalCurrentDebt >= DEBT_LIMIT || totalViolationCount >= COUNT_LIMIT)) {
+            toast.error(
+                `⛔ KHÔNG THỂ CỌC: Khách đang có ${totalViolationCount} vi phạm (hoặc nợ > 1tr). Yêu cầu thanh toán nợ trước!`, 
+                { autoClose: 6000 }
+            );
+            setShowViolationModal(true); 
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/don-thue/${orderId}/confirm-deposit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nhan_vien_id: currentUser?.nguoi_dung_id || 1 })
+            });
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+                if (result.blocked_reason === 'UNPAID_VIOLATIONS') {
+                    toast.error(
+                        `⛔ CHẶN CỌC: Khách nợ ${new Intl.NumberFormat('vi-VN').format(result.total_debt)}đ hoặc có 2 vi phạm (Vượt mức cho phép)!`,
+                        { autoClose: 5000 }
+                    );
+                } else {
+                    toast.error(result.error);
+                }
+                return;
+            }
+            
+            toast.success("✅ Đã xác nhận nhận tiền cọc thành công!");
+            fetchOrder(); 
+
+        } catch (err: any) {
+            toast.error(`Lỗi: ${err.message}`);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     
    const handleFinalize = async (data: { phi_hu_hong: number; phi_tre: number; chi_phi_khac: number; ghi_chu_quyet_toan: string; }) => {
@@ -504,19 +703,104 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
         }
     };
 
+    const renderViolationBanner = () => {
+        if (!violationInfo || violationInfo.level === 0) return null;
+
+        const badges = {
+            1: { color: '#ffc107', icon: '⚠️', text: 'Lưu ý', bgColor: '#fff3cd', borderColor: '#ffc107' },
+            2: { color: '#ff9800', icon: '🔶', text: 'Cảnh báo', bgColor: '#fff3e0', borderColor: '#ff9800' },
+            3: { color: '#dc3545', icon: '🚫', text: 'Chặn', bgColor: '#ffebee', borderColor: '#dc3545' }
+        };
+
+        const badge = badges[violationInfo.level as 1 | 2 | 3];
+
+        return (
+            <div 
+                style={{
+                    background: badge.bgColor,
+                    border: `3px solid ${badge.borderColor}`,
+                    borderRadius: '12px',
+                    padding: '20px',
+                    marginBottom: '20px',
+                    animation: violationInfo.level === 3 ? 'pulse 2s ease-in-out infinite' : 'none'
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '40px' }}>{badge.icon}</span>
+                    <div>
+                        <h3 style={{ margin: 0, color: badge.color, fontSize: '20px' }}>
+                            CẤP {violationInfo.level}: {badge.text.toUpperCase()}
+                        </h3>
+                        <p style={{ margin: '5px 0 0 0', color: '#666', fontSize: '14px' }}>
+                            {violationInfo.message}
+                        </p>
+                    </div>
+                </div>
+
+                <div style={{
+                    background: 'white',
+                    padding: '15px',
+                    borderRadius: '8px',
+                    marginTop: '15px'
+                }}>
+                    <p style={{ margin: '0 0 10px 0', fontSize: '15px' }}>
+                        <strong>Số lần vi phạm:</strong> <span style={{ color: badge.color, fontWeight: 'bold' }}>{violationInfo.total_violations}</span>
+                    </p>
+                    <p style={{ margin: '0', fontSize: '16px' }}>
+                        <strong>Tổng nợ vi phạm:</strong> <span style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '18px' }}>{formatCurrency(violationInfo.total_debt)}</span>
+                    </p>
+                </div>
+
+                <button
+                    onClick={() => setShowViolationModal(true)}
+                    style={{
+                        marginTop: '15px',
+                        background: badge.color,
+                        color: 'white',
+                        border: 'none',
+                        padding: '12px 24px',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '14px',
+                        width: '100%'
+                    }}
+                >
+                    📋 Xem chi tiết vi phạm
+                </button>
+            </div>
+        );
+    };
+
+
      const renderActionButtons = () => {
         if (!order) return null;
         const isWaitingPayment = order.ghi_chu && order.ghi_chu.includes('[WAITING_PAYMENT]');
 
         switch (order.trang_thai) {
             case 'CHO_DUYET':
+                const canApprove = !violationInfo || violationInfo.level !== 3;
+                
                 return (
                     <>
-                        <button className="button-approve" onClick={handleApprove} disabled={isSubmitting}>
-                            {isSubmitting ? 'Đang xử lý...' : '✅ Duyệt Đơn'}
+                        <button 
+                            className="button-approve" 
+                            onClick={handleApprove} 
+                            disabled={isSubmitting || !canApprove}
+                            style={{
+                                opacity: canApprove ? 1 : 0.5,
+                                cursor: canApprove ? 'pointer' : 'not-allowed'
+                            }}
+                            title={!canApprove ? 'Không thể duyệt: Khách hàng vi phạm cấp 3' : ''}
+                        >
+                            {violationInfo?.level === 3 ? '🚫 KHÔNG THỂ DUYỆT' : (isSubmitting ? 'Đang xử lý...' : '✅ Duyệt Đơn')}
                         </button>
-                        <button className="button-reject" onClick={handleReject} disabled={isSubmitting}>
-                             {isSubmitting ? 'Đang xử lý...' : '❌ Từ Chối'}
+                        <button 
+                            className="button-reject" 
+                            onClick={handleReject} 
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Đang xử lý...' : '❌ Từ Chối'}
                         </button>
                     </>
                 );
@@ -644,6 +928,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
 
             <OrderTimeline status={order.trang_thai} />
 
+             {renderViolationBanner()}
             
             <div className="order-detail-layout">
                 {/* CỘT BÊN TRÁI: THÔNG TIN CHÍNH */}
@@ -704,7 +989,6 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                                 </div>
                             )}
 
-                            {/* 🔥 ĐÃ SỬA: Hiển thị tiền cọc với % tính ra */}
                             <div className="fi-row" style={{marginTop: '15px'}}>
                                 <span>Tiền cọc đã giữ ({phanTramCoc}%):</span>
                                 <span>{formatCurrency(tienCocThucTe)}</span>
@@ -730,7 +1014,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                             </div>
                         </div>
                     )}
-
+                     
                 </div>
 
                 {/* CỘT BÊN PHẢI: THÔNG TIN PHỤ & HÀNH ĐỘNG */}
@@ -796,31 +1080,250 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                     )}
 
                     {order.trang_thai === 'DA_DUYET' && (
-                        <div className="info-card">
-                            <h2>Tình Trạng Thanh Toán</h2>
-                            <p>
-                                <strong>Tiền cọc:</strong> 
-                                <span className={`status-badge status-${order.trang_thai_coc}`} style={{color: 'black'}}>
-                                    {order.trang_thai_coc === 'DANG_GIU' ? 'Đã Nhận Cọc' : 'Chưa Nhận Cọc'}
-                                </span>
-                            </p>
-                             {order.trang_thai_coc === 'CHO_THANH_TOAN' && depositTime && (
-                                    <DepositCountdown 
-                                        approvedTime={depositTime}
-                                        depositStatus={order.trang_thai_coc}
-                                    />
-                                )}
-                            {order.trang_thai_coc !== 'DANG_GIU' && (
-                                <button 
-                                    className="button-primary" 
-                                    style={{width: '100%', marginTop: '1rem'}}
-                                    onClick={handleConfirmDeposit}
-                                    disabled={isSubmitting}
-                                >
-                                    Xác nhận đã nhận cọc
-                                </button>
+                    <div className="info-card">
+                        <h2>Tình Trạng Thanh Toán</h2>
+                        {order.trang_thai_coc === 'CHO_THANH_TOAN' && depositTime && (
+                            <DepositCountdown 
+                                approvedTime={depositTime}
+                                depositStatus={order.trang_thai_coc}
+                            />
+                        )}
+                        {/* CẢNH BÁO CẤP 1 - REMINDER */}
+                        {order.ghi_chu && order.ghi_chu.includes('[CONDITION: REMINDER]') && (
+                            <div style={{
+                                background: '#fff3cd',
+                                border: '2px solid #ffc107',
+                                borderRadius: '8px',
+                                padding: '15px',
+                                marginBottom: '15px'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                                    <span style={{ fontSize: '24px' }}>⚠️</span>
+                                    <strong style={{ color: '#856404' }}>LƯU Ý VI PHẠM</strong>
+                                </div>
+                                <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>
+                                    Khách hàng có vi phạm chưa thanh toán. Vui lòng nhắc nhở thanh toán sớm.
+                                </p>
+                            </div>
+                        )}
+
+                        {/* CẢNH BÁO CẤP 2 - PAY_FIRST */}
+                        {order.ghi_chu && 
+                            order.ghi_chu.includes('[CONDITION: PAY_FIRST]') && 
+                            violations.length > 0 && (
+                            <div style={{
+                                background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
+                                border: '3px solid #ff9800',
+                                borderRadius: '12px',
+                                padding: '20px',
+                                marginBottom: '20px'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
+                                    <span style={{ fontSize: '28px' }}>🔶</span>
+                                    <strong style={{ color: '#e65100', fontSize: '18px' }}>
+                                        ĐIỀU KIỆN ĐẶC BIỆT - CẤP 2
+                                    </strong>
+                                </div>
+                                
+                                <p style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#d84315', fontWeight: 'bold' }}>
+                                    ⚠️ Khách hàng PHẢI thanh toán vi phạm TRƯỚC KHI đặt cọc
+                                </p>
+
+                                {/* DANH SÁCH VI PHẠM */}
+                                {loadingViolations ? (
+                                        <p>Đang tải vi phạm...</p>
+                                    ) : violations.length > 0 ? (
+                                        <>
+                                            {/* DANH SÁCH VI PHẠM */}
+                                            <div style={{ 
+                                                background: 'white', 
+                                                padding: '15px', 
+                                                borderRadius: '8px',
+                                                marginBottom: '15px'
+                                            }}>
+                                                <h4 style={{ marginTop: 0, color: '#d84315' }}>
+                                                    📋 Vi phạm chưa thanh toán ({violations.length})
+                                                </h4>
+                                                <table style={{ width: '100%', fontSize: '14px' }}>
+                                                    <tbody>
+                                                        {violations.map(v => (
+                                                            <tr key={v.vi_pham_id} style={{ borderBottom: '1px solid #eee' }}>
+                                                                <td style={{ padding: '8px 0' }}>
+                                                                    <strong>{v.loai_vi_pham}</strong><br/>
+                                                                    <small style={{ color: '#666' }}>
+                                                                        {new Date(v.thoi_gian_xay_ra).toLocaleDateString('vi-VN')}
+                                                                    </small>
+                                                                </td>
+                                                                <td style={{ 
+                                                                    textAlign: 'right', 
+                                                                    fontWeight: 'bold', 
+                                                                    color: '#dc3545',
+                                                                    padding: '8px 0'
+                                                                }}>
+                                                                    {new Intl.NumberFormat('vi-VN').format(v.so_tien_phat)} đ
+                                                                </td>
+                                                            </tr>
+                                                        ))}
+                                                        <tr style={{ background: '#ffebee' }}>
+                                                            <td style={{ padding: '12px 8px', fontWeight: 'bold' }}>
+                                                                TỔNG PHẢI TRẢ
+                                                            </td>
+                                                            <td style={{ 
+                                                                padding: '12px 8px',
+                                                                textAlign: 'right', 
+                                                                fontWeight: 'bold', 
+                                                                color: '#dc3545',
+                                                                fontSize: '18px'
+                                                            }}>
+                                                            {new Intl.NumberFormat('vi-VN').format(
+                                                                violations.reduce((sum, v) => sum + v.so_tien_phat, 0)
+                                                            )} đ
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                     </div>
+
+                                    <button 
+                                        className="button-primary"
+                                        style={{
+                                            width: '100%',
+                                            background: '#ff9800',
+                                            border: 'none',
+                                            fontSize: '16px',
+                                            fontWeight: 'bold',
+                                            padding: '14px',
+                                            cursor: confirmingViolationPayment ? 'not-allowed' : 'pointer',
+                                            opacity: confirmingViolationPayment ? 0.6 : 1
+                                        }}
+                                        onClick={handleConfirmViolationPayment}
+                                        disabled={confirmingViolationPayment}
+                                    >
+                                        {confirmingViolationPayment ? '⏳ Đang xử lý...' : '💳 Xác nhận đã thanh toán vi phạm'}
+                                    </button>
+                                </>
+                            ) : violationsPaid ? (
+                                <div style={{ 
+                                    background: '#e8f5e9', 
+                                    padding: '15px', 
+                                    borderRadius: '8px',
+                                    border: '2px solid #4caf50'
+                                }}>
+                                    <p style={{ margin: 0, color: '#2e7d32', fontWeight: 'bold' }}>
+                                        ✅ Đã thanh toán hết vi phạm
+                                    </p>
+                                    <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#666' }}>
+                                        Có thể xác nhận cọc bên dưới
+                                    </p>
+                                </div>
+                            ) : null}
+                        </div>
+                    )}
+
+                    {/* TIỀN CỌC */}
+                    <p>
+                        <strong>Tiền cọc:</strong> 
+                        <span className={`status-badge status-${order.trang_thai_coc}`} style={{color: 'black'}}>
+                            {order.trang_thai_coc === 'DANG_GIU' ? '✅ Đã Nhận Cọc' : '⏳ Chưa Nhận Cọc'}
+                        </span>
+                    </p>
+
+                    {/* BUTTON XÁC NHẬN CỌC - CHỈ HIỂN THỊ KHI: */}
+                    {/* 1. Chưa nhận cọc */}
+                    {/* 2. KHÔNG có điều kiện PAY_FIRST HOẶC đã thanh toán hết vi phạm */}
+                    {order.trang_thai_coc !== 'DANG_GIU' && (
+                        <div style={{ marginTop: '15px' }}>
+                            {(() => {
+                                const currentDebt = violations.reduce((sum, v) => sum + v.so_tien_phat, 0);
+                                const currentCount = violations.length; // Số lần vi phạm
+                                const isPayFirst = order.ghi_chu?.includes('CONDITION: PAY_FIRST');
+                                
+                                // Điều kiện chặn hiển thị nút (Nợ >= 1tr HOẶC Số lần >= 2)
+                                const isBlocked = isPayFirst && (currentDebt >= 1000000 || currentCount >= 2);
+
+                                return (
+                                    <>
+                                        {/* Nút Xác nhận */}
+                                        <button 
+                                            className="button-primary" 
+                                            style={{
+                                                width: '100%', 
+                                                padding: '14px', 
+                                                fontSize: '16px', 
+                                                fontWeight: 'bold',
+                                                opacity: isBlocked ? 0.5 : 1,
+                                                cursor: isBlocked ? 'not-allowed' : 'pointer',
+                                                backgroundColor: isBlocked ? '#999' : '#007bff'
+                                            }}
+                                            onClick={handleConfirmDeposit}
+                                            disabled={isSubmitting || isBlocked} 
+                                        >
+                                            {isSubmitting ? '⏳ Đang xử lý...' : '✅ Xác nhận nhận cọc'}
+                                        </button>
+
+                                        {/* Các thông báo cảnh báo bên dưới nút */}
+                                        {isBlocked ? (
+                                            // 🔴 TRƯỜNG HỢP 1: BỊ CHẶN
+                                            <div style={{
+                                                marginTop: '10px',
+                                                padding: '10px',
+                                                background: '#ffebee',
+                                                border: '1px solid #ef5350',
+                                                borderRadius: '6px',
+                                                color: '#c62828',
+                                                fontSize: '13px',
+                                                textAlign: 'center'
+                                            }}>
+                                                ⛔ <strong>CHẶN CỌC DO:</strong> 
+                                                <ul style={{textAlign: 'left', margin: '5px 0 5px 20px'}}>
+                                                    {currentDebt >= 1000000 && <li>Tổng nợ {formatCurrency(currentDebt)} ({'>'}= 1tr)</li>}
+                                                    {currentCount >= 2 && <li>Có {currentCount} lần vi phạm ({'>'}= 2)</li>}
+                                                </ul>
+                                                Vui lòng thanh toán vi phạm trước!
+                                            </div>
+                                        ) : (
+                                            // 🟢 TRƯỜNG HỢP 2: ĐƯỢC PHÉP (Châm chước)
+                                            isPayFirst && currentCount > 0 && (
+                                                <div style={{
+                                                    marginTop: '10px',
+                                                    padding: '10px',
+                                                    background: '#e8f5e9',
+                                                    border: '1px solid #4caf50',
+                                                    borderRadius: '6px',
+                                                    color: '#2e7d32',
+                                                    fontSize: '13px',
+                                                    textAlign: 'center'
+                                                }}>
+                                                    ⚠️ Khách còn 1 vi phạm nhỏ ({formatCurrency(currentDebt)}).
+                                                    <br/>(Đủ điều kiện châm chước cho cọc)
+                                                </div>
+                                            )
+                                        )}
+                                    </>
+                                );
+                            })()}
+                        </div>
+                    )}
+
+                    {/* HIỂN THỊ CẢNH BÁO NẾU CÒN VI PHẠM */}
+                    {order.trang_thai_coc !== "DANG_GIU" && 
+                        order.ghi_chu?.includes("CONDITION: PAY_FIRST") && 
+                        violations.length > 0 && (
+                        <div style={{
+                            background: "#fff3cd",
+                            border: "2px solid #ff9800",
+                            borderRadius: "8px",
+                            padding: "15px",
+                            marginTop: "1rem",
+                            textAlign: "center"
+                        }}>
+                                <p style={{margin: 0, color: "#856404", fontWeight: "bold"}}>
+                                ⚠️ Phải thanh toán {violations.length} vi phạm trước khi xác nhận cọc
+                                </p>
+                            </div>
                             )}
                         </div>
+                        
                     )}
 
                     <div className="info-card action-card">

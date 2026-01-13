@@ -237,3 +237,111 @@
         box-shadow: 0 6px 20px rgba(244, 67, 54, 0.5);
     }
 }
+
+
+.violation-warning-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    border: 2px solid #ffc107;
+    border-left: 5px solid #dc3545;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    animation: pulse-warning 2s infinite;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes pulse-warning {
+    0%, 100% { 
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3); 
+    }
+    50% { 
+        box-shadow: 0 4px 20px rgba(220, 53, 69, 0.5); 
+    }
+}
+
+.violation-warning-banner .warning-icon {
+    font-size: 40px;
+    animation: shake 0.8s ease-in-out infinite;
+    flex-shrink: 0;
+}
+
+@keyframes shake {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-8deg); }
+    50% { transform: rotate(8deg); }
+    75% { transform: rotate(-8deg); }
+}
+
+.violation-warning-banner .warning-content {
+    flex: 1;
+}
+
+.violation-warning-banner .warning-content h4 {
+    color: #856404;
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.violation-warning-banner .warning-content p {
+    color: #856404;
+    margin: 0 0 15px 0;
+    font-size: 15px;
+}
+
+.violation-warning-banner .text-danger {
+    color: #dc3545 !important;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.violation-warning-banner .btn-view-violations {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s;
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+}
+
+.violation-warning-banner .btn-view-violations:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.5);
+}
+
+.violation-warning-banner .btn-view-violations:active {
+    transform: translateY(0);
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+    .violation-warning-banner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .violation-warning-banner .warning-icon {
+        font-size: 32px;
+    }
+    
+    .violation-warning-banner .warning-content h4 {
+        font-size: 16px;
+    }
+}
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+}
