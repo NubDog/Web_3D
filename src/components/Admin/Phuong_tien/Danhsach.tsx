@@ -23,6 +23,7 @@ export interface PhuongTien {
   phan_loai_id: number;
   ten_phan_loai?: string;
   hanBaoTri?: string;
+  nguoi_thay_doi_chinh_sach_gia?: string;
 }
 
 export interface ApiResponse {
@@ -351,6 +352,9 @@ const PhuongTienList: React.FC = () => {
               <th className="py-3 px-6 text-left">Số khung</th>
               <th className="py-3 px-6 text-left">Số Km đã đi</th>
               <th className="py-3 px-6 text-left">Giá Thuê</th>
+              <th className="py-3 px-6 text-left">
+                Người Thay Đổi Chính Sách Giá
+              </th>
               <th className="py-3 px-6 text-left">Hạn Bảo Hành</th>
               <th className="py-3 px-6 text-left">Ngày Tạo</th>
               <th className="py-3 px-6 text-left">Ngày Cập Nhật</th>
@@ -399,8 +403,12 @@ const PhuongTienList: React.FC = () => {
                   {item.gia_thue.toLocaleString("vi-VN")} VND
                 </td>
                 <td className="py-3 px-6 text-left">
+                  {item.nguoi_thay_doi_chinh_sach_gia || "N/A"}
+                </td>
+                <td className="py-3 px-6 text-left">
                   {formatDateTimehanbaotri(item.hanBaoTri)}
                 </td>
+
                 <td className="py-3 px-6 text-left">
                   {formatDateTimecapnhattao(item.ngay_tao)}
                 </td>

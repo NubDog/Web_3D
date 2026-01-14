@@ -35,12 +35,16 @@ export async function getPhuongTiens(request: Request, env: Env): Promise<Respon
 
 			let query = `
                 SELECT 
-                    ${fields || `p.*, d.ten_danh_muc, c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh, pl.ten_phan_loai`}
+                    ${
+											fields ||
+											`p.*, d.ten_danh_muc, c.ten_chinh_sach, c.gia_co_ban, c.tien_coc_mac_dinh, pl.ten_phan_loai,nd.ten_dang_nhap as nguoi_thay_doi_chinh_sach_gia`
+										}
                 FROM PhuongTien p
               
                 LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
 				LEFT JOIN PhanLoaiPhuongTien pl ON p.phan_loai_id = pl.phan_loai_id
 				LEFT JOIN DanhMucPhuongTien d ON d.danh_muc_id = pl.danh_muc_id
+				LEFT JOIN NguoiDung nd ON p.nguoi_thay_doi_chinh_sach_gia_id = nd.nguoi_dung_id
             `;
 
 			const queryParams: (string | number)[] = [];
@@ -96,12 +100,14 @@ export async function getPhuongTienById(request: Request, env: Env, id: string):
 				c.ten_chinh_sach,
 				c.gia_co_ban,
 				c.tien_coc_mac_dinh,
-				pl.ten_phan_loai
+				pl.ten_phan_loai,
+				nd.ten_dang_nhap as nguoi_thay_doi_chinh_sach_gia
 			FROM PhuongTien p
 			
 			LEFT JOIN ChinhSachGia c ON p.chinh_sach_id = c.chinh_sach_id
 			LEFT JOIN PhanLoaiPhuongTien pl ON p.phan_loai_id = pl.phan_loai_id
 			LEFT JOIN DanhMucPhuongTien d ON pl.danh_muc_id = d.danh_muc_id
+			LEFT JOIN NguoiDung nd ON p.nguoi_thay_doi_chinh_sach_gia_id = nd.nguoi_dung_id
 			WHERE p.phuong_tien_id = ?
 			`
 		)
@@ -142,6 +148,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		const bien_so = formData.get('bien_so') as string;
 		const so_km = Number(formData.get('so_km'));
 		const chinh_sach_id = Number(formData.get('chinh_sach_id'));
+		const nguoi_dung_id = formData.get('nguoi_dung_id');
 		const so_khung = formData.get('so_khung') as string;
 		const gia_thue = Number(formData.get('gia_thue'));
 		const ngay_cap_nhat = null;
@@ -152,7 +159,17 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		now.setMonth(now.getMonth() + 4);
 		const hanbaotri = now.toISOString().slice(0, 10);
 
-		if (!ten_phuong_tien || !loai || !trang_thai || !bien_so || !so_khung || !gia_thue || !phan_loai_id) {
+		if (
+			!ten_phuong_tien ||
+			!loai ||
+			!trang_thai ||
+			!bien_so ||
+			!so_khung ||
+			!gia_thue ||
+			!phan_loai_id ||
+			!chinh_sach_id ||
+			!nguoi_dung_id
+		) {
 			return withCors(Response.json({ success: false, error: 'Thiếu dữ liệu bắt buộc' }, { status: 400 }));
 		}
 
@@ -212,8 +229,8 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		const result = await env.DB.prepare(
 			`
       INSERT INTO PhuongTien
-      (ten_phuong_tien, loai, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao, phan_loai_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (ten_phuong_tien, loai, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao, phan_loai_id, nguoi_thay_doi_chinh_sach_gia_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 		)
 			.bind(
@@ -230,7 +247,8 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 				hanbaotri,
 				ngay_cap_nhat,
 				ngay_tao,
-				phan_loai_id
+				phan_loai_id,
+				nguoi_dung_id
 			)
 			.run();
 
@@ -252,18 +270,17 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 
 // Cập nhật thông tin phương tiện
 export async function updatePhuongTien(request: Request, env: Env, id: string): Promise<Response> {
-	// Chỉ chấp nhận PUT
 	if (request.method !== 'PUT') {
 		return withCors(Response.json({ success: false, error: 'Method not allowed' }, { status: 405 }));
 	}
 
 	let new_hinh_anh_key: string | null = null;
 	let new_models_3d_key: string | null = null;
-	let img_url_to_save: string | null | undefined = undefined; // Undefined: không thay đổi; Null: xóa; String: URL mới
+	let img_url_to_save: string | null | undefined = undefined;
 	let model_url_to_save: string | null | undefined = undefined;
 
 	const R2_IMG_DOMAIN = 'https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev';
-	const R2_MODELS_DOMAIN = 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev'; // Thay thế bằng domain models thực tế của bạn
+	const R2_MODELS_DOMAIN = 'https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev';
 
 	try {
 		const formData = await request.formData();
@@ -275,30 +292,21 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		}
 
 		const existing: Record<string, any> = existingRecord as Record<string, any>;
-
 		const getFormValue = (key: string) => formData.get(key) as string | null;
 
 		const ten_phuong_tien = getFormValue('ten_phuong_tien');
 		const loai = getFormValue('loai');
 		const trang_thai = getFormValue('trang_thai');
 		const bien_so = getFormValue('bien_so');
-		const so_km = Number(getFormValue('so_km'));
-		let chinh_sach_id = Number(getFormValue('chinh_sach_id'));
+		const so_km = getFormValue('so_km') ? Number(getFormValue('so_km')) : null;
+		const new_chinh_sach_id = getFormValue('chinh_sach_id') ? Number(getFormValue('chinh_sach_id')) : null;
 		const so_khung = getFormValue('so_khung');
-		const gia_thue = Number(getFormValue('gia_thue'));
-		const phan_loai_id = Number(getFormValue('phan_loai_id'));
+		const gia_thue = getFormValue('gia_thue') ? Number(getFormValue('gia_thue')) : null;
+		const phan_loai_id = getFormValue('phan_loai_id') ? Number(getFormValue('phan_loai_id')) : null;
+		const nguoi_dung_id = getFormValue('nguoi_dung_id') ? Number(getFormValue('nguoi_dung_id')) : null; // ID người thực hiện từ Frontend
 
 		const file = formData.get('file_anh') as File | null;
 		const models = formData.get('models_3d') as File | null;
-
-		const final_gia_thue = gia_thue || existing.gia_thue;
-		if (final_gia_thue > 0 && final_gia_thue <= 1000000) {
-			chinh_sach_id = 1;
-		} else if (final_gia_thue > 1000000 && final_gia_thue <= 10000000) {
-			chinh_sach_id = 2;
-		} else if (final_gia_thue > 10000000) {
-			chinh_sach_id = 3;
-		}
 
 		if (file && file.size > 0) {
 			if (!file.type.startsWith('image/')) {
@@ -315,12 +323,12 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		} else if (formData.has('file_anh') && file?.size === 0) {
 			img_url_to_save = null;
 		}
+
 		if (models && models.size > 0) {
 			const modelExtension = models.name.split('.').pop()?.toLowerCase();
 			if (!modelExtension || !['glb', 'gltf', 'fbx', 'obj', 'zip'].includes(modelExtension)) {
 				return withCors(Response.json({ success: false, error: 'File models không hợp lệ' }, { status: 400 }));
 			}
-
 			const model_id = crypto.randomUUID();
 			new_models_3d_key = `Model Product/${model_id}.${modelExtension}`;
 
@@ -333,8 +341,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		}
 
 		const old_img_url: string | null = existing.img;
-
-		const old_model_url: string | null = (existing.model as string) ?? (existing.model_url as string) ?? null;
+		const old_model_url: string | null = existing.model || null;
 
 		const final_img_url = img_url_to_save === undefined ? old_img_url : img_url_to_save;
 		const final_model_url = model_url_to_save === undefined ? old_model_url : model_url_to_save;
@@ -345,7 +352,6 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 				await env.product.delete(old_img_key).catch((e) => console.error('Lỗi xóa ảnh cũ:', e));
 			}
 		}
-
 		if (new_models_3d_key || final_model_url === null) {
 			if (old_model_url) {
 				const old_model_key = old_model_url.replace(`${R2_MODELS_DOMAIN}/`, '');
@@ -353,25 +359,42 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 			}
 		}
 
+		let final_nguoi_thay_doi_id = existing.nguoi_thay_doi_chinh_sach_gia_id;
+		console.log('📊 Kiểm tra chinh_sach_id:', {
+			new_chinh_sach_id,
+			old_chinh_sach_id: existing.chinh_sach_id,
+			changed: new_chinh_sach_id !== null && new_chinh_sach_id !== existing.chinh_sach_id,
+			nguoi_dung_id,
+		});
+
+		if (new_chinh_sach_id !== null && new_chinh_sach_id !== existing.chinh_sach_id) {
+			console.log('✅ Chinh sách giá thay đổi! Lưu nguoi_dung_id:', nguoi_dung_id);
+			final_nguoi_thay_doi_id = nguoi_dung_id;
+		}
+
 		const finalValues = {
 			ten_phuong_tien: ten_phuong_tien ?? existing.ten_phuong_tien,
 			loai: loai ?? existing.loai,
 			trang_thai: trang_thai ?? existing.trang_thai,
 			bien_so: bien_so ?? existing.bien_so,
-			so_km: so_km || existing.so_km,
-			chinh_sach_id: chinh_sach_id || existing.chinh_sach_id,
+			so_km: so_km !== null ? so_km : existing.so_km,
+			chinh_sach_id: new_chinh_sach_id !== null ? new_chinh_sach_id : existing.chinh_sach_id,
 			so_khung: so_khung ?? existing.so_khung,
-			gia_thue: final_gia_thue,
+			gia_thue: gia_thue !== null ? gia_thue : existing.gia_thue,
 			img: final_img_url,
 			model: final_model_url,
 			ngay_cap_nhat: getNowVN(),
-			phan_loai_id: phan_loai_id || existing.phan_loai_id,
+			phan_loai_id: phan_loai_id !== null ? phan_loai_id : existing.phan_loai_id,
+			nguoi_thay_doi_chinh_sach_gia_id: final_nguoi_thay_doi_id,
 		};
 
-		const updateKeys = Object.keys(finalValues).join(' = ?, ') + ' = ?'; // Tạo chuỗi SET key = ?, key2 = ?...
-		const updateValues = Object.values(finalValues).map((value) => (value === undefined || value === 0 ? null : value));
+		const updateKeys = Object.keys(finalValues).join(' = ?, ') + ' = ?';
+		const updateValues = Object.values(finalValues);
 
-		await env.DB.prepare(
+		console.log('🔄 UPDATE values:', finalValues);
+		console.log('🔄 UPDATE query:', `UPDATE PhuongTien SET ${updateKeys} WHERE phuong_tien_id = ?`);
+
+		const result = await env.DB.prepare(
 			`UPDATE PhuongTien
              SET ${updateKeys}
              WHERE phuong_tien_id = ?`
@@ -379,18 +402,25 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 			.bind(...updateValues, id)
 			.run();
 
+		console.log('✅ UPDATE result:', result);
+
 		return withCors(Response.json({ success: true, message: 'Cập nhật phương tiện thành công' }));
 	} catch (err: any) {
-		if (new_hinh_anh_key) {
-			await env.product.delete(new_hinh_anh_key).catch((e) => console.error('Lỗi xóa ảnh mới mồ côi:', e));
-		}
-
-		if (new_models_3d_key) {
-			await env.r2.delete(new_models_3d_key).catch((e) => console.error('Lỗi xóa models mới mồ côi:', e));
-		}
+		// Rollback R2 nếu lỗi xảy ra trong quá trình cập nhật DB
+		if (new_hinh_anh_key) await env.product.delete(new_hinh_anh_key).catch(() => {});
+		if (new_models_3d_key) await env.r2.delete(new_models_3d_key).catch(() => {});
 
 		console.error('Lỗi khi cập nhật phương tiện:', err);
-		return withCors(Response.json({ success: false, error: 'Lỗi khi cập nhật phương tiện', details: err.message }, { status: 500 }));
+		return withCors(
+			Response.json(
+				{
+					success: false,
+					error: 'Lỗi khi cập nhật phương tiện',
+					details: err.message,
+				},
+				{ status: 500 }
+			)
+		);
 	}
 }
 // Xoá phương tiện

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, type FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../contexts/AuthContext";
 import "../css/PhuongTienList.css";
 import BabylonScene from "../../babylon";
 // --- INTERFACE CẬP NHẬT ---
@@ -29,11 +30,19 @@ interface PhanLoai {
   ten_phan_loai: string;
 }
 
+interface ChinhSachGia {
+  chinh_sach_id: number;
+  ten_chinh_sach: string;
+  gia_co_ban: number;
+  tien_coc_mac_dinh: number;
+}
+
 const API_BASE_URL = "https://r2-api.sharkeatrice.workers.dev";
 
 const PhuongTienModal: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const [phuongTien, setPhuongTien] = useState<Partial<PhuongTien> | null>(
     null
@@ -44,6 +53,7 @@ const PhuongTienModal: React.FC = () => {
   const isEditing = !!id;
 
   const [phanLoaiList, setPhanLoaiList] = useState<PhanLoai[]>([]);
+  const [chinhSachList, setChinhSachList] = useState<ChinhSachGia[]>([]);
 
   // Hàm hỗ trợ tạo URL cho API (Giữ nguyên)
   const buildCandidateUrls = (path: string) => {
@@ -91,37 +101,34 @@ const PhuongTienModal: React.FC = () => {
     );
   };
 
-  // Tải chi tiết Phương tiện (Giữ nguyên)
+  // Tải chi tiết Phương tiện + danh sách
   useEffect(() => {
-    const loadDetail = async () => {
-      if (!isEditing) {
-        setLoading(false);
-        return;
-      }
+    const loadData = async () => {
       setLoading(true);
       setError(null);
       try {
-        const { data } = await fetchWithFallback(`/Admin/phuong-tien/${id}`);
-        setPhuongTien(data as Partial<PhuongTien>);
+        // Load danh sách trước
+        const r2 = await fetchWithFallback("/api/phan-loai-hieu-xe");
+        setPhanLoaiList(Array.isArray(r2.data) ? r2.data : []);
+
+        const cs = await fetchWithFallback("/api/chinh-sach-gia");
+        setChinhSachList(Array.isArray(cs.data) ? cs.data : []);
+
+        // Nếu đang edit, load chi tiết phương tiện
+        if (isEditing && id) {
+          const { data } = await fetchWithFallback(`/Admin/phuong-tien/${id}`);
+          setPhuongTien(data as Partial<PhuongTien>);
+        }
       } catch (err: any) {
-        setError(`Lỗi khi tải chi tiết phương tiện: ${err.message}`);
+        if (isEditing) {
+          setError(`Lỗi khi tải dữ liệu: ${err.message}`);
+        }
       } finally {
         setLoading(false);
       }
     };
-    loadDetail();
+    loadData();
   }, [id, isEditing]);
-
-  // Tải danh sách Danh Mục (Giữ nguyên)
-  useEffect(() => {
-    const loadLists = async () => {
-      try {
-        const r2 = await fetchWithFallback("/api/phan-loai-hieu-xe");
-        setPhanLoaiList(Array.isArray(r2.data) ? r2.data : []);
-      } catch {}
-    };
-    loadLists();
-  }, []);
 
   // Hàm Validate Form (Giữ nguyên)
   const validateForm = (data: Partial<PhuongTien>) => {
@@ -147,6 +154,9 @@ const PhuongTienModal: React.FC = () => {
     if (!data.phan_loai_id || data.phan_loai_id <= 0) {
       errors.phan_loai_id = "Vui lòng chọn phân loại phương tiện";
     }
+    if (!data.chinh_sach_id || data.chinh_sach_id <= 0) {
+      errors.chinh_sach_id = "Vui lòng chọn chính sách giá";
+    }
 
     return errors;
   };
@@ -157,23 +167,23 @@ const PhuongTienModal: React.FC = () => {
     setError(null);
     setFormErrors({});
 
+    if (!currentUser) {
+      setError("Bạn chưa đăng nhập");
+      return;
+    }
+
     const form = e.currentTarget;
     const formData = new FormData(form);
 
     const gia_thue = Number(formData.get("gia_thue")) || 0;
-
-    // Tự động tính chinh_sach_id và thêm vào FormData
-    let chinh_sach_id = 0;
-    if (gia_thue > 0 && gia_thue <= 1000000) {
-      chinh_sach_id = 1;
-    } else if (gia_thue > 1000000 && gia_thue <= 10000000) {
-      chinh_sach_id = 2;
-    } else if (gia_thue > 10000000) {
-      chinh_sach_id = 3;
-    }
+    const chinh_sach_id = Number(formData.get("chinh_sach_id")) || 0;
 
     formData.set("chinh_sach_id", chinh_sach_id.toString());
-    formData.set("trang_thai", "SAN_SANG");
+    // Chỉ set trang_thai khi thêm mới
+    if (!isEditing) {
+      formData.set("trang_thai", "SAN_SANG");
+    }
+    formData.set("nguoi_dung_id", currentUser.nguoi_dung_id.toString());
 
     // Tạo object tạm thời để validate
     const payloadForValidation: Partial<PhuongTien> = {
@@ -184,6 +194,7 @@ const PhuongTienModal: React.FC = () => {
       so_khung: (formData.get("so_khung") as string) || "",
       gia_thue: gia_thue,
       phan_loai_id: Number(formData.get("phan_loai_id")) || 0,
+      chinh_sach_id: chinh_sach_id,
     };
 
     const errors = validateForm(payloadForValidation);
@@ -198,22 +209,31 @@ const PhuongTienModal: React.FC = () => {
     let lastErr: any = null;
     for (const url of candidates) {
       try {
+        console.log(`[${isEditing ? "PUT" : "POST"}] Gửi tới: ${url}`, {
+          method: isEditing ? "PUT" : "POST",
+          hasFormData: true,
+        });
+
         const resp = await fetch(url, {
           method: isEditing ? "PUT" : "POST",
           body: formData, // Gửi FormData trực tiếp
         });
 
         const responseData = await resp.json().catch(() => null);
+        console.log(`Response từ ${url}:`, resp.status, responseData);
 
         if (resp.ok) {
+          console.log("✅ Lưu thành công, redirect...");
           navigate("/admin/phuong-tien");
           return;
         } else {
           lastErr = new Error(
             `Lỗi HTTP ${resp.status}: ${responseData?.error || resp.statusText}`
           );
+          console.warn("❌ Lỗi response:", lastErr.message);
         }
       } catch (err: any) {
+        console.error("❌ Lỗi fetch:", err);
         lastErr = err;
       }
     }
@@ -336,21 +356,35 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
+          {/* Chính sách giá */}
+          <div className="form-group">
+            <label>Chính sách giá:</label>
+            <select
+              name="chinh_sach_id"
+              defaultValue={phuongTien?.chinh_sach_id ?? ""}
+            >
+              <option value="">-- Chọn chính sách giá --</option>
+              {chinhSachList.map((cs) => (
+                <option key={cs.chinh_sach_id} value={cs.chinh_sach_id}>
+                  {cs.ten_chinh_sach}
+                </option>
+              ))}
+            </select>
+            {formErrors.chinh_sach_id && (
+              <span className="error-text">{formErrors.chinh_sach_id}</span>
+            )}
+          </div>
+
           {/* HÌNH ẢNH (UPLOAD R2) */}
           <div className="form-group">
             <label>Hình ảnh Phương tiện:</label>
-            <input
-              type="file"
-              name="file_anh" // Tên key này phải khớp với backend!
-              accept="image/*"
-            />
+            <input type="file" name="file_anh" accept="image/*" />
 
-            {/* Hiển thị ảnh hiện tại khi chỉnh sửa */}
             {isEditing && phuongTien?.img && (
               <div className="mt-2 p-2 border rounded border-gray-300">
                 <p className="text-sm font-semibold mb-1">Ảnh hiện tại:</p>
                 <img
-                  src={`${phuongTien.img}`} // ✅ Dùng trực tiếp img vì backend đã lưu full URL
+                  src={`${phuongTien.img}`}
                   alt="Ảnh phương tiện"
                   className="w-32 h-32 object-cover rounded shadow"
                   onError={(e) => {
@@ -366,7 +400,6 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
-          {/* ✅ MODELS 3D (UPLOAD R2) */}
           <div className="form-group">
             <label>Models 3D (GLB/GLTF/FBX):</label>
             <input
@@ -375,17 +408,14 @@ const PhuongTienModal: React.FC = () => {
               accept=".glb,.gltf,.fbx,.obj,.zip"
             />
 
-            {/* Chỉ hiển thị khi đang sửa và đã có model */}
             {isEditing && phuongTien?.model && (
               <div className="mt-3 p-2 border rounded border-gray-300">
                 <p className="text-sm font-semibold mb-2">Preview Models 3D:</p>
 
-                {/* Viewer Babylon */}
                 <div style={{ width: "100%", height: "350px" }}>
                   <BabylonScene modelUrl={phuongTien.model} />
                 </div>
 
-                {/* Link tải */}
                 <a
                   href={phuongTien.model}
                   target="_blank"
@@ -402,7 +432,6 @@ const PhuongTienModal: React.FC = () => {
             )}
           </div>
 
-          {/* Actions */}
           <div className="form-actions">
             <button type="button" onClick={() => navigate(-1)}>
               Hủy
