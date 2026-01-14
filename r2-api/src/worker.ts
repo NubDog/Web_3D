@@ -1,3 +1,4 @@
+
 export interface Env {
     DB: D1Database;
     hd: R2Bucket; 
@@ -18,7 +19,7 @@ function json(data: unknown, status = 200) {
 }
 
 export default {
-   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     // handle preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
@@ -67,6 +68,10 @@ export async function handleScheduled(
     // console.log("🕐 [CRON] Trigger time:", new Date(event.scheduledTime).toISOString());
 
     ctx.waitUntil(handleExpiredDeposits(env));
+
+    console.log("🕐 [CRON] Kiểm tra đơn từ chối quá hạn...");
+    ctx.waitUntil(handleAutoRejectLevel3Orders(env));
+
 }
 /**
  * Logic xử lý hủy đơn quá hạn cọc (5 phút)
@@ -253,6 +258,223 @@ async function sendCancellationEmail(
         } else {
             const errorText = await res.text();
             console.error(`  ❌ Lỗi gửi email tới ${data.email}:`, errorText);
+        }
+    } catch (error: any) {
+        console.error(`  ❌ Exception gửi email:`, error.message);
+    }
+}
+async function handleAutoRejectLevel3Orders(env: Env) {
+    try {
+        // Tìm các đơn CHO_DUYET > 60 phút của khách cấp 3
+        const pendingOrders = await env.DB.prepare(`
+            SELECT 
+                dt.don_thue_id,
+                dt.khach_hang_id,
+                dt.phuong_tien_id,
+                dt.ngay_tao,
+                kh.ho_ten,
+                nd.email,
+                pt.ten_phuong_tien,
+                CAST((julianday('now', '+7 hours') - julianday(dt.ngay_tao)) * 1440 AS INTEGER) as phut_da_qua
+            FROM DonThue dt
+            JOIN KhachHang kh ON dt.khach_hang_id = kh.khach_hang_id
+            JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
+            JOIN PhuongTien pt ON dt.phuong_tien_id = pt.phuong_tien_id
+            WHERE dt.trang_thai = 'CHO_DUYET'
+              AND julianday('now', '+7 hours') - julianday(dt.ngay_tao) > (2.0 / 1440.0)
+        `).all<{
+            don_thue_id: number;
+            khach_hang_id: number;
+            phuong_tien_id: number;
+            ngay_tao: string;
+            ho_ten: string;
+            email: string;
+            ten_phuong_tien: string;
+            phut_da_qua: number;
+        }>();
+
+        if (!pendingOrders.results || pendingOrders.results.length === 0) {
+            console.log("✅ [CRON] Không có đơn chờ duyệt quá 60 phút");
+            return { rejected: 0 };
+        }
+
+        console.log(`⚠️ [CRON] Tìm thấy ${pendingOrders.results.length} đơn chờ duyệt quá 60 phút`);
+
+        let rejectedCount = 0;
+        const emailPromises: Promise<void>[] = [];
+
+        for (const order of pendingOrders.results) {
+            // Check xem khách này có vi phạm cấp 3 không
+            const violations = await env.DB.prepare(`
+                SELECT * FROM ViPham
+                WHERE khach_hang_id = ? AND trang_thai = 'chua_xu_ly'
+            `).bind(order.khach_hang_id).all();
+
+            const totalDebt = violations.results.reduce((sum: number, v: any) => sum + v.so_tien_phat, 0);
+            const totalViolations = violations.results.length;
+
+            // Chỉ tự động từ chối nếu CẤP 3
+            if (totalDebt > 2000000 || totalViolations >= 3) {
+                console.log(`  - Tự động từ chối đơn #${order.don_thue_id}: ${order.ho_ten} | Vi phạm: ${totalViolations} | Nợ: ${totalDebt}`);
+
+                // Từ chối đơn
+                await env.DB.batch([
+                    env.DB.prepare(`
+                        UPDATE DonThue 
+                        SET trang_thai = 'TU_CHOI',
+                            ghi_chu = '[HỆ THỐNG] Tự động từ chối sau 60p - Vi phạm cấp 3',
+                            ngay_cap_nhat = datetime('now', '+7 hours')
+                        WHERE don_thue_id = ?
+                    `).bind(order.don_thue_id),
+
+                    env.DB.prepare(`
+                        UPDATE PhuongTien 
+                        SET trang_thai = 'SAN_SANG' 
+                        WHERE phuong_tien_id = ?
+                    `).bind(order.phuong_tien_id)
+                ]);
+
+                rejectedCount++;
+
+                // Gửi email
+                if (env.RESEND_API_KEY && order.email) {
+                    emailPromises.push(
+                        sendAutoRejectEmail(env, {
+                            email: order.email,
+                            ho_ten: order.ho_ten,
+                            don_thue_id: order.don_thue_id,
+                            ten_phuong_tien: order.ten_phuong_tien,
+                            total_debt: totalDebt,
+                            violations: violations.results
+                        })
+                    );
+                }
+            }
+        }
+
+        if (rejectedCount > 0) {
+            console.log(`✅ [CRON] Đã tự động từ chối ${rejectedCount} đơn cấp 3`);
+        }
+
+        if (emailPromises.length > 0) {
+            await Promise.allSettled(emailPromises);
+            console.log(`📧 [CRON] Đã gửi ${emailPromises.length} email thông báo`);
+        }
+
+        return { success: true, rejected: rejectedCount };
+
+    } catch (error: any) {
+        console.error("❌ [CRON] Lỗi:", error.message);
+        return { success: false, error: error.message };
+    }
+}
+
+
+async function sendAutoRejectEmail(
+    env: Env,
+    data: { 
+        email: string; 
+        ho_ten: string; 
+        don_thue_id: number; 
+        ten_phuong_tien: string;
+        total_debt: number;
+        violations: any[];
+    }
+): Promise<void> {
+    try {
+        const fmt = (t: number) => new Intl.NumberFormat('vi-VN').format(t) + ' đ';
+
+        const emailBody = {
+            from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+            to: 'khoatran3123@gmail.com',//data.email,
+            subject: `❌ Đơn #${data.don_thue_id} tự động bị từ chối`,
+            html: `
+                <!DOCTYPE html>
+                <html>
+                <head><meta charset="UTF-8"></head>
+                <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+                    <table align="center" width="600" style="margin: 20px auto; border: 1px solid #ccc; background: #fff;">
+                        <tr>
+                            <td align="center" bgcolor="#dc3545" style="padding: 20px;">
+                                <h1 style="color: #fff; margin: 0;">🚫 ĐƠN TỰ ĐỘNG BỊ TỪ CHỐI</h1>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 40px 30px;">
+                                <h2 style="color: #333;">Xin chào ${data.ho_ten},</h2>
+                                
+                                <div style="background: #ffebee; padding: 20px; border-left: 5px solid #dc3545; margin: 20px 0; border-radius: 8px;">
+                                    <h3 style="color: #c62828; margin-top: 0;">⏰ TỰ ĐỘNG TỪ CHỐI</h3>
+                                    <p style="font-size: 16px;">
+                                        Đơn thuê xe <strong>#${data.don_thue_id}</strong> (${data.ten_phuong_tien}) 
+                                        đã bị <strong style="color: #dc3545;">TỰ ĐỘNG TỪ CHỐI</strong> do:
+                                    </p>
+                                    <ul style="line-height: 1.8; font-size: 15px;">
+                                        <li>Bạn có vi phạm nghiêm trọng chưa xử lý</li>
+                                        <li>Đơn chờ duyệt quá 60 phút</li>
+                                    </ul>
+                                    <p style="font-size: 16px; margin-top: 15px;">
+                                        Tổng nợ vi phạm: <strong style="color: #dc3545; font-size: 22px;">${fmt(data.total_debt)}</strong>
+                                    </p>
+                                </div>
+                                
+                                <h3 style="border-bottom: 2px solid #dc3545; padding-bottom: 10px;">📋 Danh sách vi phạm</h3>
+                                <table width="100%" style="border-collapse: collapse; margin: 20px 0;">
+                                    ${data.violations.map((v: any) => `
+                                        <tr style="border-bottom: 1px solid #eee;">
+                                            <td style="padding: 12px;">
+                                                <strong>${v.loai_vi_pham}</strong><br>
+                                                <small style="color: #888;">${new Date(v.thoi_gian_xay_ra).toLocaleDateString('vi-VN')}</small>
+                                            </td>
+                                            <td style="padding: 12px; text-align: right; font-weight: bold; color: #dc3545;">
+                                                ${fmt(v.so_tien_phat)}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                    <tr style="background: #ffebee;">
+                                        <td style="padding: 15px; font-weight: bold;">TỔNG NỢ</td>
+                                        <td style="padding: 15px; text-align: right; color: #dc3545; font-size: 22px; font-weight: bold;">
+                                            ${fmt(data.total_debt)}
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 25px 0;">
+                                    <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê xe</h3>
+                                    <ol style="line-height: 2; font-size: 15px;">
+                                        <li>Thanh toán <strong>TOÀN BỘ ${fmt(data.total_debt)}</strong></li>
+                                        <li>Liên hệ hotline: <strong>0123 - 4567 - 89</strong></li>
+                                        <li>Sau xác nhận, bạn có thể đặt đơn mới</li>
+                                    </ol>
+                                </div>
+                                
+                                <p style="text-align: center; margin-top: 30px;">
+                                    <a href="tel:0123 - 4567 - 89" style="background: #dc3545; color: white; padding: 16px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                                        📞 Liên hệ: 0123 - 4567 - 89
+                                    </a>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                </html>
+            `
+        };
+
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailBody)
+        });
+
+        if (res.ok) {
+            console.log(`  ✅ Email đã gửi tới ${data.email}`);
+        } else {
+            const errorText = await res.text();
+            console.error(`  ❌ Lỗi gửi email:`, errorText);
         }
     } catch (error: any) {
         console.error(`  ❌ Exception gửi email:`, error.message);

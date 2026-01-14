@@ -31,12 +31,14 @@ import {
 	handleCancelOrder,
 	handleSettleOrder,
 	handleConfirmPayment,
+	handleCheckOrderViolation,
+	handleRejectOrderLevel3,
 } from './Admin/don-thue';
 import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
-import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation } from './Admin/vi-pham';
+import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation, handleCheckCustomerViolations, handleGetCustomerViolationHistory, handleBatchCheckViolations, handleConfirmViolationPayment } from './Admin/vi-pham';
 import { addhieupt, deletehieupt, gethieupt, updatehieupt } from './Admin/Hieu-phuong-tien';
 import {
 	addBaoTri,
@@ -379,6 +381,21 @@ export default {
 				return handleConfirmPayment(request, env, id);
 			}
 
+			if (path.match(/^\/api\/don-thue\/(\d+)\/check-violation$/)) {
+				const orderId = path.split('/')[3];
+				return handleCheckOrderViolation(request, env, orderId);
+			}
+			 if (path.match(/^\/api\/don-thue\/(\d+)\/reject$/) && request.method === 'POST') {
+			const orderId = path.split('/')[3];
+			return handleRejectOrderLevel3(request, env, orderId);
+			}
+
+			const confirmViolationPaymentMatch = path.match(/^\/api\/don-thue\/(\d+)\/confirm-violation-payment$/);
+			if (confirmViolationPaymentMatch && method === 'POST') {
+				const orderId = confirmViolationPaymentMatch[1];
+				return handleConfirmViolationPayment(request, env, orderId);
+			}
+			
 			// ------------------- Vi phạm -------------------
 			if (path === '/api/violations' && method === 'POST') {
 				return handleCreateViolation(request, env);
@@ -394,6 +411,19 @@ export default {
 			if (violationMatch && method === 'DELETE') {
 				const violationId = violationMatch[1];
 				return handleDeleteViolation(request, env, violationId);
+			}
+			if (path.match(/^\/api\/customers\/(\d+)\/violations\/check$/) && method === 'GET') {
+				const khachHangId = path.match(/^\/api\/customers\/(\d+)\/violations\/check$/)![1];
+				return handleCheckCustomerViolations(request, env, khachHangId);
+			}
+			if (path === '/api/violations/batch-check' && method === 'POST') {
+				return handleBatchCheckViolations(request, env);
+			}
+
+		// ✅ API lấy lịch sử vi phạm đầy đủ
+			if (path.match(/^\/api\/customers\/(\d+)\/violations\/history$/) && method === 'GET') {
+				const khachHangId = path.match(/^\/api\/customers\/(\d+)\/violations\/history$/)![1];
+				return handleGetCustomerViolationHistory(request, env, khachHangId);
 			}
 
 			// ------------------- User Profile -------------------

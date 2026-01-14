@@ -196,9 +196,13 @@ export const handleGetPendingOrders = async (request: Request, env: Env) => {
 
 export const handleApproveOrder = async (request: Request, env: Env, orderId: string) => {
     try {
-        const { nhan_vien_id } = await request.json<{ nhan_vien_id: number }>();
+       const { nhan_vien_id, condition_type, note } = await request.json<{
+            nhan_vien_id: number;
+            condition_type?: 'extra_deposit' | 'pay_first' | 'normal';
+            note?: string;
+        }>();
         if (!nhan_vien_id) return jsonResponse({ success: false, error: "Thiếu ID nhân viên" }, 400);
-
+        
         const orderInfo = await env.DB.prepare(`
             SELECT 
                 dt.don_thue_id, dt.tong_tien, dt.tien_coc_yeu_cau, 
@@ -238,6 +242,37 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
 
         if (!orderInfo) return jsonResponse({ success: false, error: "Không tìm thấy đơn" }, 404);
 
+        const violations = await env.DB.prepare(`
+            SELECT * FROM ViPham
+            WHERE khach_hang_id = ? AND trang_thai = 'chua_xu_ly'
+        `).bind(orderInfo.khach_hang_id).all();
+
+        const totalDebt = violations.results.reduce((sum: number, v: any) => sum + v.so_tien_phat, 0);
+        const totalViolations = violations.results.length;
+
+        let level = 0; 
+        if (totalViolations === 0) {
+            level = 0; 
+        } else if (totalDebt > 2000000 || totalViolations >= 3) {
+            level = 3; 
+        } else if (totalViolations >= 2 || totalDebt > 1000000) { 
+            level = 2; 
+        } else {
+            level = 1; 
+        }
+        
+
+        if (level === 3) {
+            return jsonResponse({
+                success: false,
+                error: 'KHÔNG THỂ DUYỆT: Khách hàng vi phạm cấp 3. Vui lòng từ chối đơn.',
+                level: 3,
+                total_debt: totalDebt,
+                total_violations: totalViolations,
+                should_reject: true
+            }, 403);
+        }
+
         const d1 = new Date(orderInfo.ngay_bat_dau);
         const d2 = new Date(orderInfo.ngay_ket_thuc);
         const diffTime = Math.abs(d2.getTime() - d1.getTime());
@@ -249,9 +284,24 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
         const tamTinh = donGia * soNgay;
         const tienGiam = Math.round(tamTinh * (tyLeGiam / 100));
         const tongTien = tamTinh - tienGiam;
-        const tienCoc = tongTien * (orderInfo.tien_coc_yeu_cau/100) ;
+        // const tienCoc = tongTien * (orderInfo.tien_coc_yeu_cau/100) ;
+        
+        let tienCocYeuCau = tongTien * (orderInfo.tien_coc_yeu_cau/100);
+        if (level === 2 && condition_type === 'extra_deposit') {
+            const cocThem = Math.round(totalDebt * 0.5);
+            tienCocYeuCau += cocThem;
+        }
 
         const fmt = (t: number) => t.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+        let ghiChu = note || '';
+
+        if (level === 1) {
+            ghiChu = `[CONDITION: REMINDER] Khách hàng có ${totalViolations} vi phạm (${fmt(totalDebt)}). Nhắc nhở thanh toán.`;
+        } else if (level === 2) {
+            ghiChu = `[CONDITION: PAY_FIRST] Khách hàng có ${totalViolations} vi phạm (${fmt(totalDebt)}). YÊU CẦU thanh toán vi phạm TRƯỚC KHI đặt cọc.`;
+        }
+
 
         const so_hop_dong = `HD-${orderId}-${new Date().getTime()}`;
         const contractData = {
@@ -278,11 +328,9 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
             giam_gia: tienGiam,                       
             ten_chinh_sach: orderInfo.ten_chinh_sach || '', 
 
-            
             tong_tien: tongTien,
-            tien_coc_yeu_cau: tienCoc,
+            tien_coc_yeu_cau: tienCocYeuCau,
             
-
             cccd_anh_truoc: orderInfo.anh_truoc,
             cccd_anh_sau: orderInfo.anh_sau
         };
@@ -298,8 +346,14 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
 
         await env.DB.batch([
             // Cập nhật trạng thái đơn
-            env.DB.prepare("UPDATE DonThue SET trang_thai = 'DA_DUYET', nhan_vien_tao = ?, ngay_cap_nhat = datetime('now', '+7 hours') WHERE don_thue_id = ?")
-                .bind(nhan_vien_id, orderId),
+           env.DB.prepare(`
+                UPDATE DonThue 
+                SET trang_thai = 'DA_DUYET', 
+                    nhan_vien_tao = ?, 
+                    ghi_chu = ?,  -- ✅ THÊM FIELD NÀY
+                    ngay_cap_nhat = datetime('now', '+7 hours') 
+                WHERE don_thue_id = ?
+            `).bind(nhan_vien_id, ghiChu, orderId),
 
             // Tạo hợp đồng 
             env.DB.prepare(`
@@ -313,82 +367,261 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
             `).bind(orderId, orderInfo.tien_coc_yeu_cau)
         ]);
 
-        if (env.RESEND_API_KEY) {
-            console.log("🔥 Đang gửi mail...");
+       if (env.RESEND_API_KEY) {
+            const fmt = (t: number) => new Intl.NumberFormat('vi-VN').format(t) + ' đ';
 
-            const emailBody = {
-                from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
-                to: 'khoatran3123@gmail.com',
-                subject: `[ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`,
-                html: `
-                <!DOCTYPE html>
-                <html>
-                <head><meta charset="UTF-8"></head>
-                <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
-                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; margin-top: 20px; margin-bottom: 20px; border: 1px solid #cccccc; background-color: #ffffff;">
-                        <tr><td align="center" bgcolor="#008cffff" style="padding: 20px 0;"><h1 style="color: #ffffff; margin: 0; font-size: 24px;">XÁC NHẬN HỢP ĐỒNG</h1></td></tr>
-                        <tr>
-                            <td style="padding: 40px 30px;">
-                                <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderInfo.ho_ten},</h2>
-                                <p style="color: #555555; font-size: 16px; line-height: 1.5;">Đơn thuê xe <strong>#${orderId}</strong> của bạn đã được duyệt. Chi tiết tài chính như sau:</p>
-                                
-                                <table width="100%" style="border-collapse: collapse; margin-top: 20px; margin-bottom: 30px; font-size: 15px;">
-                                    <tr style="border-bottom: 1px solid #eeeeee;">
-                                        <td style="padding: 12px 0; color: #555555;">Phương tiện:</td>
-                                        <td style="padding: 12px 0; color: #333333; text-align: right; font-weight: bold;">${orderInfo.ten_phuong_tien}</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid #eeeeee;">
-                                        <td style="padding: 12px 0; color: #555555;">Thời gian:</td>
-                                        <td style="padding: 12px 0; color: #333333; text-align: right;">${new Date(orderInfo.ngay_bat_dau).toLocaleDateString('vi-VN')} - ${new Date(orderInfo.ngay_ket_thuc).toLocaleDateString('vi-VN')}</td>
-                                    </tr>
-                                    <tr style="border-bottom: 1px solid #eeeeee;">
-                                        <td style="padding: 12px 0; color: #555555;">Tạm tính:</td>
-                                        <td style="padding: 12px 0; color: #333333; text-align: right;">${fmt(tamTinh)}</td>
-                                    </tr>
+            let emailSubject = '';
+            let emailHtml = '';
+
+            // TRƯỜNG HỢP 0: KHÔNG VI PHẠM (EMAIL BÌNH THƯỜNG)
+            if (level === 0) {
+                emailSubject = `✅ [ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`;
+                emailHtml = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head><meta charset="UTF-8"></head>
+                    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; margin: 20px auto; border: 1px solid #cccccc; background-color: #ffffff;">
+                            <tr><td align="center" bgcolor="#008cffff" style="padding: 20px 0;"><h1 style="color: #ffffff; margin: 0; font-size: 24px;">XÁC NHẬN HỢP ĐỒNG</h1></td></tr>
+                            <tr>
+                                <td style="padding: 40px 30px;">
+                                    <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderInfo.ho_ten},</h2>
+                                    <p style="color: #555555; font-size: 16px; line-height: 1.5;">Đơn thuê xe <strong>#${orderId}</strong> của bạn đã được duyệt.</p>
                                     
-                                    ${tienGiam > 0 ? `
-                                    <tr style="border-bottom: 1px solid #eeeeee;">
-                                        <td style="padding: 12px 0; color: #555555;">Khuyến mãi (${tyLeGiam}%):<br><span style="font-size:12px;color:#888">${orderInfo.ten_chinh_sach || ''}</span></td>
-                                        <td style="padding: 12px 0; color: #28a745; text-align: right; font-weight: bold;">-${fmt(tienGiam)}</td>
-                                    </tr>` : ''}
+                                    <table width="100%" style="border-collapse: collapse; margin: 20px 0; font-size: 15px;">
+                                        <tr style="border-bottom: 1px solid #eeeeee;">
+                                            <td style="padding: 12px 0; color: #555555;">Phương tiện:</td>
+                                            <td style="padding: 12px 0; color: #333333; text-align: right; font-weight: bold;">${orderInfo.ten_phuong_tien}</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #eeeeee;">
+                                            <td style="padding: 12px 0; color: #555555;">Thời gian:</td>
+                                            <td style="padding: 12px 0; color: #333333; text-align: right;">${d1.toLocaleDateString('vi-VN')} - ${d2.toLocaleDateString('vi-VN')}</td>
+                                        </tr>
+                                        <tr style="border-bottom: 1px solid #eeeeee;">
+                                            <td style="padding: 12px 0; color: #333333; font-weight: bold;">Tổng tiền:</td>
+                                            <td style="padding: 12px 0; color: #008cffff; text-align: right; font-weight: bold; font-size: 18px;">${fmt(tongTien)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 12px 0; color: #555555;">Tiền cọc:</td>
+                                            <td style="padding: 12px 0; color: #666; text-align: right;">${fmt(tienCocYeuCau)}</td>
+                                        </tr>
+                                    </table>
+                                    
+                                    <p style="text-align: center; margin-top: 30px;">
+                                        <a href="${publicUrl}" style="background-color: #008cffff; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">XEM HỢP ĐỒNG</a>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                `;
+            }
+            // TRƯỜNG HỢP 1: LƯU Ý (CÓ VI PHẠM NHẸ)
+            else if (level === 1) {
+                const qrAmount = totalDebt;
+                const qrContent = `Vipham ${qrAmount} ${orderId}`;
+                const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+                
+                emailSubject = `✅ Đơn #${orderId} đã duyệt - Lưu ý vi phạm`;
+                emailHtml = `
+                    <!DOCTYPE html>
+                    <html>
+                    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+                        <table align="center" width="600" style="margin: 20px auto; border: 1px solid #ccc; background: #fff;">
+                            <tr>
+                                <td align="center" bgcolor="#ffc107" style="padding: 20px;">
+                                    <h1 style="color: #fff; margin: 0;">⚠️ NHẮC NHỞ THANH TOÁN VI PHẠM</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 40px 30px;">
+                                    <h2 style="color: #333;">Xin chào ${orderInfo.ho_ten},</h2>
+                                    
+                                    <div style="background: #fff3cd; padding: 20px; border-left: 5px solid #ffc107; margin: 20px 0; border-radius: 8px;">
+                                        <h3 style="color: #856404; margin-top: 0;">✅ Đơn đã được duyệt</h3>
+                                        <p>Đơn thuê xe <strong>#${orderId}</strong> (${orderInfo.ten_phuong_tien}) đã được duyệt.</p>
+                                        <p style="margin-top: 15px;">
+                                            Tuy nhiên, bạn có <strong>${totalViolations} vi phạm chưa xử lý</strong> với tổng nợ: 
+                                            <strong style="color: #dc3545; font-size: 20px;">${fmt(totalDebt)}</strong>
+                                        </p>
+                                    </div>
 
-                                    <tr style="border-bottom: 1px solid #eeeeee;">
-                                        <td style="padding: 12px 0; color: #333333; font-weight: bold; font-size: 16px;">Tổng tiền thuê:</td>
-                                        <td style="padding: 12px 0; color: #008cffff; text-align: right; font-weight: bold; font-size: 18px;">${fmt(tongTien)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="padding: 12px 0; color: #555555;">Tiền cọc yêu cầu:</td>
-                                        <td style="padding: 12px 0; color: #666; text-align: right;">${fmt(tienCoc)}</td>
-                                    </tr>
-                                </table>
-                                
-                                <p style="text-align: center; margin-top: 30px;">
-                                    <a href="${publicUrl}" style="background-color: #008cffff; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">XEM CHI TIẾT HỢP ĐỒNG</a>
-                                </p>
-                            </td>
-                        </tr>
-                        <tr><td bgcolor="#f4f4f4" style="padding: 20px 30px; text-align: center; border-top: 1px solid #cccccc;"><p style="margin: 0; color: #888888; font-size: 12px;">&copy; ${new Date().getFullYear()} Dịch vụ cho thuê xe.</p></td></tr>
-                    </table>
-                </body>
-                </html>`
-            };
+                                    <!-- DANH SÁCH VI PHẠM -->
+                                    <h3 style="border-bottom: 2px solid #ffc107; padding-bottom: 10px;">📋 Chi tiết vi phạm</h3>
+                                    <table width="100%" style="border-collapse: collapse; margin: 20px 0;">
+                                        ${violations.results.map((v: any) => `
+                                            <tr style="border-bottom: 1px solid #eee;">
+                                                <td style="padding: 12px;">
+                                                    <strong>${v.loai_vi_pham}</strong><br>
+                                                    <small style="color: #888;">${new Date(v.thoi_gian_xay_ra).toLocaleDateString('vi-VN')}</small>
+                                                </td>
+                                                <td style="padding: 12px; text-align: right; color: #dc3545; font-weight: bold;">
+                                                    ${fmt(v.so_tien_phat)}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </table>
 
-            const res = await fetch('https://api.resend.com/emails', {
+                                    <!-- MÃ QR THANH TOÁN -->
+                                    <div style="background: #f8f9fa; padding: 25px; border-radius: 12px; text-align: center; margin: 30px 0;">
+                                        <h3 style="margin-top: 0; color: #2563eb;">💳 Thanh Toán Nhanh</h3>
+                                        <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Quét mã QR để thanh toán vi phạm</p>
+                                        
+                                        <div style="margin: 20px auto; border: 2px solid #2563eb; padding: 15px; border-radius: 12px; display: inline-block; background: white;">
+                                            <img src="${qrUrl}" alt="QR Code" style="width: 240px; height: 240px; display: block;" />
+                                        </div>
+
+                                        <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px;">
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Số tài khoản:</strong> 0385750387</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Ngân hàng:</strong> MB Bank</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> NGUYEN TRAN VIET KHOA</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold;">${fmt(totalDebt)}</span></p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Nội dung:</strong> <code style="background: #f1f3f5; padding: 4px 8px; border-radius: 4px;">${qrContent}</code></p>
+                                        </div>
+                                    </div>
+
+                                    <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 25px 0;">
+                                        <p style="margin: 0; color: #1565c0; font-size: 14px;">
+                                            💡 <strong>Lưu ý:</strong> Vui lòng thanh toán sớm để tránh ảnh hưởng đến các giao dịch tiếp theo.
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                `;
+            }
+            // TRƯỜNG HỢP 2: CẢNH BÁO NGHIÊM TRỌNG
+            else if (level === 2) {
+                const qrAmount = totalDebt;
+                const qrContent = `Vipham ${qrAmount} ${orderId}`;
+                const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+                const conditionText = condition_type === 'extra_deposit'
+                    ? `cọc thêm <strong style="color: #dc3545;">${fmt(Math.round(totalDebt * 0.5))}</strong>`
+                    : `thanh toán <strong style="color: #dc3545;">${fmt(totalDebt)}</strong> vi phạm trước`;
+
+                emailSubject = `⚠️ Đơn #${orderId} duyệt CÓ ĐIỀU KIỆN`;
+                emailHtml = `
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                        <table align="center" width="600" style="margin: 20px auto; border: 1px solid #ccc; background: #fff;">
+                            <tr>
+                                <td align="center" bgcolor="#ff9800" style="padding: 20px;">
+                                    <h1 style="color: #fff; margin: 0;">🔶 THANH TOÁN VI PHẠM BẮT BUỘC</h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 40px 30px;">
+                                    <h2 style="color: #333;">Xin chào ${orderInfo.ho_ten},</h2>
+                                    
+                                    <div style="background: #fff3e0; padding: 25px; border-left: 5px solid #ff9800; margin: 20px 0; border-radius: 8px;">
+                                        <h3 style="color: #e65100; margin-top: 0;">⚠️ YÊU CẦU THANH TOÁN TRƯỚC</h3>
+                                        <p style="font-size: 16px;">
+                                            Đơn <strong>#${orderId}</strong> đã được duyệt <strong>CÓ ĐIỀU KIỆN</strong>.
+                                        </p>
+                                        <p style="font-size: 18px; color: #dc3545; font-weight: bold; margin: 20px 0;">
+                                            Bạn PHẢI thanh toán <strong>${fmt(totalDebt)}</strong> vi phạm TRƯỚC KHI đặt cọc.
+                                        </p>
+                                    </div>
+
+                                    <!-- DANH SÁCH VI PHẠM -->
+                                    <h3 style="border-bottom: 2px solid #ff9800; padding-bottom: 10px;">📋 Vi phạm cần thanh toán</h3>
+                                    <table width="100%" style="border-collapse: collapse; margin: 20px 0;">
+                                        ${violations.results.map((v: any) => `
+                                            <tr style="border-bottom: 1px solid #eee;">
+                                                <td style="padding: 12px;">
+                                                    <strong>${v.loai_vi_pham}</strong><br>
+                                                    <small style="color: #888;">${new Date(v.thoi_gian_xay_ra).toLocaleDateString('vi-VN')}</small>
+                                                </td>
+                                                <td style="padding: 12px; text-align: right; color: #dc3545; font-weight: bold; font-size: 16px;">
+                                                    ${fmt(v.so_tien_phat)}
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                        <tr style="background: #ffebee;">
+                                            <td style="padding: 15px; font-weight: bold;">TỔNG PHẢI TRẢ</td>
+                                            <td style="padding: 15px; text-align: right; color: #dc3545; font-size: 24px; font-weight: bold;">
+                                                ${fmt(totalDebt)}
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <!-- MÃ QR THANH TOÁN -->
+                                    <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 30px; border-radius: 12px; text-align: center; margin: 30px 0; border: 3px solid #ff9800;">
+                                        <h3 style="margin-top: 0; color: #e65100;">💳 THANH TOÁN NGAY</h3>
+                                        <p style="font-size: 15px; color: #d84315; font-weight: bold; margin-bottom: 20px;">
+                                            ⚠️ BẮT BUỘC - Thanh toán trước khi đặt cọc
+                                        </p>
+                                        
+                                        <div style="margin: 20px auto; border: 3px solid #ff5722; padding: 15px; border-radius: 12px; display: inline-block; background: white; box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);">
+                                            <img src="${qrUrl}" alt="QR Code" style="width: 250px; height: 250px; display: block;" />
+                                        </div>
+
+                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                            <p style="margin: 8px 0; font-size: 15px;"><strong>Ngân hàng:</strong> MB Bank</p>
+                                            <p style="margin: 8px 0; font-size: 15px;"><strong>Số tài khoản:</strong> 0385750387</p>
+                                            <p style="margin: 8px 0; font-size: 15px;"><strong>Chủ TK:</strong> NGUYEN TRAN VIET KHOA</p>
+                                            <p style="margin: 8px 0; font-size: 16px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold; font-size: 22px;">${fmt(totalDebt)}</span></p>
+                                            <p style="margin: 8px 0; font-size: 14px;">
+                                                <strong>Nội dung:</strong><br>
+                                                <code style="background: #fff3e0; padding: 8px 12px; border-radius: 6px; display: inline-block; margin-top: 5px; border: 1px solid #ff9800;">${qrContent}</code>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- QUY TRÌNH -->
+                                    <div style="background: #ffebee; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #f44336;">
+                                        <h3 style="margin-top: 0; color: #c62828;">📌 Quy trình tiếp theo</h3>
+                                        <ol style="line-height: 2; font-size: 15px; padding-left: 20px;">
+                                            <li><strong>Bước 1:</strong> Thanh toán <strong>${fmt(totalDebt)}</strong> vi phạm (quét QR)</li>
+                                            <li><strong>Bước 2:</strong> Liên hệ hotline <strong>0123456789</strong> để xác nhận</li>
+                                            <li><strong>Bước 3:</strong> Sau khi xác nhận, đặt cọc xe</li>
+                                            <li><strong>Bước 4:</strong> Nhận xe theo lịch</li>
+                                        </ol>
+                                    </div>
+
+                                    <p style="text-align: center; margin-top: 30px;">
+                                        <a href="tel:1900xxxx" style="background: #ff9800; color: white; padding: 16px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                                            📞 Hotline: 0123456789
+                                        </a>
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                `;
+            }
+
+            // Gửi email
+            await fetch('https://api.resend.com/emails', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(emailBody)
+                headers: {
+                    'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                    to: 'khoatran3123@gmail.com', //orderInfo.email,
+                    subject: emailSubject,
+                    html: emailHtml
+                })
             });
-
-            if (res.ok) console.log("✅ Đã gửi mail thành công!");
-            else console.log("❌ Lỗi Resend:", await res.text());
-
-        } else {
-            console.log("⚠️ Không tìm thấy RESEND_API_KEY");
         }
 
-        return jsonResponse({ success: true, contractUrl: publicUrl });
+        return jsonResponse({
+            success: true,
+            message: `Đã duyệt đơn #${orderId}`,
+            level,
+            contractUrl: publicUrl,
+            condition: level === 2 ? condition_type : 'normal'
+        });
 
     } catch (e: any) {
+        console.error('API handleApproveOrder Lỗi:', e);
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
@@ -543,7 +776,7 @@ export const handleGetOrders = async (request: Request, env: Env) => {
 
         const baseQuery = `
             SELECT 
-                dt.don_thue_id, dt.ngay_tao, dt.ngay_bat_dau, dt.ngay_ket_thuc, 
+                dt.don_thue_id, dt.khach_hang_id, dt.ngay_tao, dt.ngay_bat_dau, dt.ngay_ket_thuc, 
                 dt.tong_tien, dt.trang_thai, kh.ho_ten, pt.ten_phuong_tien
             FROM DonThue AS dt
             JOIN NguoiDung AS kh ON dt.khach_hang_id = kh.nguoi_dung_id
@@ -837,7 +1070,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
 
                                 <p style="color: #888888; font-size: 13px; margin-top: 20px;">
                                     Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:<br>
-                                    📞 Hotline: <strong>1900-xxxx</strong><br>
+                                    📞 Hotline: <strong>0123456789</strong><br>
                                     📧 Email: <strong>support@thuexe.vn</strong>
                                 </p>
                             </td>
@@ -893,6 +1126,233 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
 
     } catch (e: any) {
         console.error("❌ Error:", e);
+        return jsonResponse({ success: false, error: e.message }, 500);
+    }
+};
+
+export const handleCheckOrderViolation = async (request: Request, env: Env, orderId: string) => {
+    try {
+        const orderInfo = await env.DB.prepare(`
+            SELECT khach_hang_id 
+            FROM DonThue 
+            WHERE don_thue_id = ?
+        `).bind(orderId).first<{ khach_hang_id: number }>();
+
+        if (!orderInfo) {
+            return jsonResponse({ success: false, error: 'Không tìm thấy đơn hàng.' }, 404);
+        }
+
+        const violations = await env.DB.prepare(`
+            SELECT 
+                vi_pham_id,
+                loai_vi_pham,
+                so_tien_phat,
+                ghi_chu,
+                thoi_gian_xay_ra,
+                duong_dan_anh
+            FROM ViPham
+            WHERE khach_hang_id = ? 
+            AND trang_thai = 'chua_xu_ly'
+            ORDER BY thoi_gian_xay_ra DESC
+        `).bind(orderInfo.khach_hang_id).all();
+
+        const totalDebt = violations.results.reduce((sum: number, v: any) => sum + v.so_tien_phat, 0);
+        const totalViolations = violations.results.length;
+
+        let level = 0;
+        if (totalViolations === 0) {
+            level = 0;  
+        } else if (totalDebt > 2000000 || totalViolations >= 3) {
+            level = 3;  
+        } else if (totalViolations >= 2 || totalDebt > 1000000) {  
+            level = 2;  
+        } else {
+            level = 1; 
+        }
+
+        return jsonResponse({
+            success: true,
+            data: {
+                level,
+                total_debt: totalDebt,
+                total_violations: totalViolations,
+                violations: violations.results,
+                message: level === 0
+                    ? 'Khách hàng không có vi phạm'
+                    : level === 3 
+                    ? 'CHẶN: Khách hàng không được phép thuê thêm'
+                    : level === 2
+                    ? 'CẢNH BÁO: Yêu cầu điều kiện đặc biệt'
+                    : 'LƯU Ý: Khách hàng có vi phạm nhẹ'
+            }
+        });
+    } catch (e: any) {
+        console.error('❌ Check violation error:', e);  
+        return jsonResponse({ success: false, error: e.message }, 500);
+    }
+};
+
+export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string) => {
+    try {
+        const { nhanvien_id, ly_do } = await request.json<{
+            nhanvien_id: number;
+            ly_do?: string;
+        }>();
+
+        const orderInfo = await env.DB.prepare(`
+            SELECT 
+                dt.*,
+                kh.ho_ten,
+                nd.email,
+                pt.ten_phuong_tien
+            FROM DonThue dt
+            JOIN KhachHang kh ON dt.khach_hang_id = kh.khach_hang_id
+            JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
+            JOIN PhuongTien pt ON dt.phuong_tien_id = pt.phuong_tien_id
+            WHERE dt.don_thue_id = ?
+        `).bind(orderId).first<any>();
+
+        if (!orderInfo) {
+            return jsonResponse({ success: false, error: 'Không tìm thấy đơn.' }, 404);
+        }
+
+        const violations = await env.DB.prepare(`
+            SELECT * FROM ViPham
+            WHERE khach_hang_id = ? AND trang_thai = 'chua_xu_ly'
+        `).bind(orderInfo.khach_hang_id).all();
+
+        const totalDebt = violations.results.reduce((sum: number, v: any) => sum + v.so_tien_phat, 0);
+
+        await env.DB.batch([
+            env.DB.prepare(`
+                UPDATE DonThue 
+                SET trang_thai = 'TU_CHOI',
+                    ghi_chu = ?,
+                    ngay_cap_nhat = datetime('now', '+7 hours')
+                WHERE don_thue_id = ?
+            `).bind(
+                `[VI PHẠM CẤP 3] ${ly_do || 'Không duyệt do vi phạm nghiêm trọng'}`,
+                orderId
+            ),
+
+            env.DB.prepare(`
+                UPDATE PhuongTien 
+                SET trang_thai = 'SAN_SANG' 
+                WHERE phuong_tien_id = ?
+            `).bind(orderInfo.phuong_tien_id)
+        ]);
+
+        // 📧 GỬI EMAIL
+        if (env.RESEND_API_KEY) {
+            const fmt = (t: number) => new Intl.NumberFormat('vi-VN').format(t) + ' đ';
+            const qrAmount = totalDebt;
+            const qrContent = `Vipham ${qrAmount} ${orderId}`;
+            const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+
+            await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                    to: 'khoatran3123@gmail.com', //orderInfo.email,
+                    subject: `❌ Đơn #${orderId} KHÔNG được duyệt - Tự động hủy sau 60 phút`,
+                    html: `
+                        <!DOCTYPE html>
+                        <html>
+                        <body>
+                            <table align="center" width="600" style="margin: 20px auto; border: 1px solid #ccc; background: #fff;">
+                                <tr>
+                                    <td align="center" bgcolor="#dc3545" style="padding: 20px;">
+                                        <h1 style="color: #fff; margin: 0;">🚫 ĐƠN BỊ TỪ CHỐI</h1>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 40px 30px;">
+                                        <h2 style="color: #333;">Xin chào ${orderInfo.ho_ten},</h2>
+                                        
+                                        <div style="background: #ffebee; padding: 25px; border-left: 5px solid #dc3545; margin: 20px 0; border-radius: 8px;">
+                                            <h3 style="color: #c62828; margin-top: 0;">❌ ĐƠN KHÔNG ĐƯỢC DUYỆT</h3>
+                                            <p style="font-size: 16px;">
+                                                Đơn <strong>#${orderId}</strong> (${orderInfo.ten_phuong_tien}) KHÔNG được duyệt do vi phạm nghiêm trọng.
+                                            </p>
+                                            <p style="font-size: 18px; color: #dc3545; font-weight: bold; margin-top: 15px;">
+                                                Tổng nợ vi phạm: <strong style="font-size: 24px;">${fmt(totalDebt)}</strong>
+                                            </p>
+                                        </div>
+
+                                        <!-- VI PHẠM -->
+                                        <h3 style="border-bottom: 2px solid #dc3545; padding-bottom: 10px;">📋 Danh sách vi phạm</h3>
+                                        <table width="100%" style="border-collapse: collapse; margin: 20px 0;">
+                                            ${violations.results.map((v: any) => `
+                                                <tr style="border-bottom: 1px solid #eee;">
+                                                    <td style="padding: 12px;">
+                                                        <strong>${v.loai_vi_pham}</strong><br>
+                                                        <small style="color: #888;">${new Date(v.thoi_gian_xay_ra).toLocaleDateString('vi-VN')}</small>
+                                                    </td>
+                                                    <td style="padding: 12px; text-align: right; color: #dc3545; font-weight: bold; font-size: 16px;">
+                                                        ${fmt(v.so_tien_phat)}
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                            <tr style="background: #ffebee;">
+                                                <td style="padding: 15px; font-weight: bold;">TỔNG NỢ</td>
+                                                <td style="padding: 15px; text-align: right; color: #dc3545; font-size: 24px; font-weight: bold;">
+                                                    ${fmt(totalDebt)}
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <!-- MÃ QR -->
+                                        <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; text-align: center; margin: 30px 0;">
+                                            <h3 style="margin-top: 0; color: #dc3545;">💳 Thanh Toán Để Tiếp Tục Thuê Xe</h3>
+                                            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Quét mã QR để thanh toán vi phạm</p>
+                                            
+                                            <div style="margin: 20px auto; border: 2px solid #dc3545; padding: 15px; border-radius: 12px; display: inline-block; background: white;">
+                                                <img src="${qrUrl}" alt="QR Code" style="width: 240px; height: 240px; display: block;" />
+                                            </div>
+
+                                            <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px;">
+                                                <p style="margin: 5px 0; font-size: 15px;"><strong>STK:</strong> 0385750387 - MB Bank</p>
+                                                <p style="margin: 5px 0; font-size: 15px;"><strong>Chủ TK:</strong> NGUYEN TRAN VIET KHOA</p>
+                                                <p style="margin: 5px 0; font-size: 16px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold;">${fmt(totalDebt)}</span></p>
+                                                <p style="margin: 5px 0; font-size: 14px;"><strong>Nội dung:</strong> <code style="background: #f1f3f5; padding: 4px 8px; border-radius: 4px;">${qrContent}</code></p>
+                                            </div>
+                                        </div>
+
+                                        <!-- HƯỚNG DẪN -->
+                                        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 25px 0;">
+                                            <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê xe</h3>
+                                            <ol style="line-height: 2; font-size: 15px;">
+                                                <li>Thanh toán <strong>TOÀN BỘ ${fmt(totalDebt)}</strong></li>
+                                                <li>Liên hệ hotline: <strong>0123456789</strong></li>
+                                                <li>Sau xác nhận, bạn có thể đặt đơn mới</li>
+                                            </ol>
+                                        </div>
+                                        
+                                        <p style="text-align: center; margin-top: 30px;">
+                                            <a href="tel:1900xxxx" style="background: #dc3545; color: white; padding: 16px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                                                📞 Liên hệ: 0123456789
+                                            </a>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </body>
+                        </html>
+                    `
+                })
+            });
+        }
+
+        return jsonResponse({
+            success: true,
+            message: 'Đã từ chối đơn. Đơn sẽ tự động hủy sau 60 phút.'
+        });
+
+    } catch (e: any) {
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
