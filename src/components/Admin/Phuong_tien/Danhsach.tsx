@@ -24,6 +24,7 @@ export interface PhuongTien {
   ten_phan_loai?: string;
   hanBaoTri?: string;
   nguoi_thay_doi_chinh_sach_gia?: string;
+  ngay_update_chinh_sach_gia?: string;
 }
 
 export interface ApiResponse {
@@ -358,6 +359,9 @@ const PhuongTienList: React.FC = () => {
               <th className="py-3 px-6 text-left">Hạn Bảo Hành</th>
               <th className="py-3 px-6 text-left">Ngày Tạo</th>
               <th className="py-3 px-6 text-left">Ngày Cập Nhật</th>
+              <th className="py-3 px-6 text-left">
+                Ngày Cập Nhật Chính Sách Giá
+              </th>
               <th className="py-3 px-6 text-center">Chức năng</th>
             </tr>
           </thead>
@@ -414,6 +418,9 @@ const PhuongTienList: React.FC = () => {
                 </td>
                 <td className="py-3 px-6 text-left">
                   {formatDateTimecapnhattao(item.ngay_cap_nhat)}
+                </td>
+                <td className="py-3 px-6 text-left">
+                  {formatDateTimecapnhattao(item.ngay_update_chinh_sach_gia)}
                 </td>
                 <td className="py-3 px-6 text-center">
                   <div className="action-buttons flex item-center justify-center space-x-2">

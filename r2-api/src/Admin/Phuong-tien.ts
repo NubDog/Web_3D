@@ -96,6 +96,7 @@ export async function getPhuongTienById(request: Request, env: Env, id: string):
 				p.ngay_tao,
 				p.ngay_cap_nhat,
 				p.phan_loai_id,
+				p.ngay_update_chinh_sach_gia,
 				d.ten_danh_muc,
 				c.ten_chinh_sach,
 				c.gia_co_ban,
@@ -154,6 +155,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		const ngay_cap_nhat = null;
 		const ngay_tao = getNowVN();
 		const phan_loai_id = Number(formData.get('phan_loai_id'));
+		const ngay_update_chinh_sach_gia = getNowVN();
 
 		const now = new Date();
 		now.setMonth(now.getMonth() + 4);
@@ -229,8 +231,8 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		const result = await env.DB.prepare(
 			`
       INSERT INTO PhuongTien
-      (ten_phuong_tien, loai, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao, phan_loai_id, nguoi_thay_doi_chinh_sach_gia_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      (ten_phuong_tien, loai, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao, phan_loai_id, nguoi_thay_doi_chinh_sach_gia_id,ngay_update_chinh_sach_gia)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 		)
 			.bind(
@@ -248,7 +250,8 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 				ngay_cap_nhat,
 				ngay_tao,
 				phan_loai_id,
-				nguoi_dung_id
+				nguoi_dung_id,
+				ngay_update_chinh_sach_gia
 			)
 			.run();
 
@@ -307,6 +310,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 
 		const file = formData.get('file_anh') as File | null;
 		const models = formData.get('models_3d') as File | null;
+		const ngay_update_chinh_sach_gia = getNowVN();
 
 		if (file && file.size > 0) {
 			if (!file.type.startsWith('image/')) {
@@ -360,6 +364,8 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		}
 
 		let final_nguoi_thay_doi_id = existing.nguoi_thay_doi_chinh_sach_gia_id;
+		let final_ngay_update_chinh_sach_gia = existing.ngay_update_chinh_sach_gia;
+
 		console.log('📊 Kiểm tra chinh_sach_id:', {
 			new_chinh_sach_id,
 			old_chinh_sach_id: existing.chinh_sach_id,
@@ -370,6 +376,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		if (new_chinh_sach_id !== null && new_chinh_sach_id !== existing.chinh_sach_id) {
 			console.log('✅ Chinh sách giá thay đổi! Lưu nguoi_dung_id:', nguoi_dung_id);
 			final_nguoi_thay_doi_id = nguoi_dung_id;
+			final_ngay_update_chinh_sach_gia = ngay_update_chinh_sach_gia;
 		}
 
 		const finalValues = {
@@ -386,6 +393,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 			ngay_cap_nhat: getNowVN(),
 			phan_loai_id: phan_loai_id !== null ? phan_loai_id : existing.phan_loai_id,
 			nguoi_thay_doi_chinh_sach_gia_id: final_nguoi_thay_doi_id,
+			ngay_update_chinh_sach_gia: final_ngay_update_chinh_sach_gia,
 		};
 
 		const updateKeys = Object.keys(finalValues).join(' = ?, ') + ' = ?';
