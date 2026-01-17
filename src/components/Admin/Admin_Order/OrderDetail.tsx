@@ -1048,282 +1048,110 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
 
                     {order.duong_dan_file && (
                         <div className="info-card" style={{ marginTop: '20px', padding: '15px', border: '1px solid #e5e7eb', borderRadius: '8px', backgroundColor: '#f9fafb' }}>
-                            
                             <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '10px', color: '#111827' }}>
                                 Hợp Đồng Thuê Xe
                             </h3>
-
                             <button 
                                 onClick={() => window.open(order.duong_dan_file, '_blank')}
                                 style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px',
-                                    padding: '10px 16px',
-                                    backgroundColor: '#2563eb',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '6px',
-                                    cursor: 'pointer',
-                                    fontSize: '14px',
-                                    fontWeight: '500',
-                                    transition: 'background 0.2s'
+                                    display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px',
+                                    backgroundColor: '#2563eb', color: 'white', border: 'none', borderRadius: '6px',
+                                    cursor: 'pointer', fontSize: '14px', fontWeight: '500', transition: 'background 0.2s'
                                 }}
                                 onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
                                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
                             >
-                                <span>📄</span>
-                                <span>Xem Hợp Đồng (PDF)</span>
+                                <span>📄</span><span>Xem Hợp Đồng (PDF)</span>
                             </button>
-
                         </div>
                     )}
 
                     {order.trang_thai === 'DA_DUYET' && (
-                    <div className="info-card">
-                        <h2>Tình Trạng Thanh Toán</h2>
-                        {order.trang_thai_coc === 'CHO_THANH_TOAN' && depositTime && (
-                            <DepositCountdown 
-                                approvedTime={depositTime}
-                                depositStatus={order.trang_thai_coc}
-                            />
-                        )}
-                        {/* CẢNH BÁO CẤP 1 - REMINDER */}
-                        {order.ghi_chu && order.ghi_chu.includes('[CONDITION: REMINDER]') && (
-                            <div style={{
-                                background: '#fff3cd',
-                                border: '2px solid #ffc107',
-                                borderRadius: '8px',
-                                padding: '15px',
-                                marginBottom: '15px'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                                    <span style={{ fontSize: '24px' }}>⚠️</span>
-                                    <strong style={{ color: '#856404' }}>LƯU Ý VI PHẠM</strong>
+                        <div className="info-card">
+                            <h2>Tình Trạng Thanh Toán</h2>
+                            {order.trang_thai_coc === 'CHO_THANH_TOAN' && depositTime && (
+                                <DepositCountdown approvedTime={depositTime} depositStatus={order.trang_thai_coc} />
+                            )}
+                            
+                            {order.ghi_chu && order.ghi_chu.includes('[CONDITION: REMINDER]') && (
+                                <div style={{ background: '#fff3cd', border: '2px solid #ffc107', borderRadius: '8px', padding: '15px', marginBottom: '15px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                                        <span style={{ fontSize: '24px' }}>⚠️</span>
+                                        <strong style={{ color: '#856404' }}>LƯU Ý VI PHẠM</strong>
+                                    </div>
+                                    <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>Khách hàng có vi phạm chưa thanh toán. Vui lòng nhắc nhở thanh toán sớm.</p>
                                 </div>
-                                <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>
-                                    Khách hàng có vi phạm chưa thanh toán. Vui lòng nhắc nhở thanh toán sớm.
-                                </p>
-                            </div>
-                        )}
+                            )}
 
-                        {/* CẢNH BÁO CẤP 2 - PAY_FIRST */}
-                        {order.ghi_chu && 
-                            order.ghi_chu.includes('[CONDITION: PAY_FIRST]') && 
-                            violations.length > 0 && (
-                            <div style={{
-                                background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)',
-                                border: '3px solid #ff9800',
-                                borderRadius: '12px',
-                                padding: '20px',
-                                marginBottom: '20px'
-                            }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-                                    <span style={{ fontSize: '28px' }}>🔶</span>
-                                    <strong style={{ color: '#e65100', fontSize: '18px' }}>
-                                        ĐIỀU KIỆN ĐẶC BIỆT - CẤP 2
-                                    </strong>
+                            {order.ghi_chu && order.ghi_chu.includes('[CONDITION: PAY_FIRST]') && violations.length > 0 && (
+                                <div style={{ background: 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)', border: '3px solid #ff9800', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
+                                        <span style={{ fontSize: '28px' }}>🔶</span>
+                                        <strong style={{ color: '#e65100', fontSize: '18px' }}>ĐIỀU KIỆN ĐẶC BIỆT - CẤP 2</strong>
+                                    </div>
+                                    <p style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#d84315', fontWeight: 'bold' }}>⚠️ Khách hàng PHẢI thanh toán vi phạm TRƯỚC KHI đặt cọc</p>
+                                    
+                                    {loadingViolations ? <p>Đang tải...</p> : violations.length > 0 ? (
+                                        <div style={{ background: 'white', padding: '15px', borderRadius: '8px', marginBottom: '15px' }}>
+                                            <h4 style={{ marginTop: 0, color: '#d84315' }}>📋 Vi phạm chưa xử lý ({violations.length})</h4>
+                                            <p style={{ margin: 0, fontSize: '16px' }}><strong>Tổng nợ:</strong> <span style={{ color: '#dc3545', fontWeight: 'bold' }}>{formatCurrency(violationInfo?.total_debt || 0)}</span></p>
+                                            
+                                            <button className="button-primary" style={{ width: '100%', background: '#ff9800', border: 'none', fontSize: '14px', fontWeight: 'bold', padding: '10px', marginTop: '10px', cursor: confirmingViolationPayment ? 'not-allowed' : 'pointer', opacity: confirmingViolationPayment ? 0.6 : 1 }} onClick={handleConfirmViolationPayment} disabled={confirmingViolationPayment}>
+                                                {confirmingViolationPayment ? '⏳ Đang xử lý...' : '💳 Xác nhận đã thanh toán vi phạm'}
+                                            </button>
+                                        </div>
+                                    ) : violationsPaid ? (
+                                        <div style={{ background: '#e8f5e9', padding: '15px', borderRadius: '8px', border: '2px solid #4caf50' }}>
+                                            <p style={{ margin: 0, color: '#2e7d32', fontWeight: 'bold' }}>✅ Đã thanh toán hết vi phạm</p>
+                                        </div>
+                                    ) : null}
                                 </div>
-                                
-                                <p style={{ margin: '0 0 15px 0', fontSize: '15px', color: '#d84315', fontWeight: 'bold' }}>
-                                    ⚠️ Khách hàng PHẢI thanh toán vi phạm TRƯỚC KHI đặt cọc
-                                </p>
+                            )}
 
-                                {/* DANH SÁCH VI PHẠM */}
-                                {loadingViolations ? (
-                                        <p>Đang tải vi phạm...</p>
-                                    ) : violations.length > 0 ? (
-                                        <>
-                                            {/* DANH SÁCH VI PHẠM */}
-                                            <div style={{ 
-                                                background: 'white', 
-                                                padding: '15px', 
-                                                borderRadius: '8px',
-                                                marginBottom: '15px'
-                                            }}>
-                                                <h4 style={{ marginTop: 0, color: '#d84315' }}>
-                                                    📋 Vi phạm chưa thanh toán ({violations.length})
-                                                </h4>
-                                                <table style={{ width: '100%', fontSize: '14px' }}>
-                                                    <tbody>
-                                                        {violations.map(v => (
-                                                            <tr key={v.vi_pham_id} style={{ borderBottom: '1px solid #eee' }}>
-                                                                <td style={{ padding: '8px 0' }}>
-                                                                    <strong>{v.loai_vi_pham}</strong><br/>
-                                                                    <small style={{ color: '#666' }}>
-                                                                        {new Date(v.thoi_gian_xay_ra).toLocaleDateString('vi-VN')}
-                                                                    </small>
-                                                                </td>
-                                                                <td style={{ 
-                                                                    textAlign: 'right', 
-                                                                    fontWeight: 'bold', 
-                                                                    color: '#dc3545',
-                                                                    padding: '8px 0'
-                                                                }}>
-                                                                    {new Intl.NumberFormat('vi-VN').format(v.so_tien_phat)} đ
-                                                                </td>
-                                                            </tr>
-                                                        ))}
-                                                        <tr style={{ background: '#ffebee' }}>
-                                                            <td style={{ padding: '12px 8px', fontWeight: 'bold' }}>
-                                                                TỔNG PHẢI TRẢ
-                                                            </td>
-                                                            <td style={{ 
-                                                                padding: '12px 8px',
-                                                                textAlign: 'right', 
-                                                                fontWeight: 'bold', 
-                                                                color: '#dc3545',
-                                                                fontSize: '18px'
-                                                            }}>
-                                                            {new Intl.NumberFormat('vi-VN').format(
-                                                                violations.reduce((sum, v) => sum + v.so_tien_phat, 0)
-                                                            )} đ
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                     </div>
+                            <p><strong>Tiền cọc:</strong> <span className={`status-badge status-${order.trang_thai_coc}`} style={{color: 'black'}}>{order.trang_thai_coc === 'DANG_GIU' ? '✅ Đã Nhận Cọc' : '⏳ Chưa Nhận Cọc'}</span></p>
 
-                                    <button 
-                                        className="button-primary"
-                                        style={{
-                                            width: '100%',
-                                            background: '#ff9800',
-                                            border: 'none',
-                                            fontSize: '16px',
-                                            fontWeight: 'bold',
-                                            padding: '14px',
-                                            cursor: confirmingViolationPayment ? 'not-allowed' : 'pointer',
-                                            opacity: confirmingViolationPayment ? 0.6 : 1
-                                        }}
-                                        onClick={handleConfirmViolationPayment}
-                                        disabled={confirmingViolationPayment}
-                                    >
-                                        {confirmingViolationPayment ? '⏳ Đang xử lý...' : '💳 Xác nhận đã thanh toán vi phạm'}
-                                    </button>
-                                </>
-                            ) : violationsPaid ? (
-                                <div style={{ 
-                                    background: '#e8f5e9', 
-                                    padding: '15px', 
-                                    borderRadius: '8px',
-                                    border: '2px solid #4caf50'
-                                }}>
-                                    <p style={{ margin: 0, color: '#2e7d32', fontWeight: 'bold' }}>
-                                        ✅ Đã thanh toán hết vi phạm
-                                    </p>
-                                    <p style={{ margin: '5px 0 0 0', fontSize: '14px', color: '#666' }}>
-                                        Có thể xác nhận cọc bên dưới
-                                    </p>
+                            {order.trang_thai_coc !== 'DANG_GIU' && (
+                                <div style={{ marginTop: '15px' }}>
+                                    {(() => {
+                                        const currentDebt = violations.reduce((sum, v) => sum + v.so_tien_phat, 0);
+                                        const currentCount = violations.length;
+                                        const isPayFirst = order.ghi_chu?.includes('CONDITION: PAY_FIRST');
+                                        
+                                        const isBlocked = isPayFirst && (currentDebt >= 1000000 || currentCount >= 2);
+
+                                        return (
+                                            <>
+                                                <button 
+                                                    className="button-primary" 
+                                                    style={{ width: '100%', padding: '14px', fontSize: '16px', fontWeight: 'bold', opacity: isBlocked ? 0.5 : 1, cursor: isBlocked ? 'not-allowed' : 'pointer', backgroundColor: isBlocked ? '#999' : '#007bff' }}
+                                                    onClick={handleConfirmDeposit}
+                                                    disabled={isSubmitting || isBlocked} 
+                                                >
+                                                    {isSubmitting ? '⏳ Đang xử lý...' : '✅ Xác nhận nhận cọc'}
+                                                </button>
+
+x                                                {isBlocked ? (
+                                                    <div style={{ marginTop: '10px', padding: '10px', background: '#ffebee', border: '1px solid #ef5350', borderRadius: '6px', color: '#c62828', fontSize: '13px', textAlign: 'center' }}>
+                                                        ⛔ <strong>CHẶN CỌC DO:</strong> 
+                                                        <ul style={{textAlign: 'left', margin: '5px 0 5px 20px'}}>
+                                                            {currentDebt >= 1000000 && <li>Tổng nợ {formatCurrency(currentDebt)} ({'>'}= 1tr)</li>}
+                                                            {currentCount >= 2 && <li>Có {currentCount} lần vi phạm ({'>'}= 2)</li>}
+                                                        </ul>
+                                                        Vui lòng thanh toán vi phạm trước!
+                                                    </div>
+                                                ) : (
+                                                    isPayFirst && currentCount > 0 && (
+                                                        <div style={{ marginTop: '10px', padding: '10px', background: '#e8f5e9', border: '1px solid #4caf50', borderRadius: '6px', color: '#2e7d32', fontSize: '13px', textAlign: 'center' }}>
+                                                            ⚠️ Khách còn 1 vi phạm nhỏ ({formatCurrency(currentDebt)}).<br/>(Đủ điều kiện châm chước cho cọc)
+                                                        </div>
+                                                    )
+                                                )}
+                                            </>
+                                        );
+                                    })()}
                                 </div>
-                            ) : null}
-                        </div>
-                    )}
-
-                    {/* TIỀN CỌC */}
-                    <p>
-                        <strong>Tiền cọc:</strong> 
-                        <span className={`status-badge status-${order.trang_thai_coc}`} style={{color: 'black'}}>
-                            {order.trang_thai_coc === 'DANG_GIU' ? '✅ Đã Nhận Cọc' : '⏳ Chưa Nhận Cọc'}
-                        </span>
-                    </p>
-
-                    {/* BUTTON XÁC NHẬN CỌC - CHỈ HIỂN THỊ KHI: */}
-                    {/* 1. Chưa nhận cọc */}
-                    {/* 2. KHÔNG có điều kiện PAY_FIRST HOẶC đã thanh toán hết vi phạm */}
-                    {order.trang_thai_coc !== 'DANG_GIU' && (
-                        <div style={{ marginTop: '15px' }}>
-                            {(() => {
-                                const currentDebt = violations.reduce((sum, v) => sum + v.so_tien_phat, 0);
-                                const currentCount = violations.length; // Số lần vi phạm
-                                const isPayFirst = order.ghi_chu?.includes('CONDITION: PAY_FIRST');
-                                
-                                // Điều kiện chặn hiển thị nút (Nợ >= 1tr HOẶC Số lần >= 2)
-                                const isBlocked = isPayFirst && (currentDebt >= 1000000 || currentCount >= 2);
-
-                                return (
-                                    <>
-                                        {/* Nút Xác nhận */}
-                                        <button 
-                                            className="button-primary" 
-                                            style={{
-                                                width: '100%', 
-                                                padding: '14px', 
-                                                fontSize: '16px', 
-                                                fontWeight: 'bold',
-                                                opacity: isBlocked ? 0.5 : 1,
-                                                cursor: isBlocked ? 'not-allowed' : 'pointer',
-                                                backgroundColor: isBlocked ? '#999' : '#007bff'
-                                            }}
-                                            onClick={handleConfirmDeposit}
-                                            disabled={isSubmitting || isBlocked} 
-                                        >
-                                            {isSubmitting ? '⏳ Đang xử lý...' : '✅ Xác nhận nhận cọc'}
-                                        </button>
-
-                                        {/* Các thông báo cảnh báo bên dưới nút */}
-                                        {isBlocked ? (
-                                            // 🔴 TRƯỜNG HỢP 1: BỊ CHẶN
-                                            <div style={{
-                                                marginTop: '10px',
-                                                padding: '10px',
-                                                background: '#ffebee',
-                                                border: '1px solid #ef5350',
-                                                borderRadius: '6px',
-                                                color: '#c62828',
-                                                fontSize: '13px',
-                                                textAlign: 'center'
-                                            }}>
-                                                ⛔ <strong>CHẶN CỌC DO:</strong> 
-                                                <ul style={{textAlign: 'left', margin: '5px 0 5px 20px'}}>
-                                                    {currentDebt >= 1000000 && <li>Tổng nợ {formatCurrency(currentDebt)} ({'>'}= 1tr)</li>}
-                                                    {currentCount >= 2 && <li>Có {currentCount} lần vi phạm ({'>'}= 2)</li>}
-                                                </ul>
-                                                Vui lòng thanh toán vi phạm trước!
-                                            </div>
-                                        ) : (
-                                            // 🟢 TRƯỜNG HỢP 2: ĐƯỢC PHÉP (Châm chước)
-                                            isPayFirst && currentCount > 0 && (
-                                                <div style={{
-                                                    marginTop: '10px',
-                                                    padding: '10px',
-                                                    background: '#e8f5e9',
-                                                    border: '1px solid #4caf50',
-                                                    borderRadius: '6px',
-                                                    color: '#2e7d32',
-                                                    fontSize: '13px',
-                                                    textAlign: 'center'
-                                                }}>
-                                                    ⚠️ Khách còn 1 vi phạm nhỏ ({formatCurrency(currentDebt)}).
-                                                    <br/>(Đủ điều kiện châm chước cho cọc)
-                                                </div>
-                                            )
-                                        )}
-                                    </>
-                                );
-                            })()}
-                        </div>
-                    )}
-
-                    {/* HIỂN THỊ CẢNH BÁO NẾU CÒN VI PHẠM */}
-                    {order.trang_thai_coc !== "DANG_GIU" && 
-                        order.ghi_chu?.includes("CONDITION: PAY_FIRST") && 
-                        violations.length > 0 && (
-                        <div style={{
-                            background: "#fff3cd",
-                            border: "2px solid #ff9800",
-                            borderRadius: "8px",
-                            padding: "15px",
-                            marginTop: "1rem",
-                            textAlign: "center"
-                        }}>
-                                <p style={{margin: 0, color: "#856404", fontWeight: "bold"}}>
-                                ⚠️ Phải thanh toán {violations.length} vi phạm trước khi xác nhận cọc
-                                </p>
-                            </div>
                             )}
                         </div>
-                        
                     )}
 
                     <div className="info-card action-card">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../css/Admin_order.css';
@@ -12,6 +12,7 @@ interface PendingOrder {
     ho_ten: string;
     ten_phuong_tien: string;
     khach_hang_id: number;
+    trang_thai: string
 }
 
 interface ViolationInfo {
@@ -21,6 +22,8 @@ interface ViolationInfo {
     latest_violation_type: string;
 }
 
+// Tiếng "Ping" dạng Base64 (Không lo chết link)
+const NOTIFICATION_SOUND = 'sound/mixkit-software-interface-remove-2576.wav';
 const ITEMS_PER_PAGE = 10;
 
 const OrderList: React.FC = () => {
@@ -42,6 +45,15 @@ const OrderList: React.FC = () => {
 
     const [showGuideModal, setShowGuideModal] = useState(false);
 
+    const prevOrderCountRef = useRef<number>(0);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const [filterDate, setFilterDate] = useState<string>('');
+
+    useEffect(() => {
+        audioRef.current = new Audio(NOTIFICATION_SOUND);
+    }, []);
+
     const pageTitles: { [key: string]: string } = {
         all: 'Tất Cả Đơn Hàng',
         pending: 'Đơn Hàng Chờ Duyệt',
@@ -53,27 +65,43 @@ const OrderList: React.FC = () => {
     };
     const title = status ? pageTitles[status] : 'Danh sách Đơn Hàng';
 
-    const fetchOrders = useCallback(async () => {
-    if (!status) return;
-    setIsLoading(true);
-    setError(null);
-    try {
-        let apiUrl = `https://r2-api.sharkeatrice.workers.dev/api/orders`;
-        if (status !== 'all') {
-            apiUrl += `?status=${status}`;
-        }
+    const fetchOrders = useCallback(async (isBackground = false) => {
+        if (!status) return;
+        
+        if (!isBackground) setIsLoading(true);
+        
+        setError(null);
+        try {
+            let apiUrl = `https://r2-api.sharkeatrice.workers.dev/api/orders`;
+            if (status !== 'all') {
+                apiUrl += `?status=${status}`;
+            }
 
-        console.log('🔄 Fetching orders from:', apiUrl);
+            const response = await fetch(apiUrl);
+            const result = await response.json();
 
-        const response = await fetch(apiUrl);
-        const result = await response.json();
+            if (result.success && Array.isArray(result.data)) {
+               if (status === 'pending' || status === 'all') {
+                    if (isBackground && result.data.length > prevOrderCountRef.current && prevOrderCountRef.current > 0) {
+                        const newCount = result.data.length - prevOrderCountRef.current;
+                        
+                        audioRef.current?.play().catch(e => console.error("Audio block:", e));
+                        
+                        toast.info(`🔔 Có ${newCount} đơn hàng mới vừa được tạo!`, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                            theme: "colored",
+                        });
+                    }
+                    prevOrderCountRef.current = result.data.length;
+                }
 
-        console.log('📦 Orders result:', result);
+                setOrders(result.data);
 
-        if (result.success && Array.isArray(result.data)) {
-            setOrders(result.data);
-
-            // CHỈ KIỂM TRA VI PHẠM NẾU LÀ TRANG "CHỜ DUYỆT"
             if (status === 'pending' && result.data.length > 0) {
                 const uniqueCustomerIds = [...new Set(result.data.map((o: PendingOrder) => o.khach_hang_id))];
 
@@ -106,33 +134,74 @@ const OrderList: React.FC = () => {
                 console.log('⚠️ Skipping violation check (not pending page or no orders)');
             }
         } else {
-            throw new Error(result.error || 'Không thể tải danh sách đơn hàng.');
+                throw new Error(result.error || 'Không thể tải danh sách đơn hàng.');
+            }
+        } catch (err: any) {
+            console.error('❌ Error fetching orders:', err);
+            if (!isBackground) setError(err.message); 
+        } finally {
+            if (!isBackground) setIsLoading(false);
         }
-    } catch (err: any) {
-        console.error('❌ Error fetching orders:', err);
-        setError(err.message);
-        toast.error('Lỗi: ' + err.message);
-    } finally {
-        setIsLoading(false);
-    }
-}, [status]);
-
+    }, [status]);
     useEffect(() => {
         fetchOrders();
     }, [fetchOrders]);
 
     const filteredOrders = useMemo(() => {
-        return orders.filter(order =>
-            order.ho_ten.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.ten_phuong_tien.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [orders, searchTerm]);
+        return orders.filter(order => {
+            const matchesSearch = 
+                order.ho_ten.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                order.ten_phuong_tien.toLowerCase().includes(searchTerm.toLowerCase());
+
+            let matchesDate = true;
+            if (filterDate) {
+                const orderDate = new Date(order.ngay_tao).toLocaleDateString('en-CA'); 
+                matchesDate = orderDate === filterDate;
+            }
+
+            return matchesSearch && matchesDate;
+        });
+    }, [orders, searchTerm, filterDate]);
+    const todayPendingCount = useMemo(() => {
+        const todayStr = new Date().toLocaleDateString('en-CA'); 
+        return orders.filter(o => 
+            (o.trang_thai === 'CHO_DUYET' || status === 'pending') && 
+            new Date(o.ngay_tao).toLocaleDateString('en-CA') === todayStr
+        ).length;
+    }, [orders, status]);
+
 
     const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
     const currentOrders = filteredOrders.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
+
+    useEffect(() => {
+        fetchOrders(false);
+
+        let interval: ReturnType<typeof setInterval>;;
+        if (status === 'pending' || status === 'all') {
+            interval = setInterval(() => {
+                fetchOrders(true); 
+            }, 1000); 
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [fetchOrders, status]);
+
+    //Hàm kiểm tra đơn mới (trong vòng 1 tiếng)
+    const isNewOrder = (dateString: string) => {
+        if (!dateString) return false;
+            const createdDate = new Date(dateString).getTime();
+            const now = new Date().getTime();
+            const oneHour = 60 * 60 * 1000; 
+        return (now - createdDate) < oneHour; 
+    };
+
+    
 
     const handleRowClick = (orderId: number) => {
         navigate(`/admin/order/${orderId}`);
@@ -238,6 +307,84 @@ const OrderList: React.FC = () => {
         <div className="admin-container">
             <h1>{title} ({filteredOrders.length})</h1>
 
+            <div
+                style={{
+                display: 'flex',
+                gap: 20,
+                marginBottom: 24,
+                flexWrap: 'wrap',
+                }}
+            >
+                <div
+                style={{
+                    flex: 1,
+                    minWidth: 260,
+                    padding: '16px 20px',
+                    borderRadius: 14,
+                    background:
+                    'linear-gradient(135deg, #2563eb, #1d4ed8)', 
+                    color: 'white',
+                    boxShadow: '0 12px 30px rgba(37,99,235,0.25)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                }}
+                >
+                <div>
+                    <div
+                    style={{
+                        fontSize: 13,
+                        opacity: 0.9,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 6,
+                    }}
+                    >
+                    <span
+                        style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: '999px',
+                        background: 'rgba(255,255,255,0.18)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 14,
+                        }}
+                    >
+                        📅
+                    </span>
+                    <span>Hôm nay ({new Date().toLocaleDateString('vi-VN')})</span>
+                    </div>
+                    <div
+                    style={{
+                        fontSize: 24,
+                        fontWeight: 700,
+                        marginTop: 6,
+                        letterSpacing: 0.3,
+                    }}
+                    >
+                    {todayPendingCount} đơn chờ duyệt
+                    </div>
+                </div>
+                <div
+                    style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: '999px',
+                    background: 'rgba(15,23,42,0.16)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 22,
+                    boxShadow: '0 6px 18px rgba(15,23,42,0.35)',
+                    }}
+                >
+                    🔔
+                </div>
+                </div>
+            </div>
+
             {status === 'pending' && violationCount > 0 && (
                 <div className="violation-summary-banner">
                     ⚠️ <strong>{violationCount}</strong> khách hàng trong danh sách có vi phạm chưa xử lý.
@@ -285,46 +432,86 @@ const OrderList: React.FC = () => {
                 </div>
             )}
 
-            <div className="action-bar">
-                <div className="search-bar">
+             <div className="action-bar"
+                style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 16,
+                marginBottom: 18,
+                flexWrap: 'wrap',
+                }}
+            >
+                <div
+                className="search-bar"
+                style={{
+                    display: 'flex',
+                    gap: 10,
+                    flex: 1,
+                    minWidth: 260,
+                }}
+                >
+                <input
+                    type="text"
+                    placeholder="Tìm theo tên khách, tên xe..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={{
+                    flex: 1,
+                    padding: '10px 12px',
+                    borderRadius: 10,
+                    border: '1px solid #e5e7eb',
+                    fontSize: 14,
+                    outline: 'none',
+                    transition: 'border-color 0.15s, box-shadow 0.15s',
+                    }}
+                    onFocus={(e) => {
+                    e.target.style.borderColor = '#2563eb';
+                    e.target.style.boxShadow = '0 0 0 1px rgba(37,99,235,0.25)';
+                    }}
+                    onBlur={(e) => {
+                    e.target.style.borderColor = '#e5e7eb';
+                    e.target.style.boxShadow = 'none';
+                    }}
+                />
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <input
-                        type="text"
-                        placeholder="Tìm kiếm theo tên khách, tên xe..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                    type="date"
+                    value={filterDate}
+                    onChange={(e) => {
+                        setFilterDate(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    style={{
+                        padding: '10px 12px',
+                        borderRadius: 10,
+                        border: '1px solid #e5e7eb',
+                        outline: 'none',
+                        cursor: 'pointer',
+                        fontSize: 14,
+                    }}
                     />
-                </div>
-                <div style={{ display: 'flex', gap: '10px' }}>
-                    <button 
-                        onClick={() => setShowGuideModal(true)}
+                    {filterDate && (
+                    <button
+                        onClick={() => setFilterDate('')}
                         style={{
-                            background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                            color: 'white',
-                            border: 'none',
-                            padding: '10px 20px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            fontWeight: '600',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            transition: 'all 0.3s'
+                        marginLeft: 6,
+                        background: '#f3f4f6',
+                        border: 'none',
+                        padding: '7px 10px',
+                        borderRadius: 999,
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        color: '#4b5563',
                         }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = 'translateY(-2px)';
-                            e.currentTarget.style.boxShadow = '0 6px 20px rgba(102, 126, 234, 0.4)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = 'translateY(0)';
-                            e.currentTarget.style.boxShadow = 'none';
-                        }}
+                        title="Xóa lọc ngày"
                     >
-                        📖 Hướng dẫn xét vi phạm
+                        ✕
                     </button>
-                    <button onClick={fetchOrders}>Tải lại</button>
+                    )}
+                </div>
                 </div>
             </div>
-
 
             {orders.length === 0 ? (
                 <p>Không có đơn hàng nào.</p>
@@ -366,7 +553,12 @@ const OrderList: React.FC = () => {
                                             ${blocked ? 'row-blocked' : ''}
                                         `}
                                     >
-                                        <td className='text1'>#{order.don_thue_id}</td>
+                                        <td className='text1'>
+                                            #{order.don_thue_id}
+                                                {status === 'pending' && isNewOrder(order.ngay_tao) && (
+                                                    <span className="new-badge">MỚI</span>
+                                                )}
+                                        </td>
                                         <td className='text1'>
                                             {order.ho_ten}
                                             {blocked && <span className="blocked-tag">🚫 ĐÃ CHẶN</span>}

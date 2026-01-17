@@ -345,3 +345,21 @@
         box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
     }
 }
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.badge-new {
+  background-color: #ef4444; /* Màu đỏ */
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  margin-left: 8px;
+  animation: blink 2s infinite;
+  vertical-align: middle;
+}

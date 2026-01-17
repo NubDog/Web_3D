@@ -281,7 +281,7 @@ async function handleAutoRejectLevel3Orders(env: Env) {
             JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
             JOIN PhuongTien pt ON dt.phuong_tien_id = pt.phuong_tien_id
             WHERE dt.trang_thai = 'CHO_DUYET'
-              AND julianday('now', '+7 hours') - julianday(dt.ngay_tao) > (2.0 / 1440.0)
+              AND julianday('now', '+7 hours') - julianday(dt.ngay_tao) > (60.0 / 1440.0)
         `).all<{
             don_thue_id: number;
             khach_hang_id: number;

@@ -1357,3 +1357,24 @@
         font-size: 18px;
     }
 }
+
+@keyframes blink-animation {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); } /* Nháy nhẹ, không quá gắt */
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.new-badge {
+  background: linear-gradient(135deg, #ff416c, #ff4b2b); /* Màu đỏ cam hiện đại */
+  color: white;
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 12px; /* Bo tròn */
+  margin-left: 8px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  animation: blink-animation 2s infinite ease-in-out; /* Nháy chậm (2s) cho đỡ mỏi mắt */
+  display: inline-block;
+  vertical-align: middle;
+  box-shadow: 0 2px 5px rgba(255, 75, 43, 0.4); /* Đổ bóng nhẹ */
+}
