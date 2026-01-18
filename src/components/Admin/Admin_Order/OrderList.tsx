@@ -432,6 +432,15 @@ const OrderList: React.FC = () => {
                 </div>
             )}
 
+          <button 
+                onClick={() => setShowGuideModal(true)}
+                className="guide-button-mini"
+                >
+                <span>📖</span>
+                <span>Hướng dẫn xét vi phạm</span>
+            </button>
+
+
              <div className="action-bar"
                 style={{
                 display: 'flex',
@@ -590,7 +599,6 @@ const OrderList: React.FC = () => {
                 </>
             )}
 
-            {/* MODAL VI PHẠM */}
             {selectedViolation && (
                 <div 
                     className="violation-modal-overlay"
@@ -600,7 +608,6 @@ const OrderList: React.FC = () => {
                         className="violation-modal"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Header */}
                         <div className={`modal-header ${
                             selectedViolation.vio.total_debt > 2000000 || selectedViolation.vio.total_violations >= 3
                                 ? 'danger'
@@ -629,7 +636,6 @@ const OrderList: React.FC = () => {
                             </button>
                         </div>
 
-                        {/* Body */}
                         <div className="modal-body">
                             <div className="stats-grid">
                                 <div className="stat-card violations">
@@ -654,7 +660,6 @@ const OrderList: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Chi tiết */}
                             <div className="detail-section">
                                 <h4>📌 Vi phạm gần nhất</h4>
                                 <div className="violation-type-card">
@@ -662,7 +667,6 @@ const OrderList: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Mức độ nghiêm trọng */}
                             <div className="severity-section">
                                 <h4>🎯 Đánh giá</h4>
                                 {selectedViolation.vio.total_debt > 2000000 || selectedViolation.vio.total_violations >= 3 ? (
@@ -696,7 +700,6 @@ const OrderList: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Footer */}
                         <div className="modal-footer">
                             <button 
                                 className="btn btn-secondary"
@@ -726,7 +729,6 @@ const OrderList: React.FC = () => {
                         className="guide-modal"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Header */}
                         <div className="guide-header">
                             <div className="guide-header-content">
                                 <span className="guide-icon">📚</span>
@@ -740,9 +742,7 @@ const OrderList: React.FC = () => {
                             </button>
                         </div>
 
-                        {/* Body */}
                         <div className="guide-body">
-                            {/* Giới thiệu */}
                             <div className="guide-intro">
                                 <p>
                                     Hệ thống tự động phân loại mức độ vi phạm của khách hàng dựa trên 
@@ -750,7 +750,6 @@ const OrderList: React.FC = () => {
                                 </p>
                             </div>
 
-                            {/* Cấp độ vi phạm */}
                             <div className="severity-levels">
                                 <h3>📊 Phân loại mức độ vi phạm</h3>
                                 
@@ -863,7 +862,6 @@ const OrderList: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Các loại vi phạm phổ biến */}
                             <div className="common-violations">
                                 <h3>⚖️ Các loại vi phạm phổ biến</h3>
                                 <div className="violations-grid">
@@ -902,7 +900,6 @@ const OrderList: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Lưu ý quan trọng */}
                             <div className="important-notes">
                                 <h3>💡 Lưu ý quan trọng</h3>
                                 <div className="note-item">

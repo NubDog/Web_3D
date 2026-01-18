@@ -710,6 +710,8 @@ export const handleGetOrderDetails = async (request: Request, env: Env, orderId:
             `SELECT 
                 dt.*, 
                 kh.ho_ten, kh.email, 
+                dt.ngay_giao_thuc_te,  
+                dt.ngay_tra_thuc_te,   
                 pt.ten_phuong_tien, pt.bien_so, pt.gia_thue,
                 cs.ten_chinh_sach, cs.ty_le_giam, cs.tien_coc_mac_dinh,
                 tc.trang_thai AS trang_thai_coc,

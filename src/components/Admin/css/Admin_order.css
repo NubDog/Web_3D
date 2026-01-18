@@ -1378,3 +1378,35 @@
   vertical-align: middle;
   box-shadow: 0 2px 5px rgba(255, 75, 43, 0.4); /* Đổ bóng nhẹ */
 }
+
+.guide-button-mini {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: white;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin-top: -10px;
+  margin-bottom: 10px;
+    position: relative;
+  margin-left: 83.4%;
+}
+
+.guide-button-mini:hover {
+  border-color: #667eea;
+  background: #f9fafb;
+  color: #667eea;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.15);
+}
+
+.guide-button-mini span:first-child {
+  font-size: 16px;
+  line-height: 1;
+}

@@ -55,7 +55,10 @@ export const handleVehicleHandover = async (request: Request, env: Env, orderId:
              VALUES (?, 'GIAO_XE', datetime('now','+7 hours'), ?, ?, ?, ?, ?, ?)`
         );
         const startOrderStmt = env.DB.prepare(
-            `UPDATE DonThue SET trang_thai = 'DANG_THUE' WHERE don_thue_id = ?`
+            `UPDATE DonThue 
+                SET trang_thai = 'DANG_THUE', 
+                ngay_giao_thuc_te = datetime('now', '+7 hours')
+                WHERE don_thue_id = ?`
         );
         const updateVehicleStmt = env.DB.prepare(
             `UPDATE PhuongTien SET trang_thai = 'DANG_THUE', so_km = ? WHERE phuong_tien_id = ?`
@@ -113,7 +116,10 @@ export const handleVehicleReturn = async (request: Request, env: Env, orderId: s
              VALUES (?, 'TRA_XE', datetime('now','+7 hours'), ?, ?, ?, ?, ?,?)`
         );
         const updateOrderStmt = env.DB.prepare(
-            `UPDATE DonThue SET trang_thai = 'DA_TRA' WHERE don_thue_id = ?`
+            `UPDATE DonThue 
+                SET trang_thai = 'DA_TRA',
+                ngay_tra_thuc_te = datetime('now', '+7 hours') 
+            WHERE don_thue_id = ?`
         );
         const updateVehicleStmt = env.DB.prepare(
             `UPDATE PhuongTien SET trang_thai = ?, so_km = ? WHERE phuong_tien_id = ?`

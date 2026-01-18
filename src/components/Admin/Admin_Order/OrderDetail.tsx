@@ -14,7 +14,7 @@ import FinalizeModal from '../Component-Admin/Component-FinalizeModal';
 import CancelOrderModal from '../Component-Admin/CancelOrderModal';
 import VehicleRecordModal from '../Component-Admin/VehicleRecordModal';
 
-interface OrderDetail {
+export interface OrderDetail {
     don_thue_id: number;
     trang_thai: 'CHO_DUYET' | 'DA_DUYET' | 'DANG_THUE' | 'DA_TRA' |'CHO_QUYET_TOAN'|'CHO_THANH_TOAN'| 'HOAN_TAT' | 'TU_CHOI';
     ngay_bat_dau: string;
@@ -48,6 +48,9 @@ interface OrderDetail {
     tong_phi_phat: number
 
     khach_hang_id: number
+
+    ngay_giao_thuc_te?: string;
+    ngay_tra_thuc_te?: string;
 }
 
 interface RecordData {
