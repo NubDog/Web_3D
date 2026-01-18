@@ -192,7 +192,8 @@ const AccountOrder = () => {
             case 'da_tra':
             case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả xe - Chờ thanh toán'; break;
             case 'hoan_thanh': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành'; break;
-            case 'da_huy': color = '#dc3545'; bg = '#f8d7da'; text = 'Đã hủy'; break;
+            case 'hoan_tat': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành';break
+            case 'tu_choi': color = '#dc3545'; bg = '#f8d7da'; text = 'Đã hủy'; break;
         }
         return (
             <span style={{ backgroundColor: bg, color: color, padding: '5px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', border: `1px solid ${color}20` }}>
@@ -431,9 +432,9 @@ const AccountOrder = () => {
                                                         </div>
                                                     )}
 
-                                                    {(order.trang_thai === 'DA_TRA' || order.trang_thai === 'HOAN_THANH') && Math.abs(phiPhatSinh) > 1000 && (
+                                                    {(['CHO_THANH_TOAN', 'DA_TRA', 'HOAN_THANH', 'HOAN_TAT'].includes(order.trang_thai)) && Math.abs(phiPhatSinh) > 1000 && (
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '14px', color: phiPhatSinh > 0 ? '#dc3545' : '#28a745' }}>
-                                                            <span>Phụ phí / Điều chỉnh:</span>
+                                                            <span>Phí phát sinh / Điều chỉnh:</span>
                                                             <span>{phiPhatSinh > 0 ? '+' : ''}{formatCurrency(phiPhatSinh)}</span>
                                                         </div>
                                                     )}
@@ -442,12 +443,12 @@ const AccountOrder = () => {
 
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                                         <span style={{ color: 'black', fontWeight: '600' }}>
-                                                            {(order.trang_thai === 'DA_TRA' || order.trang_thai === 'HOAN_THANH') 
+                                                            {(['CHO_THANH_TOAN', 'DA_TRA', 'HOAN_THANH', 'HOAN_TAT'].includes(order.trang_thai))
                                                                 ? 'Tổng thanh toán (Chưa tính cọc):' 
                                                                 : 'Tổng thanh toán tạm (Chưa tính cọc):'}
                                                         </span>
                                                         <span style={{ fontWeight: 'bold', color: '#007bff', fontSize: '16px' }}>
-                                                            {(order.trang_thai === 'DA_TRA' || order.trang_thai === 'HOAN_THANH') 
+                                                            {(['CHO_THANH_TOAN', 'DA_TRA', 'HOAN_THANH', 'HOAN_TAT'].includes(order.trang_thai))
                                                                 ? formatCurrency(order.tong_tien) 
                                                                 : formatCurrency(TongTienTamThoi)}
                                                         </span>
