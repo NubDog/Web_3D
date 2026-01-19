@@ -781,3 +781,40 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
+
+export const handleGetUserViolations = async (request: Request, env: Env) => {
+    try {
+        const url = new URL(request.url);
+        const nguoi_dung_id = url.searchParams.get('nguoi_dung_id');
+
+        if (!nguoi_dung_id) {
+            return jsonResponse({ success: false, error: 'Thiếu ID người dùng' }, 400);
+        }
+
+        const khStmt = env.DB.prepare(`
+            SELECT khach_hang_id FROM KhachHang WHERE nguoi_dung_id = ?
+        `);
+        const khInfo = await khStmt.bind(nguoi_dung_id).first<{ khach_hang_id: number }>();
+
+        if (!khInfo) {
+            return jsonResponse({ success: true, data: [] });
+        }
+
+        const stmt = env.DB.prepare(`
+            SELECT * FROM ViPham 
+            WHERE khach_hang_id = ?
+            ORDER BY thoi_gian_xay_ra DESC
+        `);
+
+        const violations = await stmt.bind(khInfo.khach_hang_id).all();
+
+        return jsonResponse({ 
+            success: true, 
+            data: violations.results 
+        });
+
+    } catch (e: any) {
+        console.error('API Error:', e);
+        return jsonResponse({ success: false, error: e.message }, 500);
+    }
+};

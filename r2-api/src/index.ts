@@ -38,7 +38,7 @@ import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
-import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation, handleCheckCustomerViolations, handleGetCustomerViolationHistory, handleBatchCheckViolations, handleConfirmViolationPayment } from './Admin/vi-pham';
+import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation, handleCheckCustomerViolations, handleGetCustomerViolationHistory, handleBatchCheckViolations, handleConfirmViolationPayment, handleGetUserViolations } from './Admin/vi-pham';
 import { addhieupt, deletehieupt, gethieupt, updatehieupt } from './Admin/Hieu-phuong-tien';
 import {
 	addBaoTri,
@@ -424,6 +424,10 @@ export default {
 			if (path.match(/^\/api\/customers\/(\d+)\/violations\/history$/) && method === 'GET') {
 				const khachHangId = path.match(/^\/api\/customers\/(\d+)\/violations\/history$/)![1];
 				return handleGetCustomerViolationHistory(request, env, khachHangId);
+			}
+
+			if (url.pathname === '/api/user-violations' && request.method === 'GET') {
+				return handleGetUserViolations(request, env);
 			}
 
 			// ------------------- User Profile -------------------

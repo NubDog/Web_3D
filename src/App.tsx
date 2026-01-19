@@ -47,6 +47,7 @@ import HanBaoTri from "./components/Admin/Bao_tri/Han_Bao_Tri";
 import Forgot_password from "./pages/Forgot_password";
 import Danhsachphanloaipt from "./components/Admin/Phan_loai_hieu_pt/Danhsachphanloaipt";
 import Phuongtienchitietadmin from "./components/Admin/Phuong_tien/Phuongtienchitiet";
+import UserViolations from "./pages/UserViolations/UserViolations";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/account_home" element={<AccountHome />} />
           <Route path="/forgot_password" element={<Forgot_password />} />
+           <Route path="/user/violations" element={<UserViolations />} />
           <Route
             path="/account_home/account_home_kyc"
             element={<AccountHome_KYC />}
