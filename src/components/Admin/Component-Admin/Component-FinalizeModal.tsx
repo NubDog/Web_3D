@@ -326,7 +326,7 @@ const FinalizeModal: React.FC<FinalizeModalProps> = ({
                 rows={2} 
                 value={ghiChu} 
                 onChange={(e) => setGhiChu(e.target.value)}
-                placeholder="Lý do hư hỏng, địa điểm trả, tình trạng xe..."
+                placeholder="Lý do hư hỏng, địa điểm trả, tình trạng phương tiện..."
               ></textarea>
             </div>
 

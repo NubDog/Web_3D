@@ -187,10 +187,10 @@ const AccountOrder = () => {
         let color = '#6c757d'; let text = status; let bg = '#f8f9fa';
         switch (status?.toLowerCase()) {
             case 'da_duyet': color = '#007bff'; bg = '#e7f1ff'; text = 'Đã duyệt - Chờ cọc'; break;
-            case 'da_coc': color = '#198754'; bg = '#d1e7dd'; text = 'Đã cọc - Chờ nhận xe'; break;
-            case 'dang_thue': color = '#0dcaf0'; bg = '#cff4fc'; text = 'Đang thuê xe'; break;
+            case 'da_coc': color = '#198754'; bg = '#d1e7dd'; text = 'Đã cọc - Chờ nhận phương tiện'; break;
+            case 'dang_thue': color = '#0dcaf0'; bg = '#cff4fc'; text = 'Đang thuê phương tiện'; break;
             case 'da_tra':
-            case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả xe - Chờ thanh toán'; break;
+            case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả phương tiện - Chờ thanh toán'; break;
             case 'hoan_thanh': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành'; break;
             case 'hoan_tat': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành';break
             case 'tu_choi': color = '#dc3545'; bg = '#f8d7da'; text = 'Đã hủy'; break;
@@ -314,7 +314,7 @@ const AccountOrder = () => {
             <div style={{ textAlign: 'left', background: '#f8f9fa', padding: '15px', borderRadius: '8px', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                     <span style={{ color: '#666' }}>Loại giao dịch:</span>
-                    <strong style={{ color: '#000000ff' }}>Đặt cọc thuê xe</strong>
+                    <strong style={{ color: '#000000ff' }}>Đặt cọc thuê phương tiện</strong>
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -342,7 +342,7 @@ const AccountOrder = () => {
                                 • Tổng giá trị đơn hàng: <strong>{formatCurrency(tongSauGiam)}</strong><br/>
                                 • Tỷ lệ cọc: <strong style={{color: '#6610f2'}}>{phanTramCoc}%</strong><br/>
                                 • Tiền cọc phải trả: <strong style={{color: '#d32f2f'}}>{formatCurrency(tienCocThucTe)}</strong><br/>
-                                • Còn lại thanh toán khi trả xe: <strong>{formatCurrency(tongSauGiam - tienCocThucTe)}</strong>
+                                • Còn lại thanh toán khi trả phương tiện: <strong>{formatCurrency(tongSauGiam - tienCocThucTe)}</strong>
                             </div>
                         </div>
                     </div>
@@ -531,7 +531,7 @@ const AccountOrder = () => {
                                     if (st === 'da_tra' && !isReadyToPay) {
                                         return (
                                             <span style={{ color: '#fd7e14', fontWeight: '500', fontStyle: 'italic', fontSize: '13px' }}>
-                                                <i className="fa-solid fa-hourglass-half"></i> Chờ Admin kiểm tra xe...
+                                                <i className="fa-solid fa-hourglass-half"></i> Chờ Admin kiểm tra phương tiện...
                                             </span>
                                         );
                                     }

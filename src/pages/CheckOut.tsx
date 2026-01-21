@@ -89,7 +89,7 @@ const CheckOutPage = () => {
             <Header />
             <div className='cheackOut-header col-980'>
                 <h3>Thanh Toán</h3>
-                <p>Giá thuê xe cơ bản trong một ngày: {vehiclePrice ? vehiclePrice.toLocaleString('vi-VN') : '...'} VNĐ</p>
+                <p>Giá thuê cơ bản trong một ngày: {vehiclePrice ? vehiclePrice.toLocaleString('vi-VN') : '...'} VNĐ</p>
             </div>
 
             {step === 'checkout' && <CheckOut onNext={handleNextFromCheckout} />}

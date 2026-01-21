@@ -23,7 +23,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                     <i className="fa-solid fa-circle-check"></i>
                 </div>
 
-                <h1>Yêu cầu thuê xe đã được gửi!</h1>
+                <h1>Yêu cầu thuê đã được gửi!</h1>
                 <p className='checkOut-final-message'>
                     Cảm ơn bạn đã tin tưởng Shark Eat Rice.
                     Chúng tôi đã nhận được yêu cầu của bạn và đang tiến hành xử lý hồ sơ.
@@ -38,7 +38,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                         </div>
 
                         <div className='detail-row'>
-                            <span className='detail-label'>Địa điểm nhận xe:</span>
+                            <span className='detail-label'>Địa điểm nhận :</span>
                             <span className='detail-value'>Tại cửa hàng (Chi nhánh Đà Nẵng 99 Tô Hiến Thành)</span>
                         </div>
 
@@ -67,7 +67,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                     <h3>Chi tiết chi phí dự kiến:</h3>
                     <div className='payment-summary-details'>
                         <div className='detail-row'>
-                            <span className='detail-label'>Tiền thuê xe:</span>
+                            <span className='detail-label'>Tiền thuê phương tiện:</span>
                             <span className='detail-value'>{(checkoutData.rentalAmount || 0).toLocaleString('vi-VN')} VNĐ</span>
                         </div>
                         <div className='detail-row'>
@@ -75,7 +75,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                             <span className='detail-value'>{(checkoutData.depositAmount || 0).toLocaleString('vi-VN')} VNĐ</span>
                         </div>
                         <div className='detail-row total-row'>
-                            <span className='detail-label'>Tổng thanh toán khi nhận xe:</span>
+                            <span className='detail-label'>Tổng thanh toán khi nhận phương tiện:</span>
                             <span className='detail-value'>{(checkoutData.totalAmount || 0).toLocaleString('vi-VN')} VNĐ</span>
                         </div>
                     </div>
@@ -86,7 +86,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                     <ul>
                         <li><i className="fa-solid fa-clock"></i> Đơn thuê sẽ được duyệt trong vòng 30 phút (Giờ hành chính).</li>
                         <li><i className="fa-solid fa-envelope"></i> Bạn sẽ nhận được Email thông báo kết quả duyệt đơn.</li>
-                        <li><i className="fa-solid fa-phone"></i> Nhân viên sẽ gọi điện để xác nhận lịch hẹn giao xe.</li>
+                        <li><i className="fa-solid fa-phone"></i> Nhân viên sẽ gọi điện để xác nhận lịch hẹn giao phương tiện.</li>
                         <li><i className="fa-solid fa-id-card"></i> Vui lòng mang theo CCCD/CMND gốc để đối chiếu.</li>
                     </ul>
                 </div>

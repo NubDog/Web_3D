@@ -53,7 +53,7 @@ const Footer = () => {
                 </ul>
 
                 <div className="Footer-shop">
-                    <p>Xem thêm cách để thuê xe.</p>
+                    <p>Xem thêm cách để thuê phương tiện.</p>
                     <a>Tìm cửa hàng gần bạn.</a>
                     <p>Hoặc gọi 27082004</p>
                 </div>

@@ -110,7 +110,7 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
 
         return jsonResponse({
             success: true,
-            message: `Yêu cầu thuê xe đã được gửi thành công!`,
+            message: `Yêu cầu thuê phương tiện đã được gửi thành công!`,
             data: {
                 trang_thai: "CHO_DUYET",
                 tong_tien_du_kien: tong_tien,
@@ -375,7 +375,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
 
             // TRƯỜNG HỢP 0: KHÔNG VI PHẠM (EMAIL BÌNH THƯỜNG)
             if (level === 0) {
-                emailSubject = `✅ [ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`;
+                emailSubject = `✅ [ĐÃ DUYỆT] Hợp đồng thuê phương tiện #${orderId}`;
                 emailHtml = `
                     <!DOCTYPE html>
                     <html>
@@ -386,7 +386,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                             <tr>
                                 <td style="padding: 40px 30px;">
                                     <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderInfo.ho_ten},</h2>
-                                    <p style="color: #555555; font-size: 16px; line-height: 1.5;">Đơn thuê xe <strong>#${orderId}</strong> của bạn đã được duyệt.</p>
+                                    <p style="color: #555555; font-size: 16px; line-height: 1.5;">Đơn thuê phương tiện <strong>#${orderId}</strong> của bạn đã được duyệt.</p>
                                     
                                     <table width="100%" style="border-collapse: collapse; margin: 20px 0; font-size: 15px;">
                                         <tr style="border-bottom: 1px solid #eeeeee;">
@@ -440,7 +440,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                     
                                     <div style="background: #fff3cd; padding: 20px; border-left: 5px solid #ffc107; margin: 20px 0; border-radius: 8px;">
                                         <h3 style="color: #856404; margin-top: 0;">✅ Đơn đã được duyệt</h3>
-                                        <p>Đơn thuê xe <strong>#${orderId}</strong> (${orderInfo.ten_phuong_tien}) đã được duyệt.</p>
+                                        <p>Đơn thuê phương tiện <strong>#${orderId}</strong> (${orderInfo.ten_phuong_tien}) đã được duyệt.</p>
                                         <p style="margin-top: 15px;">
                                             Tuy nhiên, bạn có <strong>${totalViolations} vi phạm chưa xử lý</strong> với tổng nợ: 
                                             <strong style="color: #dc3545; font-size: 20px;">${fmt(totalDebt)}</strong>
@@ -558,7 +558,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                             </span>
                                                         </div>
                                                         <p style="margin: 0; font-size: 15px; color: #e65100; font-weight: 600; line-height: 1.6;">
-                                                            💡 <strong>Lưu ý:</strong> Bạn cần thanh toán <strong>ít nhất 1 vi phạm</strong> để giảm cấp độ xuống mức an toàn TRƯỚC KHI đặt cọc xe.
+                                                            💡 <strong>Lưu ý:</strong> Bạn cần thanh toán <strong>ít nhất 1 vi phạm</strong> để giảm cấp độ xuống mức an toàn TRƯỚC KHI đặt cọc phương tiện.
                                                         </p>
                                                     </div>
 
@@ -624,8 +624,8 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                             <li><strong>Bước 2:</strong> Chọn <strong style="color: #e65100;">ít nhất 1 vi phạm</strong> để thanh toán (hoặc thanh toán tất cả)</li>
                                                             <li><strong>Bước 3:</strong> Quét mã QR và thanh toán theo hướng dẫn</li>
                                                             <li><strong>Bước 4:</strong> Liên hệ hotline <strong>0123 456 789</strong> để xác nhận thanh toán</li>
-                                                            <li><strong>Bước 5:</strong> Sau khi xác nhận → Đặt cọc xe (${fmt(tienCocYeuCau)})</li>
-                                                            <li><strong>Bước 6:</strong> Nhận xe theo lịch hẹn</li>
+                                                            <li><strong>Bước 5:</strong> Sau khi xác nhận → Đặt cọc phương tiện (${fmt(tienCocYeuCau)})</li>
+                                                            <li><strong>Bước 6:</strong> Nhận phương tiện theo lịch hẹn</li>
                                                         </ol>
                                                     </div>
 
@@ -638,7 +638,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                             
                                                             ✅ <strong>Thanh toán tất cả:</strong> Xóa hoàn toàn vi phạm → Tài khoản hoàn hảo<br><br>
                                                             
-                                                            ❌ <strong>Không thanh toán:</strong> Không thể đặt cọc xe → Đơn sẽ tự động hủy sau 60 phút
+                                                            ❌ <strong>Không thanh toán:</strong> Không thể đặt cọc phương tiện → Đơn sẽ tự động hủy sau 60 phút
                                                         </p>
                                                     </div>
 
@@ -678,7 +678,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                         Email này được gửi tự động. Vui lòng không trả lời email này.
                                                     </p>
                                                     <p style="margin: 10px 0 0 0; font-size: 12px; color: #888;">
-                                                        © 2026 Hệ Thống Cho Thuê Xe. All rights reserved.
+                                                        © 2026 Hệ Thống Cho Thuê Đa Phương Tiện. All rights reserved.
                                                     </p>
                                                 </td>
                                             </tr>
@@ -702,7 +702,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                    from: 'Dịch Vụ Thuê phương tiện <onboarding@resend.dev>',
                     to: 'khoatran3123@gmail.com', //orderInfo.email,
                     subject: emailSubject,
                     html: emailHtml
@@ -930,13 +930,13 @@ const sendEmail = async (apiKey: string, toEmail: string, userName: string, cont
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'ThueXe <onboarding@resend.dev>',
+                from: 'ThuePhuongTien <onboarding@resend.dev>',
                 tto: ['khoatran3123@gmail.com'],  //[toEmail], 
-                subject: `[ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`,
+                subject: `[ĐÃ DUYỆT] Hợp đồng thuê phương tiện #${orderId}`,
                 html: `
                     <div style="font-family: sans-serif; line-height: 1.5;">
                         <h2>Xin chào ${userName},</h2>
-                        <p>Yêu cầu thuê xe của bạn (Mã đơn: <strong>#${orderId}</strong>) đã được duyệt.</p>
+                        <p>Yêu cầu thuê phương tiện của bạn (Mã đơn: <strong>#${orderId}</strong>) đã được duyệt.</p>
                         <p>Chúng tôi đã tạo hợp đồng điện tử. Vui lòng bấm vào nút dưới để xem và tải về:</p>
                         <br/>
                         <a href="${contractUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
@@ -1088,9 +1088,9 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
             const tongTien = tamTinh - tienGiam;
             const tiencocthucte = tongTien * (orderData.tien_coc_yeu_cau/100)
             const emailBody = {
-                from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                from: 'Dịch Vụ Thuê Phương Tiện <onboarding@resend.dev>',
                 to: ['khoatran3123@gmail.com'], 
-                subject: `🎉 Hoàn tất đơn thuê xe #${orderId} - Cảm ơn bạn!`,
+                subject: `🎉 Hoàn tất đơn thuê phương tiện #${orderId} - Cảm ơn bạn!`,
                 html: `
                 <!DOCTYPE html>
                 <html>
@@ -1109,7 +1109,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
                                 <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderData.ho_ten},</h2>
                                 
                                 <p style="color: #555555; font-size: 16px; line-height: 1.6;">
-                                    Cảm ơn bạn đã sử dụng dịch vụ thuê xe của chúng tôi! 
+                                    Cảm ơn bạn đã sử dụng dịch vụ thuê phương tiện của chúng tôi! 
                                     Đơn hàng <strong>#${orderId}</strong> của bạn đã được hoàn tất.
                                 </p>
 
@@ -1171,7 +1171,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
                                 <p style="color: #888888; font-size: 13px; margin-top: 20px;">
                                     Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:<br>
                                     📞 Hotline: <strong>0123456789</strong><br>
-                                    📧 Email: <strong>support@thuexe.vn</strong>
+                                    📧 Email: <strong>support@thuephuongtien.vn</strong>
                                 </p>
                             </td>
                         </tr>
@@ -1356,7 +1356,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                    from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
                     to: 'khoatran3123@gmail.com', //orderInfo.email,
                     subject: `❌ Đơn #${orderId} KHÔNG được duyệt - Tự động hủy sau 60 phút`,
                     html: `
@@ -1407,7 +1407,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
 
                                         <!-- MÃ QR -->
                                         <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; text-align: center; margin: 30px 0;">
-                                            <h3 style="margin-top: 0; color: #dc3545;">💳 Thanh Toán Để Tiếp Tục Thuê Xe</h3>
+                                            <h3 style="margin-top: 0; color: #dc3545;">💳 Thanh Toán Để Tiếp Tục Thuê phương tiện</h3>
                                             <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Quét mã QR để thanh toán vi phạm</p>
                                             
                                             <div style="margin: 20px auto; border: 2px solid #dc3545; padding: 15px; border-radius: 12px; display: inline-block; background: white;">
@@ -1424,7 +1424,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
 
                                         <!-- HƯỚNG DẪN -->
                                         <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 25px 0;">
-                                            <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê xe</h3>
+                                            <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê phương tiện</h3>
                                             <ol style="line-height: 2; font-size: 15px;">
                                                 <li>Thanh toán <strong>TOÀN BỘ ${fmt(totalDebt)}</strong></li>
                                                 <li>Liên hệ hotline: <strong>0123456789</strong></li>

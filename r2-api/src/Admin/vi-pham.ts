@@ -142,7 +142,7 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
                 : 'Chưa xác định';
 
             const emailBody = {
-                from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
                 to: ['khoatran3123@gmail.com'], //rentalOrder.email 
                 subject: `⚠️ Thông báo vi phạm giao thông - Đơn thuê #${don_thue_id}`,
                 html: `
@@ -163,7 +163,7 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
                                 
                                 <table width="100%" style="border: 1px solid #ddd; border-radius: 8px; margin: 20px 0;">
                                     <tr style="border-bottom: 1px solid #ddd;">
-                                        <td style="padding: 12px; color: #666;">Xe vi phạm</td>
+                                        <td style="padding: 12px; color: #666;">Phương tiện vi phạm</td>
                                         <td style="padding: 12px; font-weight: bold;">${rentalOrder.ten_phuong_tien} (${rentalOrder.bien_so})</td>
                                     </tr>
                                     <tr style="border-bottom: 1px solid #ddd;">
@@ -196,14 +196,14 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
 
                                 <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-top: 20px;">
                                     <p style="margin: 0; color: #856404;">
-                                        <strong>⚠️ Lưu ý:</strong> Vi phạm này cần được xử lý trước khi bạn có thể thuê xe tiếp. 
+                                        <strong>⚠️ Lưu ý:</strong> Vi phạm này cần được xử lý trước khi bạn có thể thuê phương tiện tiếp. 
                                         Vui lòng liên hệ với chúng tôi để được hướng dẫn.
                                     </p>
                                 </div>
 
                                 <p style="margin-top: 30px; color: #666;">
                                     Trân trọng,<br>
-                                    <strong>Dịch vụ cho thuê xe</strong>
+                                    <strong>Dịch vụ cho thuê phương tiện</strong>
                                 </p>
                             </td>
                         </tr>
@@ -341,7 +341,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                                                     
                                                     <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #dee2e6; border-radius: 8px; margin: 25px 0; font-size: 15px;">
                                                         <tr>
-                                                            <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #6c757d;">Xe vi phạm</td>
+                                                            <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #6c757d;">Phương tiện vi phạm</td>
                                                             <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #212529; font-weight: 500;">${violationInfo.ten_phuong_tien} (${violationInfo.bien_so})</td>
                                                         </tr>
                                                         <tr>
@@ -415,7 +415,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                                                 
                                                 <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #dee2e6; border-radius: 8px; margin: 25px 0; font-size: 15px;">
                                                     <tr>
-                                                        <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #6c757d;">Xe vi phạm</td>
+                                                        <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #6c757d;">Phương tiện vi phạm</td>
                                                         <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #212529; font-weight: 500;">${violationInfo.ten_phuong_tien} (${violationInfo.bien_so})</td>
                                                     </tr>
                                                     <tr>
@@ -454,7 +454,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                 }
 
                 const emailBody = {
-                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>', 
+                    from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>', 
                     to: `khoatran3123@gmail.com`, // dùng 'customerInfo.email' để gọi email từ database còn bây giờ dùng email bản thân để test
                     subject: subject,
                     html: htmlBody
@@ -738,7 +738,7 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
 
                                     <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; border-left: 5px solid #15a374;">
                                         <p style="margin: 0; color: #2e7d32; font-weight: bold;">
-                                            ✅ Vấn đề đã được giải quyết. Bạn có thể tiếp tục đặt cọc xe.
+                                            ✅ Vấn đề đã được giải quyết. Bạn có thể tiếp tục đặt cọc phương tiện.
                                         </p>
                                     </div>
 
@@ -761,7 +761,7 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                        from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
                         to: 'khoatran3123@gmail.com',
                         subject: `✅ Đã xác nhận thanh toán ${violations.results.length} vi phạm - Đơn #${orderId}`,
                         html: emailHtml

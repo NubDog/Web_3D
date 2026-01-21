@@ -110,7 +110,7 @@ const AdminReportingLocation = () => {
                         </button>
                         <div className="header-title">
                             <h1>Báo cáo theo Địa điểm</h1>
-                            <p>Phân tích địa điểm nhận và trả xe phổ biến</p>
+                            <p>Phân tích địa điểm nhận và trả phương tiện phổ biến</p>
                         </div>
                     </div>
                     <div className="header-stats">
@@ -139,8 +139,8 @@ const AdminReportingLocation = () => {
                         <div className="chart-title-wrapper">
                             <i className="fa-solid fa-location-dot chart-icon pickup-icon"></i>
                             <div>
-                                <h2>Top 10 Địa điểm Nhận xe Phổ biến</h2>
-                                <p>Xếp hạng các địa điểm khách hàng chọn nhận xe nhiều nhất</p>
+                                <h2>Top 10 Địa điểm Nhận phương tiện Phổ biến</h2>
+                                <p>Xếp hạng các địa điểm khách hàng chọn nhận phương tiện nhiều nhất</p>
                             </div>
                         </div>
                     </div>
@@ -156,7 +156,7 @@ const AdminReportingLocation = () => {
                             colors={['#3b82f6']}
                             borderRadius={12}
                             axisBottom={{
-                                legend: 'Số lượt nhận xe',
+                                legend: 'Số lượt nhận phương tiện',
                                 legendPosition: 'middle',
                                 legendOffset: 40,
                             }}
@@ -201,8 +201,8 @@ const AdminReportingLocation = () => {
                         <div className="chart-title-wrapper">
                             <i className="fa-solid fa-map-pin chart-icon return-icon"></i>
                             <div>
-                                <h2>Top 10 Địa điểm Trả xe Phổ biến</h2>
-                                <p>Xếp hạng các địa điểm khách hàng chọn trả xe nhiều nhất</p>
+                                <h2>Top 10 Địa điểm Trả phương tiện Phổ biến</h2>
+                                <p>Xếp hạng các địa điểm khách hàng chọn trả phương tiện nhiều nhất</p>
                             </div>
                         </div>
                     </div>
@@ -218,7 +218,7 @@ const AdminReportingLocation = () => {
                             colors={['#10b981']}
                             borderRadius={12}
                             axisBottom={{
-                                legend: 'Số lượt trả xe',
+                                legend: 'Số lượt trả phương tiện',
                                 legendPosition: 'middle',
                                 legendOffset: 40,
                             }}
