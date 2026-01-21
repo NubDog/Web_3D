@@ -2,14 +2,15 @@ import React from 'react';
 import './../../styles/components/CheckOut/CheckOut-Final.css';
 import Sub_Button from './../Button/Sub-Button/Sub-Button';
 import { useNavigate } from 'react-router-dom';
+import { getShopAddress, getCityShop,  getHotLine} from '../../../config/app.config'
 
 interface CheckOutFinalProps {
     checkoutData: any;
 }
 
+
 const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
     const navigate = useNavigate();
-
     console.log('CheckOut Final - checkoutData:', checkoutData);
 
     const handleGoHome = () => {
@@ -39,7 +40,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
 
                         <div className='detail-row'>
                             <span className='detail-label'>Địa điểm nhận :</span>
-                            <span className='detail-value'>Tại cửa hàng (Chi nhánh Đà Nẵng 99 Tô Hiến Thành)</span>
+                            <span className='detail-value'>Tại cửa hàng (Chi nhánh {getCityShop()} {getShopAddress()})</span>
                         </div>
 
                         <div className='detail-row'>
@@ -92,7 +93,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                 </div>
 
                 <div className='checkOut-final-contact'>
-                    <p>Cần hỗ trợ gấp? Gọi ngay hotline: <strong>0905 123 456</strong></p>
+                    <p>Cần hỗ trợ gấp? Gọi ngay hotline: <strong>{getHotLine()}</strong></p>
                 </div>
 
                 <div className='checkOut-final-buttons'>

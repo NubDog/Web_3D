@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './../../styles/components/CheckOut/CheckOut-Payment.css';
 import Sub_Button from './../Button/Sub-Button/Sub-Button';
 import { useAuth } from './../../contexts/AuthContext';
+import { getShopAddress } from '../../../config/app.config'
 
 interface CheckOutPaymentProps {
     checkoutData: any;
@@ -98,8 +99,8 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 phuong_tien_id: checkoutData.product?.product_id || checkoutData.product?.id,
                 ngay_bat_dau: checkoutData.ngayMuon,
                 ngay_ket_thuc: checkoutData.ngayTra,
-                dia_diem_nhan: "99 Tô Hiến Thành",
-                dia_diem_tra: "99 Tô Hiến Thành"
+                dia_diem_nhan: getShopAddress(),
+                dia_diem_tra: getShopAddress(),
             };
 
 
@@ -203,12 +204,12 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 <div className='rental-summary-content'>
                     <div className='rental-summary-row'>
                         <span className='rental-summary-label'>Địa điểm nhận phương tiện:</span>
-                        <span className='rental-summary-value'>99 Tô Hiến Thành</span>
+                        <span className='rental-summary-value'>{getShopAddress()}</span>
                     </div>
 
                     <div className='rental-summary-row'>
                         <span className='rental-summary-label'>Địa điểm trả phương tiện:</span>
-                        <span className='rental-summary-value'>99 Tô Hiến Thành</span>
+                        <span className='rental-summary-value'>{getShopAddress()}</span>
                     </div>
                 </div>
             </div>

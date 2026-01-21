@@ -1,3 +1,4 @@
+import { AppConfig } from "../../../config/app.config";
 import { generateContractPDF } from "./file-pdf";
 
 const jsonResponse = (data: any, status = 200) => {
@@ -194,7 +195,7 @@ export const handleGetPendingOrders = async (request: Request, env: Env) => {
 //     }
 // };
 
-export const handleApproveOrder = async (request: Request, env: Env, orderId: string) => {
+export const handleApproveOrder = async (request: Request, env: Env, orderId: string, config: AppConfig) => {
     try {
        const { nhan_vien_id, condition_type, note } = await request.json<{
             nhan_vien_id: number;
@@ -473,9 +474,9 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                         </div>
 
                                         <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px;">
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Số tài khoản:</strong> 0385750387</p>
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Ngân hàng:</strong> MB Bank</p>
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> NGUYEN TRAN VIET KHOA</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Số tài khoản:</strong>${config.PAYMENT.ACCOUNT_NUMBER}</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Ngân hàng:</strong> ${config.PAYMENT.BANK_NAME}</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> ${config.PAYMENT.ACCOUNT_NAME}</p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold;">${fmt(totalDebt)}</span></p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Nội dung:</strong> <code style="background: #f1f3f5; padding: 4px 8px; border-radius: 4px;">${qrContent}</code></p>
                                         </div>
@@ -1292,7 +1293,7 @@ export const handleCheckOrderViolation = async (request: Request, env: Env, orde
     }
 };
 
-export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string) => {
+export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string,  config: AppConfig,) => {
     try {
         const { nhanvien_id, ly_do } = await request.json<{
             nhanvien_id: number;

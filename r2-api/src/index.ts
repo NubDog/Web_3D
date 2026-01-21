@@ -16,7 +16,7 @@ import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/NguoiDung_API';
 import { handleGetDonThue } from './API/DonThue_API';
-import { handleGetKhachHang } from './API/KhachHang_API';
+import { handleCheckUserStatus, handleGetKhachHang } from './API/KhachHang_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 import { handleGetKycDocumentsByNguoiDungId, handleCheckStatusKYC } from './API/KYC_User';
 import { handleGetUserOrders } from './API/UserOrder_API';
@@ -369,6 +369,11 @@ export default {
 				if (path === '/api/customers' && method === 'GET') {
 					return handleGetCustomers(env);
 				}
+			}
+
+			if (url.pathname.startsWith('/api/check-user-status/')) {
+				const userId = url.pathname.split('/').pop();
+				return handleCheckUserStatus(request, env, userId as string);
 			}
 
 			// ------------------- Danh mục phương tiện -------------------

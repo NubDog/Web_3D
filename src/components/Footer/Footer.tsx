@@ -1,5 +1,6 @@
 import React from 'react';
 import '../../styles/components/Footer/Footer.css';
+import { getHotLine } from '../../../config/app.config'
 
 import compliance from '../../assets/logo-local-compliance.png';
 
@@ -55,7 +56,7 @@ const Footer = () => {
                 <div className="Footer-shop">
                     <p>Xem thêm cách để thuê phương tiện.</p>
                     <a>Tìm cửa hàng gần bạn.</a>
-                    <p>Hoặc gọi 27082004</p>
+                    <p>Hoặc gọi {getHotLine()}</p>
                 </div>
             </div>
 
@@ -73,7 +74,7 @@ const Footer = () => {
                     ĐKKD số 0313510827, do Sở KH&ĐT thành phố Hồ Chí Minh cấp ngày 28 tháng 10 năm 2015 <br />
                     Giấy phép kinh doanh số 0313510827/KD-0137 do Sở Công Thương thành phố Hồ Chí Minh cấp ngày 23 tháng 5 năm 2018 <br />
                     Địa chỉ: Phòng 901, Ngôi Nhà Đức Tại Tp. Hồ Chí Minh, số 33, đường Lê Duẩn, Phường Bến Nghé, Quận 1, thành phố Hồ Chí Minh, Việt Nam <br />
-                    Điện thoại: 27082004 <br />
+                    Điện thoại: {getHotLine()} <br />
                 </p>
 
                 <img src={compliance} alt="compliance" />
