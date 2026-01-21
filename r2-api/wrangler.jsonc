@@ -11,8 +11,10 @@
 		"enabled": true
 	},
 	"triggers": {
-    "crons": ["* * * * *"]
-  	},
+		"crons": [
+			"* * * * *"
+		]
+	},
 	"d1_databases": [
 		{
 			"binding": "DB",
@@ -37,7 +39,6 @@
 			"bucket_name": "kyc-img",
 			"preview_bucket_name": "kyc-img"
 		},
-
 		{
 			"binding": "product",
 			"bucket_name": "product",
@@ -52,8 +53,8 @@
 			"binding": "VIO",
 			"bucket_name": "violation-img",
 			"preview_bucket_name": "violation-img"
-		}
-		,{
+		},
+		{
 			"binding": "hd",
 			"bucket_name": "hd-pdf",
 			"preview_bucket_name": "hd-pdf"
@@ -62,7 +63,16 @@
 		// 	"bucket_name": "models-3d-dev",
 		// 	"binding": "models_3d_dev"
 		// }
-	]
+	],
+	"vectorize": [
+		{
+			"binding": "VECTORIZE",
+			"index_name": "rental-index"
+		}
+	],
+	"vars": {
+		"GEMINI_API_KEY": "AIzaSyCFd4iROjLr-Hq5rRNjzGVRRiZIeyYGosg"
+	}
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

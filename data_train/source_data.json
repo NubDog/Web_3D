@@ -1,0 +1,464 @@
+[
+  {
+    "id": 1,
+    "ai_training_text": "Tên xe: Lamborghini Sián FKP 37. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Sián. Mô tả chi tiết: Siêu xe Hypercar. Giá thuê hiện tại: 1000000 VNĐ/ngày. Tình trạng xe: Đã có người đặt trước. Biển số: 59A1-12345.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Lamborghini%20Sian%20FKP%2037.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Hypercar/Lamborghini%20Sian%20FKP%2037.glb"
+  },
+  {
+    "id": 2,
+    "ai_training_text": "Tên xe: Mercedes Benz Maybach GLS 600. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Mercedes-Benz. Phân khúc: Maybach GLS. Mô tả chi tiết: SUV siêu sang. Giá thuê hiện tại: 2000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59B2-23456.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Mercedes%20Benz%20Maybach%20GLS%20600.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Mersedes-%20Benz%20Maybach%20GLS%20600.glb"
+  },
+  {
+    "id": 3,
+    "ai_training_text": "Tên xe: Peugeot 3308. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Peugeot. Phân khúc: Dòng 3000 (3008/3308). Mô tả chi tiết: SUV siêu sang. Giá thuê hiện tại: 400000 VNĐ/ngày. Tình trạng xe: Khách đang thuê. Biển số: 51H-34567.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Peugeot%203088.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Peugeot%20308%202022.glb"
+  },
+  {
+    "id": 4,
+    "ai_training_text": "Tên xe: DJI FVP - SDC PERFORMANCE EDITION. Thuộc dòng: Flycam (Thiết bị bay ghi hình từ trên cao, giúp thu trọn toàn cảnh dự án, sự kiện hoặc tạo ra những thước phim du lịch ấn tượng.). Hãng sản xuất: DJI. Phân khúc: FPV. Mô tả chi tiết: Flycam siêu cấp vjp pro. Giá thuê hiện tại: 1000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 51G-45678.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Drone/DJI%20FVP%20-%20SDC%20PERFORMANCE%20EDITION.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Drone/DJI%20FVP%20-%20SDC%20PERFORMANCE%20EDITION.glb"
+  },
+  {
+    "id": 5,
+    "ai_training_text": "Tên xe: Suzuki Carry. Thuộc dòng: Flycam (Thiết bị bay ghi hình từ trên cao, giúp thu trọn toàn cảnh dự án, sự kiện hoặc tạo ra những thước phim du lịch ấn tượng.). Hãng sản xuất: Suzuki. Phân khúc: Carry. Mô tả chi tiết: Xe tải nhỏ. Giá thuê hiện tại: 0 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 50C-56789.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/t%E1%BA%A3i%20xu%E1%BB%91ng.jpg",
+    "model_3d_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/t%E1%BA%A3i%20xu%E1%BB%91ng.jpg"
+  },
+  {
+    "id": 7,
+    "ai_training_text": "Tên xe: Harley-Davidson Police. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Harley-Davidson. Phân khúc: Police Edition. Mô tả chi tiết: Xe 2 bánh to độ Police. Giá thuê hiện tại: 90000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 53B-78901.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/Harley-Davidson%20Police.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/Harley-Davidson%20Police.glb"
+  },
+  {
+    "id": 8,
+    "ai_training_text": "Tên xe: Motor Bike/2018 BMW R NineT Pure. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: BMW. Phân khúc: R NineT. Mô tả chi tiết: Xe máy hạng sang. Giá thuê hiện tại: 22999994 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 53F-89012.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/2018%20BMW%20R%20NineT%20Pure.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/2018%20BMW%20R%20NineT%20Pure.glb"
+  },
+  {
+    "id": 10,
+    "ai_training_text": "Tên xe: Honda Twister 300. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: Twister. Mô tả chi tiết: Siêu xe 2 bánh. Giá thuê hiện tại: 20000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 92D-1010.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/Honda%20Twister%20300.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/Honda%20Twister%20300.glb"
+  },
+  {
+    "id": 11,
+    "ai_training_text": "Tên xe: Aventador SVJ Black-Ghost. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Aventador. Mô tả chi tiết: Siêu xe đường phố chuyên đua nẹt bô. Giá thuê hiện tại: 200000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59X1-98765.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Aventador%20SVJ%20Black-Ghost.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Hypercar/Aventador%20SVJ%20Black-Ghost.glb"
+  },
+  {
+    "id": 12,
+    "ai_training_text": "Tên xe: Lamborghini Centenario LP 770. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Centenario. Mô tả chi tiết: Siêu xe đường phố. Giá thuê hiện tại: 200000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59Y2-87654122.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Lamborghini%20Centenario%20LP%20770.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Hypercar/Lamborghini%20Centenario%20LP%20770-4.glb"
+  },
+  {
+    "id": 13,
+    "ai_training_text": "Tên xe: Aventador SVJ KATANA™️ - SDC™️ x BLACKDEATH. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Aventador. Mô tả chi tiết: Siêu xe đường phố 4 . Giá thuê hiện tại: 788878 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 51D-76543.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Aventador%20SVJ%20KATANA%E2%84%A2%EF%B8%8F%20-%20SDC%E2%84%A2%EF%B8%8F%20x%20BLACKDEATH.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Hypercar/Aventador%20SVJ%20KATANA%E2%84%A2%EF%B8%8F%20-%20SDC%E2%84%A2%EF%B8%8F%20x%20BLACKDEATH.glb"
+  },
+  {
+    "id": 14,
+    "ai_training_text": "Tên xe: Ferrari 550 Barchetta 2000 Azzurro Hyperion. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Ferrari. Phân khúc: 550 Barchetta. Mô tả chi tiết: Siêu xe mui trần. Giá thuê hiện tại: 200009 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 51F-65432.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Ferrari%20550%20Barchetta%202000%20Azzurro%20Hyperion.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Hypercar/Ferrari%20550%20Barchetta%202000%20Azzurro%20Hyperion.glb"
+  },
+  {
+    "id": 15,
+    "ai_training_text": "Tên xe: 2019 Honda Monkey 125. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: Monkey. Mô tả chi tiết: Xe 2 bánh loại nhỏ. Giá thuê hiện tại: 400000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 60C-54321.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/2019%20Honda%20Monkey%20125.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/2019%20Honda%20Monkey%20125.glb"
+  },
+  {
+    "id": 16,
+    "ai_training_text": "Tên xe: 2024 Ducati StreetFighter V4 S. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Ducati. Phân khúc: StreetFighter. Mô tả chi tiết: Xe 2 bánh loại lớn lùn không nên thuê. Giá thuê hiện tại: 421009 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 61C-43210.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/2024%20Ducati%20StreetFighter%20V4%20S.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/2024%20Ducati%20StreetFighter%20V4%20S.glb"
+  },
+  {
+    "id": 17,
+    "ai_training_text": "Tên xe: Honda CB500X. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: CB500X. Mô tả chi tiết: Xe 2 bánh vượt địa hình. Giá thuê hiện tại: 456789 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 53H-32109.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/Honda%20CB500X.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/Honda%20CB500X.glb"
+  },
+  {
+    "id": 18,
+    "ai_training_text": "Tên xe: Kawasaki Ninja H2 R. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Kawasaki. Phân khúc: Ninja. Mô tả chi tiết: Xe dành cho dân chơi. Giá thuê hiện tại: 400000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: N/A.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/Kawasaki%20Ninja%20H2%20R.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/Kawasaki%20Ninja%20H2%20R.glb"
+  },
+  {
+    "id": 19,
+    "ai_training_text": "Tên xe: Kawasaki ninja ZX-6R. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Kawasaki. Phân khúc: Ninja. Mô tả chi tiết: Xe đạp thành phố. Giá thuê hiện tại: 2222213 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: N/A.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/Kawasaki%20ninja%20ZX-6R.png",
+    "model_3d_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Motor%20Bike/Kawasaki%20ninja%20ZX-6R.png"
+  },
+  {
+    "id": 20,
+    "ai_training_text": "Tên xe: Lamborghini Centenario Roadster SDC. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Centenario. Mô tả chi tiết: Siêu xe Cao Cấp. Giá thuê hiện tại: 99998233 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59M1-21098.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Lamborghini%20Centenario%20Roadster%20SDC.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Hypercar/Lamborghini%20Centenario%20Roadster%20SDC.glb"
+  },
+  {
+    "id": 25,
+    "ai_training_text": "Tên xe: Mclaren P1. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: McLaren. Phân khúc: P1. Mô tả chi tiết: Siêu xe công thức 1. Giá thuê hiện tại: 10000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59A1-1234534.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Mclaren%20P1.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Hypercar/Mclaren%20P1.glb"
+  },
+  {
+    "id": 26,
+    "ai_training_text": "Tên xe: Porsche 911 Turbo (996). Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Porsche. Phân khúc: 911 Turbo. Mô tả chi tiết: Siêu xe cổ dành cho quý tộc. Giá thuê hiện tại: 10000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59A1-1234534.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Porsche%20911%20Turbo%20(996).png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Sportscar/Porsche%20911%20Turbo%20(996).glb"
+  },
+  {
+    "id": 27,
+    "ai_training_text": "Tên xe: Huracan Falcon. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Huracan. Mô tả chi tiết: Siêu xe Hypercar. Giá thuê hiện tại: 10000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59A1-12345.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/FH5_Lamborghini_Hurac%203Fn_Performante.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Sportscar/Huracan%20Falcon.glb"
+  },
+  {
+    "id": 28,
+    "ai_training_text": "Tên xe: Lamborghini Aventador. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Huracan. Mô tả chi tiết: Siêu xe Hypercar. Giá thuê hiện tại: 100000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59A1-12345.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Lamborghini%20Aventador.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Hypercar/Lamborghini%20Aventador.glb"
+  },
+  {
+    "id": 29,
+    "ai_training_text": "Tên xe: Honda Vino. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: Vino. Mô tả chi tiết: Xe điện dành cho học sinh. Giá thuê hiện tại: 100000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59A1-12345.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Honda%20Vino.jpg",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/Honda%20Vino.glb"
+  },
+  {
+    "id": 30,
+    "ai_training_text": "Tên xe: Vespa. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: CR-V. Mô tả chi tiết: Siêu xe 2 bánh. Giá thuê hiện tại: 100000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 59A1-12345.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Vespa.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Motor%20Bike/Vespa.glb"
+  },
+  {
+    "id": 31,
+    "ai_training_text": "Tên xe: DJI Inspire 3. Thuộc dòng: Flycam (Thiết bị bay ghi hình từ trên cao, giúp thu trọn toàn cảnh dự án, sự kiện hoặc tạo ra những thước phim du lịch ấn tượng.). Hãng sản xuất: DJI. Phân khúc: Inspire. Mô tả chi tiết: Flycam DJI. Giá thuê hiện tại: 5000000 VNĐ/ngày. Tình trạng xe: Khách đang thuê. Biển số: 43A-12345.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Drone/DJI%20Inspire%203.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Drone/DJI%20Inspire%203.glb"
+  },
+  {
+    "id": 32,
+    "ai_training_text": "Tên xe: Dji FPV by SDC. Thuộc dòng: Flycam (Thiết bị bay ghi hình từ trên cao, giúp thu trọn toàn cảnh dự án, sự kiện hoặc tạo ra những thước phim du lịch ấn tượng.). Hãng sản xuất: DJI. Phân khúc: FPV. Mô tả chi tiết: Flycam Vjp Nhất DJI. Giá thuê hiện tại: 150000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43B-67890.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Drone/DJI%20FVP%20-%20SDC%20PERFORMANCE%20EDITION.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Drone/Dji%20FPV%20by%20SDC.glb"
+  },
+  {
+    "id": 33,
+    "ai_training_text": "Tên xe: Dji FPV. Thuộc dòng: Flycam (Thiết bị bay ghi hình từ trên cao, giúp thu trọn toàn cảnh dự án, sự kiện hoặc tạo ra những thước phim du lịch ấn tượng.). Hãng sản xuất: DJI. Phân khúc: FPV. Mô tả chi tiết: Drone DJI. Giá thuê hiện tại: 2000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43C-24680.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Drone/Dji%20FPV.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Drone/Dji%20FPV.glb"
+  },
+  {
+    "id": 34,
+    "ai_training_text": "Tên xe: Drone Beta85X. Thuộc dòng: Flycam (Thiết bị bay ghi hình từ trên cao, giúp thu trọn toàn cảnh dự án, sự kiện hoặc tạo ra những thước phim du lịch ấn tượng.). Hãng sản xuất: BetaFPV. Phân khúc: Beta85X. Mô tả chi tiết: Drone cực vjp. Giá thuê hiện tại: 2000000 VNĐ/ngày. Tình trạng xe: Đang bảo trì/sửa chữa. Biển số: 43C-24680.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20Drone/Drone%20Beta85X.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20Drone/Drone%20Beta85X.glb"
+  },
+  {
+    "id": 39,
+    "ai_training_text": "Tên xe: 2022 Suzuki Ertiga. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Suzuki. Phân khúc: Ertiga. Mô tả chi tiết: SUV bình dân từ Nhật Bản. Giá thuê hiện tại: 3000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 77Q-87509.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/2022%20Suzuki%20Ertiga.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/2022%20Suzuki%20Ertiga.glb"
+  },
+  {
+    "id": 40,
+    "ai_training_text": "Tên xe: 2023 Ferrari Purosangue. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Ferrari. Phân khúc: Purosangue. Mô tả chi tiết: SUV siêu sang từ Ý. Giá thuê hiện tại: 4000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 55D-53147.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/2023%20Ferrari%20Purosangue.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/2023%20Ferrari%20Purosangue.glb"
+  },
+  {
+    "id": 41,
+    "ai_training_text": "Tên xe: 2023 Lexus GX 550 Overtrail. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Lexus. Phân khúc: GX. Mô tả chi tiết: SUV siêu sang từ Ý. Giá thuê hiện tại: 2000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 76L-96792.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/2023%20Lexus%20GX%20550%20Overtrail.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/2023%20Lexus%20GX%20550%20Overtrail.glb"
+  },
+  {
+    "id": 42,
+    "ai_training_text": "Tên xe: 2023 Toyota RAV4 Hybrid. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Toyota. Phân khúc: Fortuner/RAV4. Mô tả chi tiết: SUV bọc tôn. Giá thuê hiện tại: 2500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 74P-93641.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/2023%20Toyota%20RAV4%20Hybrid.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/2023%20Toyota%20RAV4%20Hybrid.glb"
+  },
+  {
+    "id": 43,
+    "ai_training_text": "Tên xe: Mazda CX-5. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Mazda. Phân khúc: CX-5. Mô tả chi tiết: SUV dễ bị đánh ghen. Giá thuê hiện tại: 2500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 74U-93014.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Mazda%20CX-5.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Mazda%20CX-5.glb"
+  },
+  {
+    "id": 44,
+    "ai_training_text": "Tên xe: Mersedes- Benz Maybach GLS 600. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Mercedes-Benz. Phân khúc: Maybach GLS. Mô tả chi tiết: SUV dành riêng cho CEO. Giá thuê hiện tại: 2000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 16C-23483.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Mercedes%20Benz%20Maybach%20GLS%20600.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Mersedes-%20Benz%20Maybach%20GLS%20600.glb"
+  },
+  {
+    "id": 45,
+    "ai_training_text": "Tên xe: Mitsubishi Concept SUV. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Mitsubishi. Phân khúc: Concept SUV. Mô tả chi tiết: SUV dành riêng cho CEO. Giá thuê hiện tại: 3500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 71N-37781.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Mitsubishi%20Concept%20SUV.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Mitsubishi%20Concept%20SUV.glb"
+  },
+  {
+    "id": 46,
+    "ai_training_text": "Tên xe: Peugeot 3008. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Peugeot. Phân khúc: Dòng 3000 (3008/3308). Mô tả chi tiết: SUV dành riêng cho CEO. Giá thuê hiện tại: 2500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 85F-41500.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Peugeot%203008.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Peugeot%203008.glb"
+  },
+  {
+    "id": 47,
+    "ai_training_text": "Tên xe: Urus Absolut. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Lamborghini. Phân khúc: Urus. Mô tả chi tiết: SUV siêu sang. Giá thuê hiện tại: 2500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 25H-71027.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/Model%20SUV%20Car/Urus%20Absolut.png",
+    "model_3d_url": "https://pub-caec26941f1449dab2d3b0817e5f01b9.r2.dev/Model%20SUV%20Car/Urus%20Absolut.glb"
+  },
+  {
+    "id": 48,
+    "ai_training_text": "Tên xe: Honda Air Blade 2022. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: Air Blade. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 120000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43A1-11111.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/honda-air-blade-125cc-ban-tieu-chuan-mau-do-den.webp",
+    "model_3d_url": ""
+  },
+  {
+    "id": 49,
+    "ai_training_text": "Tên xe: Yamaha Exciter 155. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Yamaha. Phân khúc: Exciter. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 150000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43B1-22222.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/Exciter-155-VVA-GP-ABS_004-768x645.webp",
+    "model_3d_url": ""
+  },
+  {
+    "id": 50,
+    "ai_training_text": "Tên xe: Honda Vision 2023. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: Vision. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 100000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43C1-33333.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/xe-ga-110cc-vision-1-1677901581-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 51,
+    "ai_training_text": "Tên xe: Suzuki Raider 150. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Suzuki. Phân khúc: Raider. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 135000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43D1-44444.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/images-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 52,
+    "ai_training_text": "Tên xe: Honda SH Mode. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: SH Mode. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 180000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43E1-55555.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/2.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 53,
+    "ai_training_text": "Tên xe: Ferrari F8 Tributo. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Ferrari. Phân khúc: F8 Tributo. Mô tả chi tiết: Siêu xe. Giá thuê hiện tại: 3000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43F-88888.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/mansory-ferrari-f8-tributo-1-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 54,
+    "ai_training_text": "Tên xe: Lamborghini Huracan. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Huracan. Mô tả chi tiết: Siêu xe. Giá thuê hiện tại: 3500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43G-99999.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/images__1_-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 55,
+    "ai_training_text": "Tên xe: Tesla Model S. Thuộc dòng: Xe Điện (Giải pháp di chuyển xanh, không tiếng ồn, lý tưởng cho những chuyến dạo chơi nhẹ nhàng và bảo vệ môi trường.). Hãng sản xuất: Tesla. Phân khúc: Model S. Mô tả chi tiết: Xe điện. Giá thuê hiện tại: 2500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43H-77777.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/tesla-model-3-thumb-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 56,
+    "ai_training_text": "Tên xe: Mazda CX-5 2021. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Mazda. Phân khúc: CX-5. Mô tả chi tiết: SUV. Giá thuê hiện tại: 950000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43A-10101.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/Icon-Mazda-CX5-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 57,
+    "ai_training_text": "Tên xe: Kia Sorento 2022. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Kia. Phân khúc: Sorento. Mô tả chi tiết: SUV. Giá thuê hiện tại: 1200000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43B-20202.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/Icon-Mazda-CX5-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 58,
+    "ai_training_text": "Tên xe: Toyota Fortuner. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Toyota. Phân khúc: Fortuner/RAV4. Mô tả chi tiết: SUV. Giá thuê hiện tại: 1300000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43C-30303.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/toyota-fortuner-2-8v-4x4-at-1606795j22961.webp",
+    "model_3d_url": ""
+  },
+  {
+    "id": 59,
+    "ai_training_text": "Tên xe: Hyundai SantaFe. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Hyundai. Phân khúc: SantaFe. Mô tả chi tiết: SUV. Giá thuê hiện tại: 1350000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43D-40404.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/web-santafe.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 60,
+    "ai_training_text": "Tên xe: Honda CR-V 2020. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Honda. Phân khúc: CR-V. Mô tả chi tiết: SUV. Giá thuê hiện tại: 1400000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43E-50505.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/honda-cr-v-l-2020-13-1166-2287-1698030017-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 61,
+    "ai_training_text": "Tên xe: Audi Q7. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Audi. Phân khúc: Q7. Mô tả chi tiết: SUV. Giá thuê hiện tại: 2000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43F-60606.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/2025-audi-q7-premium-plus-45-tfsi-quattro-angular-front-exterior-view_100942323_m.webp",
+    "model_3d_url": ""
+  },
+  {
+    "id": 62,
+    "ai_training_text": "Tên xe: VinFast VF e34. Thuộc dòng: Xe Điện (Giải pháp di chuyển xanh, không tiếng ồn, lý tưởng cho những chuyến dạo chơi nhẹ nhàng và bảo vệ môi trường.). Hãng sản xuất: VinFast. Phân khúc: VF e34. Mô tả chi tiết: Xe Điện. Giá thuê hiện tại: 850000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43G-70707.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/Mystique-Red-Do.jpg",
+    "model_3d_url": ""
+  },
+  {
+    "id": 63,
+    "ai_training_text": "Tên xe: VinFast VF9. Thuộc dòng: Xe Điện (Giải pháp di chuyển xanh, không tiếng ồn, lý tưởng cho những chuyến dạo chơi nhẹ nhàng và bảo vệ môi trường.). Hãng sản xuất: VinFast. Phân khúc: VF 9. Mô tả chi tiết: Xe Điện. Giá thuê hiện tại: 1600000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43H-80808.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/VinFast-VF-9-mau-Den.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 64,
+    "ai_training_text": "Tên xe: Giant Escape 3. Thuộc dòng: Xe đạp (Phương tiện vận động thân thiện, phù hợp để rèn luyện sức khỏe hoặc thong dong ngắm cảnh ở cự ly gần.). Hãng sản xuất: Giant. Phân khúc: Escape. Mô tả chi tiết: Xe đạp. Giá thuê hiện tại: 100000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43A-90909.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/xe-dap-the-thao-giant-escape-3-2020-den-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 65,
+    "ai_training_text": "Tên xe: Trek FX 2. Thuộc dòng: Xe đạp (Phương tiện vận động thân thiện, phù hợp để rèn luyện sức khỏe hoặc thong dong ngắm cảnh ở cự ly gần.). Hãng sản xuất: Trek. Phân khúc: FX. Mô tả chi tiết: Xe đạp. Giá thuê hiện tại: 150000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43B-11112.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/fx2disc_22_35003_a_primary-1_da3d7ddc2aae4079a651d4e0cd9ac7bb-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 66,
+    "ai_training_text": "Tên xe: DJI Mavic 3. Thuộc dòng: Flycam (Thiết bị bay ghi hình từ trên cao, giúp thu trọn toàn cảnh dự án, sự kiện hoặc tạo ra những thước phim du lịch ấn tượng.). Hãng sản xuất: DJI. Phân khúc: Mavic. Mô tả chi tiết: Flycam. Giá thuê hiện tại: 500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43C-12121.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/danh-gia-mavic-3-3-711x400-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 67,
+    "ai_training_text": "Tên xe: Black Hawk. Thuộc dòng: Trực thăng (Dịch vụ bay trải nghiệm đẳng cấp, giúp bạn ngắm nhìn toàn cảnh thành phố từ góc nhìn độc nhất vô nhị.). Hãng sản xuất: Black Hawk. Phân khúc: Black Hawk Series. Mô tả chi tiết: Trực thăng. Giá thuê hiện tại: 50000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43D-13131.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/pngtree-uh-60-black-hawk-helicopter-isolated-on-transparent-background-a-with-png-image_14860218.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 68,
+    "ai_training_text": "Tên xe: Honda Air Blade 2022. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: Air Blade. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 120000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43A1-11111.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/honda-air-blade-125cc-ban-tieu-chuan-mau-do-den.webp",
+    "model_3d_url": ""
+  },
+  {
+    "id": 69,
+    "ai_training_text": "Tên xe: Yamaha Exciter 155. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Yamaha. Phân khúc: Exciter. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 150000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43B1-22222.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/Exciter-155-VVA-GP-ABS_004-768x645.webp",
+    "model_3d_url": ""
+  },
+  {
+    "id": 70,
+    "ai_training_text": "Tên xe: Honda Vision 2023. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: Vision. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 100000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43C1-33333.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/xe-ga-110cc-vision-1-1677901581-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 71,
+    "ai_training_text": "Tên xe: Suzuki Raider 150. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Suzuki. Phân khúc: Raider. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 135000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43D1-44444.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/images-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 72,
+    "ai_training_text": "Tên xe: Honda SH Mode. Thuộc dòng: Xe máy (Phương tiện 2 bánh cơ động, giúp bạn dễ dàng len lỏi và di chuyển linh hoạt trong thành phố đông đúc.). Hãng sản xuất: Honda. Phân khúc: SH Mode. Mô tả chi tiết: Xe máy. Giá thuê hiện tại: 180000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43E1-55555.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/2.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 73,
+    "ai_training_text": "Tên xe: Ferrari F8 Tributo. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Ferrari. Phân khúc: F8 Tributo. Mô tả chi tiết: Siêu xe. Giá thuê hiện tại: 3000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43F-88888.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/mansory-ferrari-f8-tributo-1-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 74,
+    "ai_training_text": "Tên xe: Lamborghini Huracan. Thuộc dòng: siêu xe (Những dòng xe sang trọng, đẳng cấp, giúp bạn tạo điểm nhấn khác biệt trong các sự kiện quan trọng hoặc buổi hẹn hò.). Hãng sản xuất: Lamborghini. Phân khúc: Huracan. Mô tả chi tiết: Siêu xe. Giá thuê hiện tại: 3500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43G-99999.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/images__1_-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 75,
+    "ai_training_text": "Tên xe: Tesla Model S. Thuộc dòng: Xe Điện (Giải pháp di chuyển xanh, không tiếng ồn, lý tưởng cho những chuyến dạo chơi nhẹ nhàng và bảo vệ môi trường.). Hãng sản xuất: Tesla. Phân khúc: Model S. Mô tả chi tiết: Xe Điện. Giá thuê hiện tại: 2500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43H-77777.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/tesla-model-3-thumb-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 76,
+    "ai_training_text": "Tên xe: Mazda CX-5 2021. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Mazda. Phân khúc: CX-5. Mô tả chi tiết: SUV. Giá thuê hiện tại: 950000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43A-10101.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/Icon-Mazda-CX5-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 77,
+    "ai_training_text": "Tên xe: Kia Sorento 2022. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Kia. Phân khúc: Sorento. Mô tả chi tiết: SUV. Giá thuê hiện tại: 1200000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43B-20202.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/Icon-Mazda-CX5-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 78,
+    "ai_training_text": "Tên xe: Toyota Fortuner. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Toyota. Phân khúc: Fortuner/RAV4. Mô tả chi tiết: SUV. Giá thuê hiện tại: 1300000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43C-30303.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/toyota-fortuner-2-8v-4x4-at-1606795j22961.webp",
+    "model_3d_url": ""
+  },
+  {
+    "id": 79,
+    "ai_training_text": "Tên xe: Hyundai SantaFe. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Hyundai. Phân khúc: SantaFe. Mô tả chi tiết: SUV. Giá thuê hiện tại: 1350000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43D-40404.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/web-santafe.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 80,
+    "ai_training_text": "Tên xe: Honda CR-V 2020. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Honda. Phân khúc: CR-V. Mô tả chi tiết: SUV. Giá thuê hiện tại: 1400000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43E-50505.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/honda-cr-v-l-2020-13-1166-2287-1698030017-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 81,
+    "ai_training_text": "Tên xe: Audi Q7. Thuộc dòng: SUV (Dòng xe gầm cao mạnh mẽ, không gian rộng rãi, là lựa chọn số 1 cho các chuyến du lịch gia đình hoặc đi đường dài). Hãng sản xuất: Audi. Phân khúc: Q7. Mô tả chi tiết: SUV. Giá thuê hiện tại: 2000000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43F-60606.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/2025-audi-q7-premium-plus-45-tfsi-quattro-angular-front-exterior-view_100942323_m.webp",
+    "model_3d_url": ""
+  },
+  {
+    "id": 82,
+    "ai_training_text": "Tên xe: VinFast VF e34. Thuộc dòng: Xe Điện (Giải pháp di chuyển xanh, không tiếng ồn, lý tưởng cho những chuyến dạo chơi nhẹ nhàng và bảo vệ môi trường.). Hãng sản xuất: VinFast. Phân khúc: VF e34. Mô tả chi tiết: Xe Điện. Giá thuê hiện tại: 850000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43G-70707.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/vinfast-color-xe-o-to-dien_0001_vf-34-765x430.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 83,
+    "ai_training_text": "Tên xe: VinFast VF9. Thuộc dòng: Xe Điện (Giải pháp di chuyển xanh, không tiếng ồn, lý tưởng cho những chuyến dạo chơi nhẹ nhàng và bảo vệ môi trường.). Hãng sản xuất: VinFast. Phân khúc: VF 9. Mô tả chi tiết: Xe Điện. Giá thuê hiện tại: 1600000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43H-80808.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/VinFast-VF-9-mau-Den.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 84,
+    "ai_training_text": "Tên xe: Giant Escape 3. Thuộc dòng: Xe đạp (Phương tiện vận động thân thiện, phù hợp để rèn luyện sức khỏe hoặc thong dong ngắm cảnh ở cự ly gần.). Hãng sản xuất: Giant. Phân khúc: Escape. Mô tả chi tiết: Xe đạp. Giá thuê hiện tại: 100000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43A-90909.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/xe-dap-the-thao-giant-escape-3-2020-den-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 85,
+    "ai_training_text": "Tên xe: Trek FX 2. Thuộc dòng: Xe đạp (Phương tiện vận động thân thiện, phù hợp để rèn luyện sức khỏe hoặc thong dong ngắm cảnh ở cự ly gần.). Hãng sản xuất: Trek. Phân khúc: FX. Mô tả chi tiết: Xe đạp. Giá thuê hiện tại: 150000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43B-11112.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/fx2disc_22_35003_a_primary-1_da3d7ddc2aae4079a651d4e0cd9ac7bb-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 86,
+    "ai_training_text": "Tên xe: DJI Mavic 3. Thuộc dòng: Flycam (Thiết bị bay ghi hình từ trên cao, giúp thu trọn toàn cảnh dự án, sự kiện hoặc tạo ra những thước phim du lịch ấn tượng.). Hãng sản xuất: DJI. Phân khúc: Mavic. Mô tả chi tiết: Flycam. Giá thuê hiện tại: 500000 VNĐ/ngày. Tình trạng xe: Đang sẵn sàng cho thuê. Biển số: 43C-12121.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/danh-gia-mavic-3-3-711x400-removebg-preview.png",
+    "model_3d_url": ""
+  },
+  {
+    "id": 87,
+    "ai_training_text": "Tên xe: Black Hawk. Thuộc dòng: Trực thăng (Dịch vụ bay trải nghiệm đẳng cấp, giúp bạn ngắm nhìn toàn cảnh thành phố từ góc nhìn độc nhất vô nhị.). Hãng sản xuất: Black Hawk. Phân khúc: Black Hawk Series. Mô tả chi tiết: Trực thăng. Giá thuê hiện tại: 50000000 VNĐ/ngày. Tình trạng xe: Đang bảo trì/sửa chữa. Biển số: 43D-13131.",
+    "image_url": "https://pub-51b489e1b34f440b9b9fee4220ce89c0.r2.dev/image%20product/pngtree-uh-60-black-hawk-helicopter-isolated-on-transparent-background-a-with-png-image_14860218.png",
+    "model_3d_url": ""
+  }
+]
