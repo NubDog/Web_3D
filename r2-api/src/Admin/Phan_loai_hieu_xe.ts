@@ -67,13 +67,47 @@ export async function addPhanloaihieuxe(request: Request, env: Env): Promise<Res
 			return withCORS({ success: false, error: 'Thiếu thông tin bắt buộc' }, 400);
 		}
 
-		const insertQuery = `
-            INSERT INTO PhanLoaiPhuongTien
-            (hieu_xe_id, ten_phan_loai, danh_muc_id)
-            VALUES (?, ?, ?)
-        `;
+		const tenPhanLoai = ten_phan_loai.trim();
 
-		const result = await env.DB.prepare(insertQuery).bind(hieu_xe_id, ten_phan_loai, danh_muc_id).run();
+		const hieuXeExist = await env.DB.prepare(`SELECT 1 FROM HieuXe WHERE hieu_xe_id = ? LIMIT 1`).bind(hieu_xe_id).all();
+
+		if (hieuXeExist.results.length === 0) {
+			return withCORS({ success: false, error: 'Hiệu xe không tồn tại' }, 404);
+		}
+
+		const danhMucExist = await env.DB.prepare(`SELECT 1 FROM DanhMucPhuongTien WHERE danh_muc_id = ? LIMIT 1`).bind(danh_muc_id).all();
+
+		if (danhMucExist.results.length === 0) {
+			return withCORS({ success: false, error: 'Danh mục không tồn tại' }, 404);
+		}
+
+		const duplicateResult = await env.DB.prepare(
+			`SELECT COUNT(*) as count
+			 FROM PhanLoaiPhuongTien
+			 WHERE hieu_xe_id = ?
+			   AND danh_muc_id = ?
+			   AND LOWER(ten_phan_loai) = LOWER(?)`,
+		)
+			.bind(hieu_xe_id, danh_muc_id, tenPhanLoai)
+			.all();
+
+		if (Number(duplicateResult.results[0].count) > 0) {
+			return withCORS(
+				{
+					success: false,
+					error: 'Phân loại này đã tồn tại cho hiệu xe và danh mục đã chọn',
+				},
+				409,
+			);
+		}
+
+		await env.DB.prepare(
+			`INSERT INTO PhanLoaiPhuongTien
+			 (hieu_xe_id, ten_phan_loai, danh_muc_id)
+			 VALUES (?, ?, ?)`,
+		)
+			.bind(hieu_xe_id, tenPhanLoai, danh_muc_id)
+			.run();
 
 		return withCORS({
 			success: true,
@@ -81,43 +115,88 @@ export async function addPhanloaihieuxe(request: Request, env: Env): Promise<Res
 		});
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
-
 		return withCORS({ success: false, error: 'Thêm thất bại ❌: ' + errorMessage }, 500);
 	}
 }
-// update phân loại hiệu xe
+
+// Update phân loại hiệu xe
 export async function updatePhanloaihieuxe(request: Request, env: Env, id: number): Promise<Response> {
 	if (request.method !== 'PUT') {
 		return withCORS({ success: false, error: 'Chỉ hỗ trợ PUT' }, 405);
 	}
+
 	try {
 		const data = (await request.json()) as {
-			id: number;
 			ten_phan_loai: string;
 			hieu_xe_id: number;
 			danh_muc_id: number;
 		};
-		const { id, ten_phan_loai, hieu_xe_id, danh_muc_id } = data;
-		if (!id || !ten_phan_loai || !hieu_xe_id || !danh_muc_id) {
+
+		const { ten_phan_loai, hieu_xe_id, danh_muc_id } = data;
+
+		if (!ten_phan_loai || !hieu_xe_id || !danh_muc_id) {
 			return withCORS({ success: false, error: 'Thiếu thông tin bắt buộc' }, 400);
 		}
-		const updateQuery = `
-			UPDATE PhanLoaiPhuongTien
-			SET hieu_xe_id = ?, ten_phan_loai = ?, danh_muc_id = ?
-			WHERE phan_loai_id = ?
-		`;
 
-		await env.DB.prepare(updateQuery).bind(hieu_xe_id, ten_phan_loai, danh_muc_id, id).run();
+		const tenPhanLoai = ten_phan_loai.trim();
+
+		const plExist = await env.DB.prepare(`SELECT 1 FROM PhanLoaiPhuongTien WHERE phan_loai_id = ? LIMIT 1`).bind(id).all();
+
+		if (plExist.results.length === 0) {
+			return withCORS({ success: false, error: 'Phân loại không tồn tại' }, 404);
+		}
+
+		const hieuXeExist = await env.DB.prepare(`SELECT 1 FROM HieuXe WHERE hieu_xe_id = ? LIMIT 1`).bind(hieu_xe_id).all();
+
+		if (hieuXeExist.results.length === 0) {
+			return withCORS({ success: false, error: 'Hiệu xe không tồn tại' }, 404);
+		}
+
+		const danhMucExist = await env.DB.prepare(`SELECT 1 FROM DanhMucPhuongTien WHERE danh_muc_id = ? LIMIT 1`).bind(danh_muc_id).all();
+
+		if (danhMucExist.results.length === 0) {
+			return withCORS({ success: false, error: 'Danh mục không tồn tại' }, 404);
+		}
+
+		const duplicateResult = await env.DB.prepare(
+			`SELECT COUNT(*) as count
+			 FROM PhanLoaiPhuongTien
+			 WHERE hieu_xe_id = ?
+			   AND danh_muc_id = ?
+			   AND LOWER(ten_phan_loai) = LOWER(?)
+			   AND phan_loai_id != ?`,
+		)
+			.bind(hieu_xe_id, danh_muc_id, tenPhanLoai, id)
+			.all();
+
+		if (Number(duplicateResult.results[0].count) > 0) {
+			return withCORS(
+				{
+					success: false,
+					error: 'Phân loại này đã tồn tại cho hiệu xe và danh mục đã chọn',
+				},
+				409,
+			);
+		}
+
+		await env.DB.prepare(
+			`UPDATE PhanLoaiPhuongTien
+			 SET hieu_xe_id = ?, ten_phan_loai = ?, danh_muc_id = ?
+			 WHERE phan_loai_id = ?`,
+		)
+			.bind(hieu_xe_id, tenPhanLoai, danh_muc_id, id)
+			.run();
+
 		return withCORS({
 			success: true,
 			message: 'Cập nhật phân loại hiệu xe thành công!',
 		});
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
-
 		return withCORS({ success: false, error: 'Cập nhật thất bại ❌: ' + errorMessage }, 500);
 	}
 }
+
 // Xoá phân loại hiệu xe
 export async function deletePhanloaihieuxe(request: Request, env: Env, id: number): Promise<Response> {
 	if (request.method !== 'DELETE') {

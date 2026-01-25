@@ -59,24 +59,31 @@ export async function Adddanhmucphuongtien(request: Request, env: Env): Promise<
 			return withCORS({ success: false, error: 'Missing ten_danh_muc or mo_ta' }, 400);
 		}
 
-		const existingResult = await env.DB.prepare('SELECT COUNT(*) as count FROM DanhMucPhuongTien WHERE ten_danh_muc = ?;')
-			.bind(body.ten_danh_muc)
+		const tenDanhMuc = body.ten_danh_muc.trim();
+
+		const existingResult = await env.DB.prepare(
+			`SELECT COUNT(*) as count
+			 FROM DanhMucPhuongTien
+			 WHERE LOWER(ten_danh_muc) = LOWER(?)`,
+		)
+			.bind(tenDanhMuc)
 			.all();
 
-		const count = Number(existingResult.results[0].count);
-
-		if (count > 0) {
+		if (Number(existingResult.results[0].count) > 0) {
 			return withCORS(
 				{
 					success: false,
-					error: `Tên danh mục '${body.ten_danh_muc}' đã tồn tại.`,
+					error: `Tên danh mục '${tenDanhMuc}' đã tồn tại`,
 				},
-				409
+				409,
 			);
 		}
 
-		const insertResult = await env.DB.prepare('INSERT INTO DanhMucPhuongTien (ten_danh_muc, mo_ta) VALUES (?, ?);')
-			.bind(body.ten_danh_muc, body.mo_ta)
+		const insertResult = await env.DB.prepare(
+			`INSERT INTO DanhMucPhuongTien (ten_danh_muc, mo_ta)
+			 VALUES (?, ?)`,
+		)
+			.bind(tenDanhMuc, body.mo_ta.trim())
 			.run();
 
 		return withCORS({
@@ -91,10 +98,11 @@ export async function Adddanhmucphuongtien(request: Request, env: Env): Promise<
 				success: false,
 				error: 'Thêm danh mục phương tiện thất bại ❌: ' + errorMessage,
 			},
-			500
+			500,
 		);
 	}
 }
+
 export async function deleteDanhmucphuongtien(request: Request, env: Env, id: string): Promise<Response> {
 	if (request.method !== 'DELETE') {
 		return withCORS({ success: false, error: 'Method not allowed' }, 405);
@@ -116,7 +124,7 @@ export async function deleteDanhmucphuongtien(request: Request, env: Env, id: st
 					success: false,
 					error: `Xóa không thành công do danh mục ID ${id} này có trong bảng Phương Tiện.`,
 				},
-				409
+				409,
 			);
 		}
 
@@ -130,7 +138,7 @@ export async function deleteDanhmucphuongtien(request: Request, env: Env, id: st
 				success: false,
 				error: 'Xóa danh mục phương tiện thất bại ❌: ' + errorMessage,
 			},
-			500
+			500,
 		);
 	}
 }
@@ -138,38 +146,70 @@ export async function putDanhmucphuongtien(request: Request, env: Env, id: strin
 	if (request.method !== 'PUT') {
 		return withCORS({ success: false, error: 'Method not allowed' }, 405);
 	}
+
 	try {
 		const body = (await request.json()) as {
 			ten_danh_muc?: string;
 			mo_ta?: string;
 		};
+
 		if (!body.ten_danh_muc && !body.mo_ta) {
 			return withCORS({ success: false, error: 'Missing ten_danh_muc or mo_ta' }, 400);
 		}
 
-		const existingResult = await env.DB.prepare('SELECT COUNT(*) as count FROM DanhMucPhuongTien WHERE danh_muc_id = ?;').bind(id).all();
-		const exists = Number(existingResult.results[0].count);
-		if (exists === 0) {
+		const existResult = await env.DB.prepare('SELECT COUNT(*) as count FROM DanhMucPhuongTien WHERE danh_muc_id = ?').bind(id).all();
+
+		if (Number(existResult.results[0].count) === 0) {
 			return withCORS({ success: false, error: `Không tìm thấy danh mục với ID ${id}` }, 404);
 		}
-		const updateFields = [];
-		const updateValues = [];
-		if (body.ten_danh_muc) {
+
+		const tenDanhMuc = body.ten_danh_muc?.trim();
+
+		if (tenDanhMuc) {
+			const duplicateResult = await env.DB.prepare(
+				`SELECT COUNT(*) as count
+				 FROM DanhMucPhuongTien
+				 WHERE LOWER(ten_danh_muc) = LOWER(?)
+				   AND danh_muc_id != ?`,
+			)
+				.bind(tenDanhMuc, id)
+				.all();
+
+			if (Number(duplicateResult.results[0].count) > 0) {
+				return withCORS({ success: false, error: 'Tên danh mục đã tồn tại' }, 409);
+			}
+		}
+
+		const updateFields: string[] = [];
+		const updateValues: any[] = [];
+
+		if (tenDanhMuc) {
 			updateFields.push('ten_danh_muc = ?');
-			updateValues.push(body.ten_danh_muc);
+			updateValues.push(tenDanhMuc);
 		}
 		if (body.mo_ta) {
 			updateFields.push('mo_ta = ?');
-			updateValues.push(body.mo_ta);
+			updateValues.push(body.mo_ta.trim());
 		}
+
 		updateValues.push(id);
-		const updateQuery = `UPDATE DanhMucPhuongTien SET ${updateFields.join(', ')} WHERE danh_muc_id = ?;`;
+
+		const updateQuery = `
+			UPDATE DanhMucPhuongTien
+			SET ${updateFields.join(', ')}
+			WHERE danh_muc_id = ?
+		`;
+
 		await env.DB.prepare(updateQuery)
 			.bind(...updateValues)
 			.run();
-		return withCORS({ success: true, message: 'Cập nhật danh mục phương tiện thành công' });
+
+		return withCORS({
+			success: true,
+			message: 'Cập nhật danh mục phương tiện thành công',
+		});
 	} catch (err: any) {
 		const errorMessage = err instanceof Error ? err.message : String(err);
-		return withCORS({ success: false, error: 'Cập nhật danh mục phương tiện thất bại ❌: ' + errorMessage }, 500);
+		return withCORS({ success: false, error: 'Cập nhật thất bại: ' + errorMessage }, 500);
 	}
 }

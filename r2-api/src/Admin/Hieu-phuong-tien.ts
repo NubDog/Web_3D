@@ -28,57 +28,109 @@ export async function addhieupt(request: Request, env: Env): Promise<Response> {
 	if (request.method !== 'POST') {
 		return withCors(Response.json({ success: false, error: 'Chỉ hỗ trợ POST' }, { status: 405 }));
 	}
+
 	try {
 		const data = (await request.json()) as {
 			ten_hieu_xe: string;
 		};
-		const { ten_hieu_xe } = data;
-		if (!ten_hieu_xe) {
+
+		if (!data.ten_hieu_xe) {
 			return withCors(Response.json({ success: false, error: 'Thiếu thông tin bắt buộc' }, { status: 400 }));
 		}
+
+		const tenHieuXe = data.ten_hieu_xe.trim();
+
+		const existResult = await env.DB.prepare(
+			`SELECT COUNT(*) as count
+			 FROM HieuXe
+			 WHERE LOWER(ten_hieu_xe) = LOWER(?)`,
+		)
+			.bind(tenHieuXe)
+			.all();
+
+		if (Number(existResult.results[0].count) > 0) {
+			return withCors(Response.json({ success: false, error: 'Tên hiệu xe đã tồn tại' }, { status: 409 }));
+		}
+
 		const insertQuery = `
-            INSERT INTO HieuXe 
-            (ten_hieu_xe)
-            VALUES (?)
-        `;
-		const result = await env.DB.prepare(insertQuery).bind(ten_hieu_xe).run();
+			INSERT INTO HieuXe (ten_hieu_xe)
+			VALUES (?)
+		`;
+
+		const result = await env.DB.prepare(insertQuery).bind(tenHieuXe).run();
+
 		return withCors(
 			Response.json({
 				success: true,
 				message: 'Thêm hiệu phương tiện thành công!',
-				data: { hieu_xe_id: result.meta.last_row_id, ten_hieu_xe },
-			})
+				data: {
+					hieu_xe_id: result.meta.last_row_id,
+					ten_hieu_xe: tenHieuXe,
+				},
+			}),
 		);
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		return withCors(Response.json({ success: false, error: 'Thêm thất bại ❌: ' + errorMessage }, { status: 500 }));
 	}
 }
+
 // Cập nhật hiệu phương tiện
 export async function updatehieupt(request: Request, env: Env, id: number): Promise<Response> {
 	if (request.method !== 'PUT') {
 		return withCors(Response.json({ success: false, error: 'Chỉ hỗ trợ PUT' }, { status: 405 }));
 	}
+
 	try {
 		const data = (await request.json()) as {
-			ten_hieu_xe: string;
+			ten_hieu_xe?: string;
 		};
-		const { ten_hieu_xe } = data;
-		if (!ten_hieu_xe) {
+
+		if (!data.ten_hieu_xe) {
 			return withCors(Response.json({ success: false, error: 'Thiếu thông tin bắt buộc' }, { status: 400 }));
 		}
-		const updateQuery = `
-            UPDATE HieuXe   
-            SET ten_hieu_xe = ?
-            WHERE hieu_xe_id = ?
-        `;
-		await env.DB.prepare(updateQuery).bind(ten_hieu_xe, id).run();
-		return withCors(Response.json({ success: true, message: 'Cập nhật hiệu phương tiện thành công!' }));
+
+		const tenHieuXe = data.ten_hieu_xe.trim();
+
+		const existResult = await env.DB.prepare(`SELECT COUNT(*) as count FROM HieuXe WHERE hieu_xe_id = ?`).bind(id).all();
+
+		if (Number(existResult.results[0].count) === 0) {
+			return withCors(Response.json({ success: false, error: `Không tìm thấy hiệu xe với ID ${id}` }, { status: 404 }));
+		}
+
+		const duplicateResult = await env.DB.prepare(
+			`SELECT COUNT(*) as count
+			 FROM HieuXe
+			 WHERE LOWER(ten_hieu_xe) = LOWER(?)
+			   AND hieu_xe_id != ?`,
+		)
+			.bind(tenHieuXe, id)
+			.all();
+
+		if (Number(duplicateResult.results[0].count) > 0) {
+			return withCors(Response.json({ success: false, error: 'Tên hiệu xe đã tồn tại' }, { status: 409 }));
+		}
+
+		await env.DB.prepare(
+			`UPDATE HieuXe
+			 SET ten_hieu_xe = ?
+			 WHERE hieu_xe_id = ?`,
+		)
+			.bind(tenHieuXe, id)
+			.run();
+
+		return withCors(
+			Response.json({
+				success: true,
+				message: 'Cập nhật hiệu phương tiện thành công!',
+			}),
+		);
 	} catch (error) {
 		const errorMessage = error instanceof Error ? error.message : String(error);
 		return withCors(Response.json({ success: false, error: 'Cập nhật thất bại ❌: ' + errorMessage }, { status: 500 }));
 	}
 }
+
 // Xóa hiệu phương tiện
 export async function deletehieupt(request: Request, env: Env, id: number): Promise<Response> {
 	if (request.method !== 'DELETE') {
