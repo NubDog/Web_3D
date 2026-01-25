@@ -10,7 +10,9 @@
     flex: 1;
     width: 100%;
     max-width: 1690px;
+    width: 100%;
     margin: 0 auto;
+    margin-top: 60px;
 }
 
 .StoreHypercar-header {
@@ -75,16 +77,15 @@
     }
 }
 
-/* Feature Section */
 .StoreHypercar-feature-section {
+    position: relative;
     width: 100%;
-    max-width: 1690px;
-    margin: 80px auto;
-    padding: 0;
 }
 
 .StoreHypercar-feature-header {
-    margin-bottom: 40px;
+    max-width: 1690px;
+    margin: 0 auto 40px auto;
+    padding: 0 max(20px, calc((100% - 1690px) / 2));
 }
 
 .StoreHypercar-feature-title {
@@ -94,35 +95,17 @@
     margin-bottom: 10px;
 }
 
-.StoreHypercar-feature-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
+.StoreHypercar-feature-scroll-container {
     width: 100%;
+    position: relative;
+    padding-bottom: 480px;
 }
 
-@media (max-width: 1200px) {
-    .StoreHypercar-feature-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 900px) {
-    .StoreHypercar-feature-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .StoreHypercar-feature-title {
-        font-size: 32px;
-    }
-}
-
-@media (max-width: 600px) {
-    .StoreHypercar-feature-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .StoreHypercar-feature-title {
-        font-size: 28px;
-    }
+.StoreHypercar-feature-scroll-box {
+    display: flex;
+    gap: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0 max(20px, calc((100% - 1690px)));
 }

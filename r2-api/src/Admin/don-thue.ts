@@ -1,3 +1,4 @@
+import { AppConfig } from "../../../config/app.config";
 import { generateContractPDF } from "./file-pdf";
 
 const jsonResponse = (data: any, status = 200) => {
@@ -110,7 +111,7 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
 
         return jsonResponse({
             success: true,
-            message: `Yêu cầu thuê xe đã được gửi thành công!`,
+            message: `Yêu cầu thuê phương tiện đã được gửi thành công!`,
             data: {
                 trang_thai: "CHO_DUYET",
                 tong_tien_du_kien: tong_tien,
@@ -194,7 +195,7 @@ export const handleGetPendingOrders = async (request: Request, env: Env) => {
 //     }
 // };
 
-export const handleApproveOrder = async (request: Request, env: Env, orderId: string) => {
+export const handleApproveOrder = async (request: Request, env: Env, orderId: string, config: AppConfig) => {
     try {
        const { nhan_vien_id, condition_type, note } = await request.json<{
             nhan_vien_id: number;
@@ -375,7 +376,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
 
             // TRƯỜNG HỢP 0: KHÔNG VI PHẠM (EMAIL BÌNH THƯỜNG)
             if (level === 0) {
-                emailSubject = `✅ [ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`;
+                emailSubject = `✅ [ĐÃ DUYỆT] Hợp đồng thuê phương tiện #${orderId}`;
                 emailHtml = `
                     <!DOCTYPE html>
                     <html>
@@ -386,7 +387,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                             <tr>
                                 <td style="padding: 40px 30px;">
                                     <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderInfo.ho_ten},</h2>
-                                    <p style="color: #555555; font-size: 16px; line-height: 1.5;">Đơn thuê xe <strong>#${orderId}</strong> của bạn đã được duyệt.</p>
+                                    <p style="color: #555555; font-size: 16px; line-height: 1.5;">Đơn thuê phương tiện <strong>#${orderId}</strong> của bạn đã được duyệt.</p>
                                     
                                     <table width="100%" style="border-collapse: collapse; margin: 20px 0; font-size: 15px;">
                                         <tr style="border-bottom: 1px solid #eeeeee;">
@@ -440,7 +441,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                     
                                     <div style="background: #fff3cd; padding: 20px; border-left: 5px solid #ffc107; margin: 20px 0; border-radius: 8px;">
                                         <h3 style="color: #856404; margin-top: 0;">✅ Đơn đã được duyệt</h3>
-                                        <p>Đơn thuê xe <strong>#${orderId}</strong> (${orderInfo.ten_phuong_tien}) đã được duyệt.</p>
+                                        <p>Đơn thuê phương tiện <strong>#${orderId}</strong> (${orderInfo.ten_phuong_tien}) đã được duyệt.</p>
                                         <p style="margin-top: 15px;">
                                             Tuy nhiên, bạn có <strong>${totalViolations} vi phạm chưa xử lý</strong> với tổng nợ: 
                                             <strong style="color: #dc3545; font-size: 20px;">${fmt(totalDebt)}</strong>
@@ -473,9 +474,9 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                         </div>
 
                                         <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px;">
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Số tài khoản:</strong> 0385750387</p>
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Ngân hàng:</strong> MB Bank</p>
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> NGUYEN TRAN VIET KHOA</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Số tài khoản:</strong>${config.PAYMENT.ACCOUNT_NUMBER}</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Ngân hàng:</strong> ${config.PAYMENT.BANK_NAME}</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> ${config.PAYMENT.ACCOUNT_NAME}</p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold;">${fmt(totalDebt)}</span></p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Nội dung:</strong> <code style="background: #f1f3f5; padding: 4px 8px; border-radius: 4px;">${qrContent}</code></p>
                                         </div>
@@ -502,99 +503,197 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                     ? `cọc thêm <strong style="color: #dc3545;">${fmt(Math.round(totalDebt * 0.5))}</strong>`
                     : `thanh toán <strong style="color: #dc3545;">${fmt(totalDebt)}</strong> vi phạm trước`;
 
-                emailSubject = `⚠️ Đơn #${orderId} duyệt CÓ ĐIỀU KIỆN`;
-                emailHtml = `
-                    <!DOCTYPE html>
-                    <html>
-                    <body>
-                        <table align="center" width="600" style="margin: 20px auto; border: 1px solid #ccc; background: #fff;">
-                            <tr>
-                                <td align="center" bgcolor="#ff9800" style="padding: 20px;">
-                                    <h1 style="color: #fff; margin: 0;">🔶 THANH TOÁN VI PHẠM BẮT BUỘC</h1>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 40px 30px;">
-                                    <h2 style="color: #333;">Xin chào ${orderInfo.ho_ten},</h2>
-                                    
-                                    <div style="background: #fff3e0; padding: 25px; border-left: 5px solid #ff9800; margin: 20px 0; border-radius: 8px;">
-                                        <h3 style="color: #e65100; margin-top: 0;">⚠️ YÊU CẦU THANH TOÁN TRƯỚC</h3>
-                                        <p style="font-size: 16px;">
-                                            Đơn <strong>#${orderId}</strong> đã được duyệt <strong>CÓ ĐIỀU KIỆN</strong>.
-                                        </p>
-                                        <p style="font-size: 18px; color: #dc3545; font-weight: bold; margin: 20px 0;">
-                                            Bạn PHẢI thanh toán <strong>${fmt(totalDebt)}</strong> vi phạm TRƯỚC KHI đặt cọc.
-                                        </p>
-                                    </div>
-
-                                    <!-- DANH SÁCH VI PHẠM -->
-                                    <h3 style="border-bottom: 2px solid #ff9800; padding-bottom: 10px;">📋 Vi phạm cần thanh toán</h3>
-                                    <table width="100%" style="border-collapse: collapse; margin: 20px 0;">
-                                        ${violations.results.map((v: any) => `
-                                            <tr style="border-bottom: 1px solid #eee;">
-                                                <td style="padding: 12px;">
-                                                    <strong>${v.loai_vi_pham}</strong><br>
-                                                    <small style="color: #888;">${new Date(v.thoi_gian_xay_ra).toLocaleDateString('vi-VN')}</small>
-                                                </td>
-                                                <td style="padding: 12px; text-align: right; color: #dc3545; font-weight: bold; font-size: 16px;">
-                                                    ${fmt(v.so_tien_phat)}
+                    emailSubject = `⚠️ [CẤP 2] Đơn #${orderId} - Yêu cầu thanh toán vi phạm`;
+                    emailHtml = `
+                        <!DOCTYPE html>
+                        <html lang="vi">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Thông báo vi phạm</title>
+                        </head>
+                        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f5f7fa;">
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f7fa; padding: 40px 20px;">
+                                <tr>
+                                    <td align="center">
+                                        <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden;">
+                                            
+                                            <!-- Header -->
+                                            <tr>
+                                                <td style="background: linear-gradient(135deg, #FF9F1C 0%, #FF8C00 100%); padding: 40px 30px; text-align: center;">
+                                                    <h1 style="margin: 0; color: white; font-size: 28px;">⚠️ Đơn Duyệt Có Điều Kiện - Cấp 2</h1>
+                                                    <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">Yêu cầu thanh toán vi phạm để tiếp tục</p>
                                                 </td>
                                             </tr>
-                                        `).join('')}
-                                        <tr style="background: #ffebee;">
-                                            <td style="padding: 15px; font-weight: bold;">TỔNG PHẢI TRẢ</td>
-                                            <td style="padding: 15px; text-align: right; color: #dc3545; font-size: 24px; font-weight: bold;">
-                                                ${fmt(totalDebt)}
-                                            </td>
-                                        </tr>
-                                    </table>
 
-                                    <!-- MÃ QR THANH TOÁN -->
-                                    <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 30px; border-radius: 12px; text-align: center; margin: 30px 0; border: 3px solid #ff9800;">
-                                        <h3 style="margin-top: 0; color: #e65100;">💳 THANH TOÁN NGAY</h3>
-                                        <p style="font-size: 15px; color: #d84315; font-weight: bold; margin-bottom: 20px;">
-                                            ⚠️ BẮT BUỘC - Thanh toán trước khi đặt cọc
-                                        </p>
-                                        
-                                        <div style="margin: 20px auto; border: 3px solid #ff5722; padding: 15px; border-radius: 12px; display: inline-block; background: white; box-shadow: 0 4px 12px rgba(255, 87, 34, 0.3);">
-                                            <img src="${qrUrl}" alt="QR Code" style="width: 250px; height: 250px; display: block;" />
-                                        </div>
+                                            <!-- Body -->
+                                            <tr>
+                                                <td style="padding: 40px 30px;">
+                                                    <p style="margin: 0 0 20px 0; font-size: 16px; color: #333; line-height: 1.6;">
+                                                        Xin chào <strong>${orderInfo.ho_ten}</strong>,
+                                                    </p>
 
-                                        <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                            <p style="margin: 8px 0; font-size: 15px;"><strong>Ngân hàng:</strong> MB Bank</p>
-                                            <p style="margin: 8px 0; font-size: 15px;"><strong>Số tài khoản:</strong> 0385750387</p>
-                                            <p style="margin: 8px 0; font-size: 15px;"><strong>Chủ TK:</strong> NGUYEN TRAN VIET KHOA</p>
-                                            <p style="margin: 8px 0; font-size: 16px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold; font-size: 22px;">${fmt(totalDebt)}</span></p>
-                                            <p style="margin: 8px 0; font-size: 14px;">
-                                                <strong>Nội dung:</strong><br>
-                                                <code style="background: #fff3e0; padding: 8px 12px; border-radius: 6px; display: inline-block; margin-top: 5px; border: 1px solid #ff9800;">${qrContent}</code>
-                                            </p>
-                                        </div>
-                                    </div>
+                                                    <!-- Success Notice -->
+                                                    <div style="background: #e8f5e9; border-left: 5px solid #4caf50; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
+                                                        <h3 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 17px;">
+                                                            ✅ Đơn #${orderId} đã được duyệt
+                                                        </h3>
+                                                        <p style="margin: 0; font-size: 14px; color: #666; line-height: 1.6;">
+                                                            <strong>Phương tiện:</strong> ${orderInfo.ten_phuong_tien}<br>
+                                                            <strong>Thời gian:</strong> ${d1.toLocaleDateString('vi-VN')} - ${d2.toLocaleDateString('vi-VN')}<br>
+                                                            <strong>Tổng tiền:</strong> ${fmt(tongTien)}
+                                                        </p>
+                                                    </div>
 
-                                    <!-- QUY TRÌNH -->
-                                    <div style="background: #ffebee; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #f44336;">
-                                        <h3 style="margin-top: 0; color: #c62828;">📌 Quy trình tiếp theo</h3>
-                                        <ol style="line-height: 2; font-size: 15px; padding-left: 20px;">
-                                            <li><strong>Bước 1:</strong> Thanh toán <strong>${fmt(totalDebt)}</strong> vi phạm (quét QR)</li>
-                                            <li><strong>Bước 2:</strong> Liên hệ hotline <strong>0123456789</strong> để xác nhận</li>
-                                            <li><strong>Bước 3:</strong> Sau khi xác nhận, đặt cọc xe</li>
-                                            <li><strong>Bước 4:</strong> Nhận xe theo lịch</li>
-                                        </ol>
-                                    </div>
+                                                    <!-- Warning Alert -->
+                                                    <div style="background-color: #fff3e0; border-left: 5px solid #ff9800; border-radius: 8px; padding: 25px; margin-bottom: 30px;">
+                                                        <h3 style="color: #e65100; margin: 0 0 15px 0; font-size: 18px;">
+                                                            🔶 CẤP ĐỘ 2: CẢNH BÁO
+                                                        </h3>
+                                                        <p style="margin: 0 0 15px 0; font-size: 15px; color: #666; line-height: 1.6;">
+                                                            Tài khoản của bạn hiện có <strong style="color: #e65100;">${totalViolations} vi phạm</strong> chưa được thanh toán với tổng số tiền:
+                                                        </p>
+                                                        <div style="text-align: center; margin: 20px 0;">
+                                                            <span style="font-size: 36px; font-weight: bold; color: #e65100;">
+                                                                ${fmt(totalDebt)}
+                                                            </span>
+                                                        </div>
+                                                        <p style="margin: 0; font-size: 15px; color: #e65100; font-weight: 600; line-height: 1.6;">
+                                                            💡 <strong>Lưu ý:</strong> Bạn cần thanh toán <strong>ít nhất 1 vi phạm</strong> để giảm cấp độ xuống mức an toàn TRƯỚC KHI đặt cọc phương tiện.
+                                                        </p>
+                                                    </div>
 
-                                    <p style="text-align: center; margin-top: 30px;">
-                                        <a href="tel:1900xxxx" style="background: #ff9800; color: white; padding: 16px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                                            📞 Hotline: 0123456789
-                                        </a>
-                                    </p>
-                                </td>
-                            </tr>
-                        </table>
-                    </body>
-                    </html>
-                `;
-            }
+                                                    <!-- Violation List -->
+                                                    <div style="margin-bottom: 30px;">
+                                                        <h3 style="margin: 0 0 15px 0; color: #333; font-size: 16px; font-weight: 600; border-bottom: 2px solid #ff9800; padding-bottom: 10px;">
+                                                            📋 Danh sách vi phạm cần xử lý:
+                                                        </h3>
+                                                        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                                                            ${violations.results.map((v: any, idx: number) => `
+                                                                <tr style="border-bottom: 1px solid #eee;">
+                                                                    <td style="padding: 15px 10px;">
+                                                                        <div style="margin-bottom: 5px;">
+                                                                            <strong style="color: #333; font-size: 14px;">${idx + 1}. ${v.loai_vi_pham}</strong>
+                                                                        </div>
+                                                                        <div style="color: #888; font-size: 12px;">
+                                                                            ⏰ ${new Date(v.thoi_gian_xay_ra).toLocaleString('vi-VN')}
+                                                                        </div>
+                                                                    </td>
+                                                                    <td style="padding: 15px 10px; text-align: right;">
+                                                                        <span style="color: #dc3545; font-weight: bold; font-size: 16px;">
+                                                                            ${fmt(v.so_tien_phat)}
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            `).join('')}
+                                                            <tr style="background: #fff3e0; border-top: 2px solid #ff9800;">
+                                                                <td style="padding: 15px 10px;">
+                                                                    <strong style="font-size: 15px; color: #e65100;">TỔNG CỘNG</strong>
+                                                                </td>
+                                                                <td style="padding: 15px 10px; text-align: right;">
+                                                                    <strong style="color: #e65100; font-size: 20px;">
+                                                                        ${fmt(totalDebt)}
+                                                                    </strong>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+                                                    <!-- CTA Section -->
+                                                    <div style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); padding: 30px; border-radius: 12px; text-align: center; margin: 30px 0; border: 3px solid #ff9800;">
+                                                        <h3 style="margin: 0 0 15px 0; color: #e65100; font-size: 20px;">
+                                                            💳 Thanh Toán Vi Phạm Ngay
+                                                        </h3>
+                                                        <p style="margin: 0 0 25px 0; font-size: 15px; color: #d84315; font-weight: 600; line-height: 1.6;">
+                                                            ⚠️ BẮT BUỘC - Thanh toán ít nhất 1 vi phạm để đặt cọc
+                                                        </p>
+                                                        
+                                                        <!-- Button -->
+                                                        <a href="http://localhost:5173/user/violations" 
+                                                        style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 18px 45px; border-radius: 10px; font-weight: bold; font-size: 16px; box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); margin-bottom: 20px;">
+                                                            🚀 Xem & Thanh Toán Vi Phạm
+                                                        </a>
+                                                    </div>
+
+                                                    <!-- Process Steps -->
+                                                    <div style="background: #ffebee; padding: 25px; border-radius: 8px; margin: 25px 0; border-left: 5px solid #f44336;">
+                                                        <h3 style="margin: 0 0 15px 0; color: #c62828; font-size: 16px;">
+                                                            📌 Quy trình hoàn tất đơn hàng
+                                                        </h3>
+                                                        <ol style="line-height: 2; font-size: 14px; padding-left: 20px; margin: 0; color: #666;">
+                                                            <li><strong>Bước 1:</strong> Truy cập trang thanh toán vi phạm (click button bên trên)</li>
+                                                            <li><strong>Bước 2:</strong> Chọn <strong style="color: #e65100;">ít nhất 1 vi phạm</strong> để thanh toán (hoặc thanh toán tất cả)</li>
+                                                            <li><strong>Bước 3:</strong> Quét mã QR và thanh toán theo hướng dẫn</li>
+                                                            <li><strong>Bước 4:</strong> Liên hệ hotline <strong>0123 456 789</strong> để xác nhận thanh toán</li>
+                                                            <li><strong>Bước 5:</strong> Sau khi xác nhận → Đặt cọc phương tiện (${fmt(tienCocYeuCau)})</li>
+                                                            <li><strong>Bước 6:</strong> Nhận phương tiện theo lịch hẹn</li>
+                                                        </ol>
+                                                    </div>
+
+                                                    <!-- Important Note -->
+                                                    <div style="background-color: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                                                        <p style="margin: 0; color: #856404; font-size: 14px; line-height: 1.6;">
+                                                            <strong>⚠️ Quan trọng:</strong><br><br>
+                                                            
+                                                            ✅ <strong>Thanh toán 1 vi phạm:</strong> Giảm xuống Cấp 1 → Được đặt cọc bình thường<br><br>
+                                                            
+                                                            ✅ <strong>Thanh toán tất cả:</strong> Xóa hoàn toàn vi phạm → Tài khoản hoàn hảo<br><br>
+                                                            
+                                                            ❌ <strong>Không thanh toán:</strong> Không thể đặt cọc phương tiện → Đơn sẽ tự động hủy sau 60 phút
+                                                        </p>
+                                                    </div>
+
+                                                    <!-- Contract Link -->
+                                                    <div style="background: #f5f5f5; padding: 20px; border-radius: 8px; text-align: center; margin: 25px 0;">
+                                                        <p style="margin: 0 0 15px 0; font-size: 14px; color: #666;">
+                                                            📄 Hợp đồng của bạn đã được tạo sẵn:
+                                                        </p>
+                                                        <a href="${publicUrl}" 
+                                                        style="display: inline-block; background: #2563eb; color: white; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; font-size: 14px;">
+                                                            Xem Hợp Đồng PDF
+                                                        </a>
+                                                    </div>
+
+                                                    <!-- Hotline -->
+                                                    <div style="text-align: center; margin-top: 30px;">
+                                                        <p style="margin: 0 0 15px 0; font-size: 14px; color: #666;">
+                                                            Cần hỗ trợ? Liên hệ ngay:
+                                                        </p>
+                                                        <a href="tel:0123456789" 
+                                                        style="display: inline-block; background: #4caf50; color: white; text-decoration: none; padding: 14px 30px; border-radius: 8px; font-weight: bold; font-size: 15px;">
+                                                            📞 Hotline: 0123 456 789
+                                                        </a>
+                                                    </div>
+
+                                                    <p style="margin: 30px 0 0 0; font-size: 14px; color: #666; line-height: 1.6; text-align: center;">
+                                                        Trân trọng,<br>
+                                                        <strong>Đội ngũ hỗ trợ khách hàng</strong>
+                                                    </p>
+                                                </td>
+                                            </tr>
+
+                                            <!-- Footer -->
+                                            <tr>
+                                                <td style="background-color: #f9fafb; padding: 20px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                                                    <p style="margin: 0; font-size: 12px; color: #888;">
+                                                        Email này được gửi tự động. Vui lòng không trả lời email này.
+                                                    </p>
+                                                    <p style="margin: 10px 0 0 0; font-size: 12px; color: #888;">
+                                                        © 2026 Hệ Thống Cho Thuê Đa Phương Tiện. All rights reserved.
+                                                    </p>
+                                                </td>
+                                            </tr>
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </body>
+                        </html>
+                    `;
+                }
+
+            
 
             // Gửi email
             await fetch('https://api.resend.com/emails', {
@@ -604,7 +703,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                    from: 'Dịch Vụ Thuê phương tiện <onboarding@resend.dev>',
                     to: 'khoatran3123@gmail.com', //orderInfo.email,
                     subject: emailSubject,
                     html: emailHtml
@@ -832,13 +931,13 @@ const sendEmail = async (apiKey: string, toEmail: string, userName: string, cont
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'ThueXe <onboarding@resend.dev>',
+                from: 'ThuePhuongTien <onboarding@resend.dev>',
                 tto: ['khoatran3123@gmail.com'],  //[toEmail], 
-                subject: `[ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`,
+                subject: `[ĐÃ DUYỆT] Hợp đồng thuê phương tiện #${orderId}`,
                 html: `
                     <div style="font-family: sans-serif; line-height: 1.5;">
                         <h2>Xin chào ${userName},</h2>
-                        <p>Yêu cầu thuê xe của bạn (Mã đơn: <strong>#${orderId}</strong>) đã được duyệt.</p>
+                        <p>Yêu cầu thuê phương tiện của bạn (Mã đơn: <strong>#${orderId}</strong>) đã được duyệt.</p>
                         <p>Chúng tôi đã tạo hợp đồng điện tử. Vui lòng bấm vào nút dưới để xem và tải về:</p>
                         <br/>
                         <a href="${contractUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
@@ -990,9 +1089,9 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
             const tongTien = tamTinh - tienGiam;
             const tiencocthucte = tongTien * (orderData.tien_coc_yeu_cau/100)
             const emailBody = {
-                from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                from: 'Dịch Vụ Thuê Phương Tiện <onboarding@resend.dev>',
                 to: ['khoatran3123@gmail.com'], 
-                subject: `🎉 Hoàn tất đơn thuê xe #${orderId} - Cảm ơn bạn!`,
+                subject: `🎉 Hoàn tất đơn thuê phương tiện #${orderId} - Cảm ơn bạn!`,
                 html: `
                 <!DOCTYPE html>
                 <html>
@@ -1011,7 +1110,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
                                 <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderData.ho_ten},</h2>
                                 
                                 <p style="color: #555555; font-size: 16px; line-height: 1.6;">
-                                    Cảm ơn bạn đã sử dụng dịch vụ thuê xe của chúng tôi! 
+                                    Cảm ơn bạn đã sử dụng dịch vụ thuê phương tiện của chúng tôi! 
                                     Đơn hàng <strong>#${orderId}</strong> của bạn đã được hoàn tất.
                                 </p>
 
@@ -1073,7 +1172,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
                                 <p style="color: #888888; font-size: 13px; margin-top: 20px;">
                                     Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:<br>
                                     📞 Hotline: <strong>0123456789</strong><br>
-                                    📧 Email: <strong>support@thuexe.vn</strong>
+                                    📧 Email: <strong>support@thuephuongtien.vn</strong>
                                 </p>
                             </td>
                         </tr>
@@ -1194,7 +1293,7 @@ export const handleCheckOrderViolation = async (request: Request, env: Env, orde
     }
 };
 
-export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string) => {
+export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string,  config: AppConfig,) => {
     try {
         const { nhanvien_id, ly_do } = await request.json<{
             nhanvien_id: number;
@@ -1258,7 +1357,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                    from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
                     to: 'khoatran3123@gmail.com', //orderInfo.email,
                     subject: `❌ Đơn #${orderId} KHÔNG được duyệt - Tự động hủy sau 60 phút`,
                     html: `
@@ -1309,7 +1408,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
 
                                         <!-- MÃ QR -->
                                         <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; text-align: center; margin: 30px 0;">
-                                            <h3 style="margin-top: 0; color: #dc3545;">💳 Thanh Toán Để Tiếp Tục Thuê Xe</h3>
+                                            <h3 style="margin-top: 0; color: #dc3545;">💳 Thanh Toán Để Tiếp Tục Thuê phương tiện</h3>
                                             <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Quét mã QR để thanh toán vi phạm</p>
                                             
                                             <div style="margin: 20px auto; border: 2px solid #dc3545; padding: 15px; border-radius: 12px; display: inline-block; background: white;">
@@ -1326,7 +1425,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
 
                                         <!-- HƯỚNG DẪN -->
                                         <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 25px 0;">
-                                            <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê xe</h3>
+                                            <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê phương tiện</h3>
                                             <ol style="line-height: 2; font-size: 15px;">
                                                 <li>Thanh toán <strong>TOÀN BỘ ${fmt(totalDebt)}</strong></li>
                                                 <li>Liên hệ hotline: <strong>0123456789</strong></li>

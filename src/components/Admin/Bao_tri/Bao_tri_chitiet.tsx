@@ -350,7 +350,7 @@ const BaoTriChiTiet: React.FC = () => {
             <b>Biển số:</b> {baotrichitiet.bien_so}
           </p>
           <p>
-            <b>Loại xe:</b> {baotrichitiet.loai}
+            <b>Loại phương tiện:</b> {baotrichitiet.loai}
           </p>
           <p>
             <b>Số KM hiện tại:</b> {baotrichitiet.so_km.toLocaleString("vi-VN")}{" "}
@@ -360,7 +360,7 @@ const BaoTriChiTiet: React.FC = () => {
             <b>Số khung:</b> {baotrichitiet.so_khung}
           </p>
           <p>
-            <b>Trạng thái xe:</b>{" "}
+            <b>Trạng thái phương tiện:</b>{" "}
             {baotrichitiet.trang_thai_phuong_tien || "Không rõ"}
           </p>
         </div>

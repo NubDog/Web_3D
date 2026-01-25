@@ -62,7 +62,7 @@ export async function getUserWEmail(request: Request, env: Env, email: string) {
             console.log("🔑 OTP:", token);
 
             const emailBody = {
-                from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
                 to: 'khoatran3123@gmail.com', 
                 subject: `Mã khôi phục mật khẩu - ${token}`,
                 html: `

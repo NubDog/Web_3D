@@ -120,7 +120,7 @@ async function handleExpiredDeposits(env: Env) {
         const batchStatements = [];
 
         for (const order of expiredOrders.results) {
-            console.log(`  - Đơn #${order.don_thue_id}: ${order.ho_ten} | Xe: ${order.ten_phuong_tien} | Quá: ${order.phut_da_qua} phút`);
+            console.log(`  - Đơn #${order.don_thue_id}: ${order.ho_ten} | phương tiện: ${order.ten_phuong_tien} | Quá: ${order.phut_da_qua} phút`);
 
             batchStatements.push(
                 env.DB.prepare(`
@@ -191,9 +191,9 @@ async function sendCancellationEmail(
 ): Promise<void> {
     try {
         const emailBody = {
-            from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+            from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
             to: 'khoatran3123@gmail.com',
-            subject: `[HỦY ĐƠN] Đơn thuê xe #${data.don_thue_id} đã bị hủy`,
+            subject: `[HỦY ĐƠN] Đơn thuê phương tiện #${data.don_thue_id} đã bị hủy`,
             html: `
             <!DOCTYPE html>
             <html>
@@ -209,7 +209,7 @@ async function sendCancellationEmail(
                         <td style="padding: 40px 30px;">
                             <h2 style="color: #333333; margin-top: 0;">Xin chào ${data.ho_ten},</h2>
                             <p style="color: #555555; font-size: 16px; line-height: 1.5;">
-                                Đơn thuê xe <strong>#${data.don_thue_id}</strong> (${data.ten_phuong_tien}) của bạn đã bị 
+                                Đơn thuê phương tiện <strong>#${data.don_thue_id}</strong> (${data.ten_phuong_tien}) của bạn đã bị 
                                 <strong style="color: #dc3545;">tự động hủy</strong> do không thanh toán tiền cọc trong vòng 
                                 <strong>60 phút</strong> sau khi được duyệt.
                             </p>
@@ -221,13 +221,13 @@ async function sendCancellationEmail(
                             </div>
 
                             <p style="color: #555555; font-size: 15px; line-height: 1.5;">
-                                Nếu bạn vẫn muốn thuê xe, vui lòng đặt lại đơn mới. Chúng tôi rất tiếc vì sự bất tiện này.
+                                Nếu bạn vẫn muốn thuê phương tiện, vui lòng đặt lại đơn mới. Chúng tôi rất tiếc vì sự bất tiện này.
                             </p>
 
                             <p style="text-align: center; margin-top: 30px;">
                                 <a href="https://yourwebsite.com/cars" 
                                    style="background-color: #28a745; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 16px; display: inline-block;">
-                                    🚗 ĐẶT XE MỚI
+                                    🚗 ĐẶT PHƯƠNG TIỆN MỚI
                                 </a>
                             </p>
                         </td>
@@ -385,7 +385,7 @@ async function sendAutoRejectEmail(
         const fmt = (t: number) => new Intl.NumberFormat('vi-VN').format(t) + ' đ';
 
         const emailBody = {
-            from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+            from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
             to: 'khoatran3123@gmail.com',//data.email,
             subject: `❌ Đơn #${data.don_thue_id} tự động bị từ chối`,
             html: `
@@ -406,7 +406,7 @@ async function sendAutoRejectEmail(
                                 <div style="background: #ffebee; padding: 20px; border-left: 5px solid #dc3545; margin: 20px 0; border-radius: 8px;">
                                     <h3 style="color: #c62828; margin-top: 0;">⏰ TỰ ĐỘNG TỪ CHỐI</h3>
                                     <p style="font-size: 16px;">
-                                        Đơn thuê xe <strong>#${data.don_thue_id}</strong> (${data.ten_phuong_tien}) 
+                                        Đơn thuê phương tiện <strong>#${data.don_thue_id}</strong> (${data.ten_phuong_tien}) 
                                         đã bị <strong style="color: #dc3545;">TỰ ĐỘNG TỪ CHỐI</strong> do:
                                     </p>
                                     <ul style="line-height: 1.8; font-size: 15px;">
@@ -440,7 +440,7 @@ async function sendAutoRejectEmail(
                                 </table>
                                 
                                 <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 25px 0;">
-                                    <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê xe</h3>
+                                    <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê phương tiện</h3>
                                     <ol style="line-height: 2; font-size: 15px;">
                                         <li>Thanh toán <strong>TOÀN BỘ ${fmt(data.total_debt)}</strong></li>
                                         <li>Liên hệ hotline: <strong>0123 - 4567 - 89</strong></li>

@@ -26,32 +26,32 @@ const StoreHypercar: React.FC = () => {
             description: "Hỗ trợ trả góp 0% lãi suất qua thẻ tín dụng."
         },
         {
-            icon: "fa-solid fa-shield-halved",
+            icon: "fa-brands fa-telegram",
             title: "Bảo hiểm toàn diện.",
             description: "Gói bảo hiểm cao cấp bảo vệ bạn trên mọi hành trình."
         },
         {
-            icon: "fa-solid fa-truck-fast",
+            icon: "fa-brands fa-accusoft",
             title: "Giao xe tận nơi.",
             description: "Miễn phí giao nhận xe trong nội thành TP.HCM."
         },
         {
-            icon: "fa-solid fa-headset",
+            icon: "fa-brands fa-aws",
             title: "Hỗ trợ 24/7.",
             description: "Đội ngũ kỹ thuật hỗ trợ mọi lúc mọi nơi."
         },
         {
-            icon: "fa-solid fa-user-shield",
+            icon: "fa-brands fa-battle-net",
             title: "Bảo mật tuyệt đối.",
             description: "Thông tin khách hàng được bảo mật 100%."
         },
         {
-            icon: "fa-solid fa-car-side",
+            icon: "fa-brands fa-bity",
             title: "Đa dạng dòng xe.",
             description: "Hơn 50 mẫu siêu xe từ các thương hiệu hàng đầu."
         },
         {
-            icon: "fa-solid fa-hand-holding-dollar",
+            icon: "fa-brands fa-bitcoin",
             title: "Giá thuê tốt nhất.",
             description: "Cam kết giá cạnh tranh nhất thị trường."
         },
@@ -121,15 +121,18 @@ const StoreHypercar: React.FC = () => {
                 <div className="StoreHypercar-feature-header">
                     <h2 className="StoreHypercar-feature-title">Vì sao chọn chúng tôi?</h2>
                 </div>
-                <div className="StoreHypercar-feature-grid">
-                    {featureCards.map((card, index) => (
-                        <FeatureCard
-                            key={index}
-                            iconName={card.icon}
-                            title={card.title}
-                            description={card.description}
-                        />
-                    ))}
+
+                <div className="StoreHypercar-feature-scroll-container">
+                    <div className="StoreHypercar-feature-scroll-box">
+                        {featureCards.map((card, index) => (
+                            <FeatureCard
+                                key={index}
+                                iconName={card.icon}
+                                title={card.title}
+                                description={card.description}
+                            />
+                        ))}
+                    </div>
                 </div>
             </div>
 

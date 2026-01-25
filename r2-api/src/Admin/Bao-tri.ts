@@ -111,9 +111,9 @@ export async function addBaoTri(request: Request, env: Env): Promise<Response> {
 			.bind(phuong_tien_id)
 			.first<{ trang_thai: string }>();
 
-		if (!checkPhuongTien) return withCORS({ success: false, error: 'Xe không tồn tại' }, 404);
+		if (!checkPhuongTien) return withCORS({ success: false, error: 'Phương tiện không tồn tại' }, 404);
 		if (checkPhuongTien.trang_thai !== 'SAN_SANG') {
-			return withCORS({ success: false, error: `Xe đang ở trạng thái: ${checkPhuongTien.trang_thai}` }, 400);
+			return withCORS({ success: false, error: `Phương tiện đang ở trạng thái: ${checkPhuongTien.trang_thai}` }, 400);
 		}
 
 		// --- CHUẨN BỊ LỆNH SQL ---

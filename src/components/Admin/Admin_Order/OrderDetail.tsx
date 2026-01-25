@@ -533,7 +533,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
             
-            toast.success("Bàn giao xe thành công!");
+            toast.success("Bàn giao phương tiện thành công!");
             setIsHandoverModalOpen(false);
             fetchOrder();
         } catch (err: any) {
@@ -567,7 +567,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
             const result = await response.json();
             if (!result.success) throw new Error(result.error);
             
-            toast.success("Đã tiếp nhận xe trả. Vui lòng quyết toán.");
+            toast.success("Đã tiếp nhận phương tiện trả. Vui lòng quyết toán.");
             setIsReturnModalOpen(false); 
             fetchOrder();
         } catch (err: any) {
@@ -685,7 +685,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
 
         if (type === 'giao' && order.giao_so_km) {
             setRecordModalData({
-                title: "Chi Tiết Bàn Giao Xe",
+                title: "Chi Tiết Bàn Giao phương tiện",
                 km: order.giao_so_km,
                 fuel: order.giao_muc_xang,
                 notes: order.giao_ghi_chu,
@@ -696,7 +696,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
 
         if (type === 'tra' && order.tra_so_km) {
             setRecordModalData({
-                title: "Chi Tiết Trả Xe",
+                title: "Chi Tiết Trả phương tiện",
                 km: order.tra_so_km,
                 fuel: order.tra_muc_xang,
                 notes: order.tra_ghi_chu,
@@ -816,7 +816,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                         disabled={isSubmitting || order.trang_thai_coc !== 'DANG_GIU'}
                         title={order.trang_thai_coc !== 'DANG_GIU' ? 'Cần xác nhận tiền cọc trước' : ''}
                     >
-                        🚚 Bàn Giao Xe
+                        🚚 Bàn Giao phương tiện
                     </button>
                     <button 
                             className="button-reject" 
@@ -831,7 +831,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
             case 'DANG_THUE':
                  return (
                    <button className="button-primary" onClick={() => setIsReturnModalOpen(true)} disabled={isSubmitting}>
-                        ➡️ Tiếp Nhận Xe Trả
+                        ➡️ Tiếp Nhận phương tiện Trả
                     </button>
                  );
             case 'DA_TRA':
@@ -1011,7 +1011,7 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                                 )}
                                 {order.tra_so_km && (
                                     <button className="button-secondary" onClick={() => showRecordDetails('tra')}>
-                                        Xem chi tiết trả xe
+                                        Xem chi tiết trả phương tiện
                                     </button>
                                 )}
                             </div>
@@ -1045,14 +1045,14 @@ const DepositCountdown: React.FC<DepositCountdownProps> = ({ approvedTime, depos
                     </div>
                     <div className="info-card">
                         <h2><FaCar /> Phương tiện</h2>
-                        <p><strong>Tên xe:</strong> {order.ten_phuong_tien}</p>
+                        <p><strong>Tên phương tiện:</strong> {order.ten_phuong_tien}</p>
                         <p><strong>Biển số:</strong> {order.bien_so}</p>
                     </div>
 
                     {order.duong_dan_file && (
                         <div className="info-card" style={{ marginTop: '20px', padding: '15px', border: '1px solid #e5e7eb', borderRadius: '8px', backgroundColor: '#f9fafb' }}>
                             <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '10px', color: '#111827' }}>
-                                Hợp Đồng Thuê Xe
+                                Hợp Đồng Thuê phương tiện
                             </h3>
                             <button 
                                 onClick={() => window.open(order.duong_dan_file, '_blank')}

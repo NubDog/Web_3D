@@ -313,7 +313,7 @@ const AdminReportingCustomer = () => {
                 <div className="chart-section">
                     <div className="chart-header">
                         <h2>Hoạt động của Top 5 Khách hàng</h2>
-                        <p>Tần suất thuê xe theo thời gian của các khách hàng VIP</p>
+                        <p>Tần suất thuê phương tiện theo thời gian của các khách hàng VIP</p>
                     </div>
                     <div className="chart-container">
                         <ResponsiveLine

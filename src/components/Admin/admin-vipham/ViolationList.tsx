@@ -154,7 +154,7 @@ const ViolationList: React.FC = () => {
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Xe Vi Phạm</th>
+                            <th>phương tiện Vi Phạm</th>
                             <th>Khách Hàng</th>
                             <th>Loại Vi Phạm</th>
                             <th>Cơ quan xử lý</th>

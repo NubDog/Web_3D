@@ -462,7 +462,7 @@ const OrderList: React.FC = () => {
                 >
                 <input
                     type="text"
-                    placeholder="Tìm theo tên khách, tên xe..."
+                    placeholder="Tìm theo tên khách, tên phương tiện..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     style={{
@@ -531,7 +531,7 @@ const OrderList: React.FC = () => {
                             <tr>
                                 <th>Mã Đơn</th>
                                 <th>Tên Khách Hàng</th>
-                                <th>Tên Xe</th>
+                                <th>Tên phương tiện</th>
                                 <th>Ngày Bắt Đầu</th>
                                 <th>Tổng Tiền</th>
                                 {status === 'pending' && <th className="text-center">⚠️ Vi Phạm</th>}
@@ -869,14 +869,14 @@ const OrderList: React.FC = () => {
                                         <span className="vio-icon">🚦</span>
                                         <div>
                                             <strong>Vi phạm giao thông</strong>
-                                            <p>Vượt đèn đỏ, đậu xe sai, không đội mũ, quá tốc độ</p>
+                                            <p>Vượt đèn đỏ, đậu phương tiện sai, không đội mũ, quá tốc độ</p>
                                             <span className="vio-fine">200k - 1tr</span>
                                         </div>
                                     </div>
                                     <div className="violation-type-item">
                                         <span className="vio-icon">⏰</span>
                                         <div>
-                                            <strong>Trả xe trễ</strong>
+                                            <strong>Trả trễ</strong>
                                             <p>Quá hạn hợp đồng</p>
                                             <span className="vio-fine">400k/ngày</span>
                                         </div>
@@ -884,7 +884,7 @@ const OrderList: React.FC = () => {
                                     <div className="violation-type-item">
                                         <span className="vio-icon">🔧</span>
                                         <div>
-                                            <strong>Hư hỏng xe</strong>
+                                            <strong>Hư hỏng </strong>
                                             <p>Trầy xước, vỡ kính, tai nạn</p>
                                             <span className="vio-fine">500k - 5tr</span>
                                         </div>
@@ -893,7 +893,7 @@ const OrderList: React.FC = () => {
                                         <span className="vio-icon">📄</span>
                                         <div>
                                             <strong>Thiếu giấy tờ</strong>
-                                            <p>Không mang GPLX, đăng ký xe</p>
+                                            <p>Không mang GPLX, đăng ký phương tiện</p>
                                             <span className="vio-fine">500k - 1tr</span>
                                         </div>
                                     </div>

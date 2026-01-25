@@ -64,7 +64,7 @@ const AdminDashboard = () => {
                             </div>
                             <div className="report-menu-content">
                                 <h3>Báo cáo Đơn thuê</h3>
-                                <p>Thống kê và phân tích các đơn thuê xe theo thời gian, loại xe và khu vực</p>
+                                <p>Thống kê và phân tích các đơn thuê phương tiện theo thời gian, loại phương tiện và khu vực</p>
                                 <ul>
                                     <li>Số lượng đơn thuê theo ngày/tháng</li>
                                     <li>Phân tích theo loại phương tiện</li>

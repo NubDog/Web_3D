@@ -41,7 +41,7 @@ const CancelOrderModal: React.FC<CancelOrderModalProps> = ({ isOpen, onClose, on
                 rows={4}
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="Ví dụ: Khách hàng báo bận, muốn đổi xe khác..."
+                placeholder="Ví dụ: Khách hàng báo bận, muốn đổi phương tiện khác..."
                 required
               ></textarea>
             </div>

@@ -70,9 +70,9 @@ const HandoverModal: React.FC<HandoverModalProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="ho-modal__header">
             <div>
-              <h2>Bàn giao xe cho khách</h2>
+              <h2>Bàn giao phương tiện cho khách</h2>
               <p className="ho-modal__subtitle">
-                Ghi nhận hiện trạng ban đầu để đối chiếu khi khách trả xe.
+                Ghi nhận hiện trạng ban đầu để đối chiếu khi khách trả phương tiện.
               </p>
             </div>
             <button type="button" onClick={onClose} className="ho-modal__close">
@@ -149,7 +149,7 @@ const HandoverModal: React.FC<HandoverModalProps> = ({
                     onChange={handleFileChange}
                   />
                   <p className="ho-upload-hint">
-                    Chụp tổng thể xe, 4 góc, đồng hồ KM, mức nhiên liệu và các
+                    Chụp tổng thể phương tiện, 4 góc, đồng hồ KM, mức nhiên liệu và các
                     vết trầy/hư hỏng có sẵn. Có thể chọn nhiều ảnh / video.
                   </p>
                 </div>

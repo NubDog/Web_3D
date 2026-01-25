@@ -53,3 +53,23 @@ export async function handleGetKhachHang(request: Request, env: Env): Promise<Re
         }, 500);
     }
 }
+
+export const handleCheckUserStatus = async (
+    request: Request, 
+    env: Env, 
+    nguoiDungId: string
+) => {
+    const userId = parseInt(nguoiDungId);
+    
+    const user = await env.DB.prepare(`
+        SELECT nguoi_dung_id, email, vai_tro, trang_thai
+        FROM NguoiDung
+        WHERE nguoi_dung_id = ?
+    `).bind(userId).first();
+
+    if (!user) {
+        return jsonResponse({ success: false, error: 'Không tìm thấy người dùng' }, 404);
+    }
+
+    return jsonResponse({ success: true, data: user });
+};

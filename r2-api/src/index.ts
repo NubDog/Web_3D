@@ -1,3 +1,4 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { handleGetUsers, handleCreateUser, handleUpdateUser, handleDeleteUser, handleToggleUserStatus } from './Admin/admin-users';
 import * as PhuongTien from './Admin/Phuong-tien';
 import { handleGetCustomers, handleGetCustomerById, handleUpdateCustomer, handleGetCustomerByUserId } from './Admin/admin-customers';
@@ -15,7 +16,7 @@ import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/NguoiDung_API';
 import { handleGetDonThue } from './API/DonThue_API';
-import { handleGetKhachHang } from './API/KhachHang_API';
+import { handleCheckUserStatus, handleGetKhachHang } from './API/KhachHang_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 import { handleGetKycDocumentsByNguoiDungId, handleCheckStatusKYC } from './API/KYC_User';
 import { handleGetUserOrders } from './API/UserOrder_API';
@@ -38,7 +39,7 @@ import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
 import { handleConfirmDeposit } from './Admin/tien_coc';
 import { getLogin } from './Admin/Login';
-import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation, handleCheckCustomerViolations, handleGetCustomerViolationHistory, handleBatchCheckViolations, handleConfirmViolationPayment } from './Admin/vi-pham';
+import { handleCreateViolation, handleGetViolations, handleUpdateViolation, handleDeleteViolation, handleCheckCustomerViolations, handleGetCustomerViolationHistory, handleBatchCheckViolations, handleConfirmViolationPayment, handleGetUserViolations } from './Admin/vi-pham';
 import { addhieupt, deletehieupt, gethieupt, updatehieupt } from './Admin/Hieu-phuong-tien';
 import {
 	addBaoTri,
@@ -67,6 +68,9 @@ interface Env {
 	ICC: R2Bucket;
 	RESEND_API_KEY: string;
 	VIO: R2Bucket;
+	VECTORIZE: VectorizeIndex;
+	GEMINI_API_KEY: string;
+	hd: R2Bucket;
 }
 
 const jsonResponse = (data: any, status = 200) => {
@@ -97,6 +101,12 @@ export default {
 			if (path === '/files' && method === 'GET') {
 				return handleListFiles(request, env);
 			}
+
+			// ------------------- Trang chủ -------------------
+			if (path === '/' && method === 'GET') {
+				return new Response('API Thuê Xe đang chạy ngon lành!', { status: 200 });
+			}
+
 			const deleteMatch = path.match(/^\/delete\/(.+)/);
 			if (deleteMatch && method === 'DELETE') {
 				const key = decodeURIComponent(deleteMatch[1]);
@@ -141,6 +151,70 @@ export default {
 			if (path === '/api/khach-hang' && method === 'GET') {
 				return handleGetKhachHang(request, env);
 			}
+
+			// ------------------- API Tìm kiếm Vector -------------------
+			if (path === '/search' && method === 'GET') {
+				const question = url.searchParams.get('q');
+				if (!question) {
+					return jsonResponse({ error: 'Thiếu câu hỏi (tham số ?q=...)' }, 400);
+				}
+
+				try {
+					const apiKey = env.GEMINI_API_KEY;
+					const genAI = new GoogleGenerativeAI(apiKey);
+
+					// 1. Model Embed (để tìm xe)
+					const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
+					const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+					// --- BƯỚC 1: TÌM XE ---
+					const result = await embedModel.embedContent(question);
+					const userVector = result.embedding.values;
+
+					// 3. So khớp với Database Vectorize
+					const matches = await env.VECTORIZE.query(userVector, {
+						topK: 3, // Lấy 3 xe giống nhất
+						returnMetadata: true,
+					});
+
+					// --- BƯỚC 2: TỔNG HỢP DỮ LIỆU ---
+					// Gom thông tin các xe tìm được thành 1 đoạn văn bản
+					const contextData = matches.matches
+						.map((m) => {
+							const xe = m.metadata as any; // Ép kiểu để lấy dữ liệu
+							return `- Xe: ${xe.name}\n  + Thông tin: ${xe.text}\n  + Ảnh: ${xe.image}`;
+						})
+						.join('\n\n');
+
+					// --- BƯỚC 3: KÊU GEMINI TRẢ LỜI ---
+					const prompt = `
+						Bạn là nhân viên tư vấn của SharkRent. Hãy trả lời câu hỏi của khách hàng dựa trên thông tin xe dưới đây.
+						
+						THÔNG TIN XE TÌM ĐƯỢC TRONG KHO:
+						${contextData}
+						
+						CÂU HỎI CỦA KHÁCH: "${question}"
+						
+						YÊU CẦU:
+						1. Trả lời thân thiện, ngắn gọn, tự nhiên như người Việt Nam.
+						2. Chỉ giới thiệu các xe có trong danh sách trên.
+						3. Cuối câu trả lời, hãy chốt bằng một câu mời gọi đặt xe.
+						4. Đừng nhắc đến ID hay thông tin kỹ thuật khô khan nếu khách không hỏi.
+					`;
+
+					const chatResult = await chatModel.generateContent(prompt);
+					const textResponse = chatResult.response.text();
+
+					// 4. Trả kết quả JSON
+					return jsonResponse({
+						answer: textResponse, // Lời AI nói
+						cars: matches.matches.map((match) => match.metadata), // Dữ liệu xe để hiện thẻ card
+					});
+				} catch (error: any) {
+					return jsonResponse({ error: error.message }, 500);
+				}
+			}
+
 
 			// ------------------- Test kết nối -------------------
 			if (path === '/test-r2' && request.method === 'GET') {
@@ -297,6 +371,11 @@ export default {
 				}
 			}
 
+			if (url.pathname.startsWith('/api/check-user-status/')) {
+				const userId = url.pathname.split('/').pop();
+				return handleCheckUserStatus(request, env, userId as string);
+			}
+
 			// ------------------- Danh mục phương tiện -------------------
 			const danhMucIdMatch = path.match(/^\/api\/danh-muc-phuong-tien\/(\d+)$/);
 			if (danhMucIdMatch) {
@@ -424,6 +503,10 @@ export default {
 			if (path.match(/^\/api\/customers\/(\d+)\/violations\/history$/) && method === 'GET') {
 				const khachHangId = path.match(/^\/api\/customers\/(\d+)\/violations\/history$/)![1];
 				return handleGetCustomerViolationHistory(request, env, khachHangId);
+			}
+
+			if (url.pathname === '/api/user-violations' && request.method === 'GET') {
+				return handleGetUserViolations(request, env);
 			}
 
 			// ------------------- User Profile -------------------

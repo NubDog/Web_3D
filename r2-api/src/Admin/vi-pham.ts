@@ -1,3 +1,5 @@
+import { getAppConfig, buildQRUrl, formatMoney, getViolationUrl, type AppConfig } from '../../../config/app.config';
+
 const jsonResponse = (data: any, status = 200) => {
 	const headers = {
 		'Content-Type': 'application/json',
@@ -18,7 +20,7 @@ export interface Env {
 export const handleGetViolations = async (request: Request, env: Env) => {
     try {
         const url = new URL(request.url);
-        const status = url.searchParams.get('status'); // Lấy trạng thái từ query param
+        const status = url.searchParams.get('status'); 
 
         let query = `
             SELECT 
@@ -50,7 +52,7 @@ export const handleGetViolations = async (request: Request, env: Env) => {
 };
 
 // Ghi nhận một vi phạm mới
-export const handleCreateViolation = async (request: Request, env: Env) => {
+export const handleCreateViolation = async (request: Request, env: Env, ) => {
     try {
         const formData = await request.formData();
 
@@ -135,6 +137,9 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
             co_quan_xu_ly || null
         ).run();
 
+        const config = getAppConfig(env);
+        const blockResult = await checkAndBlockCustomerIfNeeded(env, rentalOrder.khach_hang_id, config);
+
         // Gửi email thông báo
         if (env.RESEND_API_KEY && rentalOrder.email) {
             const thoiGianFormat = thoi_gian_xay_ra 
@@ -142,9 +147,9 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
                 : 'Chưa xác định';
 
             const emailBody = {
-                from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                from: `${config.EMAIL.FROM_NAME} <${config.EMAIL.FROM_EMAIL}>`,
                 to: ['khoatran3123@gmail.com'], //rentalOrder.email 
-                subject: `⚠️ Thông báo vi phạm giao thông - Đơn thuê #${don_thue_id}`,
+                subject: `${config.VIOLATIONS.EMAIL.SUBJECT_VIOLATION} - Đơn #${don_thue_id}`,
                 html: `
                 <!DOCTYPE html>
                 <html>
@@ -163,7 +168,7 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
                                 
                                 <table width="100%" style="border: 1px solid #ddd; border-radius: 8px; margin: 20px 0;">
                                     <tr style="border-bottom: 1px solid #ddd;">
-                                        <td style="padding: 12px; color: #666;">Xe vi phạm</td>
+                                        <td style="padding: 12px; color: #666;">Phương tiện vi phạm</td>
                                         <td style="padding: 12px; font-weight: bold;">${rentalOrder.ten_phuong_tien} (${rentalOrder.bien_so})</td>
                                     </tr>
                                     <tr style="border-bottom: 1px solid #ddd;">
@@ -196,14 +201,14 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
 
                                 <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 15px; margin-top: 20px;">
                                     <p style="margin: 0; color: #856404;">
-                                        <strong>⚠️ Lưu ý:</strong> Vi phạm này cần được xử lý trước khi bạn có thể thuê xe tiếp. 
+                                        <strong>⚠️ Lưu ý:</strong> Vi phạm này cần được xử lý trước khi bạn có thể thuê phương tiện tiếp. 
                                         Vui lòng liên hệ với chúng tôi để được hướng dẫn.
                                     </p>
                                 </div>
 
                                 <p style="margin-top: 30px; color: #666;">
                                     Trân trọng,<br>
-                                    <strong>Dịch vụ cho thuê xe</strong>
+                                    <strong>Dịch vụ cho thuê phương tiện</strong>
                                 </p>
                             </td>
                         </tr>
@@ -223,9 +228,11 @@ export const handleCreateViolation = async (request: Request, env: Env) => {
             });
         }
 
-        return jsonResponse({ 
-            success: true, 
-            message: "Ghi nhận vi phạm thành công và đã gửi thông báo cho khách hàng." 
+        return jsonResponse({
+            success: true,
+            message: 'Ghi nhận vi phạm thành công' + 
+                (blockResult.blocked ? ' và đã khóa tài khoản do vượt ngưỡng.' : '.'),
+            blocked: blockResult.blocked,
         }, 201);
 
     } catch (e: any) {
@@ -274,6 +281,21 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
             return jsonResponse({ success: false, error: `Không tìm thấy vi phạm với ID: ${violationId}` }, 404);
         }
 
+        if (so_tien_phat !== undefined) {
+            const violationInfo = await env.DB.prepare(
+                `SELECT khach_hang_id FROM ViPham WHERE vi_pham_id = ?`
+            ).bind(violationId).first<{ khach_hang_id: number }>();
+
+            if (violationInfo) {
+                const config = getAppConfig(env);
+                const blockResult = await checkAndBlockCustomerIfNeeded(env, violationInfo.khach_hang_id, config);
+                
+                if (blockResult.blocked) {
+                console.log(`🔒 Tài khoản bị khóa sau khi cập nhật số tiền vi phạm`);
+                }
+            }
+        }
+
         if (trang_thai && ['da_thanh_toan', 'huy_bo'].includes(trang_thai)) {
             
             const infoStmt = env.DB.prepare(
@@ -307,8 +329,10 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                 minute: '2-digit',
                 });
 
+                const config = getAppConfig(env);
+
                 if (trang_thai === 'da_thanh_toan') {
-                    subject = `Xác nhận thanh toán vi phạm cho đơn thuê #${violationInfo.don_thue_id}`;
+                    subject = `${config.VIOLATIONS.EMAIL.SUBJECT_PAYMENT_CONFIRMED} - Đơn #${violationInfo.don_thue_id}`;
                     htmlBody = `
                                     <!DOCTYPE html>
                                     <html lang="vi">
@@ -341,7 +365,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                                                     
                                                     <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #dee2e6; border-radius: 8px; margin: 25px 0; font-size: 15px;">
                                                         <tr>
-                                                            <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #6c757d;">Xe vi phạm</td>
+                                                            <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #6c757d;">Phương tiện vi phạm</td>
                                                             <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #212529; font-weight: 500;">${violationInfo.ten_phuong_tien} (${violationInfo.bien_so})</td>
                                                         </tr>
                                                         <tr>
@@ -382,7 +406,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                                     </html>
                                 `;
                 } else if (trang_thai === 'huy_bo') {
-                    subject = `Thông báo hủy vi phạm cho đơn thuê #${violationInfo.don_thue_id}`;
+                    subject = `${config.VIOLATIONS.EMAIL.SUBJECT_VIOLATION_CANCELLED} - Đơn #${violationInfo.don_thue_id}`;
                     htmlBody = `
                                 <!DOCTYPE html>
                                 <html lang="vi">
@@ -415,7 +439,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                                                 
                                                 <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #dee2e6; border-radius: 8px; margin: 25px 0; font-size: 15px;">
                                                     <tr>
-                                                        <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #6c757d;">Xe vi phạm</td>
+                                                        <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #6c757d;">Phương tiện vi phạm</td>
                                                         <td style="padding: 12px 15px; border-bottom: 1px solid #dee2e6; color: #212529; font-weight: 500;">${violationInfo.ten_phuong_tien} (${violationInfo.bien_so})</td>
                                                     </tr>
                                                     <tr>
@@ -454,7 +478,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                 }
 
                 const emailBody = {
-                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>', 
+                    from: `${config.EMAIL.FROM_NAME} <${config.EMAIL.FROM_EMAIL}>`,
                     to: `khoatran3123@gmail.com`, // dùng 'customerInfo.email' để gọi email từ database còn bây giờ dùng email bản thân để test
                     subject: subject,
                     html: htmlBody
@@ -738,7 +762,7 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
 
                                     <div style="background: #e8f5e9; padding: 20px; border-radius: 8px; border-left: 5px solid #15a374;">
                                         <p style="margin: 0; color: #2e7d32; font-weight: bold;">
-                                            ✅ Vấn đề đã được giải quyết. Bạn có thể tiếp tục đặt cọc xe.
+                                            ✅ Vấn đề đã được giải quyết. Bạn có thể tiếp tục đặt cọc phương tiện.
                                         </p>
                                     </div>
 
@@ -754,6 +778,8 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
                     </html>
                 `;
 
+                const config = getAppConfig(env);
+
                 await fetch('https://api.resend.com/emails', {
                     method: 'POST',
                     headers: {
@@ -761,9 +787,9 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                        from: `${config.EMAIL.FROM_NAME} <${config.EMAIL.FROM_EMAIL}>`,
                         to: 'khoatran3123@gmail.com',
-                        subject: `✅ Đã xác nhận thanh toán ${violations.results.length} vi phạm - Đơn #${orderId}`,
+                        subject: `${config.VIOLATIONS.EMAIL.SUBJECT_PAYMENT_CONFIRMED} (${violations.results.length} vi phạm) - Đơn #${orderId}`,
                         html: emailHtml
                     })
                 });
@@ -781,3 +807,254 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
+
+export const handleGetUserViolations = async (request: Request, env: Env) => {
+    try {
+        const url = new URL(request.url);
+        const nguoi_dung_id = url.searchParams.get('nguoi_dung_id');
+
+        if (!nguoi_dung_id) {
+            return jsonResponse({ success: false, error: 'Thiếu ID người dùng' }, 400);
+        }
+
+        const khStmt = env.DB.prepare(`
+            SELECT khach_hang_id FROM KhachHang WHERE nguoi_dung_id = ?
+        `);
+        const khInfo = await khStmt.bind(nguoi_dung_id).first<{ khach_hang_id: number }>();
+
+        if (!khInfo) {
+            return jsonResponse({ success: true, data: [] });
+        }
+
+        const stmt = env.DB.prepare(`
+            SELECT * FROM ViPham 
+            WHERE khach_hang_id = ?
+            ORDER BY thoi_gian_xay_ra DESC
+        `);
+
+        const violations = await stmt.bind(khInfo.khach_hang_id).all();
+
+        return jsonResponse({ 
+            success: true, 
+            data: violations.results 
+        });
+
+    } catch (e: any) {
+        console.error('API Error:', e);
+        return jsonResponse({ success: false, error: e.message }, 500);
+    }
+};
+
+async function checkAndBlockCustomerIfNeeded(env: Env, khachHangId: number, config: AppConfig) {
+    const summary = await env.DB.prepare(
+        `SELECT 
+        COUNT(*) as total_count,
+        COALESCE(SUM(so_tien_phat), 0) as total_debt
+        FROM ViPham
+        WHERE khach_hang_id = ? AND trang_thai = ?`
+    ).bind(khachHangId, config.DB.VIOLATION_STATUS.UNPAID).first<{ total_count: number; total_debt: number }>();
+
+    if (!summary) return { blocked: false };
+
+    const totalDebt = summary.total_debt || 0;
+    const totalCount = summary.total_count || 0;
+
+    const shouldBlock = 
+        totalDebt >= config.VIOLATIONS.BLOCK_THRESHOLDS.MIN_DEBT ||
+        totalCount >= config.VIOLATIONS.BLOCK_THRESHOLDS.MIN_COUNT;
+
+    if (!shouldBlock) {
+        return { blocked: false, totalDebt, totalCount };
+    }
+
+    const reason: 'DEBT' | 'COUNT' = 
+        totalDebt >= config.VIOLATIONS.BLOCK_THRESHOLDS.MIN_DEBT ? 'DEBT' : 'COUNT';
+
+    const customer = await env.DB.prepare(
+        `SELECT kh.khach_hang_id, kh.ho_ten, nd.email, nd.trang_thai, nd.nguoi_dung_id
+        FROM KhachHang kh
+        JOIN NguoiDung nd ON kh.nguoi_dung_id = nd.nguoi_dung_id
+        WHERE kh.khach_hang_id = ?`
+    ).bind(khachHangId).first<{
+        khach_hang_id: number;
+        ho_ten: string;
+        email: string;
+        trang_thai: string;
+        nguoi_dung_id: number;
+    }>();
+
+    if (!customer) return { blocked: false };
+
+    // Nếu đã bị khóa rồi, bỏ qua
+    if (customer.trang_thai === config.DB.USER_STATUS.BLOCKED) {
+        console.log(`⚠️ Tài khoản ${khachHangId} đã bị khóa từ trước`);
+        return { blocked: true, reason, totalDebt, totalCount };
+    }
+
+    await env.DB.prepare(
+        `UPDATE NguoiDung
+        SET trang_thai = ?
+        WHERE nguoi_dung_id = ?`
+    ).bind(config.DB.USER_STATUS.BLOCKED, customer.nguoi_dung_id).run();
+
+    console.log(`🔒 ĐÃ KHÓA tài khoản khách hàng ${khachHangId} (NguoiDung ${customer.nguoi_dung_id}) - Lý do: ${reason}`);
+
+    const violations = await env.DB.prepare(
+        `SELECT loai_vi_pham, so_tien_phat, thoi_gian_xay_ra, ghi_chu as mo_ta
+        FROM ViPham
+        WHERE khach_hang_id = ? AND trang_thai = ?
+        ORDER BY thoi_gian_xay_ra DESC`
+    ).bind(khachHangId, config.DB.VIOLATION_STATUS.UNPAID).all();
+
+    await sendBlockedAccountEmail(env, config, {
+        customerName: customer.ho_ten,
+        customerEmail: customer.email,
+        totalDebt,
+        totalCount,
+        reason,
+        violations: violations.results as any[],
+    });
+
+    return { blocked: true, reason, totalDebt, totalCount };
+    }
+
+    async function sendBlockedAccountEmail(
+    env: Env,
+    config: AppConfig,
+    data: {
+        customerName: string;
+        customerEmail: string;
+        totalDebt: number;
+        totalCount: number;
+        reason: 'DEBT' | 'COUNT';
+        violations: Array<{ loai_vi_pham: string; so_tien_phat: number; thoi_gian_xay_ra: string; mo_ta?: string }>;
+    }
+    ) {
+    if (!env.RESEND_API_KEY) {
+        console.warn('⚠️ Không có RESEND_API_KEY');
+        return;
+    }
+
+    const qrUrl = buildQRUrl(config, data.totalDebt, `VIPHAM ${data.totalDebt}`);
+    const violationUrl = getViolationUrl(config);
+    const reasonText = data.reason === 'DEBT' 
+        ? config.VIOLATIONS.EMAIL.REASON_DEBT
+        : config.VIOLATIONS.EMAIL.REASON_COUNT;
+
+    const html = `
+        <!DOCTYPE html>
+        <html lang="vi">
+        <head><meta charset="UTF-8"><title>Tài khoản bị khóa</title></head>
+        <body style="margin:0;padding:0;font-family:Arial,sans-serif;background:#f5f5f5;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 20px;">
+            <tr><td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.1);">
+                
+                <tr>
+                    <td style="background:linear-gradient(135deg,#dc3545 0%,#c82333 100%);padding:30px;text-align:center;">
+                    <h1 style="margin:0;color:#fff;font-size:28px;">⛔ TÀI KHOẢN BỊ KHÓA</h1>
+                    <p style="margin:10px 0 0;color:rgba(255,255,255,0.9);">Do vi phạm chính sách</p>
+                    </td>
+                </tr>
+
+                <tr><td style="padding:35px 30px;">
+                    <p style="margin:0 0 20px;font-size:16px;">Xin chào <strong>${data.customerName}</strong>,</p>
+
+                    <div style="background:#ffebee;border-left:5px solid #dc3545;padding:20px;margin-bottom:25px;">
+                        <p style="margin:0;font-size:15px;color:#c62828;">
+                        Tài khoản của bạn đã bị <strong>KHÓA</strong> do:<br/><br/>
+                        • ${reasonText}<br/>
+                        • Số lần vi phạm: <strong>${data.totalCount}</strong><br/>
+                        • Tổng nợ: <strong style="font-size:20px;color:#dc3545;">${formatMoney(data.totalDebt)}</strong>
+                        </p>
+                    </div>
+
+                    <h3 style="margin:0 0 15px;border-bottom:2px solid #e0e0e0;padding-bottom:8px;">
+                        📋 Chi tiết vi phạm chưa thanh toán
+                    </h3>
+                    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 25px;">
+                        ${data.violations.map((v) => `
+                        <tr style="border-bottom:1px solid #eee;">
+                            <td style="padding:12px 8px;">
+                            <div style="font-weight:600;">${v.loai_vi_pham}</div>
+                            ${v.mo_ta ? `<div style="font-size:12px;color:#777;margin-top:4px;">${v.mo_ta}</div>` : ''}
+                            <div style="font-size:12px;color:#999;margin-top:4px;">
+                                ⏰ ${new Date(v.thoi_gian_xay_ra).toLocaleString('vi-VN')}
+                            </div>
+                            </td>
+                            <td style="padding:12px 8px;text-align:right;vertical-align:middle;">
+                            <span style="color:#dc3545;font-weight:bold;">${formatMoney(v.so_tien_phat)}</span>
+                            </td>
+                        </tr>
+                        `).join('')}
+                        <tr style="background:#ffebee;">
+                        <td style="padding:15px 8px;font-weight:700;">TỔNG CHƯA THANH TOÁN</td>
+                        <td style="padding:15px 8px;text-align:right;font-weight:bold;color:#c62828;font-size:20px;">
+                            ${formatMoney(data.totalDebt)}
+                        </td>
+                        </tr>
+                    </table>
+
+                    <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);padding:25px;border-radius:10px;border:2px solid #ff9800;margin-bottom:25px;text-align:center;">
+                        <h3 style="margin:0 0 10px;color:#e65100;">💳 Thanh toán ngay để mở khóa</h3>
+                        <p style="margin:0 0 18px;font-size:14px;color:#d84315;">
+                        Vui lòng thanh toán <strong>TOÀN BỘ</strong> số tiền vi phạm
+                        </p>
+                        
+                        <div style="margin:10px auto 20px;border:3px solid #ff5722;padding:10px;border-radius:12px;display:inline-block;background:#fff;">
+                        <img src="${qrUrl}" alt="QR Code" style="width:240px;height:240px;display:block;" />
+                        </div>
+
+                        <div style="background:#fff;padding:15px;border-radius:8px;display:inline-block;text-align:left;">
+                        <p style="margin:6px 0;font-size:13px;"><strong>Ngân hàng:</strong> ${config.PAYMENT.BANK_NAME}</p>
+                        <p style="margin:6px 0;font-size:13px;"><strong>Số TK:</strong> ${config.PAYMENT.ACCOUNT_NUMBER}</p>
+                        <p style="margin:6px 0;font-size:13px;"><strong>Chủ TK:</strong> ${config.PAYMENT.ACCOUNT_NAME}</p>
+                        <p style="margin:6px 0;font-size:14px;"><strong>Số tiền:</strong> 
+                            <span style="color:#dc3545;font-weight:bold;font-size:16px;">${formatMoney(data.totalDebt)}</span>
+                        </p>
+                        <p style="margin:6px 0;font-size:13px;">
+                            <strong>Nội dung CK:</strong><br/>
+                            <code style="background:#fff3e0;padding:6px 10px;border-radius:4px;display:inline-block;">
+                            VIPHAM ${data.totalDebt}
+                            </code>
+                        </p>
+                        </div>
+                    </div>
+
+                    <div style="background:#e8f5e9;border-left:5px solid #4caf50;padding:18px 20px;">
+                        <p style="margin:0;font-size:14px;color:#2e7d32;">
+                        ⚠️ <strong>SAU KHI CHUYỂN KHOẢN:</strong><br/>
+                        ${config.VIOLATIONS.EMAIL.AFTER_PAYMENT_NOTE}
+                        </p>
+                    </div>
+
+                    <p style="margin:20px 0 0;font-size:12px;color:#999;text-align:center;">
+                        Email tự động - Không trả lời
+                    </p>
+                    </td></tr>
+                </table>
+            </td></tr>
+        </table>
+        </body>
+        </html>
+    `;
+
+    try {
+        await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            from: `${config.EMAIL.FROM_NAME} <${config.EMAIL.FROM_EMAIL}>`,
+            to: 'khoatran3123@gmail.com',//data.customerEmail,
+            subject: config.VIOLATIONS.EMAIL.SUBJECT_BLOCKED,
+            html,
+        }),
+        });
+        console.log(`✅ Đã gửi email khóa tài khoản đến khoatran3123@gmail.com`);
+    } catch (error) {
+        console.error('❌ Lỗi gửi email:', error);
+    }
+}

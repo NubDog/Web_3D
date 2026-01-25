@@ -98,6 +98,10 @@ const Header: React.FC<HeaderProps> = ({ id }) => {
                                         <i className="fa-solid fa-file-contract"></i>
                                         Hợp đồng của tôi
                                     </button>
+                                    <button onClick={() => navigate('/user/violations')}>
+                                        <i className="fa-solid fa-triangle-exclamation"></i>
+                                        Vi phạm của tôi
+                                    </button>
                                 </div>
                             )}
 

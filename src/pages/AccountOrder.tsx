@@ -5,6 +5,8 @@ import Footer from '../components/Footer/Footer';
 import Button from '../components/Button/Button';
 import { useAuth } from '../contexts/AuthContext';
 import './../styles/pages/AccountOrder/AccountOrder.css';
+import { getShopAddress, getCityShop } from '../../config/app.config';
+import { getConfig } from '../../config/app.config';
 
 interface DonThue {
     don_thue_id: number;
@@ -35,6 +37,7 @@ interface DonThue {
 }
 
 const AccountOrder = () => {
+    const config = getConfig()
     const { currentUser } = useAuth();
     const [orders, setOrders] = useState<DonThue[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -187,10 +190,10 @@ const AccountOrder = () => {
         let color = '#6c757d'; let text = status; let bg = '#f8f9fa';
         switch (status?.toLowerCase()) {
             case 'da_duyet': color = '#007bff'; bg = '#e7f1ff'; text = 'Đã duyệt - Chờ cọc'; break;
-            case 'da_coc': color = '#198754'; bg = '#d1e7dd'; text = 'Đã cọc - Chờ nhận xe'; break;
-            case 'dang_thue': color = '#0dcaf0'; bg = '#cff4fc'; text = 'Đang thuê xe'; break;
+            case 'da_coc': color = '#198754'; bg = '#d1e7dd'; text = 'Đã cọc - Chờ nhận phương tiện'; break;
+            case 'dang_thue': color = '#0dcaf0'; bg = '#cff4fc'; text = 'Đang thuê phương tiện'; break;
             case 'da_tra':
-            case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả xe - Chờ thanh toán'; break;
+            case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả phương tiện - Chờ thanh toán'; break;
             case 'hoan_thanh': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành'; break;
             case 'hoan_tat': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành';break
             case 'tu_choi': color = '#dc3545'; bg = '#f8d7da'; text = 'Đã hủy'; break;
@@ -314,7 +317,7 @@ const AccountOrder = () => {
             <div style={{ textAlign: 'left', background: '#f8f9fa', padding: '15px', borderRadius: '8px', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                     <span style={{ color: '#666' }}>Loại giao dịch:</span>
-                    <strong style={{ color: '#000000ff' }}>Đặt cọc thuê xe</strong>
+                    <strong style={{ color: '#000000ff' }}>Đặt cọc thuê phương tiện</strong>
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -342,7 +345,7 @@ const AccountOrder = () => {
                                 • Tổng giá trị đơn hàng: <strong>{formatCurrency(tongSauGiam)}</strong><br/>
                                 • Tỷ lệ cọc: <strong style={{color: '#6610f2'}}>{phanTramCoc}%</strong><br/>
                                 • Tiền cọc phải trả: <strong style={{color: '#d32f2f'}}>{formatCurrency(tienCocThucTe)}</strong><br/>
-                                • Còn lại thanh toán khi trả xe: <strong>{formatCurrency(tongSauGiam - tienCocThucTe)}</strong>
+                                • Còn lại thanh toán khi trả phương tiện: <strong>{formatCurrency(tongSauGiam - tienCocThucTe)}</strong>
                             </div>
                         </div>
                     </div>
@@ -400,7 +403,7 @@ const AccountOrder = () => {
                                         </div>
                                         <div>
                                             <span style={{ color: '#777', fontSize: '13px' }}>Địa điểm: </span>
-                                            <span style={{ fontWeight: '600', color: 'black' }}>Tại cửa hàng (Chi nhánh Đà Nẵng)</span>
+                                            <span style={{ fontWeight: '600', color: 'black' }}>Tại cửa hàng ({getShopAddress()}, chi nhánh {getCityShop()})</span>
                                         </div>
                                     </div>
                                     <div style={{ flex: 1, minWidth: '300px', backgroundColor: '#f8faff', padding: '15px', borderRadius: '12px', border: '1px solid #e6f0ff' }}>
@@ -531,7 +534,7 @@ const AccountOrder = () => {
                                     if (st === 'da_tra' && !isReadyToPay) {
                                         return (
                                             <span style={{ color: '#fd7e14', fontWeight: '500', fontStyle: 'italic', fontSize: '13px' }}>
-                                                <i className="fa-solid fa-hourglass-half"></i> Chờ Admin kiểm tra xe...
+                                                <i className="fa-solid fa-hourglass-half"></i> Chờ Admin kiểm tra phương tiện...
                                             </span>
                                         );
                                     }
@@ -560,7 +563,7 @@ const AccountOrder = () => {
                                 <p style={{ fontSize: '14px', color: '#666' }}>Quét mã QR để thanh toán nhanh</p>
 
                                 <div style={{ margin: '20px auto', border: '1px solid #eee', padding: '10px', borderRadius: '8px', display: 'inline-block' }}>
-                                    <img src={`https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${getPaymentAmount()}&addInfo=${getPaymentContent()}&accountName=NGUYEN TRAN VIET KHOA`} alt="QR Code" style={{ width: '220px', height: '220px', display: 'block' }} />
+                                    <img src={`https://img.vietqr.io/image/MB-${config.PAYMENT.ACCOUNT_NUMBER}-compact2.png?amount=${getPaymentAmount()}&addInfo=${getPaymentContent()}&accountName=${config.PAYMENT.ACCOUNT_NAME}`} alt="QR Code" style={{ width: '220px', height: '220px', display: 'block' }} />
                                 </div>
 
                                 {renderPaymentDetails()}

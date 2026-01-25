@@ -59,14 +59,14 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
     }, [product]);
 
     if (!product) {
-        return <div>Không tìm thấy thông tin xe</div>;
+        return <div>Không tìm thấy thông tin phương tiện</div>;
     }
 
     const handleRentRequest = async () => {
         setIsLoading(true);
         try {
             if (!currentUser || !currentUser.nguoi_dung_id) {
-                alert("Vui lòng đăng nhập để thuê xe!");
+                alert("Vui lòng đăng nhập để thuê phương tiện!");
                 navigate('/signin');
                 return;
             }
@@ -97,7 +97,7 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                     } : {}
                 });
             } else {
-                const confirmUpdate = window.confirm("Hồ sơ của bạn chưa có ảnh CCCD/CMND. Bạn cần cập nhật để thuê xe. Đi đến trang cập nhật ngay?");
+                const confirmUpdate = window.confirm("Hồ sơ của bạn chưa có ảnh CCCD/CMND. Bạn cần cập nhật để thuê phương tiện. Đi đến trang cập nhật ngay?");
                 if (confirmUpdate) {
                     navigate('/account_home/account_home_kyc');
                 }
@@ -116,7 +116,7 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
             <div className='cheackOut-content col-980'>
 
                 <div className="checkOut-shipmentgroup">
-                    <p style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>Xác nhận thuê xe</p>
+                    <p style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>Xác nhận thuê phương tiện</p>
 
                     <div className="checkOut-product">
                         <img
@@ -137,17 +137,17 @@ const CheckOut: React.FC<CheckOutProps> = ({ onNext }) => {
                                 <p><strong>Quy trình xử lý:</strong></p>
                                 <ul>
                                     <li>Hệ thống sẽ kiểm tra hồ sơ CCCD/CMND của bạn.</li>
-                                    <li>Nhân viên sẽ liên hệ xác nhận thời gian giao xe từ 8h - 22h.</li>
-                                    <li>Vui lòng chuẩn bị bản gốc giấy tờ để đối chiếu khi nhận xe.</li>
+                                    <li>Nhân viên sẽ liên hệ xác nhận thời gian giao phương tiện từ 8h - 22h.</li>
+                                    <li>Vui lòng chuẩn bị bản gốc giấy tờ để đối chiếu khi nhận phương tiện.</li>
                                 </ul>
-                                <a href="#">Xem Chính Sách Giao Xe Của Shark Eat Rice</a>
+                                <a href="#">Xem Chính Sách Giao Phương Tiện Của Shark Eat Rice</a>
                             </div>
                         </div>
                     </div>
 
                     <div className="checkOut-button" style={{ marginTop: '20px' }}>
                         <Sub_Button
-                            content={isLoading ? 'Đang kiểm tra hồ sơ...' : 'Gửi Yêu Cầu Thuê Xe'}
+                            content={isLoading ? 'Đang kiểm tra hồ sơ...' : 'Gửi Yêu Cầu Thuê'}
                             onClick={handleRentRequest}
                         />
                     </div>
