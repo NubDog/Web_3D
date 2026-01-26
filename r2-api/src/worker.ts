@@ -1,3 +1,4 @@
+import { getAppConfig } from "./Config/App.Config";
 
 export interface Env {
     DB: D1Database;
@@ -17,6 +18,8 @@ function json(data: unknown, status = 200) {
     },
   });
 }
+
+
 
 export default {
     async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -189,9 +192,11 @@ async function sendCancellationEmail(
     env: Env,
     data: { email: string; ho_ten: string; don_thue_id: number; ten_phuong_tien: string }
 ): Promise<void> {
+    
     try {
+        const config = await getAppConfig(env)
         const emailBody = {
-            from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
+            from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
             to: 'khoatran3123@gmail.com',
             subject: `[HỦY ĐƠN] Đơn thuê phương tiện #${data.don_thue_id} đã bị hủy`,
             html: `
@@ -235,7 +240,7 @@ async function sendCancellationEmail(
                     <tr>
                         <td bgcolor="#f4f4f4" style="padding: 20px 30px; text-align: center; border-top: 1px solid #cccccc;">
                             <p style="margin: 0; color: #888888; font-size: 12px;">
-                                &copy; ${new Date().getFullYear()} Dịch vụ cho thuê đa phương tiện
+                                &copy; ${new Date().getFullYear()} ${config.EMAIL?.FROM_NAME}
                             </p>
                         </td>
                     </tr>
@@ -383,9 +388,9 @@ async function sendAutoRejectEmail(
 ): Promise<void> {
     try {
         const fmt = (t: number) => new Intl.NumberFormat('vi-VN').format(t) + ' đ';
-
+        const config = await getAppConfig(env)
         const emailBody = {
-            from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
+            from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
             to: 'khoatran3123@gmail.com',//data.email,
             subject: `❌ Đơn #${data.don_thue_id} tự động bị từ chối`,
             html: `
@@ -443,14 +448,14 @@ async function sendAutoRejectEmail(
                                     <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê phương tiện</h3>
                                     <ol style="line-height: 2; font-size: 15px;">
                                         <li>Thanh toán <strong>TOÀN BỘ ${fmt(data.total_debt)}</strong></li>
-                                        <li>Liên hệ hotline: <strong>0123 - 4567 - 89</strong></li>
+                                        <li>Liên hệ hotline: <strong>${config.CONTACT.HOTLINE}</strong></li>
                                         <li>Sau xác nhận, bạn có thể đặt đơn mới</li>
                                     </ol>
                                 </div>
                                 
                                 <p style="text-align: center; margin-top: 30px;">
-                                    <a href="tel:0123 - 4567 - 89" style="background: #dc3545; color: white; padding: 16px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                                        📞 Liên hệ: 0123 - 4567 - 89
+                                    <a href="tel:${config.CONTACT.HOTLINE}" style="background: #dc3545; color: white; padding: 16px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
+                                        📞 Liên hệ: ${config.CONTACT.HOTLINE}
                                     </a>
                                 </p>
                             </td>

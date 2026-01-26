@@ -1,3 +1,4 @@
+import { getAppConfig } from "../Config/App.Config";
 
 interface Env {
     DB: D1Database;
@@ -27,6 +28,7 @@ export async function getUserWEmail(request: Request, env: Env, email: string) {
     }
     
     try {
+        const config = await getAppConfig(env)
         const result = await env.DB.prepare(
             `SELECT nguoi_dung_id, ten_dang_nhap, ho_ten, email 
              FROM NguoiDung 
@@ -62,7 +64,7 @@ export async function getUserWEmail(request: Request, env: Env, email: string) {
             console.log("🔑 OTP:", token);
 
             const emailBody = {
-                from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
+                from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                 to: 'khoatran3123@gmail.com', 
                 subject: `Mã khôi phục mật khẩu - ${token}`,
                 html: `
@@ -114,7 +116,7 @@ export async function getUserWEmail(request: Request, env: Env, email: string) {
                         <tr>
                             <td bgcolor="#f4f4f4" style="padding: 20px 30px; text-align: center; border-top: 1px solid #cccccc;">
                                 <p style="margin: 0; color: #888888; font-size: 12px;">
-                                    &copy; ${new Date().getFullYear()} Dịch vụ cho thuê đa phương tiện.
+                                    &copy; ${new Date().getFullYear()} ${config.EMAIL?.FROM_NAME}.
                                 </p>
                             </td>
                         </tr>
