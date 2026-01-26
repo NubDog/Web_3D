@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import './../../styles/components/CheckOut/CheckOut-Payment.css';
 import Sub_Button from './../Button/Sub-Button/Sub-Button';
 import { useAuth } from './../../contexts/AuthContext';
-import { getShopAddress } from '../../../config/app.config'
+// import { getShopAddress } from '../../../config/app.config'
+
+import { useConfig } from '../../contexts/ConfigContext';
 
 interface CheckOutPaymentProps {
     checkoutData: any;
@@ -17,6 +19,8 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
     const [discountRate, setDiscountRate] = useState(0);
 
     const vehicleId = checkoutData.product?.id || checkoutData.product?.product_id;
+
+    const { config } = useConfig();
 
     if (!currentUser) {
         return (
@@ -99,8 +103,8 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 phuong_tien_id: checkoutData.product?.product_id || checkoutData.product?.id,
                 ngay_bat_dau: checkoutData.ngayMuon,
                 ngay_ket_thuc: checkoutData.ngayTra,
-                dia_diem_nhan: getShopAddress(),
-                dia_diem_tra: getShopAddress(),
+                dia_diem_nhan: config.Locations.DIACHISHOP,
+                dia_diem_tra: config.Locations.DIACHISHOP,
             };
 
 
@@ -204,12 +208,12 @@ const CheckOutPayment: React.FC<CheckOutPaymentProps> = ({ checkoutData, onBack,
                 <div className='rental-summary-content'>
                     <div className='rental-summary-row'>
                         <span className='rental-summary-label'>Địa điểm nhận phương tiện:</span>
-                        <span className='rental-summary-value'>{getShopAddress()}</span>
+                        <span className='rental-summary-value'>{config.Locations.DIACHISHOP}</span>
                     </div>
 
                     <div className='rental-summary-row'>
                         <span className='rental-summary-label'>Địa điểm trả phương tiện:</span>
-                        <span className='rental-summary-value'>{getShopAddress()}</span>
+                        <span className='rental-summary-value'>{config.Locations.DIACHISHOP}</span>
                     </div>
                 </div>
             </div>

@@ -57,6 +57,7 @@ import {
 import { handleScheduled } from './worker';
 import { getToken, getUserWEmail, verifyTokenAndUpdatePassword } from './API/Forgot_password_API';
 import { addPhanloaihieuxe, deletePhanloaihieuxe, getPhanloaihieuxe, updatePhanloaihieuxe } from './Admin/Phan_loai_hieu_xe';
+import { handleGetConfig, handleSaveConfig } from './Config-Handler/configHandler'
 
 interface Env {
 	ua: R2Bucket;
@@ -85,6 +86,14 @@ const jsonResponse = (data: any, status = 200) => {
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+		
+		 const headers = {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+			};
+
 		if (request.method === 'OPTIONS') {
 			return jsonResponse(null);
 		}
@@ -579,6 +588,24 @@ export default {
 			}
 			if (path === '/api/baotri/getdsptsangsang' && method === 'GET') {
 				return getPhuongTienSanSang(request, env);
+			}
+
+			// config
+
+			 if (url.pathname === '/api/config/current' && request.method === 'GET') {
+				const response = await handleGetConfig(env);
+				return new Response(response.body, {
+				status: response.status,
+				headers, 
+				});
+			}
+
+			if (url.pathname === '/api/config/save' && request.method === 'POST') {
+				const response = await handleSaveConfig(request, env);
+				return new Response(response.body, {
+				status: response.status,
+				headers, 
+				});
 			}
 
 			// ------------------- Default -------------------

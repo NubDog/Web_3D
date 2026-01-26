@@ -7,7 +7,8 @@ import CheckOutShiping from './../components/CheckOut/CheckOut-Shiping';
 import CheckOutPayment from './../components/CheckOut/CheckOut-Payment';
 import CheckOutFinal from './../components/CheckOut/CheckOut-Final';
 import './../styles/components/CheckOut/CheckOut.css';
-import { getHotLine } from '../../config/app.config';
+// import { getHotLine } from '../../config/app.config';
+import { useConfig } from '../contexts/ConfigContext';
 
 type CheckoutStep = 'checkout' | 'shipping' | 'payment' | 'final';
 
@@ -36,6 +37,7 @@ const CheckOutPage = () => {
     const [vehiclePrice, setVehiclePrice] = useState<number | null>(null);
 
     const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/phuong-tien';
+    const { config } = useConfig();
 
     useEffect(() => {
         const fetchVehiclePrice = async () => {
@@ -99,7 +101,7 @@ const CheckOutPage = () => {
             {step === 'final' && <CheckOutFinal checkoutData={checkoutData} />}
 
             <div className="checkOut-product-support col-980">
-                <p>Bạn cần hỗ trợ thêm? <span><a href="#">Chat ngay <i className="fa-brands fa-telegram"></i></a></span> hoặc gọi {getHotLine()}</p>
+                <p>Bạn cần hỗ trợ thêm? <span><a href="#">Chat ngay <i className="fa-brands fa-telegram"></i></a></span> hoặc gọi {config.CONTACT.HOTLINE}</p>
             </div>
             <Footer />
         </div>

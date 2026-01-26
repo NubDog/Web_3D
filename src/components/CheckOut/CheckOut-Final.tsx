@@ -2,7 +2,8 @@ import React from 'react';
 import './../../styles/components/CheckOut/CheckOut-Final.css';
 import Sub_Button from './../Button/Sub-Button/Sub-Button';
 import { useNavigate } from 'react-router-dom';
-import { getShopAddress, getCityShop,  getHotLine} from '../../../config/app.config'
+// import { getShopAddress, getCityShop,  getHotLine} from '../../../config/app.config'
+import { useConfig } from '../../contexts/ConfigContext';
 
 interface CheckOutFinalProps {
     checkoutData: any;
@@ -12,7 +13,7 @@ interface CheckOutFinalProps {
 const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
     const navigate = useNavigate();
     console.log('CheckOut Final - checkoutData:', checkoutData);
-
+    const { config } = useConfig()
     const handleGoHome = () => {
         navigate('/');
     };
@@ -40,7 +41,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
 
                         <div className='detail-row'>
                             <span className='detail-label'>Địa điểm nhận :</span>
-                            <span className='detail-value'>Tại cửa hàng (Chi nhánh {getCityShop()} {getShopAddress()})</span>
+                            <span className='detail-value'>Tại cửa hàng (Chi nhánh {config.Locations.CHINHANHTP}, {config.Locations.DIACHISHOP})</span>
                         </div>
 
                         <div className='detail-row'>
@@ -93,7 +94,7 @@ const CheckOutFinal: React.FC<CheckOutFinalProps> = ({ checkoutData }) => {
                 </div>
 
                 <div className='checkOut-final-contact'>
-                    <p>Cần hỗ trợ gấp? Gọi ngay hotline: <strong>{getHotLine()}</strong></p>
+                    <p>Cần hỗ trợ gấp? Gọi ngay hotline: <strong>{config.CONTACT.HOTLINE}</strong></p>
                 </div>
 
                 <div className='checkOut-final-buttons'>

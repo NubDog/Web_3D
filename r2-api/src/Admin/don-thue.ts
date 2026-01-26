@@ -1,4 +1,5 @@
-import { AppConfig } from "../../../config/app.config";
+// import { AppConfig } from "../../../config/app.config";
+import { getConfig } from "../../../config/app.config";
 import { generateContractPDF } from "./file-pdf";
 
 const jsonResponse = (data: any, status = 200) => {
@@ -24,6 +25,81 @@ interface RentalRequestBody {
     ngay_ket_thuc: string;
     dia_diem_nhan: string;
     dia_diem_tra: string;
+}
+
+async function getAppConfig(env: any) {
+    try {
+        const result = await env.DB.prepare(`
+            SELECT 
+                *
+            FROM app_config 
+            WHERE id = 1
+        `).first();
+
+        if (!result) {
+            return {
+                CONTACT: {
+                    HOTLINE: '0123 456 789',
+                    SUPPORT_EMAIL: 'onboarding@resend.dev',
+                },
+                PAYMENT: {
+                    BANK_NAME: 'MB Bank',
+                    ACCOUNT_NUMBER: '0385750387',
+                    ACCOUNT_NAME: 'NGUYEN TRAN VIET KHOA',
+                    QR_BASE_URL: `https://img.vietqr.io/image/MB-0385750387-compact2.png`,
+                    BANK_CODE: 'MB',
+                },
+                Locations: {
+                    DIACHISHOP: '99 Tô Hiến Thành',
+                    CHINHANHTP: 'Đà Nẵng',
+                },
+            };
+        }
+
+        const qrBaseUrl = `https://img.vietqr.io/image/${result.bank_code}-${result.account_number}-compact2.png`;
+
+        return {
+            CONTACT: {
+                HOTLINE: result.hotline as string,
+                SUPPORT_EMAIL: result.support_email as string,
+            },
+            PAYMENT: {
+                BANK_NAME: result.bank_name as string,
+                BANK_CODE: result.bank_code as string,  
+                ACCOUNT_NUMBER: result.account_number as string,
+                ACCOUNT_NAME: result.account_name as string,
+                QR_BASE_URL: qrBaseUrl,
+            },
+            Locations: {
+                DIACHISHOP: result.shop_address as string,
+                CHINHANHTP: result.city as string,
+            },
+             EMAIL: {
+                FROM_NAME: result.email_from_name as string,
+                FROM_EMAIL: result.email_from_address as string,
+            },
+        };
+    } catch (err) {
+        console.error('Error loading config:', err);
+        return {
+            CONTACT: {
+                HOTLINE: '0123 456 789',
+                SUPPORT_EMAIL: 'onboarding@resend.dev',
+            },
+            PAYMENT: {
+                BANK_NAME: 'MB Bank',
+                BANK_CODE: 'MB',   
+                ACCOUNT_NUMBER: '0385750387',
+                ACCOUNT_NAME: 'NGUYEN TRAN VIET KHOA',
+                QR_BASE_URL: `https://img.vietqr.io/image/MB-0385750387-compact2.png`,
+            },
+            Locations: {
+                DIACHISHOP: '99 Tô Hiến Thành',
+                CHINHANHTP: 'Đà Nẵng',
+            },
+
+        };
+    }
 }
 
 export const handleCreateRentalOrder = async (request: Request, env: Env) => {
@@ -195,8 +271,10 @@ export const handleGetPendingOrders = async (request: Request, env: Env) => {
 //     }
 // };
 
-export const handleApproveOrder = async (request: Request, env: Env, orderId: string, config: AppConfig) => {
+export const handleApproveOrder = async (request: Request, env: Env, orderId: string) => {
     try {
+        const config = await getAppConfig(env);
+
        const { nhan_vien_id, condition_type, note } = await request.json<{
             nhan_vien_id: number;
             condition_type?: 'extra_deposit' | 'pay_first' | 'normal';
@@ -422,7 +500,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
             else if (level === 1) {
                 const qrAmount = totalDebt;
                 const qrContent = `Vipham ${qrAmount} ${orderId}`;
-                const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+                const qrUrl = `${config.PAYMENT.QR_BASE_URL}?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=${config.PAYMENT.ACCOUNT_NAME}`;
                 
                 emailSubject = `✅ Đơn #${orderId} đã duyệt - Lưu ý vi phạm`;
                 emailHtml = `
@@ -476,7 +554,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                         <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px;">
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Số tài khoản:</strong>${config.PAYMENT.ACCOUNT_NUMBER}</p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Ngân hàng:</strong> ${config.PAYMENT.BANK_NAME}</p>
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> ${config.PAYMENT.ACCOUNT_NAME}</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> ${config.PAYMENT.ACCOUNT_NAME} </p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold;">${fmt(totalDebt)}</span></p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Nội dung:</strong> <code style="background: #f1f3f5; padding: 4px 8px; border-radius: 4px;">${qrContent}</code></p>
                                         </div>
@@ -498,7 +576,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
             else if (level === 2) {
                 const qrAmount = totalDebt;
                 const qrContent = `Vipham ${qrAmount} ${orderId}`;
-                const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+                const qrUrl = `${config.PAYMENT.QR_BASE_URL}?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=${config.PAYMENT.ACCOUNT_NAME}`;
                 const conditionText = condition_type === 'extra_deposit'
                     ? `cọc thêm <strong style="color: #dc3545;">${fmt(Math.round(totalDebt * 0.5))}</strong>`
                     : `thanh toán <strong style="color: #dc3545;">${fmt(totalDebt)}</strong> vi phạm trước`;
@@ -661,7 +739,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                         </p>
                                                         <a href="tel:0123456789" 
                                                         style="display: inline-block; background: #4caf50; color: white; text-decoration: none; padding: 14px 30px; border-radius: 8px; font-weight: bold; font-size: 15px;">
-                                                            📞 Hotline: 0123 456 789
+                                                            📞 Hotline: ${config.CONTACT.HOTLINE}
                                                         </a>
                                                     </div>
 
@@ -703,7 +781,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Dịch Vụ Thuê phương tiện <onboarding@resend.dev>',
+                    from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                     to: 'khoatran3123@gmail.com', //orderInfo.email,
                     subject: emailSubject,
                     html: emailHtml
@@ -920,10 +998,11 @@ export const handleGetOrders = async (request: Request, env: Env) => {
 
 //hàm gửi email
 
-const sendEmail = async (apiKey: string, toEmail: string, userName: string, contractUrl: string, orderId: string) => {
+const sendEmail = async (env : Env, apiKey: string, toEmail: string, userName: string, contractUrl: string, orderId: string) => {
     if (!apiKey || !toEmail) return;
 
     try {
+        const  config  = await getAppConfig(env)
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -931,7 +1010,7 @@ const sendEmail = async (apiKey: string, toEmail: string, userName: string, cont
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'ThuePhuongTien <onboarding@resend.dev>',
+                from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                 tto: ['khoatran3123@gmail.com'],  //[toEmail], 
                 subject: `[ĐÃ DUYỆT] Hợp đồng thuê phương tiện #${orderId}`,
                 html: `
@@ -1005,6 +1084,7 @@ export const handleSettleOrder = async (request: Request, env: Env, orderId: str
 // XÁC NHẬN ĐÃ THU TIỀN (Hoàn tất đơn)
 export const handleConfirmPayment = async (request: Request, env: Env, orderId: string) => {
     try {
+        const config = await getAppConfig(env)
         console.log("🔑 RESEND_API_KEY exists:", !!env.RESEND_API_KEY);
         console.log("📧 Order ID:", orderId);
         
@@ -1089,7 +1169,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
             const tongTien = tamTinh - tienGiam;
             const tiencocthucte = tongTien * (orderData.tien_coc_yeu_cau/100)
             const emailBody = {
-                from: 'Dịch Vụ Thuê Phương Tiện <onboarding@resend.dev>',
+                from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                 to: ['khoatran3123@gmail.com'], 
                 subject: `🎉 Hoàn tất đơn thuê phương tiện #${orderId} - Cảm ơn bạn!`,
                 html: `
@@ -1171,8 +1251,8 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
 
                                 <p style="color: #888888; font-size: 13px; margin-top: 20px;">
                                     Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:<br>
-                                    📞 Hotline: <strong>0123456789</strong><br>
-                                    📧 Email: <strong>support@thuephuongtien.vn</strong>
+                                    📞 Hotline: <strong>${config.CONTACT.HOTLINE}</strong><br>
+                                    📧 Email: <strong>${config.CONTACT.SUPPORT_EMAIL}</strong>
                                 </p>
                             </td>
                         </tr>
@@ -1293,8 +1373,11 @@ export const handleCheckOrderViolation = async (request: Request, env: Env, orde
     }
 };
 
-export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string,  config: AppConfig,) => {
+export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string,  ) => {
     try {
+
+        const config = await getAppConfig(env);
+
         const { nhanvien_id, ly_do } = await request.json<{
             nhanvien_id: number;
             ly_do?: string;
@@ -1348,7 +1431,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
             const fmt = (t: number) => new Intl.NumberFormat('vi-VN').format(t) + ' đ';
             const qrAmount = totalDebt;
             const qrContent = `Vipham ${qrAmount} ${orderId}`;
-            const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+            const qrUrl = `${config.PAYMENT.QR_BASE_URL}?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=${config.PAYMENT.ACCOUNT_NAME}`;
 
             await fetch('https://api.resend.com/emails', {
                 method: 'POST',
@@ -1357,7 +1440,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Dịch Vụ Thuê Đa Phương Tiện <onboarding@resend.dev>',
+                    from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                     to: 'khoatran3123@gmail.com', //orderInfo.email,
                     subject: `❌ Đơn #${orderId} KHÔNG được duyệt - Tự động hủy sau 60 phút`,
                     html: `
@@ -1416,8 +1499,8 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
                                             </div>
 
                                             <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px;">
-                                                <p style="margin: 5px 0; font-size: 15px;"><strong>STK:</strong> 0385750387 - MB Bank</p>
-                                                <p style="margin: 5px 0; font-size: 15px;"><strong>Chủ TK:</strong> NGUYEN TRAN VIET KHOA</p>
+                                                <p style="margin: 5px 0; font-size: 15px;"><strong>STK:</strong> ${config.PAYMENT.ACCOUNT_NUMBER} - ${config.PAYMENT.BANK_NAME}</p>
+                                                <p style="margin: 5px 0; font-size: 15px;"><strong>Chủ TK:</strong> ${config.PAYMENT.ACCOUNT_NAME}</p>
                                                 <p style="margin: 5px 0; font-size: 16px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold;">${fmt(totalDebt)}</span></p>
                                                 <p style="margin: 5px 0; font-size: 14px;"><strong>Nội dung:</strong> <code style="background: #f1f3f5; padding: 4px 8px; border-radius: 4px;">${qrContent}</code></p>
                                             </div>
@@ -1435,7 +1518,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
                                         
                                         <p style="text-align: center; margin-top: 30px;">
                                             <a href="tel:1900xxxx" style="background: #dc3545; color: white; padding: 16px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                                                📞 Liên hệ: 0123456789
+                                                📞 Liên hệ: ${config.CONTACT.HOTLINE}
                                             </a>
                                         </p>
                                     </td>

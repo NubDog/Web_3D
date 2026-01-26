@@ -1,5 +1,6 @@
 import React from 'react';
 import './BlockedAccountModal.css';
+import { useConfig } from '../../contexts/ConfigContext';
 
 interface BlockedAccountModalProps {
     onClose: () => void;
@@ -10,6 +11,7 @@ const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({
     onClose, 
     hotline = '0123 456 789' 
 }) => {
+    const { config } = useConfig()
     return (
         <div className="blocked-modal-overlay" onClick={onClose}>
             <div className="blocked-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -27,8 +29,8 @@ const BlockedAccountModal: React.FC<BlockedAccountModalProps> = ({
                     <h4>📞 Để mở khóa tài khoản:</h4>
                     <ul>
                         <li>Thanh toán các khoản phí vi phạm đang chờ xử lý</li>
-                        <li>Liên hệ hotline: <strong>{hotline}</strong></li>
-                        <li>Gửi email đến: <strong>support@sharkrent.vn</strong></li>
+                        <li>Liên hệ hotline: <strong>{config.CONTACT.HOTLINE}</strong></li>
+                        <li>Gửi email đến: <strong>{config.CONTACT.SUPPORT_EMAIL}</strong></li>
                     </ul>
                 </div>
 

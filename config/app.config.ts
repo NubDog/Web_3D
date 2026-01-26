@@ -5,6 +5,7 @@ export interface AppConfig {
   };
 
   PAYMENT: {
+    BANK_CODE: string;
     BANK_NAME: string;
     ACCOUNT_NUMBER: string;
     ACCOUNT_NAME: string;
@@ -70,6 +71,7 @@ const DEFAULT_CONFIG: AppConfig = {
   },
 
   PAYMENT: {
+     BANK_CODE: 'MB',
     BANK_NAME: 'MB Bank',
     ACCOUNT_NUMBER: '0385750387',
     ACCOUNT_NAME: 'NGUYEN TRAN VIET KHOA',
@@ -168,4 +170,50 @@ export function getCityShop (): string {
 
 export function getHotLine (): string {
   return DEFAULT_CONFIG.CONTACT.HOTLINE
+}
+
+export interface ConfigRequest {
+  CONTACT: {
+    HOTLINE: string;
+    SUPPORT_EMAIL: string;
+  };
+  PAYMENT: {
+    
+    BANK_NAME: string;
+    ACCOUNT_NUMBER: string;
+    ACCOUNT_NAME: string;
+    QR_BASE_URL?: string;
+    BANK_CODE: string;
+  };
+ VIOLATIONS: {
+    BLOCK_THRESHOLDS: {
+      MIN_DEBT: number;
+      MIN_COUNT: number;
+    };
+    EMAIL: {
+      SUBJECT_BLOCKED: string;
+      REASON_DEBT: string;
+      REASON_COUNT: string;
+      AFTER_PAYMENT_NOTE: string;
+      SUBJECT_VIOLATION: string;
+      SUBJECT_PAYMENT_CONFIRMED: string;
+      SUBJECT_VIOLATION_CANCELLED: string;
+    };
+  };
+  Locations: {
+    DIACHISHOP: string;
+    CHINHANHTP: string;
+  };
+  EMAIL: {
+    FROM_NAME: string;
+    FROM_EMAIL: string;
+  };
+}
+
+export interface ConfigResponse {
+  success: boolean;
+  data?: any;
+  error?: string;
+  message?: string;
+  updated_at?: string;
 }

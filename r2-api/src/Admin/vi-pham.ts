@@ -16,6 +16,81 @@ export interface Env {
   VIO: R2Bucket;
 }
 
+async function getAppConfig2(env: any) {
+    try {
+        const result = await env.DB.prepare(`
+            SELECT 
+                *
+            FROM app_config 
+            WHERE id = 1
+        `).first();
+
+        if (!result) {
+            return {
+                CONTACT: {
+                    HOTLINE: '0123 456 789',
+                    SUPPORT_EMAIL: 'onboarding@resend.dev',
+                },
+                PAYMENT: {
+                    BANK_NAME: 'MB Bank',
+                    ACCOUNT_NUMBER: '0385750387',
+                    ACCOUNT_NAME: 'NGUYEN TRAN VIET KHOA',
+                    QR_BASE_URL: `https://img.vietqr.io/image/MB-0385750387-compact2.png`,
+                    BANK_CODE: 'MB',
+                },
+                Locations: {
+                    DIACHISHOP: '99 Tô Hiến Thành',
+                    CHINHANHTP: 'Đà Nẵng',
+                },
+            };
+        }
+
+        const qrBaseUrl = `https://img.vietqr.io/image/${result.bank_code}-${result.account_number}-compact2.png`;
+
+        return {
+            CONTACT: {
+                HOTLINE: result.hotline as string,
+                SUPPORT_EMAIL: result.support_email as string,
+            },
+            PAYMENT: {
+                BANK_NAME: result.bank_name as string,
+                BANK_CODE: result.bank_code as string,  
+                ACCOUNT_NUMBER: result.account_number as string,
+                ACCOUNT_NAME: result.account_name as string,
+                QR_BASE_URL: qrBaseUrl,
+            },
+            Locations: {
+                DIACHISHOP: result.shop_address as string,
+                CHINHANHTP: result.city as string,
+            },
+             EMAIL: {
+                FROM_NAME: result.email_from_name as string,
+                FROM_EMAIL: result.email_from_address as string,
+            },
+        };
+    } catch (err) {
+        console.error('Error loading config:', err);
+        return {
+            CONTACT: {
+                HOTLINE: '0123 456 789',
+                SUPPORT_EMAIL: 'onboarding@resend.dev',
+            },
+            PAYMENT: {
+                BANK_NAME: 'MB Bank',
+                BANK_CODE: 'MB',   
+                ACCOUNT_NUMBER: '0385750387',
+                ACCOUNT_NAME: 'NGUYEN TRAN VIET KHOA',
+                QR_BASE_URL: `https://img.vietqr.io/image/MB-0385750387-compact2.png`,
+            },
+            Locations: {
+                DIACHISHOP: '99 Tô Hiến Thành',
+                CHINHANHTP: 'Đà Nẵng',
+            },
+
+        };
+    }
+}
+
 // Lấy danh sách tất cả vi phạm + làm chức năng lọc trạng thái vi phạm
 export const handleGetViolations = async (request: Request, env: Env) => {
     try {
@@ -55,6 +130,9 @@ export const handleGetViolations = async (request: Request, env: Env) => {
 export const handleCreateViolation = async (request: Request, env: Env, ) => {
     try {
         const formData = await request.formData();
+
+        const config = await getAppConfig2(env)
+        const config2 = await getAppConfig(env) 
 
         const don_thue_id = parseInt(formData.get('don_thue_id') as string);
         const loai_vi_pham = formData.get('loai_vi_pham') as string;
@@ -137,8 +215,7 @@ export const handleCreateViolation = async (request: Request, env: Env, ) => {
             co_quan_xu_ly || null
         ).run();
 
-        const config = getAppConfig(env);
-        const blockResult = await checkAndBlockCustomerIfNeeded(env, rentalOrder.khach_hang_id, config);
+        const blockResult = await checkAndBlockCustomerIfNeeded(env, rentalOrder.khach_hang_id, config2);
 
         // Gửi email thông báo
         if (env.RESEND_API_KEY && rentalOrder.email) {
@@ -147,9 +224,9 @@ export const handleCreateViolation = async (request: Request, env: Env, ) => {
                 : 'Chưa xác định';
 
             const emailBody = {
-                from: `${config.EMAIL.FROM_NAME} <${config.EMAIL.FROM_EMAIL}>`,
+                from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                 to: ['khoatran3123@gmail.com'], //rentalOrder.email 
-                subject: `${config.VIOLATIONS.EMAIL.SUBJECT_VIOLATION} - Đơn #${don_thue_id}`,
+                subject: `${config2.VIOLATIONS.EMAIL.SUBJECT_VIOLATION} - Đơn #${don_thue_id}`,
                 html: `
                 <!DOCTYPE html>
                 <html>
@@ -329,10 +406,11 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                 minute: '2-digit',
                 });
 
-                const config = getAppConfig(env);
+                const config = await getAppConfig2(env);
+                const config2 = getAppConfig(env)
 
                 if (trang_thai === 'da_thanh_toan') {
-                    subject = `${config.VIOLATIONS.EMAIL.SUBJECT_PAYMENT_CONFIRMED} - Đơn #${violationInfo.don_thue_id}`;
+                    subject = `${config2.VIOLATIONS.EMAIL.SUBJECT_PAYMENT_CONFIRMED} - Đơn #${violationInfo.don_thue_id}`;
                     htmlBody = `
                                     <!DOCTYPE html>
                                     <html lang="vi">
@@ -406,7 +484,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                                     </html>
                                 `;
                 } else if (trang_thai === 'huy_bo') {
-                    subject = `${config.VIOLATIONS.EMAIL.SUBJECT_VIOLATION_CANCELLED} - Đơn #${violationInfo.don_thue_id}`;
+                    subject = `${config2.VIOLATIONS.EMAIL.SUBJECT_VIOLATION_CANCELLED} - Đơn #${violationInfo.don_thue_id}`;
                     htmlBody = `
                                 <!DOCTYPE html>
                                 <html lang="vi">
@@ -478,7 +556,7 @@ export async function handleUpdateViolation(request: Request, env: Env, violatio
                 }
 
                 const emailBody = {
-                    from: `${config.EMAIL.FROM_NAME} <${config.EMAIL.FROM_EMAIL}>`,
+                    from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                     to: `khoatran3123@gmail.com`, // dùng 'customerInfo.email' để gọi email từ database còn bây giờ dùng email bản thân để test
                     subject: subject,
                     html: htmlBody
@@ -778,7 +856,8 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
                     </html>
                 `;
 
-                const config = getAppConfig(env);
+                const config = await getAppConfig2(env);
+                const config2 = await getAppConfig(env);
 
                 await fetch('https://api.resend.com/emails', {
                     method: 'POST',
@@ -787,9 +866,9 @@ export const handleConfirmViolationPayment = async (request: Request, env: Env, 
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        from: `${config.EMAIL.FROM_NAME} <${config.EMAIL.FROM_EMAIL}>`,
+                        from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                         to: 'khoatran3123@gmail.com',
-                        subject: `${config.VIOLATIONS.EMAIL.SUBJECT_PAYMENT_CONFIRMED} (${violations.results.length} vi phạm) - Đơn #${orderId}`,
+                        subject: `${config2.VIOLATIONS.EMAIL.SUBJECT_PAYMENT_CONFIRMED} (${violations.results.length} vi phạm) - Đơn #${orderId}`,
                         html: emailHtml
                     })
                 });
@@ -920,7 +999,7 @@ async function checkAndBlockCustomerIfNeeded(env: Env, khachHangId: number, conf
 
     async function sendBlockedAccountEmail(
     env: Env,
-    config: AppConfig,
+    config2: AppConfig,
     data: {
         customerName: string;
         customerEmail: string;
@@ -935,11 +1014,14 @@ async function checkAndBlockCustomerIfNeeded(env: Env, khachHangId: number, conf
         return;
     }
 
-    const qrUrl = buildQRUrl(config, data.totalDebt, `VIPHAM ${data.totalDebt}`);
-    const violationUrl = getViolationUrl(config);
+    const config = await getAppConfig2(env)
+
+    const qrUrl2 = buildQRUrl(config2, data.totalDebt, `VIPHAM ${data.totalDebt}`);
+    const qrUrl = `${config.PAYMENT.QR_BASE_URL}?amount=${data.totalDebt}&addInfo=${encodeURIComponent(`VIPHAM ${data.totalDebt}`)}&accountName=${encodeURIComponent(config.PAYMENT.ACCOUNT_NAME)}`;
+    const violationUrl = getViolationUrl(config2);
     const reasonText = data.reason === 'DEBT' 
-        ? config.VIOLATIONS.EMAIL.REASON_DEBT
-        : config.VIOLATIONS.EMAIL.REASON_COUNT;
+        ? config2.VIOLATIONS.EMAIL.REASON_DEBT
+        : config2.VIOLATIONS.EMAIL.REASON_COUNT;
 
     const html = `
         <!DOCTYPE html>
@@ -1024,7 +1106,7 @@ async function checkAndBlockCustomerIfNeeded(env: Env, khachHangId: number, conf
                     <div style="background:#e8f5e9;border-left:5px solid #4caf50;padding:18px 20px;">
                         <p style="margin:0;font-size:14px;color:#2e7d32;">
                         ⚠️ <strong>SAU KHI CHUYỂN KHOẢN:</strong><br/>
-                        ${config.VIOLATIONS.EMAIL.AFTER_PAYMENT_NOTE}
+                        ${config2.VIOLATIONS.EMAIL.AFTER_PAYMENT_NOTE}
                         </p>
                     </div>
 
@@ -1047,9 +1129,9 @@ async function checkAndBlockCustomerIfNeeded(env: Env, khachHangId: number, conf
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            from: `${config.EMAIL.FROM_NAME} <${config.EMAIL.FROM_EMAIL}>`,
+            from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
             to: 'khoatran3123@gmail.com',//data.customerEmail,
-            subject: config.VIOLATIONS.EMAIL.SUBJECT_BLOCKED,
+            subject: config2.VIOLATIONS.EMAIL.SUBJECT_BLOCKED,
             html,
         }),
         });

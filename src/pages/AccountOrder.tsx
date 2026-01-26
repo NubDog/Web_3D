@@ -5,8 +5,9 @@ import Footer from '../components/Footer/Footer';
 import Button from '../components/Button/Button';
 import { useAuth } from '../contexts/AuthContext';
 import './../styles/pages/AccountOrder/AccountOrder.css';
-import { getShopAddress, getCityShop } from '../../config/app.config';
-import { getConfig } from '../../config/app.config';
+// import { getShopAddress, getCityShop } from '../../config/app.config';
+// import { getConfig } from '../../config/app.config';
+import { useConfig } from '../contexts/ConfigContext';
 
 interface DonThue {
     don_thue_id: number;
@@ -37,7 +38,7 @@ interface DonThue {
 }
 
 const AccountOrder = () => {
-    const config = getConfig()
+    const { config } = useConfig();
     const { currentUser } = useAuth();
     const [orders, setOrders] = useState<DonThue[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -403,7 +404,7 @@ const AccountOrder = () => {
                                         </div>
                                         <div>
                                             <span style={{ color: '#777', fontSize: '13px' }}>Địa điểm: </span>
-                                            <span style={{ fontWeight: '600', color: 'black' }}>Tại cửa hàng ({getShopAddress()}, chi nhánh {getCityShop()})</span>
+                                            <span style={{ fontWeight: '600', color: 'black' }}>Tại cửa hàng ({config.Locations.DIACHISHOP}, chi nhánh {config.Locations.CHINHANHTP})</span>
                                         </div>
                                     </div>
                                     <div style={{ flex: 1, minWidth: '300px', backgroundColor: '#f8faff', padding: '15px', borderRadius: '12px', border: '1px solid #e6f0ff' }}>
@@ -563,7 +564,7 @@ const AccountOrder = () => {
                                 <p style={{ fontSize: '14px', color: '#666' }}>Quét mã QR để thanh toán nhanh</p>
 
                                 <div style={{ margin: '20px auto', border: '1px solid #eee', padding: '10px', borderRadius: '8px', display: 'inline-block' }}>
-                                    <img src={`https://img.vietqr.io/image/MB-${config.PAYMENT.ACCOUNT_NUMBER}-compact2.png?amount=${getPaymentAmount()}&addInfo=${getPaymentContent()}&accountName=${config.PAYMENT.ACCOUNT_NAME}`} alt="QR Code" style={{ width: '220px', height: '220px', display: 'block' }} />
+                                    <img src={`${config.PAYMENT.QR_BASE_URL}?amount=${getPaymentAmount()}&addInfo=${getPaymentContent()}&accountName=${config.PAYMENT.ACCOUNT_NAME}`} alt="QR Code" style={{ width: '220px', height: '220px', display: 'block' }} />
                                 </div>
 
                                 {renderPaymentDetails()}
