@@ -84,7 +84,11 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({
         EMAIL: {
         ...config.VIOLATIONS.EMAIL,
         ...(updates.VIOLATIONS?.EMAIL || {}),
-      },
+        },
+        MAINTENANCE: {
+        ...config.MAINTENANCE,
+        ...(updates.MAINTENANCE || {})
+        },
       },
       Locations: { ...config.Locations, ...(updates.Locations || {}) },
       EMAIL: { ...config.EMAIL, ...(updates.EMAIL || {}) },

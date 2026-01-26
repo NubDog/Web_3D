@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../css/Admin_order.css';
+import sound from '../../../../sound/mixkit-software-interface-start-2574.wav';
 
 interface PendingOrder {
     don_thue_id: number;
@@ -22,8 +23,26 @@ interface ViolationInfo {
     latest_violation_type: string;
 }
 
-// Tiếng "Ping" dạng Base64 (Không lo chết link)
-const NOTIFICATION_SOUND = 'sound/mixkit-software-interface-remove-2576.wav';
+interface OverdueOrder {
+  don_thue_id: number;
+  khach_hang_id: number;
+  ho_ten: string;
+  email: string;
+  so_dien_thoai: string;
+  ten_phuong_tien: string;
+  bien_so: string;
+  ngay_bat_dau: string;
+  ngay_ket_thuc: string;
+  tong_tien: number;
+  tien_coc_yeu_cau: number;
+  tong_gio_qua_han: number; 
+  so_ngay_qua_han: number;    
+  so_gio_le: number;          
+  phi_tre_han: number;        
+}
+
+// Tiếng "Ping" dạng Base64 
+const NOTIFICATION_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3';
 const ITEMS_PER_PAGE = 10;
 
 const OrderList: React.FC = () => {
@@ -37,6 +56,15 @@ const OrderList: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
 
+    const [overdueOrders, setOverdueOrders] = useState<OverdueOrder[]>([]);
+    const [showOverdueModal, setShowOverdueModal] = useState(false);
+    const [overdueLoading, setOverdueLoading] = useState(false);
+
+    // Filter states
+    const [overdueSearch, setOverdueSearch] = useState('');
+    const [overdueMinDays, setOverdueMinDays] = useState('0');
+    const [overdueSortBy, setOverdueSortBy] = useState<'time' | 'fee' | 'name'>('time');
+
     const [selectedViolation, setSelectedViolation] = useState<{
         khachHangId: number;
         hoTen: string;
@@ -47,11 +75,13 @@ const OrderList: React.FC = () => {
 
     const prevOrderCountRef = useRef<number>(0);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const overdueAudioRef = useRef<HTMLAudioElement | null>(null);
 
     const [filterDate, setFilterDate] = useState<string>('');
 
     useEffect(() => {
         audioRef.current = new Audio(NOTIFICATION_SOUND);
+        overdueAudioRef.current = new Audio(NOTIFICATION_SOUND);
     }, []);
 
     const pageTitles: { [key: string]: string } = {
@@ -131,7 +161,7 @@ const OrderList: React.FC = () => {
                     console.error('❌ Failed to fetch violations:', vioErr);
                 }
             } else {
-                console.log('⚠️ Skipping violation check (not pending page or no orders)');
+                console.log('⚠️ Bỏ qua kiểm tra vi phạm (không phải trang chờ hoặc không có đơn hàng)');
             }
         } else {
                 throw new Error(result.error || 'Không thể tải danh sách đơn hàng.');
@@ -286,6 +316,116 @@ const OrderList: React.FC = () => {
     );
 };
 
+    const hasNotifiedOverdue = useRef(false);
+    const lastOverdueCount = useRef(0);
+
+    const fetchOverdueOrders = useCallback(async (isBackground = false) => {
+    if (isBackground) {
+      try {
+        const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/orders/overdue');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          const newCount = result.data.length;
+          
+          if (newCount > lastOverdueCount.current && !hasNotifiedOverdue.current) {
+            overdueAudioRef.current?.play().catch(e => {
+                console.error("❌ Lỗi phát âm thanh đơn quá hạn:", e);
+                console.log("💡 Tip: Click vào trang web trước để browser cho phép autoplay");
+            });
+
+            toast.warning(`⚠️ Có ${newCount - lastOverdueCount.current} đơn hàng quá hạn mới!`, {
+              position: "top-right",
+              autoClose: 5000,
+              onClick: () => setShowOverdueModal(true)
+            });
+            hasNotifiedOverdue.current = true;
+          }
+          
+          lastOverdueCount.current = newCount;
+          setOverdueOrders(result.data);
+        }
+      } catch (err) {
+        console.error('Lỗi fetch overdue:', err);
+      }
+    } else {
+      setOverdueLoading(true);
+      try {
+        const response = await fetch('https://r2-api.sharkeatrice.workers.dev/api/orders/overdue');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          lastOverdueCount.current = result.data.length;
+          setOverdueOrders(result.data);
+          hasNotifiedOverdue.current = false; 
+        }
+        if (!isBackground) {
+            hasNotifiedOverdue.current = false;
+        }
+      } catch (err) {
+        console.error('Lỗi fetch overdue:', err);
+      } finally {
+        if (!isBackground) {
+        setOverdueLoading(false);
+        }
+    }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (status === 'active' || status === 'all') {
+      fetchOverdueOrders(false); 
+      
+      const interval = setInterval(() => {
+        fetchOverdueOrders(true); 
+      }, 5 * 1000); 
+      
+      return () => clearInterval(interval);
+    }
+  }, [status, fetchOverdueOrders]);
+
+    const filteredOverdueOrders = useMemo(() => {
+        let filtered = overdueOrders;
+
+        if (overdueMinDays !== '0') {
+            const minDays = parseInt(overdueMinDays);
+            filtered = filtered.filter(o => o.so_ngay_qua_han >= minDays);
+        }
+
+        if (overdueSearch) {
+            const term = overdueSearch.toLowerCase();
+            filtered = filtered.filter(o =>
+            o.ho_ten.toLowerCase().includes(term) ||
+            o.ten_phuong_tien.toLowerCase().includes(term) ||
+            o.bien_so.toLowerCase().includes(term) ||
+            o.don_thue_id.toString().includes(term) ||
+            o.so_dien_thoai.includes(term)
+            );
+        }
+
+        filtered.sort((a, b) => {
+            if (overdueSortBy === 'time') {
+            return b.tong_gio_qua_han - a.tong_gio_qua_han;
+            } else if (overdueSortBy === 'fee') {
+            return b.phi_tre_han - a.phi_tre_han;
+            } else {
+            return a.ho_ten.localeCompare(b.ho_ten);
+            }
+        });
+
+        return filtered;
+        }, [overdueOrders, overdueSearch, overdueMinDays, overdueSortBy]);
+
+        const overdueStats = useMemo(() => {
+        return {
+            total: overdueOrders.length,
+            critical: overdueOrders.filter(o => o.so_ngay_qua_han >= 7).length,
+            serious: overdueOrders.filter(o => o.so_ngay_qua_han >= 3 && o.so_ngay_qua_han < 7).length,
+            minor: overdueOrders.filter(o => o.so_ngay_qua_han < 3).length,
+            totalDebt: overdueOrders.reduce((sum, o) => sum + o.phi_tre_han, 0),
+        };
+    }, [overdueOrders]);
+
 
     const isOrderBlocked = (khachHangId: number) => {
         const vio = violations[khachHangId];
@@ -366,6 +506,46 @@ const OrderList: React.FC = () => {
                     >
                     {todayPendingCount} đơn chờ duyệt
                     </div>
+
+                    {(status === 'active'|| status === 'all') && (
+                        <button 
+                            onClick={() => {
+                            fetchOverdueOrders();
+                            setShowOverdueModal(true);
+                            }}
+                            style={{
+                            background: overdueOrders.length > 0 
+                                ? 'linear-gradient(135deg, #ff5252, #dc3545)' 
+                                : 'linear-gradient(135deg, #6c757d, #495057)',
+                            color: 'white',
+                            border: 'none',
+                            padding: '14px 28px',
+                            borderRadius: '12px',
+                            fontSize: '15px',
+                            fontWeight: 'bold',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            boxShadow: overdueOrders.length > 0 
+                                ? '0 4px 15px rgba(220, 53, 69, 0.4)' 
+                                : '0 2px 8px rgba(0,0,0,0.1)',
+                            transition: 'all 0.3s',
+                            marginTop: '20px',
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        >
+                            <span style={{ fontSize: '20px' }}>⚠️</span>
+                            <div style={{ textAlign: 'left' }}>
+                            <div>Đơn quá hạn trả</div>
+                            <div style={{ fontSize: '12px', opacity: 0.9 }}>
+                                {overdueOrders.length} đơn
+                            </div>
+                            </div>
+                        </button>
+                    )}
+
                 </div>
                 <div
                     style={{
@@ -926,7 +1106,386 @@ const OrderList: React.FC = () => {
                 </div>
             )}
 
+            {showOverdueModal && (
+                <div 
+                    className="violation-modal-overlay"
+                    onClick={() => setShowOverdueModal(false)}
+                >
+                    <div 
+                    className="violation-modal"
+                    style={{ maxWidth: '1200px', maxHeight: '90vh' }}
+                    onClick={(e) => e.stopPropagation()}
+                    >
+                    {/* Header */}
+                    <div className="modal-header danger">
+                        <div className="header-content">
+                        <span className="header-icon">⚠️</span>
+                        <div>
+                            <h3>ĐƠN HÀNG QUÁ HẠN TRẢ</h3>
+                            <p className="customer-name" style={{ color: 'white' }}>
+                            {filteredOverdueOrders.length} / {overdueOrders.length} đơn
+                            </p>
+                        </div>
+                        </div>
+                        <button 
+                        className="close-btn"
+                        onClick={() => setShowOverdueModal(false)}
+                        >
+                        ✕
+                        </button>
+                    </div>
+
+                    {/* Stats */}
+                    <div style={{ 
+                        display: 'grid', 
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                        gap: '15px',
+                        padding: '20px',
+                        background: '#f8f9fa',
+                        borderBottom: '1px solid #dee2e6'
+                    }}>
+                        <div style={{ 
+                        textAlign: 'center', 
+                        padding: '15px', 
+                        background: 'white', 
+                        borderRadius: '10px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+                        }}>
+                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#dc3545' }}>
+                            {overdueStats.critical}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                            🚨 Nghiêm trọng (≥7 ngày)
+                        </div>
+                        </div>
+
+                        <div style={{ textAlign: 'center', padding: '15px', background: 'white', borderRadius: '10px' }}>
+                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ff9800' }}>
+                            {overdueStats.serious}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                            ⚠️ Cảnh báo (3-6 ngày)
+                        </div>
+                        </div>
+
+                        <div style={{ textAlign: 'center', padding: '15px', background: 'white', borderRadius: '10px' }}>
+                        <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#ffc107' }}>
+                            {overdueStats.minor}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                            ℹ️ Nhẹ (1-2 ngày)
+                        </div>
+                        </div>
+
+                        <div style={{ textAlign: 'center', padding: '15px', background: 'white', borderRadius: '10px' }}>
+                        <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#17a2b8' }}>
+                            {new Intl.NumberFormat('vi-VN').format(overdueStats.totalDebt)}đ
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                            💰 Tổng phí trễ hạn
+                        </div>
+                        </div>
+                    </div>
+
+                    {/* Filters */}
+                    <div style={{ 
+                        padding: '20px', 
+                        background: 'white',
+                        borderBottom: '1px solid #dee2e6',
+                        display: 'flex',
+                        gap: '12px',
+                        flexWrap: 'wrap',
+                        alignItems: 'center'
+                    }}>
+                        {/* Search */}
+                        <input
+                        type="text"
+                        placeholder="🔍 Tìm theo tên, xe, biển số, SĐT, mã đơn..."
+                        value={overdueSearch}
+                        onChange={(e) => setOverdueSearch(e.target.value)}
+                        style={{
+                            flex: '1',
+                            minWidth: '250px',
+                            padding: '11px 15px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            outline: 'none',
+                            backgroundColor: 'white',
+                            color: '#333',
+                        }}
+                        />
+
+                        {/* Min Days Filter */}
+                        <select
+                        value={overdueMinDays}
+                        onChange={(e) => setOverdueMinDays(e.target.value)}
+                        style={{
+                            padding: '11px 15px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            background: 'white',
+                            color: overdueMinDays !== '0' ? '#dc3545' : '#333',
+                        }}
+                        >
+                        <option value="0">Tất cả</option>
+                        <option value="1">≥ 1 ngày</option>
+                        <option value="3">≥ 3 ngày</option>
+                        <option value="7">≥ 7 ngày</option>
+                        <option value="14">≥ 14 ngày</option>
+                        </select>
+
+                        {/* Sort */}
+                        <select
+                        value={overdueSortBy}
+                        onChange={(e) => setOverdueSortBy(e.target.value as any)}
+                        style={{
+                            padding: '11px 15px',
+                            border: '2px solid #e5e7eb',
+                            borderRadius: '8px',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            background: 'white',
+                            color: '#333',
+                        }}
+                        >
+                        <option value="time">Sắp xếp: Thời gian quá hạn</option>
+                        <option value="fee">Sắp xếp: Phí trễ hạn</option>
+                        <option value="name">Sắp xếp: Tên khách hàng</option>
+                        </select>
+
+                       <button
+                        onClick={() => {
+                            hasNotifiedOverdue.current = false;
+                            fetchOverdueOrders();
+                        }}
+                        disabled={overdueLoading}
+                        style={{
+                            padding: '11px 18px',
+                            background: '#007bff',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: overdueLoading ? 'not-allowed' : 'pointer',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                        }}
+                        >
+                        {overdueLoading ? '⏳' : '🔄'} Làm mới
+                        </button>
+                    </div>
+
+                    <div className="modal-body" style={{ 
+                        maxHeight: '50vh', 
+                        overflowY: 'auto',
+                        padding: '20px'
+                    }}>
+                        {overdueLoading ? (
+                        <div style={{ textAlign: 'center', padding: '40px' }}>
+                            <div className="spinner"></div>
+                            <p>Đang tải...</p>
+                        </div>
+                        ) : filteredOverdueOrders.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                            {overdueSearch || overdueMinDays !== '0' 
+                            ? '🔍 Không tìm thấy đơn hàng phù hợp'
+                            : '✅ Không có đơn hàng quá hạn'}
+                        </div>
+                        ) : (
+                        filteredOverdueOrders.map(order => {
+                            const severity = order.so_ngay_qua_han >= 7 
+                            ? { color: '#dc3545', label: '🚨 Nghiêm trọng', bg: '#ffebee' }
+                            : order.so_ngay_qua_han >= 3
+                            ? { color: '#ff9800', label: '⚠️ Cảnh báo', bg: '#fff3e0' }
+                            : { color: '#ffc107', label: 'ℹ️ Nhẹ', bg: '#fffbf0' };
+
+                            return (
+                            <div 
+                                key={order.don_thue_id}
+                                style={{
+                                borderLeft: `4px solid ${severity.color}`,
+                                background: severity.bg,
+                                padding: '18px',
+                                borderRadius: '10px',
+                                marginBottom: '14px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                }}
+                                onClick={() => {
+                                setShowOverdueModal(false);
+                                navigate(`/admin/order/${order.don_thue_id}`);
+                                }}
+                                onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'translateX(5px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                }}
+                                onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'translateX(0)';
+                                e.currentTarget.style.boxShadow = 'none';
+                                }}
+                            >
+                                <div style={{ 
+                                display: 'flex', 
+                                justifyContent: 'space-between', 
+                                marginBottom: '16px'
+                                }}>
+                                <div>
+                                    <strong style={{ fontSize: '17px', color: '#333' }}>
+                                    #{order.don_thue_id} - {order.ho_ten}
+                                    </strong>
+                                    <div style={{ fontSize: '13px', color: '#666', marginTop: '5px' }}>
+                                    📱 {order.so_dien_thoai}
+                                    </div>
+                                </div>
+                                
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{
+                                    background: severity.color,
+                                    color: 'white',
+                                    padding: '8px 16px',
+                                    borderRadius: '20px',
+                                    fontSize: '14px',
+                                    fontWeight: 'bold',
+                                    marginBottom: '6px'
+                                    }}>
+                                    {order.so_ngay_qua_han > 0 && `${order.so_ngay_qua_han} ngày`}
+                                    {order.so_ngay_qua_han > 0 && order.so_gio_le > 0 && ' '}
+                                    {order.so_gio_le > 0 && `${order.so_gio_le}h`}
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: '#666' }}>
+                                    {severity.label}
+                                    </div>
+                                </div>
+                                </div>
+
+                                <div style={{ 
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                                gap: '16px',
+                                fontSize: '14px',
+                                }}>
+                                <div>
+                                    <strong style={{ color: '#555' }}>🚗 Phương tiện:</strong>
+                                    <div style={{ marginTop: '6px', fontWeight: '500' }}>
+                                    {order.ten_phuong_tien}
+                                    </div>
+                                    <div style={{ fontSize: '12px', color: '#888', marginTop: '2px' }}>
+                                    {order.bien_so}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <strong style={{ color: '#555' }}>📅 Hạn trả:</strong>
+                                    <div style={{ marginTop: '6px', color: '#333', fontWeight: '600', fontSize: '15px' }}>
+                                    {formatDate(order.ngay_ket_thuc)}
+                                    </div>
+                                    <div style={{ 
+                                    fontSize: '12px', 
+                                    color: severity.color, 
+                                    fontWeight: '600',
+                                    marginTop: '4px'
+                                    }}>
+                                    Quá hạn: {order.so_ngay_qua_han} ngày {order.so_gio_le > 0 && `${order.so_gio_le}h`}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <strong style={{ color: '#555' }}>💰 Phí trễ hạn:</strong>
+                                    <div style={{ 
+                                    color: severity.color, 
+                                    fontWeight: 'bold',
+                                    fontSize: '17px',
+                                    marginTop: '6px'
+                                    }}>
+                                    {formatCurrency(order.phi_tre_han)}
+                                    </div>
+                                    
+                                    <div style={{ 
+                                    fontSize: '11px', 
+                                    color: '#666',
+                                    marginTop: '8px',
+                                    padding: '8px 10px',
+                                    background: 'rgba(0,0,0,0.04)',
+                                    borderRadius: '6px',
+                                    lineHeight: '1.7'
+                                    }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span>Số ngày:</span>
+                                        <strong>{order.so_ngay_qua_han} × 400k</strong>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                        <span>Số giờ lẻ:</span>
+                                        <strong>{order.so_gio_le} × 5k</strong>
+                                    </div>
+                                    <div style={{ 
+                                        borderTop: '1px solid rgba(0,0,0,0.15)', 
+                                        marginTop: '5px',
+                                        paddingTop: '5px',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        fontWeight: 'bold',
+                                        fontSize: '12px'
+                                    }}>
+                                        <span>Tổng:</span>
+                                        <span style={{ color: severity.color }}>
+                                        {new Intl.NumberFormat('vi-VN').format(order.phi_tre_han)}đ
+                                        </span>
+                                    </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <strong style={{ color: '#555' }}>📋 Tổng tiền thuê:</strong>
+                                    <div style={{ marginTop: '6px', color: '#333', fontWeight: '600', fontSize: '17px' }}>
+                                    {formatCurrency(order.tong_tien)}
+                                    </div>
+                                    <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                                    Cọc: {formatCurrency(order.tong_tien * (order.tien_coc_yeu_cau / 100))}
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            );
+                        })
+                        )}
+                    </div>
+
+                    <div className="modal-footer" style={{ 
+                        borderTop: '1px solid #dee2e6',
+                        padding: '16px 20px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: '#f8f9fa'
+                    }}>
+                        <div style={{ fontSize: '14px', color: '#666' }}>
+                        Hiển thị <strong>{filteredOverdueOrders.length}</strong> / {overdueOrders.length} đơn
+                        </div>
+                        <button 
+                        className="btn btn-secondary"
+                        onClick={() => setShowOverdueModal(false)}
+                        style={{
+                            padding: '10px 24px',
+                            background: '#6c757d',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            fontWeight: 'bold',
+                        }}
+                        >
+                        Đóng
+                        </button>
+                    </div>
+                    </div>
+                </div>
+                )}
         </div>
+
+        
         
     );
 };

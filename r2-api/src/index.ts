@@ -34,6 +34,7 @@ import {
 	handleConfirmPayment,
 	handleCheckOrderViolation,
 	handleRejectOrderLevel3,
+	getOverdueOrders,
 } from './Admin/don-thue';
 import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
@@ -482,6 +483,10 @@ export default {
 			if (confirmViolationPaymentMatch && method === 'POST') {
 				const orderId = confirmViolationPaymentMatch[1];
 				return handleConfirmViolationPayment(request, env, orderId);
+			}
+
+			if (url.pathname === '/api/orders/overdue' && request.method === 'GET') {
+				return getOverdueOrders(request, env);
 			}
 			
 			// ------------------- Vi phạm -------------------

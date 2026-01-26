@@ -1466,3 +1466,56 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
+
+// TÍNH PHÍ TRỄ HẠN: NGÀY + GIỜ
+export async function getOverdueOrders(request: Request, env: Env) {
+  try {
+    const result = await env.DB.prepare(`
+      SELECT 
+        dt.don_thue_id,
+        dt.khach_hang_id,
+        nd.ho_ten,
+        nd.email,
+        nd.so_dien_thoai,
+        pt.ten_phuong_tien,
+        pt.bien_so,
+        dt.ngay_bat_dau,
+        dt.ngay_ket_thuc,
+        dt.tong_tien,
+        dt.tien_coc_yeu_cau,
+        
+        -- ✅ Tính tổng số giờ quá hạn (sử dụng 'now' với localtime)
+        CAST((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) * 24 AS INTEGER) as tong_gio_qua_han,
+        
+        -- ✅ Số ngày đầy đủ
+        CAST((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) AS INTEGER) as so_ngay_qua_han,
+        
+        -- ✅ Số giờ lẻ
+        CAST(((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) * 24) AS INTEGER) % 24 as so_gio_le,
+        
+        -- ✅ Tính phí
+        (CAST((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) AS INTEGER) * 400000) + 
+        ((CAST(((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) * 24) AS INTEGER) % 24) * 5000) 
+        as phi_tre_han
+        
+      FROM DonThue dt
+      JOIN NguoiDung nd ON dt.khach_hang_id = nd.nguoi_dung_id
+      JOIN PhuongTien pt ON dt.phuong_tien_id = pt.phuong_tien_id
+      WHERE 
+        dt.trang_thai = 'DANG_THUE'
+        AND dt.ngay_tra_thuc_te IS NULL
+        AND datetime(dt.ngay_ket_thuc) < datetime('now', 'localtime')
+      ORDER BY tong_gio_qua_han DESC
+    `).all();
+
+    return jsonResponse({
+      success: true,
+      data: result.results || [],
+      total: result.results?.length || 0
+    });
+
+  } catch (err: any) {
+    console.error('❌ Lỗi getOverdueOrders:', err);
+    return jsonResponse({ success: false, error: err.message }, 500);
+  }
+}

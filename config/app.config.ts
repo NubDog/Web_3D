@@ -35,6 +35,10 @@ export interface AppConfig {
     };
   };
 
+  MAINTENANCE: {
+    HAN_BAO_TRI_PHUONG_TIEN: number,
+  },
+
   FRONTEND: {
     BASE_URL: string;
     VIOLATION_PATH: string;
@@ -122,7 +126,10 @@ const DEFAULT_CONFIG: AppConfig = {
   Locations: {
     DIACHISHOP: '99 Tô Hiến Thành',
     CHINHANHTP: 'Đà Nẵng',
-  }
+  },
+  MAINTENANCE: {
+    HAN_BAO_TRI_PHUONG_TIEN: 0,
+  },
 };
 
 export function getAppConfig(env: any): AppConfig {
@@ -208,6 +215,9 @@ export interface ConfigRequest {
     FROM_NAME: string;
     FROM_EMAIL: string;
   };
+   MAINTENANCE: {
+    HAN_BAO_TRI_PHUONG_TIEN: Number,
+  },
 }
 
 export interface ConfigResponse {
