@@ -1,3 +1,5 @@
+import { env } from 'cloudflare:workers';
+
 interface Env {
 	r2: R2Bucket;
 	product: R2Bucket;
@@ -109,7 +111,7 @@ export async function getPhuongTienById(request: Request, env: Env, id: string):
 			LEFT JOIN DanhMucPhuongTien d ON pl.danh_muc_id = d.danh_muc_id
 			LEFT JOIN NguoiDung nd ON p.nguoi_thay_doi_chinh_sach_gia_id = nd.nguoi_dung_id
 			WHERE p.phuong_tien_id = ?
-			`
+			`,
 		)
 			.bind(id)
 			.all();
@@ -156,8 +158,14 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 		const phan_loai_id = Number(formData.get('phan_loai_id'));
 		const ngay_update_chinh_sach_gia = getNowVN();
 
+		// Lấy hạn bảo trì từ config
+		const configResult = await env.DB.prepare(`SELECT han_bao_tri_phuong_tien FROM app_config LIMIT 1`).first<{
+			han_bao_tri_phuong_tien: number;
+		}>();
+		const hanBaoTriMonths = configResult?.han_bao_tri_phuong_tien || 6; // Mặc định 6 tháng nếu không tìm thấy
+
 		const now = new Date();
-		now.setMonth(now.getMonth() + 4);
+		now.setMonth(now.getMonth() + hanBaoTriMonths);
 		const hanbaotri = now.toISOString().slice(0, 10);
 		const duplicateCheck = await env.DB.prepare(`SELECT 1 FROM PhuongTien WHERE bien_so = ? OR so_khung = ? LIMIT 1`)
 			.bind(bien_so, so_khung)
@@ -204,7 +212,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 					})
 					.then(() => {
 						imgUrl = `${R2_IMG_DOMAIN}/${imgKey}`;
-					})
+					}),
 			);
 		}
 
@@ -225,7 +233,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 					})
 					.then(() => {
 						modelUrl = `${R2_MODEL_DOMAIN}/${modelKey}`;
-					})
+					}),
 			);
 		}
 
@@ -238,7 +246,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
       INSERT INTO PhuongTien
       (ten_phuong_tien, loai, trang_thai, bien_so, so_km, chinh_sach_id, so_khung, gia_thue, img, model, hanBaoTri, ngay_cap_nhat, ngay_tao, phan_loai_id, nguoi_thay_doi_chinh_sach_gia_id,ngay_update_chinh_sach_gia)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `
+    `,
 		)
 			.bind(
 				ten_phuong_tien,
@@ -256,7 +264,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 				ngay_tao,
 				phan_loai_id,
 				nguoi_dung_id,
-				ngay_update_chinh_sach_gia
+				ngay_update_chinh_sach_gia,
 			)
 			.run();
 
@@ -265,7 +273,7 @@ export async function addphuongtien(request: Request, env: Env): Promise<Respons
 				success: true,
 				message: 'Thêm phương tiện thành công',
 				phuong_tien_id: result.meta.last_row_id,
-			})
+			}),
 		);
 	} catch (err: any) {
 		if (imgKey) await env.product.delete(imgKey).catch(() => {});
@@ -432,7 +440,7 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 		const result = await env.DB.prepare(
 			`UPDATE PhuongTien
              SET ${updateKeys}
-             WHERE phuong_tien_id = ?`
+             WHERE phuong_tien_id = ?`,
 		)
 			.bind(...updateValues, id)
 			.run();
@@ -441,7 +449,6 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 
 		return withCors(Response.json({ success: true, message: 'Cập nhật phương tiện thành công' }));
 	} catch (err: any) {
-		
 		if (new_hinh_anh_key) await env.product.delete(new_hinh_anh_key).catch(() => {});
 		if (new_models_3d_key) await env.r2.delete(new_models_3d_key).catch(() => {});
 
@@ -453,8 +460,8 @@ export async function updatePhuongTien(request: Request, env: Env, id: string): 
 					error: 'Lỗi khi cập nhật phương tiện',
 					details: err.message,
 				},
-				{ status: 500 }
-			)
+				{ status: 500 },
+			),
 		);
 	}
 }
@@ -470,11 +477,10 @@ export async function deletePhuongTien(request: Request, env: Env, id: string): 
 			return withCors(Response.json({ success: false, error: 'ID không hợp lệ' }, { status: 400 }));
 		}
 
-		
 		const phuongTien = await env.DB.prepare(
 			`SELECT phuong_tien_id, trang_thai
 				 FROM PhuongTien
-				 WHERE phuong_tien_id = ?`
+				 WHERE phuong_tien_id = ?`,
 		)
 			.bind(numericId)
 			.first<{
@@ -486,7 +492,6 @@ export async function deletePhuongTien(request: Request, env: Env, id: string): 
 			return withCors(Response.json({ success: false, error: 'Không tìm thấy phương tiện' }, { status: 404 }));
 		}
 
-	
 		if (phuongTien.trang_thai === 'DA_DAT' || phuongTien.trang_thai === 'BAO_TRI') {
 			return withCors(
 				Response.json(
@@ -494,12 +499,11 @@ export async function deletePhuongTien(request: Request, env: Env, id: string): 
 						success: false,
 						error: 'Không thể xoá phương tiện khi đang Đã đặt hoặc Bảo trì',
 					},
-					{ status: 400 }
-				)
+					{ status: 400 },
+				),
 			);
 		}
 
-	
 		await env.DB.prepare('DELETE FROM PhuongTien WHERE phuong_tien_id = ?').bind(numericId).run();
 
 		return withCors(Response.json({ success: true, message: 'Xoá phương tiện thành công' }));
@@ -512,8 +516,8 @@ export async function deletePhuongTien(request: Request, env: Env, id: string): 
 					error: 'Lỗi khi xoá phương tiện',
 					details: err.message,
 				},
-				{ status: 500 }
-			)
+				{ status: 500 },
+			),
 		);
 	}
 }

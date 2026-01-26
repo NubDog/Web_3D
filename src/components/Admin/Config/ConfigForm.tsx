@@ -17,7 +17,9 @@ import { useConfig } from "../../../contexts/ConfigContext";
 const ConfigForm: React.FC = () => {
   const { config, updateConfig, isLoading, lastUpdated } = useConfig();
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<"contact" | "payment" | "violations" | "location">("contact");
+  const [activeTab, setActiveTab] = useState<
+    "contact" | "payment" | "violations" | "location" | "maintenance"
+  >("contact");
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -25,40 +27,44 @@ const ConfigForm: React.FC = () => {
     // Contact
     hotline: config.CONTACT.HOTLINE,
     supportEmail: config.CONTACT.SUPPORT_EMAIL,
-    
+
     // Payment
-    bankCode: config.PAYMENT?.BANK_CODE || 'MB',
-    bankName: config.PAYMENT?.BANK_NAME || 'MB Bank',
-    accountNumber: config.PAYMENT?.ACCOUNT_NUMBER || '',
-    accountName: config.PAYMENT?.ACCOUNT_NAME || '',
-    
+    bankCode: config.PAYMENT?.BANK_CODE || "MB",
+    bankName: config.PAYMENT?.BANK_NAME || "MB Bank",
+    accountNumber: config.PAYMENT?.ACCOUNT_NUMBER || "",
+    accountName: config.PAYMENT?.ACCOUNT_NAME || "",
+
     // Violations
     minDebt: config.VIOLATIONS?.BLOCK_THRESHOLDS?.MIN_DEBT || 1000000,
     minCount: config.VIOLATIONS?.BLOCK_THRESHOLDS?.MIN_COUNT || 2,
-    
+
     // Location
     shopAddress: config.Locations.DIACHISHOP,
     cityShop: config.Locations.CHINHANHTP,
-    
+
     // Email
-    emailFromName: config.EMAIL?.FROM_NAME || 'Hệ thống cho thuê',
-    emailFromAddress: config.EMAIL?.FROM_EMAIL || 'onboarding@resend.dev',
+    emailFromName: config.EMAIL?.FROM_NAME || "Hệ thống cho thuê",
+    emailFromAddress: config.EMAIL?.FROM_EMAIL || "onboarding@resend.dev",
+
+    // Maintenance
+    hanBaoTriPhuongTien: 6,
   });
 
   useEffect(() => {
     setFormData({
       hotline: config.CONTACT.HOTLINE,
       supportEmail: config.CONTACT.SUPPORT_EMAIL,
-      bankCode: config.PAYMENT?.BANK_CODE || 'MB',
-      bankName: config.PAYMENT?.BANK_NAME || 'MB Bank',
-      accountNumber: config.PAYMENT?.ACCOUNT_NUMBER || '',
-      accountName: config.PAYMENT?.ACCOUNT_NAME || '',
+      bankCode: config.PAYMENT?.BANK_CODE || "MB",
+      bankName: config.PAYMENT?.BANK_NAME || "MB Bank",
+      accountNumber: config.PAYMENT?.ACCOUNT_NUMBER || "",
+      accountName: config.PAYMENT?.ACCOUNT_NAME || "",
       minDebt: config.VIOLATIONS?.BLOCK_THRESHOLDS?.MIN_DEBT || 1000000,
       minCount: config.VIOLATIONS?.BLOCK_THRESHOLDS?.MIN_COUNT || 2,
       shopAddress: config.Locations.DIACHISHOP,
       cityShop: config.Locations.CHINHANHTP,
-      emailFromName: config.EMAIL?.FROM_NAME || 'Hệ thống cho thuê',
-      emailFromAddress: config.EMAIL?.FROM_EMAIL || 'onboarding@resend.dev',
+      emailFromName: config.EMAIL?.FROM_NAME || "Hệ thống cho thuê",
+      emailFromAddress: config.EMAIL?.FROM_EMAIL || "onboarding@resend.dev",
+      hanBaoTriPhuongTien: config.MAINTENANCE?.HAN_BAO_TRI_PHUONG_TIEN || 6,
     });
   }, [config]);
 
@@ -80,42 +86,49 @@ const ConfigForm: React.FC = () => {
     }
 
     if (!formData.emailFromAddress.trim()) {
-        newErrors.emailFromAddress = "Vui lòng nhập Email gửi đi.";
+      newErrors.emailFromAddress = "Vui lòng nhập Email gửi đi.";
     } else if (!emailRegex.test(formData.emailFromAddress)) {
-        newErrors.emailFromAddress = "Email gửi đi không đúng định dạng.";
+      newErrors.emailFromAddress = "Email gửi đi không đúng định dạng.";
     }
 
     if (!formData.bankCode) newErrors.bankCode = "Vui lòng chọn ngân hàng.";
-    if (!formData.bankName.trim()) newErrors.bankName = "Vui lòng nhập tên ngân hàng.";
-    
+    if (!formData.bankName.trim())
+      newErrors.bankName = "Vui lòng nhập tên ngân hàng.";
+
     if (!formData.accountNumber.trim()) {
-        newErrors.accountNumber = "Vui lòng nhập số tài khoản.";
+      newErrors.accountNumber = "Vui lòng nhập số tài khoản.";
     } else if (!/^[0-9a-zA-Z\-\s]+$/.test(formData.accountNumber)) {
-        newErrors.accountNumber = "Số tài khoản chứa ký tự không hợp lệ.";
+      newErrors.accountNumber = "Số tài khoản chứa ký tự không hợp lệ.";
     }
 
     if (!formData.accountName.trim()) {
-        newErrors.accountName = "Vui lòng nhập tên chủ tài khoản.";
-    } else if (/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(formData.accountName)) {
-        newErrors.accountName = "Tên chủ tài khoản ngân hàng thường KHÔNG DẤU.";
+      newErrors.accountName = "Vui lòng nhập tên chủ tài khoản.";
+    } else if (
+      /[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(
+        formData.accountName,
+      )
+    ) {
+      newErrors.accountName = "Tên chủ tài khoản ngân hàng thường KHÔNG DẤU.";
     }
 
-    if (!formData.shopAddress.trim()) newErrors.shopAddress = "Vui lòng nhập địa chỉ.";
-    if (!formData.cityShop.trim()) newErrors.cityShop = "Vui lòng nhập thành phố.";
+    if (!formData.shopAddress.trim())
+      newErrors.shopAddress = "Vui lòng nhập địa chỉ.";
+    if (!formData.cityShop.trim())
+      newErrors.cityShop = "Vui lòng nhập thành phố.";
 
     setErrors(newErrors);
-    
+
     return Object.keys(newErrors).length === 0;
   };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    field: keyof typeof formData
+    field: keyof typeof formData,
   ) => {
     setFormData({ ...formData, [field]: e.target.value });
-    
+
     if (errors[field]) {
-      setErrors(prev => {
+      setErrors((prev) => {
         const newErrs = { ...prev };
         delete newErrs[field];
         return newErrs;
@@ -151,22 +164,36 @@ const ConfigForm: React.FC = () => {
           BANK_NAME: formData.bankName,
           ACCOUNT_NUMBER: formData.accountNumber,
           ACCOUNT_NAME: formData.accountName,
-          QR_BASE_URL: `https://img.vietqr.io/image/${formData.bankCode}-${formData.accountNumber}-compact2.png`
+          QR_BASE_URL: `https://img.vietqr.io/image/${formData.bankCode}-${formData.accountNumber}-compact2.png`,
         },
         VIOLATIONS: {
-            BLOCK_THRESHOLDS: {
+          BLOCK_THRESHOLDS: {
             MIN_DEBT: Number(formData.minDebt),
             MIN_COUNT: Number(formData.minCount),
-            },
-            EMAIL: {
-            SUBJECT_BLOCKED: config.VIOLATIONS?.EMAIL?.SUBJECT_BLOCKED || '⛔ TÀI KHOẢN BỊ KHÓA DO VI PHẠM',
-            REASON_DEBT: config.VIOLATIONS?.EMAIL?.REASON_DEBT || 'Tổng số tiền vi phạm vượt quá ngưỡng',
-            REASON_COUNT: config.VIOLATIONS?.EMAIL?.REASON_COUNT || 'Số lần vi phạm vượt quá ngưỡng',
-            AFTER_PAYMENT_NOTE: config.VIOLATIONS?.EMAIL?.AFTER_PAYMENT_NOTE || 'Vui lòng thanh toán để mở khóa',
-            SUBJECT_VIOLATION: config.VIOLATIONS?.EMAIL?.SUBJECT_VIOLATION || '⚠️ Thông báo vi phạm',
-            SUBJECT_PAYMENT_CONFIRMED: config.VIOLATIONS?.EMAIL?.SUBJECT_PAYMENT_CONFIRMED || '✅ Xác nhận thanh toán',
-            SUBJECT_VIOLATION_CANCELLED: config.VIOLATIONS?.EMAIL?.SUBJECT_VIOLATION_CANCELLED || '🔄 Hủy vi phạm',
-            },
+          },
+          EMAIL: {
+            SUBJECT_BLOCKED:
+              config.VIOLATIONS?.EMAIL?.SUBJECT_BLOCKED ||
+              "⛔ TÀI KHOẢN BỊ KHÓA DO VI PHẠM",
+            REASON_DEBT:
+              config.VIOLATIONS?.EMAIL?.REASON_DEBT ||
+              "Tổng số tiền vi phạm vượt quá ngưỡng",
+            REASON_COUNT:
+              config.VIOLATIONS?.EMAIL?.REASON_COUNT ||
+              "Số lần vi phạm vượt quá ngưỡng",
+            AFTER_PAYMENT_NOTE:
+              config.VIOLATIONS?.EMAIL?.AFTER_PAYMENT_NOTE ||
+              "Vui lòng thanh toán để mở khóa",
+            SUBJECT_VIOLATION:
+              config.VIOLATIONS?.EMAIL?.SUBJECT_VIOLATION ||
+              "⚠️ Thông báo vi phạm",
+            SUBJECT_PAYMENT_CONFIRMED:
+              config.VIOLATIONS?.EMAIL?.SUBJECT_PAYMENT_CONFIRMED ||
+              "✅ Xác nhận thanh toán",
+            SUBJECT_VIOLATION_CANCELLED:
+              config.VIOLATIONS?.EMAIL?.SUBJECT_VIOLATION_CANCELLED ||
+              "🔄 Hủy vi phạm",
+          },
         },
         Locations: {
           DIACHISHOP: formData.shopAddress,
@@ -175,6 +202,9 @@ const ConfigForm: React.FC = () => {
         EMAIL: {
           FROM_NAME: formData.emailFromName,
           FROM_EMAIL: formData.emailFromAddress,
+        },
+        MAINTENANCE: {
+          HAN_BAO_TRI_PHUONG_TIEN: Number(formData.hanBaoTriPhuongTien),
         },
       });
 
@@ -186,9 +216,10 @@ const ConfigForm: React.FC = () => {
     }
   };
 
-  const previewQRUrl = formData.bankCode && formData.accountNumber
-    ? `https://img.vietqr.io/image/${formData.bankCode}-${formData.accountNumber}-compact2.png?amount=100000&addInfo=TEST&accountName=${encodeURIComponent(formData.accountName)}`
-    : '';
+  const previewQRUrl =
+    formData.bankCode && formData.accountNumber
+      ? `https://img.vietqr.io/image/${formData.bankCode}-${formData.accountNumber}-compact2.png?amount=100000&addInfo=TEST&accountName=${encodeURIComponent(formData.accountName)}`
+      : "";
 
   if (isLoading) {
     return (
@@ -202,7 +233,9 @@ const ConfigForm: React.FC = () => {
   }
 
   const renderError = (field: string) => {
-      return errors[field] ? <span className="error-message">{errors[field]}</span> : null;
+    return errors[field] ? (
+      <span className="error-message">{errors[field]}</span>
+    ) : null;
   };
 
   return (
@@ -213,8 +246,16 @@ const ConfigForm: React.FC = () => {
           <div>
             <h1>Cấu Hình Hệ Thống</h1>
             {lastUpdated && (
-              <small style={{ color: "#6c757d", display: "flex", alignItems: "center", gap: "5px" }}>
-                <FaClock /> Cập nhật: {new Date(lastUpdated).toLocaleString("vi-VN")}
+              <small
+                style={{
+                  color: "#6c757d",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                }}
+              >
+                <FaClock /> Cập nhật:{" "}
+                {new Date(lastUpdated).toLocaleString("vi-VN")}
               </small>
             )}
           </div>
@@ -250,6 +291,12 @@ const ConfigForm: React.FC = () => {
         >
           <FaMapMarkerAlt /> Địa chỉ
         </button>
+        <button
+          className={`tab-button ${activeTab === "maintenance" ? "active" : ""}`}
+          onClick={() => setActiveTab("maintenance")}
+        >
+          <FaExclamationTriangle /> Bảo trì
+        </button>
       </div>
 
       {/* Content */}
@@ -257,13 +304,17 @@ const ConfigForm: React.FC = () => {
         {activeTab === "contact" && (
           <section className="config-section">
             <div className="section-header">
-              <h2><FaPhone /> Thông tin liên hệ</h2>
+              <h2>
+                <FaPhone /> Thông tin liên hệ
+              </h2>
               <p>Thông tin liên hệ với khách hàng</p>
             </div>
 
             <div className="form-grid">
               <div className="form-group">
-                <label><FaPhone className="label-icon" /> Hotline *</label>
+                <label>
+                  <FaPhone className="label-icon" /> Hotline *
+                </label>
                 <input
                   type="text"
                   placeholder="Nhập số hotline"
@@ -276,7 +327,9 @@ const ConfigForm: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label><FaEnvelope className="label-icon" /> Email hỗ trợ</label>
+                <label>
+                  <FaEnvelope className="label-icon" /> Email hỗ trợ
+                </label>
                 <input
                   type="email"
                   placeholder="Nhập email hỗ trợ"
@@ -289,7 +342,9 @@ const ConfigForm: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label><FaEnvelope className="label-icon" /> Tên người gửi email</label>
+                <label>
+                  <FaEnvelope className="label-icon" /> Tên người gửi email
+                </label>
                 <input
                   type="text"
                   placeholder="VD: Hệ thống cho thuê"
@@ -299,7 +354,9 @@ const ConfigForm: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label><FaEnvelope className="label-icon" /> Địa chỉ email gửi</label>
+                <label>
+                  <FaEnvelope className="label-icon" /> Địa chỉ email gửi
+                </label>
                 <input
                   type="email"
                   placeholder="VD: no-reply@example.com"
@@ -318,20 +375,28 @@ const ConfigForm: React.FC = () => {
           <>
             <section className="config-section">
               <div className="section-header">
-                <h2><FaUniversity /> Thông tin thanh toán</h2>
+                <h2>
+                  <FaUniversity /> Thông tin thanh toán
+                </h2>
                 <p>Cấu hình tài khoản ngân hàng nhận thanh toán</p>
               </div>
 
               <div className="form-grid">
                 <div className="form-group">
-                  <label><FaUniversity className="label-icon" /> Mã ngân hàng *</label>
+                  <label>
+                    <FaUniversity className="label-icon" /> Mã ngân hàng *
+                  </label>
                   <select
                     value={formData.bankCode}
                     onChange={(e) => handleInputChange(e, "bankCode")}
                     className={errors.bankCode ? "input-error" : ""}
-                    style={{ 
-                      width: "100%", padding: "12px 14px", border: "2px solid #e5e7eb",
-                      borderRadius: "8px", fontSize: "14px", cursor: "pointer"
+                    style={{
+                      width: "100%",
+                      padding: "12px 14px",
+                      border: "2px solid #e5e7eb",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      cursor: "pointer",
                     }}
                   >
                     <option value="">-- Chọn ngân hàng --</option>
@@ -352,7 +417,9 @@ const ConfigForm: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                  <label><FaUniversity className="label-icon" /> Tên ngân hàng</label>
+                  <label>
+                    <FaUniversity className="label-icon" /> Tên ngân hàng
+                  </label>
                   <input
                     type="text"
                     placeholder="VD: MB Bank"
@@ -364,7 +431,9 @@ const ConfigForm: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                  <label><FaUniversity className="label-icon" /> Số tài khoản *</label>
+                  <label>
+                    <FaUniversity className="label-icon" /> Số tài khoản *
+                  </label>
                   <input
                     type="text"
                     placeholder="Nhập số tài khoản"
@@ -376,7 +445,9 @@ const ConfigForm: React.FC = () => {
                 </div>
 
                 <div className="form-group">
-                  <label><FaUniversity className="label-icon" /> Chủ tài khoản *</label>
+                  <label>
+                    <FaUniversity className="label-icon" /> Chủ tài khoản *
+                  </label>
                   <input
                     type="text"
                     placeholder="Tên chủ tài khoản (KHÔNG DẤU)"
@@ -393,50 +464,68 @@ const ConfigForm: React.FC = () => {
             {previewQRUrl && (
               <section className="preview-section">
                 <div className="preview-header">
-                  <h3><FaQrcode /> TEST QR Code</h3>
+                  <h3>
+                    <FaQrcode /> TEST QR Code
+                  </h3>
                   <span className="preview-badge">TEST</span>
                 </div>
-                <div className="preview-content" style={{ textAlign: 'center' }}>
-                  <p style={{ marginBottom: '10px', color: 'black'}}><strong>URL QR:</strong></p>
-                  <code style={{ 
-                    background: '#f3f4f6', 
-                    padding: '8px 12px', 
-                    borderRadius: '6px',
-                    fontSize: '11px',
-                    display: 'block',
-                    marginBottom: '20px',
-                    wordBreak: 'break-all',
-                    color: '#374151'
-                  }}>
+                <div
+                  className="preview-content"
+                  style={{ textAlign: "center" }}
+                >
+                  <p style={{ marginBottom: "10px", color: "black" }}>
+                    <strong>URL QR:</strong>
+                  </p>
+                  <code
+                    style={{
+                      background: "#f3f4f6",
+                      padding: "8px 12px",
+                      borderRadius: "6px",
+                      fontSize: "11px",
+                      display: "block",
+                      marginBottom: "20px",
+                      wordBreak: "break-all",
+                      color: "#374151",
+                    }}
+                  >
                     {previewQRUrl}
                   </code>
-                  
-                  <div style={{ 
-                    display: 'inline-block',
-                    padding: '20px',
-                    background: 'white',
-                    borderRadius: '12px',
-                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-                  }}>
-                    <img 
-                      src={previewQRUrl} 
-                      alt="QR Code Preview" 
-                      style={{ 
-                        width: '240px', 
-                        height: '240px',
-                        border: '2px solid #e5e7eb',
-                        borderRadius: '8px'
+
+                  <div
+                    style={{
+                      display: "inline-block",
+                      padding: "20px",
+                      background: "white",
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <img
+                      src={previewQRUrl}
+                      alt="QR Code Preview"
+                      style={{
+                        width: "240px",
+                        height: "240px",
+                        border: "2px solid #e5e7eb",
+                        borderRadius: "8px",
                       }}
                       onError={(e) => {
-                        e.currentTarget.src = 'https://via.placeholder.com/240?text=QR+Error';
+                        e.currentTarget.src =
+                          "https://via.placeholder.com/240?text=QR+Error";
                       }}
                     />
                   </div>
-                  
-                  <p style={{ fontSize: '13px', color: '#ffffff', marginTop: '15px' }}>
-                    {formData.bankCode && formData.accountNumber 
-                      ? 'QR hợp lệ - Số tiền test: 100,000 VNĐ' 
-                      : 'Vui lòng nhập đủ thông tin'}
+
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      color: "#ffffff",
+                      marginTop: "15px",
+                    }}
+                  >
+                    {formData.bankCode && formData.accountNumber
+                      ? "QR hợp lệ - Số tiền test: 100,000 VNĐ"
+                      : "Vui lòng nhập đủ thông tin"}
                   </p>
                 </div>
               </section>
@@ -444,17 +533,20 @@ const ConfigForm: React.FC = () => {
           </>
         )}
 
-
         {activeTab === "location" && (
           <section className="config-section">
             <div className="section-header">
-              <h2><FaMapMarkerAlt /> Địa chỉ cửa hàng</h2>
+              <h2>
+                <FaMapMarkerAlt /> Địa chỉ cửa hàng
+              </h2>
               <p>Thông tin địa chỉ chi nhánh</p>
             </div>
 
             <div className="form-grid">
               <div className="form-group">
-                <label><FaMapMarkerAlt className="label-icon" /> Địa chỉ cửa hàng</label>
+                <label>
+                  <FaMapMarkerAlt className="label-icon" /> Địa chỉ cửa hàng
+                </label>
                 <input
                   type="text"
                   placeholder="Nhập địa chỉ"
@@ -466,7 +558,9 @@ const ConfigForm: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label><FaMapMarkerAlt className="label-icon" /> Thành phố</label>
+                <label>
+                  <FaMapMarkerAlt className="label-icon" /> Thành phố
+                </label>
                 <input
                   type="text"
                   placeholder="Nhập tên thành phố"
@@ -475,6 +569,31 @@ const ConfigForm: React.FC = () => {
                   className={errors.cityShop ? "input-error" : ""}
                 />
                 {renderError("cityShop")}
+              </div>
+            </div>
+          </section>
+        )}
+        {activeTab === "maintenance" && (
+          <section className="config-section">
+            <div className="section-header">
+              <h2>
+                <FaExclamationTriangle /> Bảo trì phương tiện
+              </h2>
+              <p>Thiết lập chu kỳ bảo trì theo tháng</p>
+            </div>
+
+            <div className="form-grid">
+              <div className="form-group">
+                <label>Hạn bảo trì phương tiện (tháng)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={60}
+                  step={1}
+                  value={formData.hanBaoTriPhuongTien}
+                  onChange={(e) => handleInputChange(e, "hanBaoTriPhuongTien")}
+                />
+                <small>Ví dụ: 6 = bảo trì mỗi 6 tháng</small>
               </div>
             </div>
           </section>
