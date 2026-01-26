@@ -54,6 +54,9 @@ const AccountOrder = () => {
 
     const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/user-orders';
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const ORDERS_PER_PAGE = 10;
+
     useEffect(() => {
         const timer = setInterval(() => {
             setNow(new Date().getTime());
@@ -87,6 +90,15 @@ const AccountOrder = () => {
         return () => clearInterval(interval);
     }, [currentUser, selectedOrder, showPaymentModal, paymentType]);
 
+    const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ORDERS_PER_PAGE;
+    const endIndex = startIndex + ORDERS_PER_PAGE;
+    const currentOrders = orders.slice(startIndex, endIndex);
+
+    const goToPage = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('vi-VN');
 
@@ -369,7 +381,7 @@ const AccountOrder = () => {
             <div className="accountOrder-content" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 20px', minHeight: '60vh' }}>
                 <div className="accountOrder-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                     <h1 style={{ fontSize: '28px', color: '#333' }}>Đơn thuê của tôi</h1>
-                    <Link to="/account_home" style={{ textDecoration: 'none' }}>
+                    <Link to="/account_home" style={{ textDecoration: 'none', backgroundColor: 'gray', borderRadius: '2rem'}}>
                         <Button conttent="Quay lại" />
                     </Link>
                 </div>
@@ -377,7 +389,7 @@ const AccountOrder = () => {
                 {error && <div style={{ color: 'red', textAlign: 'center', marginBottom: '20px' }}>{error}</div>}
 
                 <div className="accountOrder-list" style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-                    {orders.map((order) => (
+                    {currentOrders.map((order) => (
                         <div key={order.don_thue_id} style={{
                             backgroundColor: 'white', borderRadius: '12px', border: '1px solid #eee',
                             boxShadow: '0 4px 15px rgba(0,0,0,0.05)', overflow: 'hidden'
@@ -546,6 +558,71 @@ const AccountOrder = () => {
                         </div>
                     ))}
                 </div>
+                {totalPages > 1 && (
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '10px',
+                        marginTop: '40px',
+                        marginBottom: '20px'
+                    }}>
+                        <button
+                            onClick={() => goToPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            style={{
+                                padding: '10px 15px',
+                                backgroundColor: currentPage === 1 ? '#e9ecef' : '#007bff',
+                                color: currentPage === 1 ? '#6c757d' : 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                fontWeight: '600',
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <i className="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <button
+                                key={page}
+                                onClick={() => goToPage(page)}
+                                style={{
+                                    padding: '10px 15px',
+                                    minWidth: '45px',
+                                    backgroundColor: page === currentPage ? '#007bff' : 'white',
+                                    color: page === currentPage ? 'white' : '#333',
+                                    border: page === currentPage ? 'none' : '1px solid #ddd',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontWeight: page === currentPage ? 'bold' : '500',
+                                    transition: 'all 0.3s',
+                                    boxShadow: page === currentPage ? '0 2px 8px rgba(0,123,255,0.3)' : 'none'
+                                }}
+                            >
+                                {page}
+                            </button>
+                        ))}
+
+                        <button
+                            onClick={() => goToPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            style={{
+                                padding: '10px 15px',
+                                backgroundColor: currentPage === totalPages ? '#e9ecef' : '#007bff',
+                                color: currentPage === totalPages ? '#6c757d' : 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                fontWeight: '600',
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <i className="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* --- MODAL THANH TOÁN (ĐA NĂNG) --- */}
