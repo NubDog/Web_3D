@@ -23,7 +23,6 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     loadConfigFromAPI();
 
-    // ✅ THÊM: Reload khi user quay lại tab
     const handleFocus = () => {
       loadConfigFromAPI();
     };
