@@ -75,9 +75,9 @@ const ProductDetailPage = () => {
                     setVehicleDetail(vehicle);
                     setPricing(priceInfo || null);
 
-                    console.log("giá cơ bản của xe là: ", priceInfo?.gia_co_ban);
-                    console.log("Giá thuê cơ bản của xe là:", vehicle.gia_thue);
-                    console.log("Thông tin xe:", vehicle);
+                    console.log("giá cơ bản của phương tiện là: ", priceInfo?.gia_co_ban);
+                    console.log("Giá thuê cơ bản của phương tiện là:", vehicle.gia_thue);
+                    console.log("Thông tin phương tiện:", vehicle);
 
                     const calculatedTotalPrice = (priceInfo?.gia_co_ban ?? 0) + (vehicle?.gia_thue ?? 0);
                     setTotalPrice(calculatedTotalPrice);
@@ -156,7 +156,7 @@ const ProductDetailPage = () => {
                         <h3>Thông tin chi tiết</h3>
                         <div className="ProductDetail-spec-grid">
                             <div className="ProductDetail-spec-item">
-                                <span className="ProductDetail-spec-label">Loại xe:</span>
+                                <span className="ProductDetail-spec-label">Loại phương tiện:</span>
                                 <span className="ProductDetail-spec-value">{vehicleDetail.loai}</span>
                             </div>
                             <div className="ProductDetail-spec-item">

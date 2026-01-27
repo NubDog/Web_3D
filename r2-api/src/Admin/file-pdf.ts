@@ -152,7 +152,7 @@ export const generateContractPDF = async (data: any) => {
         page.drawLine({ start: { x: width/2 - 40, y }, end: { x: width/2 + 40, y }, thickness: 1 });
         
         y -= 40;
-        const titleText = 'HỢP ĐỒNG THUÊ XE';
+        const titleText = 'HỢP ĐỒNG THUÊ';
         page.drawText(titleText, { x: (width - fontBold.widthOfTextAtSize(titleText, 18))/2, y, size: 18, font: fontBold, color: primaryColor });
         
         y -= 25;
@@ -172,8 +172,8 @@ export const generateContractPDF = async (data: any) => {
         drawField('Địa chỉ:', data.dia_chi, margin + 270, y);
 
         y -= 40;
-        y = drawSectionHeader('II. THÔNG TIN XE & THỜI GIAN THUÊ', y);
-        drawField('Loại xe:', data.ten_phuong_tien, margin + 10, y);
+        y = drawSectionHeader('II. THÔNG TIN PHƯƠNG TIỆN & THỜI GIAN THUÊ', y);
+        drawField('Loại phương tiện:', data.ten_phuong_tien, margin + 10, y);
         drawField('Biển kiểm soát:', data.bien_so, margin + 270, y);
         y -= 35;
         drawField('Thời gian nhận:', formatDate(data.ngay_bat_dau), margin + 10, y);

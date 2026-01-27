@@ -16,7 +16,7 @@ import { handleGetPhuongTien } from './API/PhuongTien_API';
 import { handleGetChinhSachGia } from './API/ChinhSachGia_API';
 import { handleGetNguoiDung, handleCreateNguoiDung, handleLogin } from './API/NguoiDung_API';
 import { handleGetDonThue } from './API/DonThue_API';
-import { handleGetKhachHang } from './API/KhachHang_API';
+import { handleCheckUserStatus, handleGetKhachHang } from './API/KhachHang_API';
 import { handleGetUserProfile, handleUpdateUserProfile, handleChangePassword } from './API/UserProfile_API';
 import { handleGetKycDocumentsByNguoiDungId, handleCheckStatusKYC } from './API/KYC_User';
 import { handleGetUserOrders } from './API/UserOrder_API';
@@ -34,6 +34,7 @@ import {
 	handleConfirmPayment,
 	handleCheckOrderViolation,
 	handleRejectOrderLevel3,
+	getOverdueOrders,
 } from './Admin/don-thue';
 import { handleVehicleHandover, handleVehicleReturn } from './Admin/giao-nhan';
 import { handleFinalizeOrder } from './Admin/quyet-toan';
@@ -57,6 +58,7 @@ import {
 import { handleScheduled } from './worker';
 import { getToken, getUserWEmail, verifyTokenAndUpdatePassword } from './API/Forgot_password_API';
 import { addPhanloaihieuxe, deletePhanloaihieuxe, getPhanloaihieuxe, updatePhanloaihieuxe } from './Admin/Phan_loai_hieu_xe';
+import { handleGetConfig, handleSaveConfig } from './Config-Handler/configHandler'
 
 interface Env {
 	ua: R2Bucket;
@@ -85,6 +87,14 @@ const jsonResponse = (data: any, status = 200) => {
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+		
+		 const headers = {
+			'Content-Type': 'application/json',
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+			'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+			};
+
 		if (request.method === 'OPTIONS') {
 			return jsonResponse(null);
 		}
@@ -371,6 +381,11 @@ export default {
 				}
 			}
 
+			if (url.pathname.startsWith('/api/check-user-status/')) {
+				const userId = url.pathname.split('/').pop();
+				return handleCheckUserStatus(request, env, userId as string);
+			}
+
 			// ------------------- Danh mục phương tiện -------------------
 			const danhMucIdMatch = path.match(/^\/api\/danh-muc-phuong-tien\/(\d+)$/);
 			if (danhMucIdMatch) {
@@ -469,6 +484,12 @@ export default {
 				const orderId = confirmViolationPaymentMatch[1];
 				return handleConfirmViolationPayment(request, env, orderId);
 			}
+
+			if (url.pathname === '/api/orders/overdue' && request.method === 'GET') {
+				return getOverdueOrders(request, env);
+			}
+
+			
 			
 			// ------------------- Vi phạm -------------------
 			if (path === '/api/violations' && method === 'POST') {
@@ -574,6 +595,24 @@ export default {
 			}
 			if (path === '/api/baotri/getdsptsangsang' && method === 'GET') {
 				return getPhuongTienSanSang(request, env);
+			}
+
+			// config
+
+			 if (url.pathname === '/api/config/current' && request.method === 'GET') {
+				const response = await handleGetConfig(env);
+				return new Response(response.body, {
+				status: response.status,
+				headers, 
+				});
+			}
+
+			if (url.pathname === '/api/config/save' && request.method === 'POST') {
+				const response = await handleSaveConfig(request, env);
+				return new Response(response.body, {
+				status: response.status,
+				headers, 
+				});
 			}
 
 			// ------------------- Default -------------------

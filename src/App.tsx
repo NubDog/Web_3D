@@ -48,10 +48,13 @@ import Forgot_password from "./pages/Forgot_password";
 import Danhsachphanloaipt from "./components/Admin/Phan_loai_hieu_pt/Danhsachphanloaipt";
 import Phuongtienchitietadmin from "./components/Admin/Phuong_tien/Phuongtienchitiet";
 import UserViolations from "./pages/UserViolations/UserViolations";
+import ConfigForm from "./components/Admin/Config/ConfigForm";
+import { ConfigProvider } from "./contexts/ConfigContext";
 
 function App() {
   return (
     <BrowserRouter>
+    <ConfigProvider>
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -139,6 +142,7 @@ function App() {
                 path="phan_loai_hieu_xe"
                 element={<Danhsachphanloaipt />}
               />
+              <Route path="config" element={<ConfigForm />} />
             </Route>
           </Route>
           //{" "}
@@ -159,6 +163,7 @@ function App() {
           theme="light"
         />
       </AuthProvider>
+    </ConfigProvider>
     </BrowserRouter>
   );
 }

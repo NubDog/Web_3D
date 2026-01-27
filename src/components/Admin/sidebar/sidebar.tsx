@@ -14,6 +14,7 @@ import {
   FaHome,
   FaSignOutAlt,
   FaScrewdriver,
+  FaCog
 } from "react-icons/fa";
 interface SidebarProps {
   isOpen: boolean;
@@ -235,6 +236,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
                   - Đã Hủy
                 </NavLink>
               </li>
+             
             </ul>
           )}
         </li>
@@ -244,6 +246,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
             {isOpen && <span>Vi phạm</span>}
           </NavLink>
         </li>
+         <li>
+            <NavLink to="/admin/config" className="nav-link">
+                <FaCog className="nav-icon" />
+                {isOpen && <span>Cấu hình</span>}
+            </NavLink>
+          </li>
       </ul>
       <div className="sidebar-footer">
         {/* Dùng lại cấu trúc ul/li giống như menu chính */}

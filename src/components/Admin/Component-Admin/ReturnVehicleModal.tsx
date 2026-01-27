@@ -78,9 +78,9 @@ const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="rv-modal__header">
             <div>
-              <h2>Tiếp nhận xe trả</h2>
+              <h2>Tiếp nhận phương tiện trả</h2>
               <p className="rv-modal__subtitle">
-                Ghi nhận hiện trạng xe trước khi quyết toán hợp đồng.
+                Ghi nhận hiện trạng phương tiện trước khi quyết toán hợp đồng.
               </p>
             </div>
             <button
@@ -194,7 +194,7 @@ const ReturnVehicleModal: React.FC<ReturnVehicleModalProps> = ({
               className="rv-btn rv-btn--primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Đang xử lý...' : 'Xác nhận tiếp nhận xe'}
+              {isSubmitting ? 'Đang xử lý...' : 'Xác nhận tiếp nhận phương tiện'}
             </button>
           </div>
         </form>

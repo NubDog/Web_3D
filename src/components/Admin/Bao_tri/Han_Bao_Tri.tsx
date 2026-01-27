@@ -157,7 +157,7 @@ const HanBaoTri: React.FC = () => {
         <div className="search-bar" style={{ flex: 1 }}>
           <input
             type="text"
-            placeholder="Tìm kiếm theo tên xe, biển số..."
+            placeholder="Tìm kiếm theo tên phương tiện, biển số..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: "100%", padding: "8px" }}
@@ -246,7 +246,7 @@ const HanBaoTri: React.FC = () => {
                 <thead>
                   <tr>
                     <th>Mã phương tiện</th>
-                    <th>Tên xe</th>
+                    <th>Tên phương tiện</th>
                     <th>Biển số</th>
                     <th>Số khung</th>
                     <th>Chọn</th>
@@ -302,7 +302,7 @@ const HanBaoTri: React.FC = () => {
           <div style={modalContentStyle}>
             <h2 style={{ color: "black" }}>Lập Phiếu Bảo Trì</h2>
             <p>
-              Xe: <strong>{selectedPT?.ten_phuong_tien}</strong> -{" "}
+              Phương tiện: <strong>{selectedPT?.ten_phuong_tien}</strong> -{" "}
               {selectedPT?.bien_so}
             </p>
             <hr />

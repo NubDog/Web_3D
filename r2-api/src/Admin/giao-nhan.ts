@@ -35,7 +35,7 @@ export const handleVehicleHandover = async (request: Request, env: Env, orderId:
             return jsonResponse({ success: false, error: "Không tìm thấy đơn thuê." }, 404);
         }
         if (currentOrder.trang_thai !== 'DA_DUYET') {
-            return jsonResponse({ success: false, error: "Chỉ có thể bàn giao xe cho đơn đã được duyệt." }, 409);
+            return jsonResponse({ success: false, error: "Chỉ có thể bàn giao phương tiện cho đơn đã được duyệt." }, 409);
         }
 
         const imageUrls = [];
@@ -70,7 +70,7 @@ export const handleVehicleHandover = async (request: Request, env: Env, orderId:
             updateVehicleStmt.bind(so_km, currentOrder.phuong_tien_id)
         ]);
         
-        return jsonResponse({ success: true, message: "Bàn giao xe thành công, đơn thuê đã bắt đầu." });
+        return jsonResponse({ success: true, message: "Bàn giao phương tiện thành công, đơn thuê đã bắt đầu." });
 
     } catch (e: any) {
         console.error("API Error in handleVehicleHandover:", e);
@@ -96,7 +96,7 @@ export const handleVehicleReturn = async (request: Request, env: Env, orderId: s
             return jsonResponse({ success: false, error: "Không tìm thấy đơn thuê." }, 404);
         }
         if (currentOrder.trang_thai !== 'DANG_THUE') {
-            return jsonResponse({ success: false, error: "Không thể trả xe cho đơn không ở trạng thái 'ĐANG THUÊ'." }, 409);
+            return jsonResponse({ success: false, error: "Không thể trả phương tiện cho đơn không ở trạng thái 'ĐANG THUÊ'." }, 409);
         }
 
         const imageUrls = [];
@@ -138,7 +138,7 @@ export const handleVehicleReturn = async (request: Request, env: Env, orderId: s
             await createMaintenanceStmt.bind(currentOrder.phuong_tien_id, don_thue_id, ghi_chu_hu_hong_moi, currentOrder.nhan_vien_tao).run();
         }
 
-        return jsonResponse({ success: true, message: "Tiếp nhận xe trả thành công. Vui lòng tiến hành quyết toán." });
+        return jsonResponse({ success: true, message: "Tiếp nhận phương tiện trả thành công. Vui lòng tiến hành quyết toán." });
 
     } catch (e: any) {
         console.error("API Error in handleVehicleReturn:", e);

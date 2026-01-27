@@ -144,7 +144,7 @@ const AdminReportingVehicle = () => {
             });
 
             return {
-                id: vehicle?.ten_phuong_tien || `Xe ${vehicleId}`,
+                id: vehicle?.ten_phuong_tien || ` ${vehicleId}`,
                 data: sortedMonths.map(month => ({
                     x: month,
                     y: monthlyOrders[month]
@@ -288,7 +288,7 @@ const AdminReportingVehicle = () => {
                             tooltip={({ datum }) => (
                                 <div className="chart-tooltip">
                                     <strong>{datum.label}</strong>
-                                    <div>Số lượng: <span>{datum.value} xe</span></div>
+                                    <div>Số lượng: <span>{datum.value} phương tiện</span></div>
                                     <div>Tỷ lệ: <span>{((datum.value / phuongTienData.length) * 100).toFixed(1)}%</span></div>
                                 </div>
                             )}

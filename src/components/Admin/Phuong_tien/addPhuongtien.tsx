@@ -227,6 +227,24 @@ const PhuongTienModal: React.FC = () => {
           navigate("/admin/phuong-tien");
           return;
         } else {
+          // Kiểm tra lỗi trùng lặp từ backend
+          if (responseData?.error) {
+            if (responseData.error.includes("Biển số")) {
+              setFormErrors((prev) => ({
+                ...prev,
+                bien_so: responseData.error,
+              }));
+              setError("Vui lòng sửa lỗi biển số");
+              return;
+            } else if (responseData.error.includes("Số khung")) {
+              setFormErrors((prev) => ({
+                ...prev,
+                so_khung: responseData.error,
+              }));
+              setError("Vui lòng sửa lỗi số khung");
+              return;
+            }
+          }
           lastErr = new Error(
             `Lỗi HTTP ${resp.status}: ${responseData?.error || resp.statusText}`
           );

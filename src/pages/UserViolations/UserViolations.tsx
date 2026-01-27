@@ -4,6 +4,7 @@ import Header from '../../components/Header/header';
 import Footer from '../../components/Footer/Footer';
 import { useAuth } from '../../contexts/AuthContext';
 import './../UserViolations/UserViolations.css';
+import { useConfig } from '../../contexts/ConfigContext';
 
 interface Violation {
     vi_pham_id: number;
@@ -25,6 +26,8 @@ const UserViolations: React.FC = () => {
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [selectedViolation, setSelectedViolation] = useState<Violation | null>(null); 
+
+    const {config} = useConfig()
 
     const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/user-violations';
 
@@ -393,7 +396,7 @@ const UserViolations: React.FC = () => {
 
                         <div className="qr-container">
                             <img 
-                                src={`https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${
+                                src={`${config.PAYMENT.QR_BASE_URL}?amount=${
                                     selectedViolation 
                                         ? selectedViolation.so_tien_phat 
                                         : violationLevel.totalDebt
@@ -401,7 +404,7 @@ const UserViolations: React.FC = () => {
                                     selectedViolation 
                                         ? selectedViolation.vi_pham_id 
                                         : currentUser.nguoi_dung_id
-                                }&accountName=NGUYEN TRAN VIET KHOA`}
+                                }&accountName=${config.PAYMENT.ACCOUNT_NAME}`}
                                 alt="QR Code"
                                 className="qr-image"
                             />
@@ -441,7 +444,7 @@ const UserViolations: React.FC = () => {
                                 <strong>Lưu ý quan trọng</strong>
                                 <p>
                                     Sau khi thanh toán vi phạm xong, vui lòng liên hệ đến hotline 
-                                    <a href="tel:0123456789"> 0123 456 789 </a>
+                                    <a href="tel:0123456789"> {config.CONTACT.HOTLINE} </a>
                                     để xác nhận thanh toán vi phạm.
                                 </p>
                             </div>

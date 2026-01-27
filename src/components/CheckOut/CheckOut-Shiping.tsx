@@ -74,14 +74,14 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                 <p>Quay lại</p>
             </div>
 
-            <h1>Thông tin thuê xe</h1>
+            <h1>Thông tin thuê phương tiện</h1>
             <h2>Vui lòng chọn thời gian và xác nhận thông tin liên hệ:</h2>
 
             <form className='checkOut-shiping-form'>
 
                 <div className="date-selection-group">
                     <div className="date-field">
-                        <p className="field-label">Ngày nhận xe:</p>
+                        <p className="field-label">Ngày nhận:</p>
                         <Input
                             placeholder=''
                             value={ngayMuon}
@@ -91,7 +91,7 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
                     </div>
 
                     <div className="date-field">
-                        <p className="field-label">Ngày trả xe:</p>
+                        <p className="field-label">Ngày trả:</p>
                         <Input
                             placeholder=''
                             value={ngayTra}
@@ -127,7 +127,7 @@ const CheckOutShiping: React.FC<CheckOutShipingProps> = ({ onNext, onBack, check
 
 
                 <Sub_Button
-                    content='Gửi Yêu Cầu Thuê Xe'
+                    content='Gửi Yêu Cầu Thuê Phương Tiện'
                     onClick={handleSubmit}
                 />
             </form>

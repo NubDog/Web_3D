@@ -158,21 +158,21 @@ const AdminDashboardReportRental = () => {
         {
             type: 'customer' as ReportType,
             title: 'Báo cáo theo khách hàng',
-            description: 'Thống kê hoạt động thuê xe của từng khách hàng',
+            description: 'Thống kê hoạt động thuê phương tiện của từng khách hàng',
             icon: 'fa-users',
-            features: ['Top khách hàng VIP', 'Tần suất thuê xe', 'Giá trị đơn hàng trung bình']
+            features: ['Top khách hàng VIP', 'Tần suất thuê phương tiện', 'Giá trị đơn hàng trung bình']
         },
         {
             type: 'vehicle' as ReportType,
             title: 'Báo cáo theo phương tiện',
-            description: 'Hiệu suất và tỷ lệ sử dụng của từng loại xe',
+            description: 'Hiệu suất và tỷ lệ sử dụng của từng loại phương tiện',
             icon: 'fa-car',
-            features: ['Xe được thuê nhiều nhất', 'Tỷ lệ sử dụng', 'Doanh thu theo loại xe']
+            features: ['phương tiện được thuê nhiều nhất', 'Tỷ lệ sử dụng', 'Doanh thu theo loại phương tiện']
         },
         {
             type: 'location' as ReportType,
             title: 'Báo cáo theo địa điểm',
-            description: 'Phân tích theo khu vực nhận và trả xe',
+            description: 'Phân tích theo khu vực nhận và trả phương tiện',
             icon: 'fa-map-marker-alt',
             features: ['Địa điểm hot nhất', 'Phân bố địa lý', 'Khoảng cách di chuyển']
         },
@@ -199,7 +199,7 @@ const AdminDashboardReportRental = () => {
                 <div className="admin-report-header">
                     <div className="admin-report-title">
                         <h1>Báo cáo Đơn thuê</h1>
-                        <p>Phân tích chi tiết và thống kê đơn thuê xe</p>
+                        <p>Phân tích chi tiết và thống kê đơn thuê phương tiện</p>
                     </div>
                     <div className="admin-report-stats">
                         <div className="stat-item">

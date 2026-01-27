@@ -1,4 +1,7 @@
+// import { AppConfig } from "../../../config/app.config";
+import { getConfig } from "../../../config/app.config";
 import { generateContractPDF } from "./file-pdf";
+import { getAppConfig } from "../Config/App.Config";
 
 const jsonResponse = (data: any, status = 200) => {
     const headers = {
@@ -110,7 +113,7 @@ export const handleCreateRentalOrder = async (request: Request, env: Env) => {
 
         return jsonResponse({
             success: true,
-            message: `Yêu cầu thuê xe đã được gửi thành công!`,
+            message: `Yêu cầu thuê phương tiện đã được gửi thành công!`,
             data: {
                 trang_thai: "CHO_DUYET",
                 tong_tien_du_kien: tong_tien,
@@ -196,6 +199,8 @@ export const handleGetPendingOrders = async (request: Request, env: Env) => {
 
 export const handleApproveOrder = async (request: Request, env: Env, orderId: string) => {
     try {
+        const config = await getAppConfig(env);
+
        const { nhan_vien_id, condition_type, note } = await request.json<{
             nhan_vien_id: number;
             condition_type?: 'extra_deposit' | 'pay_first' | 'normal';
@@ -375,7 +380,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
 
             // TRƯỜNG HỢP 0: KHÔNG VI PHẠM (EMAIL BÌNH THƯỜNG)
             if (level === 0) {
-                emailSubject = `✅ [ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`;
+                emailSubject = `✅ [ĐÃ DUYỆT] Hợp đồng thuê phương tiện #${orderId}`;
                 emailHtml = `
                     <!DOCTYPE html>
                     <html>
@@ -386,7 +391,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                             <tr>
                                 <td style="padding: 40px 30px;">
                                     <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderInfo.ho_ten},</h2>
-                                    <p style="color: #555555; font-size: 16px; line-height: 1.5;">Đơn thuê xe <strong>#${orderId}</strong> của bạn đã được duyệt.</p>
+                                    <p style="color: #555555; font-size: 16px; line-height: 1.5;">Đơn thuê phương tiện <strong>#${orderId}</strong> của bạn đã được duyệt.</p>
                                     
                                     <table width="100%" style="border-collapse: collapse; margin: 20px 0; font-size: 15px;">
                                         <tr style="border-bottom: 1px solid #eeeeee;">
@@ -421,7 +426,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
             else if (level === 1) {
                 const qrAmount = totalDebt;
                 const qrContent = `Vipham ${qrAmount} ${orderId}`;
-                const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+                const qrUrl = `${config.PAYMENT.QR_BASE_URL}?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=${config.PAYMENT.ACCOUNT_NAME}`;
                 
                 emailSubject = `✅ Đơn #${orderId} đã duyệt - Lưu ý vi phạm`;
                 emailHtml = `
@@ -440,7 +445,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                     
                                     <div style="background: #fff3cd; padding: 20px; border-left: 5px solid #ffc107; margin: 20px 0; border-radius: 8px;">
                                         <h3 style="color: #856404; margin-top: 0;">✅ Đơn đã được duyệt</h3>
-                                        <p>Đơn thuê xe <strong>#${orderId}</strong> (${orderInfo.ten_phuong_tien}) đã được duyệt.</p>
+                                        <p>Đơn thuê phương tiện <strong>#${orderId}</strong> (${orderInfo.ten_phuong_tien}) đã được duyệt.</p>
                                         <p style="margin-top: 15px;">
                                             Tuy nhiên, bạn có <strong>${totalViolations} vi phạm chưa xử lý</strong> với tổng nợ: 
                                             <strong style="color: #dc3545; font-size: 20px;">${fmt(totalDebt)}</strong>
@@ -473,9 +478,9 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                         </div>
 
                                         <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px;">
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Số tài khoản:</strong> 0385750387</p>
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Ngân hàng:</strong> MB Bank</p>
-                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> NGUYEN TRAN VIET KHOA</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Số tài khoản:</strong>${config.PAYMENT.ACCOUNT_NUMBER}</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Ngân hàng:</strong> ${config.PAYMENT.BANK_NAME}</p>
+                                            <p style="margin: 5px 0; font-size: 14px;"><strong>Chủ tài khoản:</strong> ${config.PAYMENT.ACCOUNT_NAME} </p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold;">${fmt(totalDebt)}</span></p>
                                             <p style="margin: 5px 0; font-size: 14px;"><strong>Nội dung:</strong> <code style="background: #f1f3f5; padding: 4px 8px; border-radius: 4px;">${qrContent}</code></p>
                                         </div>
@@ -497,7 +502,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
             else if (level === 2) {
                 const qrAmount = totalDebt;
                 const qrContent = `Vipham ${qrAmount} ${orderId}`;
-                const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+                const qrUrl = `${config.PAYMENT.QR_BASE_URL}?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=${config.PAYMENT.ACCOUNT_NAME}`;
                 const conditionText = condition_type === 'extra_deposit'
                     ? `cọc thêm <strong style="color: #dc3545;">${fmt(Math.round(totalDebt * 0.5))}</strong>`
                     : `thanh toán <strong style="color: #dc3545;">${fmt(totalDebt)}</strong> vi phạm trước`;
@@ -558,7 +563,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                             </span>
                                                         </div>
                                                         <p style="margin: 0; font-size: 15px; color: #e65100; font-weight: 600; line-height: 1.6;">
-                                                            💡 <strong>Lưu ý:</strong> Bạn cần thanh toán <strong>ít nhất 1 vi phạm</strong> để giảm cấp độ xuống mức an toàn TRƯỚC KHI đặt cọc xe.
+                                                            💡 <strong>Lưu ý:</strong> Bạn cần thanh toán <strong>ít nhất 1 vi phạm</strong> để giảm cấp độ xuống mức an toàn TRƯỚC KHI đặt cọc phương tiện.
                                                         </p>
                                                     </div>
 
@@ -624,8 +629,8 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                             <li><strong>Bước 2:</strong> Chọn <strong style="color: #e65100;">ít nhất 1 vi phạm</strong> để thanh toán (hoặc thanh toán tất cả)</li>
                                                             <li><strong>Bước 3:</strong> Quét mã QR và thanh toán theo hướng dẫn</li>
                                                             <li><strong>Bước 4:</strong> Liên hệ hotline <strong>0123 456 789</strong> để xác nhận thanh toán</li>
-                                                            <li><strong>Bước 5:</strong> Sau khi xác nhận → Đặt cọc xe (${fmt(tienCocYeuCau)})</li>
-                                                            <li><strong>Bước 6:</strong> Nhận xe theo lịch hẹn</li>
+                                                            <li><strong>Bước 5:</strong> Sau khi xác nhận → Đặt cọc phương tiện (${fmt(tienCocYeuCau)})</li>
+                                                            <li><strong>Bước 6:</strong> Nhận phương tiện theo lịch hẹn</li>
                                                         </ol>
                                                     </div>
 
@@ -638,7 +643,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                             
                                                             ✅ <strong>Thanh toán tất cả:</strong> Xóa hoàn toàn vi phạm → Tài khoản hoàn hảo<br><br>
                                                             
-                                                            ❌ <strong>Không thanh toán:</strong> Không thể đặt cọc xe → Đơn sẽ tự động hủy sau 60 phút
+                                                            ❌ <strong>Không thanh toán:</strong> Không thể đặt cọc phương tiện → Đơn sẽ tự động hủy sau 60 phút
                                                         </p>
                                                     </div>
 
@@ -660,7 +665,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                         </p>
                                                         <a href="tel:0123456789" 
                                                         style="display: inline-block; background: #4caf50; color: white; text-decoration: none; padding: 14px 30px; border-radius: 8px; font-weight: bold; font-size: 15px;">
-                                                            📞 Hotline: 0123 456 789
+                                                            📞 Hotline: ${config.CONTACT.HOTLINE}
                                                         </a>
                                                     </div>
 
@@ -678,7 +683,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                                                         Email này được gửi tự động. Vui lòng không trả lời email này.
                                                     </p>
                                                     <p style="margin: 10px 0 0 0; font-size: 12px; color: #888;">
-                                                        © 2026 Hệ Thống Cho Thuê Xe. All rights reserved.
+                                                        © 2026 Hệ Thống Cho Thuê Đa Phương Tiện. All rights reserved.
                                                     </p>
                                                 </td>
                                             </tr>
@@ -702,7 +707,7 @@ export const handleApproveOrder = async (request: Request, env: Env, orderId: st
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                    from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                     to: 'khoatran3123@gmail.com', //orderInfo.email,
                     subject: emailSubject,
                     html: emailHtml
@@ -919,10 +924,11 @@ export const handleGetOrders = async (request: Request, env: Env) => {
 
 //hàm gửi email
 
-const sendEmail = async (apiKey: string, toEmail: string, userName: string, contractUrl: string, orderId: string) => {
+const sendEmail = async (env : Env, apiKey: string, toEmail: string, userName: string, contractUrl: string, orderId: string) => {
     if (!apiKey || !toEmail) return;
 
     try {
+        const  config  = await getAppConfig(env)
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
             headers: {
@@ -930,13 +936,13 @@ const sendEmail = async (apiKey: string, toEmail: string, userName: string, cont
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'ThueXe <onboarding@resend.dev>',
+                from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                 tto: ['khoatran3123@gmail.com'],  //[toEmail], 
-                subject: `[ĐÃ DUYỆT] Hợp đồng thuê xe #${orderId}`,
+                subject: `[ĐÃ DUYỆT] Hợp đồng thuê phương tiện #${orderId}`,
                 html: `
                     <div style="font-family: sans-serif; line-height: 1.5;">
                         <h2>Xin chào ${userName},</h2>
-                        <p>Yêu cầu thuê xe của bạn (Mã đơn: <strong>#${orderId}</strong>) đã được duyệt.</p>
+                        <p>Yêu cầu thuê phương tiện của bạn (Mã đơn: <strong>#${orderId}</strong>) đã được duyệt.</p>
                         <p>Chúng tôi đã tạo hợp đồng điện tử. Vui lòng bấm vào nút dưới để xem và tải về:</p>
                         <br/>
                         <a href="${contractUrl}" style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">
@@ -1004,6 +1010,7 @@ export const handleSettleOrder = async (request: Request, env: Env, orderId: str
 // XÁC NHẬN ĐÃ THU TIỀN (Hoàn tất đơn)
 export const handleConfirmPayment = async (request: Request, env: Env, orderId: string) => {
     try {
+        const config = await getAppConfig(env)
         console.log("🔑 RESEND_API_KEY exists:", !!env.RESEND_API_KEY);
         console.log("📧 Order ID:", orderId);
         
@@ -1088,9 +1095,9 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
             const tongTien = tamTinh - tienGiam;
             const tiencocthucte = tongTien * (orderData.tien_coc_yeu_cau/100)
             const emailBody = {
-                from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                 to: ['khoatran3123@gmail.com'], 
-                subject: `🎉 Hoàn tất đơn thuê xe #${orderId} - Cảm ơn bạn!`,
+                subject: `🎉 Hoàn tất đơn thuê phương tiện #${orderId} - Cảm ơn bạn!`,
                 html: `
                 <!DOCTYPE html>
                 <html>
@@ -1109,7 +1116,7 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
                                 <h2 style="color: #333333; margin-top: 0;">Xin chào ${orderData.ho_ten},</h2>
                                 
                                 <p style="color: #555555; font-size: 16px; line-height: 1.6;">
-                                    Cảm ơn bạn đã sử dụng dịch vụ thuê xe của chúng tôi! 
+                                    Cảm ơn bạn đã sử dụng dịch vụ thuê phương tiện của chúng tôi! 
                                     Đơn hàng <strong>#${orderId}</strong> của bạn đã được hoàn tất.
                                 </p>
 
@@ -1170,8 +1177,8 @@ export const handleConfirmPayment = async (request: Request, env: Env, orderId: 
 
                                 <p style="color: #888888; font-size: 13px; margin-top: 20px;">
                                     Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ:<br>
-                                    📞 Hotline: <strong>0123456789</strong><br>
-                                    📧 Email: <strong>support@thuexe.vn</strong>
+                                    📞 Hotline: <strong>${config.CONTACT.HOTLINE}</strong><br>
+                                    📧 Email: <strong>${config.CONTACT.SUPPORT_EMAIL}</strong>
                                 </p>
                             </td>
                         </tr>
@@ -1292,8 +1299,11 @@ export const handleCheckOrderViolation = async (request: Request, env: Env, orde
     }
 };
 
-export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string) => {
+export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderId: string,  ) => {
     try {
+
+        const config = await getAppConfig(env);
+
         const { nhanvien_id, ly_do } = await request.json<{
             nhanvien_id: number;
             ly_do?: string;
@@ -1347,7 +1357,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
             const fmt = (t: number) => new Intl.NumberFormat('vi-VN').format(t) + ' đ';
             const qrAmount = totalDebt;
             const qrContent = `Vipham ${qrAmount} ${orderId}`;
-            const qrUrl = `https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=NGUYEN TRAN VIET KHOA`;
+            const qrUrl = `${config.PAYMENT.QR_BASE_URL}?amount=${qrAmount}&addInfo=${encodeURIComponent(qrContent)}&accountName=${config.PAYMENT.ACCOUNT_NAME}`;
 
             await fetch('https://api.resend.com/emails', {
                 method: 'POST',
@@ -1356,7 +1366,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    from: 'Dịch Vụ Thuê Xe <onboarding@resend.dev>',
+                    from: `${config.EMAIL?.FROM_NAME} <${config.EMAIL?.FROM_EMAIL}>`,
                     to: 'khoatran3123@gmail.com', //orderInfo.email,
                     subject: `❌ Đơn #${orderId} KHÔNG được duyệt - Tự động hủy sau 60 phút`,
                     html: `
@@ -1407,7 +1417,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
 
                                         <!-- MÃ QR -->
                                         <div style="background: #f8f9fa; padding: 30px; border-radius: 12px; text-align: center; margin: 30px 0;">
-                                            <h3 style="margin-top: 0; color: #dc3545;">💳 Thanh Toán Để Tiếp Tục Thuê Xe</h3>
+                                            <h3 style="margin-top: 0; color: #dc3545;">💳 Thanh Toán Để Tiếp Tục Thuê phương tiện</h3>
                                             <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Quét mã QR để thanh toán vi phạm</p>
                                             
                                             <div style="margin: 20px auto; border: 2px solid #dc3545; padding: 15px; border-radius: 12px; display: inline-block; background: white;">
@@ -1415,8 +1425,8 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
                                             </div>
 
                                             <div style="margin-top: 20px; padding: 20px; background: white; border-radius: 8px;">
-                                                <p style="margin: 5px 0; font-size: 15px;"><strong>STK:</strong> 0385750387 - MB Bank</p>
-                                                <p style="margin: 5px 0; font-size: 15px;"><strong>Chủ TK:</strong> NGUYEN TRAN VIET KHOA</p>
+                                                <p style="margin: 5px 0; font-size: 15px;"><strong>STK:</strong> ${config.PAYMENT.ACCOUNT_NUMBER} - ${config.PAYMENT.BANK_NAME}</p>
+                                                <p style="margin: 5px 0; font-size: 15px;"><strong>Chủ TK:</strong> ${config.PAYMENT.ACCOUNT_NAME}</p>
                                                 <p style="margin: 5px 0; font-size: 16px;"><strong>Số tiền:</strong> <span style="color: #dc3545; font-weight: bold;">${fmt(totalDebt)}</span></p>
                                                 <p style="margin: 5px 0; font-size: 14px;"><strong>Nội dung:</strong> <code style="background: #f1f3f5; padding: 4px 8px; border-radius: 4px;">${qrContent}</code></p>
                                             </div>
@@ -1424,7 +1434,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
 
                                         <!-- HƯỚNG DẪN -->
                                         <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 25px 0;">
-                                            <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê xe</h3>
+                                            <h3 style="margin-top: 0; color: #856404;">💡 Để tiếp tục thuê phương tiện</h3>
                                             <ol style="line-height: 2; font-size: 15px;">
                                                 <li>Thanh toán <strong>TOÀN BỘ ${fmt(totalDebt)}</strong></li>
                                                 <li>Liên hệ hotline: <strong>0123456789</strong></li>
@@ -1434,7 +1444,7 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
                                         
                                         <p style="text-align: center; margin-top: 30px;">
                                             <a href="tel:1900xxxx" style="background: #dc3545; color: white; padding: 16px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                                                📞 Liên hệ: 0123456789
+                                                📞 Liên hệ: ${config.CONTACT.HOTLINE}
                                             </a>
                                         </p>
                                     </td>
@@ -1456,3 +1466,56 @@ export const handleRejectOrderLevel3 = async (request: Request, env: Env, orderI
         return jsonResponse({ success: false, error: e.message }, 500);
     }
 };
+
+// TÍNH PHÍ TRỄ HẠN: NGÀY + GIỜ
+export async function getOverdueOrders(request: Request, env: Env) {
+  try {
+    const result = await env.DB.prepare(`
+      SELECT 
+        dt.don_thue_id,
+        dt.khach_hang_id,
+        nd.ho_ten,
+        nd.email,
+        nd.so_dien_thoai,
+        pt.ten_phuong_tien,
+        pt.bien_so,
+        dt.ngay_bat_dau,
+        dt.ngay_ket_thuc,
+        dt.tong_tien,
+        dt.tien_coc_yeu_cau,
+        
+        -- ✅ Tính tổng số giờ quá hạn (sử dụng 'now' với localtime)
+        CAST((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) * 24 AS INTEGER) as tong_gio_qua_han,
+        
+        -- ✅ Số ngày đầy đủ
+        CAST((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) AS INTEGER) as so_ngay_qua_han,
+        
+        -- ✅ Số giờ lẻ
+        CAST(((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) * 24) AS INTEGER) % 24 as so_gio_le,
+        
+        -- ✅ Tính phí
+        (CAST((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) AS INTEGER) * 400000) + 
+        ((CAST(((julianday(datetime('now', 'localtime')) - julianday(dt.ngay_ket_thuc)) * 24) AS INTEGER) % 24) * 5000) 
+        as phi_tre_han
+        
+      FROM DonThue dt
+      JOIN NguoiDung nd ON dt.khach_hang_id = nd.nguoi_dung_id
+      JOIN PhuongTien pt ON dt.phuong_tien_id = pt.phuong_tien_id
+      WHERE 
+        dt.trang_thai = 'DANG_THUE'
+        AND dt.ngay_tra_thuc_te IS NULL
+        AND datetime(dt.ngay_ket_thuc) < datetime('now', 'localtime')
+      ORDER BY tong_gio_qua_han DESC
+    `).all();
+
+    return jsonResponse({
+      success: true,
+      data: result.results || [],
+      total: result.results?.length || 0
+    });
+
+  } catch (err: any) {
+    console.error('❌ Lỗi getOverdueOrders:', err);
+    return jsonResponse({ success: false, error: err.message }, 500);
+  }
+}

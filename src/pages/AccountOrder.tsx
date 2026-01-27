@@ -5,6 +5,9 @@ import Footer from '../components/Footer/Footer';
 import Button from '../components/Button/Button';
 import { useAuth } from '../contexts/AuthContext';
 import './../styles/pages/AccountOrder/AccountOrder.css';
+// import { getShopAddress, getCityShop } from '../../config/app.config';
+// import { getConfig } from '../../config/app.config';
+import { useConfig } from '../contexts/ConfigContext';
 
 interface DonThue {
     don_thue_id: number;
@@ -35,6 +38,7 @@ interface DonThue {
 }
 
 const AccountOrder = () => {
+    const { config } = useConfig();
     const { currentUser } = useAuth();
     const [orders, setOrders] = useState<DonThue[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -49,6 +53,9 @@ const AccountOrder = () => {
     const [paymentType, setPaymentType] = useState<'DEPOSIT' | 'FINAL'>('DEPOSIT');
 
     const API_URL = 'https://r2-api.sharkeatrice.workers.dev/api/user-orders';
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const ORDERS_PER_PAGE = 10;
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -83,6 +90,15 @@ const AccountOrder = () => {
         return () => clearInterval(interval);
     }, [currentUser, selectedOrder, showPaymentModal, paymentType]);
 
+    const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ORDERS_PER_PAGE;
+    const endIndex = startIndex + ORDERS_PER_PAGE;
+    const currentOrders = orders.slice(startIndex, endIndex);
+
+    const goToPage = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString('vi-VN');
 
@@ -187,10 +203,10 @@ const AccountOrder = () => {
         let color = '#6c757d'; let text = status; let bg = '#f8f9fa';
         switch (status?.toLowerCase()) {
             case 'da_duyet': color = '#007bff'; bg = '#e7f1ff'; text = 'Đã duyệt - Chờ cọc'; break;
-            case 'da_coc': color = '#198754'; bg = '#d1e7dd'; text = 'Đã cọc - Chờ nhận xe'; break;
-            case 'dang_thue': color = '#0dcaf0'; bg = '#cff4fc'; text = 'Đang thuê xe'; break;
+            case 'da_coc': color = '#198754'; bg = '#d1e7dd'; text = 'Đã cọc - Chờ nhận phương tiện'; break;
+            case 'dang_thue': color = '#0dcaf0'; bg = '#cff4fc'; text = 'Đang thuê phương tiện'; break;
             case 'da_tra':
-            case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả xe - Chờ thanh toán'; break;
+            case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả phương tiện - Chờ thanh toán'; break;
             case 'hoan_thanh': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành'; break;
             case 'hoan_tat': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành';break
             case 'tu_choi': color = '#dc3545'; bg = '#f8d7da'; text = 'Đã hủy'; break;
@@ -314,7 +330,7 @@ const AccountOrder = () => {
             <div style={{ textAlign: 'left', background: '#f8f9fa', padding: '15px', borderRadius: '8px', fontSize: '14px', lineHeight: '1.6', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                     <span style={{ color: '#666' }}>Loại giao dịch:</span>
-                    <strong style={{ color: '#000000ff' }}>Đặt cọc thuê xe</strong>
+                    <strong style={{ color: '#000000ff' }}>Đặt cọc thuê phương tiện</strong>
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
@@ -342,7 +358,7 @@ const AccountOrder = () => {
                                 • Tổng giá trị đơn hàng: <strong>{formatCurrency(tongSauGiam)}</strong><br/>
                                 • Tỷ lệ cọc: <strong style={{color: '#6610f2'}}>{phanTramCoc}%</strong><br/>
                                 • Tiền cọc phải trả: <strong style={{color: '#d32f2f'}}>{formatCurrency(tienCocThucTe)}</strong><br/>
-                                • Còn lại thanh toán khi trả xe: <strong>{formatCurrency(tongSauGiam - tienCocThucTe)}</strong>
+                                • Còn lại thanh toán khi trả phương tiện: <strong>{formatCurrency(tongSauGiam - tienCocThucTe)}</strong>
                             </div>
                         </div>
                     </div>
@@ -365,7 +381,7 @@ const AccountOrder = () => {
             <div className="accountOrder-content" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 20px', minHeight: '60vh' }}>
                 <div className="accountOrder-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                     <h1 style={{ fontSize: '28px', color: '#333' }}>Đơn thuê của tôi</h1>
-                    <Link to="/account_home" style={{ textDecoration: 'none' }}>
+                    <Link to="/account_home" style={{ textDecoration: 'none', backgroundColor: 'gray', borderRadius: '2rem'}}>
                         <Button conttent="Quay lại" />
                     </Link>
                 </div>
@@ -373,7 +389,7 @@ const AccountOrder = () => {
                 {error && <div style={{ color: 'red', textAlign: 'center', marginBottom: '20px' }}>{error}</div>}
 
                 <div className="accountOrder-list" style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-                    {orders.map((order) => (
+                    {currentOrders.map((order) => (
                         <div key={order.don_thue_id} style={{
                             backgroundColor: 'white', borderRadius: '12px', border: '1px solid #eee',
                             boxShadow: '0 4px 15px rgba(0,0,0,0.05)', overflow: 'hidden'
@@ -400,7 +416,7 @@ const AccountOrder = () => {
                                         </div>
                                         <div>
                                             <span style={{ color: '#777', fontSize: '13px' }}>Địa điểm: </span>
-                                            <span style={{ fontWeight: '600', color: 'black' }}>Tại cửa hàng (Chi nhánh Đà Nẵng)</span>
+                                            <span style={{ fontWeight: '600', color: 'black' }}>Tại cửa hàng ({config.Locations.DIACHISHOP}, chi nhánh {config.Locations.CHINHANHTP})</span>
                                         </div>
                                     </div>
                                     <div style={{ flex: 1, minWidth: '300px', backgroundColor: '#f8faff', padding: '15px', borderRadius: '12px', border: '1px solid #e6f0ff' }}>
@@ -531,7 +547,7 @@ const AccountOrder = () => {
                                     if (st === 'da_tra' && !isReadyToPay) {
                                         return (
                                             <span style={{ color: '#fd7e14', fontWeight: '500', fontStyle: 'italic', fontSize: '13px' }}>
-                                                <i className="fa-solid fa-hourglass-half"></i> Chờ Admin kiểm tra xe...
+                                                <i className="fa-solid fa-hourglass-half"></i> Chờ Admin kiểm tra phương tiện...
                                             </span>
                                         );
                                     }
@@ -542,6 +558,71 @@ const AccountOrder = () => {
                         </div>
                     ))}
                 </div>
+                {totalPages > 1 && (
+                    <div style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '10px',
+                        marginTop: '40px',
+                        marginBottom: '20px'
+                    }}>
+                        <button
+                            onClick={() => goToPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            style={{
+                                padding: '10px 15px',
+                                backgroundColor: currentPage === 1 ? '#e9ecef' : '#007bff',
+                                color: currentPage === 1 ? '#6c757d' : 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                                fontWeight: '600',
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <i className="fa-solid fa-chevron-left"></i>
+                        </button>
+
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <button
+                                key={page}
+                                onClick={() => goToPage(page)}
+                                style={{
+                                    padding: '10px 15px',
+                                    minWidth: '45px',
+                                    backgroundColor: page === currentPage ? '#007bff' : 'white',
+                                    color: page === currentPage ? 'white' : '#333',
+                                    border: page === currentPage ? 'none' : '1px solid #ddd',
+                                    borderRadius: '6px',
+                                    cursor: 'pointer',
+                                    fontWeight: page === currentPage ? 'bold' : '500',
+                                    transition: 'all 0.3s',
+                                    boxShadow: page === currentPage ? '0 2px 8px rgba(0,123,255,0.3)' : 'none'
+                                }}
+                            >
+                                {page}
+                            </button>
+                        ))}
+
+                        <button
+                            onClick={() => goToPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            style={{
+                                padding: '10px 15px',
+                                backgroundColor: currentPage === totalPages ? '#e9ecef' : '#007bff',
+                                color: currentPage === totalPages ? '#6c757d' : 'white',
+                                border: 'none',
+                                borderRadius: '6px',
+                                cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                                fontWeight: '600',
+                                transition: 'all 0.3s'
+                            }}
+                        >
+                            <i className="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* --- MODAL THANH TOÁN (ĐA NĂNG) --- */}
@@ -560,7 +641,7 @@ const AccountOrder = () => {
                                 <p style={{ fontSize: '14px', color: '#666' }}>Quét mã QR để thanh toán nhanh</p>
 
                                 <div style={{ margin: '20px auto', border: '1px solid #eee', padding: '10px', borderRadius: '8px', display: 'inline-block' }}>
-                                    <img src={`https://img.vietqr.io/image/MB-0385750387-compact2.png?amount=${getPaymentAmount()}&addInfo=${getPaymentContent()}&accountName=NGUYEN TRAN VIET KHOA`} alt="QR Code" style={{ width: '220px', height: '220px', display: 'block' }} />
+                                    <img src={`${config.PAYMENT.QR_BASE_URL}?amount=${getPaymentAmount()}&addInfo=${getPaymentContent()}&accountName=${config.PAYMENT.ACCOUNT_NAME}`} alt="QR Code" style={{ width: '220px', height: '220px', display: 'block' }} />
                                 </div>
 
                                 {renderPaymentDetails()}
