@@ -34,6 +34,35 @@ export const handleGetKycDocuments = async (env: Env, customerId: string) => {
     }
 };
 
+const checkCCCDExists = async (
+    env: Env, 
+    so_giay_to: string, 
+    exclude_khach_hang_id?: string
+): Promise<boolean> => {
+    try {
+        let query = `
+            SELECT COUNT(*) as count 
+            FROM TaiLieuKYC 
+            WHERE so_giay_to = ? 
+              AND (loai_giay_to = 'CCCD_TRUOC' OR loai_giay_to = 'CCCD_SAU')
+        `;
+        const params: any[] = [so_giay_to];
+
+        if (exclude_khach_hang_id) {
+            query += " AND khach_hang_id != ?";
+            params.push(exclude_khach_hang_id);
+        }
+
+        const result = await env.DB.prepare(query)
+            .bind(...params)
+            .first<{ count: number }>();
+        
+        return (result?.count || 0) > 0;
+    } catch (e: any) {
+        console.error("❌ Lỗi kiểm tra CCCD:", e);
+        return false;
+    }
+};
 
 
 export const handleAddKycDocument = async (request: Request, env: Env) => {
@@ -51,6 +80,16 @@ export const handleAddKycDocument = async (request: Request, env: Env) => {
 
         if (!frontImage || !backImage || !khach_hang_id) {
             return jsonResponse({ success: false, error: 'Thiếu ảnh hoặc ID khách hàng' }, 400);
+        }
+
+        const isDuplicate = await checkCCCDExists(env, so_giay_to);
+        
+        if (isDuplicate) {
+            return jsonResponse({ 
+                success: false, 
+                error: `Số CCCD "${so_giay_to}" đã được sử dụng. Vui lòng kiểm tra lại.`,
+                code: 'DUPLICATE_CCCD'
+            }, 409);
         }
 
         const processImage = async (file: File, loai_giay_to: string) => {
@@ -95,6 +134,36 @@ export const handleUpdateCccdSet = async (request: Request, env: Env, customerId
         const ngay_het_han = formData.get('ngay_het_han') as string ?? '';
         const trang_thai = formData.get('trang_thai') as string ?? 'Chờ xac thực'; 
         const adminId = 1; 
+
+        // Validation
+        if (!so_giay_to || !noi_cap || !ngay_cap || !ngay_het_han) {
+            return jsonResponse({ 
+                success: false, 
+                error: 'Thiếu thông tin bắt buộc' 
+            }, 400);
+        }
+
+        // ✅ KIỂM TRA SỐ CCCD HIỆN TẠI
+        const currentDoc = await env.DB.prepare(`
+            SELECT so_giay_to 
+            FROM TaiLieuKYC 
+            WHERE khach_hang_id = ? 
+              AND (loai_giay_to = 'CCCD_TRUOC' OR loai_giay_to = 'CCCD_SAU')
+            LIMIT 1
+        `).bind(customerId).first<{ so_giay_to: string }>();
+
+        // ✅ NẾU THAY ĐỔI SỐ CCCD, KIỂM TRA TRÙNG
+        if (currentDoc && so_giay_to !== currentDoc.so_giay_to) {
+            const isDuplicate = await checkCCCDExists(env, so_giay_to, customerId);
+            
+            if (isDuplicate) {
+                return jsonResponse({ 
+                    success: false, 
+                    error: `Số CCCD "${so_giay_to}" đã được sử dụng bởi khách hàng khác`,
+                    code: 'DUPLICATE_CCCD'
+                }, 409);
+            }
+        }
 
         // Cập nhật các trường text cho CẢ BỘ CCCD
         const updateTextQuery = `
