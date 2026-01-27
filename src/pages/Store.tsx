@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './../styles/pages/Store/Store.css';
 import Header from './../components/Header/header'
 import chat from './../assets/Store chat.jpg'
@@ -17,6 +17,8 @@ import CardFlycam from "../components/Card/CardFlyCam";
 import SuvCard from "../components/Card/SuvCard";
 
 import Footer from "../components/Footer/Footer";
+import SupportChat from '../components/SupportChat/SupportChat';
+import Button from '../components/Button/Button';
 
 const platter = [
     duThuyen,
@@ -28,6 +30,7 @@ const platter = [
 ]
 
 const Store = () => {
+    const [isChatOpen, setIsChatOpen] = useState(false);
     return (
         <div className="store">
             <Header />
@@ -42,7 +45,15 @@ const Store = () => {
                         <img src={chat} alt="chat" />
                         <div className="Store-chat-text">
                             <p>Bạn cần trợ giúp mua sắm?</p>
-                            <a>Hỏi chuyên gia <i className="fa-brands fa-telegram"></i></a>
+                            <div>
+                                <Button
+                                    conttent="Hỏi chuyên gia"
+                                    onClick={() => setIsChatOpen(true)}
+                                    backgroundColor="transparent"
+                                    textColor="var(--text-blue)"
+                                    style={{ border: 'none', padding: 0 }}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -63,6 +74,7 @@ const Store = () => {
             <CardFlycam />
             <SuvCard />
             <Footer />
+            <SupportChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
         </div>
     )
 }

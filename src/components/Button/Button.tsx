@@ -5,20 +5,25 @@ const Button = ({
     conttent,
     onClick,
     backgroundColor,
-    textColor
+    textColor,
+    style,
+    className
 }: {
     conttent: string,
     onClick?: () => void,
     backgroundColor?: string,
-    textColor?: string
+    textColor?: string,
+    style?: React.CSSProperties,
+    className?: string
 }) => {
     return (
         <button
-            className="main-button"
+            className={`main-button ${className || ''}`}
             onClick={onClick}
             style={{
                 backgroundColor: backgroundColor,
-                color: textColor
+                color: textColor,
+                ...style
             }}
         >
             {conttent}
