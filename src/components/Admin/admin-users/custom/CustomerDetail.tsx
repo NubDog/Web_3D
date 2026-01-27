@@ -493,7 +493,7 @@ const CustomerDetail: React.FC = () => {
                                 </div>
                                 <div className="detail-item">
                                     <span className="detail-label">Trạng thái</span>
-                                    <span className={`detail-value status-badge ${customer?.trang_thai === 'active' ? 'status-active' : 'status-inactive'}`}>
+                                    <span className={`detail-value status-badge ${customer?.trang_thai === 'active' ? 'status-active' : 'status-inactive'}`} style={{color: 'black'}}>
                                         {customer?.trang_thai}
                                     </span>
                                 </div>
@@ -606,7 +606,7 @@ const CustomerDetail: React.FC = () => {
                                                                 <p>{index === 1 ? "Mặt sau" : "Mặt trước"}</p>
                                                                 <p><strong>{doc.loai_giay_to}</strong></p>
                                                                 <p>Số: {doc.so_giay_to || 'N/A'}</p>
-                                                                <p>Trạng thái: <span className={`status-badge status-${doc.trang_thai?.toLowerCase()}`}>{doc.trang_thai}</span></p>
+                                                                <p>Trạng thái: <span className={`status-badge status-${doc.trang_thai?.toLowerCase()}`} style={{color: 'black'}}>{doc.trang_thai}</span></p>
                                                             </div>
                                                             <div className="kyc-doc-actions">
                                                                 <button onClick={() => handleStartEdit(doc)} className="action-button secondary">Sửa</button>
