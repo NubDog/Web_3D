@@ -175,13 +175,13 @@ export default {
 
 					// 1. Model Embed (để tìm xe)
 					const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
-					const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+					// const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Moved to fallback loop
 
 					// --- BƯỚC 1: TÌM XE ---
 					const result = await embedModel.embedContent(question);
 					const userVector = result.embedding.values;
 
-					// 3. So khớp với Database Vectorize
+					// 3. So khớp với Database Vectorize/
 					const matches = await env.VECTORIZE.query(userVector, {
 						topK: 3, // Lấy 3 xe giống nhất
 						returnMetadata: true,
@@ -216,8 +216,35 @@ export default {
 						8. Nếu khách có yêu cầu xem ảnh thì bạn hãy show ra hình ảnh luôn còn nếu khách không có nhu cầu xem ảnh thì không được show
 					`;
 
-					const chatResult = await chatModel.generateContent(prompt);
-					const textResponse = chatResult.response.text();
+					// --- BƯỚC 3: KÊU GEMINI TRẢ LỜI (CÓ FALLBACK) ---
+					const models = [
+						"gemini-flash-latest",
+						"gemini-2.0-flash",
+						"gemini-2.5-flash-lite",
+						"gemini-pro-latest",
+						"gemini-2.5-flash"
+					];
+
+					let textResponse = "";
+					const errorLogs: string[] = [];
+
+					for (const modelName of models) {
+						try {
+							// console.log(`Trying model: ${modelName}`);
+							const chatModel = genAI.getGenerativeModel({ model: modelName });
+							const chatResult = await chatModel.generateContent(prompt);
+							textResponse = chatResult.response.text();
+							if (textResponse) break; // Thành công, thoát vòng lặp
+						} catch (error: any) {
+							console.error(`Error with model ${modelName}:`, error.message);
+							errorLogs.push(`Model ${modelName} failed: ${error.message}`);
+							// Thử model tiếp theo
+						}
+					}
+
+					if (!textResponse) {
+						throw new Error("All AI models failed. Details:\n" + errorLogs.join("\n"));
+					}
 
 					// 4. Trả kết quả JSON
 					return jsonResponse({
