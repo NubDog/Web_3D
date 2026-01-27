@@ -212,6 +212,8 @@ export default {
 						4. Đừng nhắc đến ID hay thông tin kỹ thuật khô khan nếu khách không hỏi.
 						5. Nếu khách không hỏi những gì liên quan đến xe thì bạn chỉ cần trả lời sao cho sát với câu hỏi của khách hàng nhất (ví dụ khách chào bạn thì bạn sẻ chào lại khách đừng nói dài lam man).
 						6. Khi giới thiệu sản phẩm bạn hãy giới thiệu tối đa 2 sản phẩm liên quan nhất mà khách đề cập và chỉ giới thiệu tên  giá thuê và công năng công dụng cũng như điểm mạnh của nó.
+						7. Khi xưng hô với khách thì hãy dùng tên là "Shark Eat Rice" hoặc là "em"
+						8. Nếu khách có yêu cầu xem ảnh thì bạn hãy show ra hình ảnh luôn còn nếu khách không có nhu cầu xem ảnh thì không được show
 					`;
 
 					const chatResult = await chatModel.generateContent(prompt);
