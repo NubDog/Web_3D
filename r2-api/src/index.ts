@@ -587,16 +587,6 @@ export default {
 			}
 
 			// ------------------- Bảo trì -------------------
-			// if (path === '/api/baotri/tonghop' && method === 'GET') {
-			// 	return getBaotriTongHop(request, env);
-			// }
-			// if (path.startsWith('/api/baotri/chitiet/') && method === 'GET') {
-			// 	const phuongTienId = parseInt(path.split('/').pop() || '0', 10);
-			// 	return getBaotriChiTiet(request, env, phuongTienId);
-			// }
-			// if (path === '/api/baotri' && method === 'POST') {
-			// 	return addBaoTri(request, env);
-			// }
 			if (path.startsWith('/api/baotri/') && method === 'PUT') {
 				const id = parseInt(path.split('/').pop() || '0', 10);
 				return updateBaotri(request, env, id);
@@ -605,11 +595,6 @@ export default {
 				const id = parseInt(path.split('/').pop() || '0', 10);
 				return deleteBaotri(request, env, id);
 			}
-			// if (path.startsWith('/Admin/don-thue') && method === 'GET') {
-			// 	const url = new URL(request.url);
-			// 	const phuongTienId = url.searchParams.get('phuong_tien_id');
-			// 	return getDonThueByPhuongTien(request, env, phuongTienId ? parseInt(phuongTienId, 10) : 0);
-			// }
 			const baotrichitiet = path.match(/^\/Admin\/baotri\/chitiet\/(\d+)$/);
 			if (baotrichitiet && method === 'POST') {
 				const baoTriId = parseInt(baotrichitiet[1], 10);
