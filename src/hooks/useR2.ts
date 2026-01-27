@@ -54,7 +54,7 @@ export const useR2 = () => {
   const uploadFile = useCallback(async (file: File): Promise<UploadResult> => {
     console.log('📤 Starting upload:', file.name, `(${file.size} bytes)`);
     setUploading(true);
-    
+
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -65,7 +65,7 @@ export const useR2 = () => {
       });
 
       const result: UploadResult = await response.json();
-      
+
       console.log('📤 Upload result:', result);
 
       if (result.success) {
@@ -76,8 +76,8 @@ export const useR2 = () => {
       return result;
     } catch (error) {
       console.error('❌ Upload error:', error);
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: error instanceof Error ? error.message : 'Upload failed'
       };
     } finally {
@@ -89,11 +89,11 @@ export const useR2 = () => {
   const fetchFiles = useCallback(async (): Promise<FilesListResult> => {
     console.log('📋 Fetching files...');
     setLoading(true);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/files`);
       const result: FilesListResult = await response.json();
-      
+
       console.log('📋 Files fetched:', result);
 
       if (result.success && result.files) {
@@ -103,8 +103,8 @@ export const useR2 = () => {
       return result;
     } catch (error) {
       console.error('❌ Fetch files error:', error);
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: error instanceof Error ? error.message : 'Failed to fetch files'
       };
     } finally {
@@ -116,14 +116,14 @@ export const useR2 = () => {
   const deleteFile = useCallback(async (fileName: string): Promise<DeleteResult> => {
     console.log('🗑️ Deleting file:', fileName);
     setDeleting(fileName);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/delete/${encodeURIComponent(fileName)}`, {
         method: 'DELETE',
       });
-      
+
       const result: DeleteResult = await response.json();
-      
+
       console.log('🗑️ Delete result:', result);
 
       if (result.success) {
@@ -134,8 +134,8 @@ export const useR2 = () => {
       return result;
     } catch (error) {
       console.error('❌ Delete error:', error);
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: error instanceof Error ? error.message : 'Delete failed'
       };
     } finally {
@@ -155,7 +155,7 @@ export const useR2 = () => {
     loading,
     uploading,
     deleting,
-    
+
     // Methods
     testConnection,
     uploadFile,

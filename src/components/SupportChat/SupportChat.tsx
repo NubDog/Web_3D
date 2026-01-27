@@ -76,55 +76,56 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
         return lines.map((line, index) => {
             let processedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-            // 1. Check for standard Markdown image syntax: ![alt](url)
-            // 2. Check for "text link" style often returned by LLMs: [Txxt](url) where url is an image
+            // Regex to match "list item" style image prefixes often used by Gemini
+            // e.g. "* Ảnh:", "* Hình ảnh:", "- Ảnh:", etc.
+            const imageLabelRegex = /^[\*\-]\s*(Ảnh|Hình ảnh|Image):?/i;
+
+            // Check if line starts with an image label, strip it
+            if (imageLabelRegex.test(processedLine)) {
+                processedLine = processedLine.replace(imageLabelRegex, '').trim();
+            }
+
+            // 1. Markdown image: ![alt](url)
+            // 2. Text link: [text](url)
             // 3. Raw URL
             const rawUrlRegex = /(https?:\/\/[^\s]+?\.(?:png|jpg|jpeg|gif|webp))/gi;
 
-            // Strategy: First try to match markdown syntax which is most specific. 
-            // If match found, replace with special placeholder or split.
-            // Actually, we can just split by a unified regex.
+            // Check if the line is NOW just an image URL (after stripping label) or similar
+            // If the line *became* empty after stripping label, but had an image url, we might need to find it.
+            // Let's look for URL in the processed line.
 
-            // Let's combine regexes subtly.
-            // We want to extract the URL.
+            // Simplified logic: Find all image URLs in the line.
+            // If found, render images.
+            // If text remains after removing URLs, render text.
 
-            // If the whole line is basically an image link:
-            let imageUrl = '';
-            const mdMatch = /!\[.*?\]\((.*?)\)/.exec(line);
-            if (mdMatch && mdMatch[1]) imageUrl = mdMatch[1];
-            else {
-                const linkMatch = /\[.*?\]\((https?:\/\/.*?\.(?:png|jpg|jpeg|gif|webp))\)/.exec(line);
-                if (linkMatch && linkMatch[1]) imageUrl = linkMatch[1];
-            }
+            const urls = processedLine.match(rawUrlRegex);
 
-            if (imageUrl) {
-                return <img key={index} src={imageUrl} alt="Product" className="chat-product-image" />;
-            }
+            if (urls && urls.length > 0) {
+                // Remove URLs from text to see what's left
+                let textContent = processedLine;
+                urls.forEach(url => {
+                    textContent = textContent.replace(url, '');
+                });
 
-            // Fallback to splitting by raw URL if no markdown syntax found
-            const parts = processedLine.split(rawUrlRegex);
-            if (parts.length > 1) {
+                // Clean up common markdown link syntax artifacts left over: [] ()
+                textContent = textContent.replace(/\[.*?\]/g, '').replace(/\(\)/g, '').trim();
+
                 return (
                     <div key={index} className="chat-paragraph">
-                        {parts.map((part, i) => {
-                            // Check if this part is a URL
-                            if (part.match(rawUrlRegex)) {
-                                return <img key={i} src={part} alt="Product" className="chat-product-image" />;
-                            }
-                            // Clean up dangling brackets from [url]( if raw regex caught the url part
-                            // This is tricky. simpler to just strip logic.
-                            // If we encounter "](", it means we cut inside a markdown link.
-
-                            // Let's just output text.
-                            return <span key={i} dangerouslySetInnerHTML={{ __html: part }} />;
-                        })}
+                        {textContent && <span dangerouslySetInnerHTML={{ __html: textContent }} />}
+                        {urls.map((url, i) => (
+                            <img key={i} src={url} alt="Product" className="chat-product-image" />
+                        ))}
                     </div>
                 );
             }
 
-            // Handle lists
+            // Handle lists (text only)
             if (line.trim().startsWith('* ')) {
                 const content = processedLine.trim().substring(2);
+                // If content is empty (e.g. was just "* "), skip
+                if (!content) return null;
+
                 return (
                     <div key={index} className="chat-list-item">
                         <span className="bullet">•</span>
@@ -134,7 +135,7 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
             }
 
             // Standard paragraph
-            if (line.trim() !== '') {
+            if (processedLine.trim() !== '') {
                 return (
                     <p key={index} className="chat-paragraph" dangerouslySetInnerHTML={{
                         __html: processedLine

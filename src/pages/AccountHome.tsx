@@ -180,7 +180,7 @@ const AccountHome = () => {
         );
     }
 
-    console.log({userProfile});
+    console.log({ userProfile });
 
     return (
         <div className="AccountHome-container">
@@ -220,8 +220,8 @@ const AccountHome = () => {
                                 {/* Tên đăng nhập - Read only */}
                                 <div className="AccountHome-field">
                                     <label>Tên đăng nhập</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={userProfile.ten_dang_nhap}
                                         disabled
                                     />
@@ -231,12 +231,12 @@ const AccountHome = () => {
                                 <div className="AccountHome-field">
                                     <label>Mật khẩu</label>
                                     <div className="AccountHome-password-field">
-                                        <input 
-                                            type="password" 
+                                        <input
+                                            type="password"
                                             value="••••••••"
                                             disabled
                                         />
-                                        <button 
+                                        <button
                                             type="button"
                                             className="AccountHome-change-password-btn"
                                             onClick={() => setIsPasswordModalOpen(true)}
@@ -249,8 +249,8 @@ const AccountHome = () => {
                                 {/* Họ tên - Editable */}
                                 <div className="AccountHome-field">
                                     <label>Họ và tên</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         name="ho_ten"
                                         value={isEditing ? formData.ho_ten : userProfile.ho_ten}
                                         onChange={handleInputChange}
@@ -262,8 +262,8 @@ const AccountHome = () => {
                                 {/* Email - Editable */}
                                 <div className="AccountHome-field">
                                     <label>Email</label>
-                                    <input 
-                                        type="email" 
+                                    <input
+                                        type="email"
                                         name="email"
                                         value={isEditing ? formData.email : userProfile.email}
                                         onChange={handleInputChange}
@@ -275,8 +275,8 @@ const AccountHome = () => {
                                 {/* Số điện thoại - Editable */}
                                 <div className="AccountHome-field">
                                     <label>Số điện thoại</label>
-                                    <input 
-                                        type="tel" 
+                                    <input
+                                        type="tel"
                                         name="so_dien_thoai"
                                         value={isEditing ? formData.so_dien_thoai : userProfile.so_dien_thoai}
                                         onChange={handleInputChange}
@@ -289,8 +289,8 @@ const AccountHome = () => {
                                 {/* Trạng thái - Read only */}
                                 <div className="AccountHome-field">
                                     <label>Trạng thái</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={userProfile.trang_thai === 'active' ? 'Hoạt động' : userProfile.trang_thai}
                                         disabled
                                     />
@@ -299,8 +299,8 @@ const AccountHome = () => {
                                 {/* Ngày tạo - Read only */}
                                 <div className="AccountHome-field">
                                     <label>Ngày tạo</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={new Date(userProfile.ngay_tao).toLocaleDateString('vi-VN')}
                                         disabled
                                     />
@@ -309,8 +309,8 @@ const AccountHome = () => {
                                 {/* Ngày cập nhật - Read only */}
                                 <div className="AccountHome-field">
                                     <label>Ngày cập nhật</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={new Date(userProfile.ngay_cap_nhat).toLocaleDateString('vi-VN')}
                                         disabled
                                     />
@@ -319,7 +319,7 @@ const AccountHome = () => {
 
                             {isEditing && (
                                 <div className="AccountHome-form-actions">
-                                    <button 
+                                    <button
                                         type="button"
                                         className="AccountHome-cancel-btn"
                                         onClick={() => {
@@ -334,9 +334,9 @@ const AccountHome = () => {
                                     >
                                         Hủy
                                     </button>
-                                    <Button 
+                                    <Button
                                         conttent={isSaving ? "Đang lưu..." : "Lưu thay đổi"}
-                                        onClick={() => {}} // Form submit sẽ handle
+                                        onClick={() => { }} // Form submit sẽ handle
                                     />
                                 </div>
                             )}
@@ -345,7 +345,7 @@ const AccountHome = () => {
                 </div>
             </div>
 
-            <ChangePasswordModal 
+            <ChangePasswordModal
                 isOpen={isPasswordModalOpen}
                 onClose={() => setIsPasswordModalOpen(false)}
                 onSubmit={handleChangePassword}

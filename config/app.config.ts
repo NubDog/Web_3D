@@ -14,22 +14,22 @@ export interface AppConfig {
 
   VIOLATIONS: {
     BLOCK_THRESHOLDS: {
-      MIN_DEBT: number;     
-      MIN_COUNT: number;    
+      MIN_DEBT: number;
+      MIN_COUNT: number;
     };
-     EMAIL: {
+    EMAIL: {
       // Email khóa tài khoản
       SUBJECT_BLOCKED: string;
       REASON_DEBT: string;
       REASON_COUNT: string;
       AFTER_PAYMENT_NOTE: string;
-      
+
       //  Email vi phạm thông thường
       SUBJECT_VIOLATION: string;
-      
+
       // mail xác nhận thanh toán
       SUBJECT_PAYMENT_CONFIRMED: string;
-      
+
       //  Email hủy vi phạm
       SUBJECT_VIOLATION_CANCELLED: string;
     };
@@ -44,7 +44,7 @@ export interface AppConfig {
     VIOLATION_PATH: string;
   };
 
-  EMAIL: {  
+  EMAIL: {
     FROM_NAME: string;
     FROM_EMAIL: string;
   };
@@ -63,7 +63,7 @@ export interface AppConfig {
   };
 
   Locations: {
-    DIACHISHOP:  string,
+    DIACHISHOP: string,
     CHINHANHTP: string,
   };
 }
@@ -75,7 +75,7 @@ const DEFAULT_CONFIG: AppConfig = {
   },
 
   PAYMENT: {
-     BANK_CODE: 'MB',
+    BANK_CODE: 'MB',
     BANK_NAME: 'MB Bank',
     ACCOUNT_NUMBER: '0385750387',
     ACCOUNT_NAME: 'NGUYEN TRAN VIET KHOA',
@@ -84,10 +84,10 @@ const DEFAULT_CONFIG: AppConfig = {
 
   VIOLATIONS: {
     BLOCK_THRESHOLDS: {
-      MIN_DEBT: 2_000_000,  
-      MIN_COUNT: 3,         
+      MIN_DEBT: 2_000_000,
+      MIN_COUNT: 3,
     },
-   EMAIL: {
+    EMAIL: {
       // Email khóa tài khoản
       SUBJECT_BLOCKED: '⛔ TÀI KHOẢN BỊ KHÓA DO VI PHẠM',
       REASON_DEBT: 'Tổng số tiền vi phạm vượt quá 5.000.000đ',
@@ -107,7 +107,7 @@ const DEFAULT_CONFIG: AppConfig = {
     VIOLATION_PATH: '/user/violations',
   },
 
-   EMAIL: {  
+  EMAIL: {
     FROM_NAME: 'Hệ thống cho thuê',
     FROM_EMAIL: 'onboarding@resend.dev',
   },
@@ -167,15 +167,15 @@ export function getViolationUrl(config: AppConfig): string {
   return `${config.FRONTEND.BASE_URL}${config.FRONTEND.VIOLATION_PATH}`;
 }
 
-export function getShopAddress (): string {
-    return DEFAULT_CONFIG.Locations.DIACHISHOP
+export function getShopAddress(): string {
+  return DEFAULT_CONFIG.Locations.DIACHISHOP
 }
 
-export function getCityShop (): string {
+export function getCityShop(): string {
   return DEFAULT_CONFIG.Locations.CHINHANHTP
 }
 
-export function getHotLine (): string {
+export function getHotLine(): string {
   return DEFAULT_CONFIG.CONTACT.HOTLINE
 }
 
@@ -185,14 +185,14 @@ export interface ConfigRequest {
     SUPPORT_EMAIL: string;
   };
   PAYMENT: {
-    
+
     BANK_NAME: string;
     ACCOUNT_NUMBER: string;
     ACCOUNT_NAME: string;
     QR_BASE_URL?: string;
     BANK_CODE: string;
   };
- VIOLATIONS: {
+  VIOLATIONS: {
     BLOCK_THRESHOLDS: {
       MIN_DEBT: number;
       MIN_COUNT: number;
@@ -215,7 +215,7 @@ export interface ConfigRequest {
     FROM_NAME: string;
     FROM_EMAIL: string;
   };
-   MAINTENANCE: {
+  MAINTENANCE: {
     HAN_BAO_TRI_PHUONG_TIEN: Number,
   },
 }

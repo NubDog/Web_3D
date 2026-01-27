@@ -82,12 +82,12 @@ export const ConfigProvider: React.FC<{ children: React.ReactNode }> = ({
           ...(updates.VIOLATIONS?.BLOCK_THRESHOLDS || {}),
         },
         EMAIL: {
-        ...config.VIOLATIONS.EMAIL,
-        ...(updates.VIOLATIONS?.EMAIL || {}),
+          ...config.VIOLATIONS.EMAIL,
+          ...(updates.VIOLATIONS?.EMAIL || {}),
         },
         MAINTENANCE: {
-        ...config.MAINTENANCE,
-        ...(updates.MAINTENANCE || {})
+          ...config.MAINTENANCE,
+          ...(updates.MAINTENANCE || {})
         },
       },
       Locations: { ...config.Locations, ...(updates.Locations || {}) },

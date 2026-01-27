@@ -66,7 +66,7 @@ const Header: React.FC<HeaderProps> = ({ id }) => {
                 <li className="header-menu_items"><a href="/store">Flycam</a></li>
                 <li className="header-menu_items"><a href="/store">Tank</a></li>
 
-                <li className="header-menu_items"><a href={StoreBike}>Hỗ trợ</a></li>
+                <li className="header-menu_items"><a href="#" onClick={(e) => { e.preventDefault(); navigate('/support'); }}>Hỗ trợ</a></li>
                 <li className="header-menu_items"><a href="#"><i className="fa-solid fa-magnifying-glass"></i></a></li>
             </ul>
 
@@ -113,6 +113,7 @@ const Header: React.FC<HeaderProps> = ({ id }) => {
                     <Button
                         conttent="Đăng nhập / đăng ký"
                         onClick={() => navigate('/signin')}
+                        style={{ backgroundColor: 'transparent', border: 'none' }}
                     />
                 )}
             </div>
