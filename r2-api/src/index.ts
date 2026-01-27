@@ -87,13 +87,13 @@ const jsonResponse = (data: any, status = 200) => {
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		
-		 const headers = {
+
+		const headers = {
 			'Content-Type': 'application/json',
 			'Access-Control-Allow-Origin': '*',
 			'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 			'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-			};
+		};
 
 		if (request.method === 'OPTIONS') {
 			return jsonResponse(null);
@@ -198,7 +198,7 @@ export default {
 
 					// --- BƯỚC 3: KÊU GEMINI TRẢ LỜI ---
 					const prompt = `
-						Bạn là nhân viên tư vấn của SharkRent. Hãy trả lời câu hỏi của khách hàng dựa trên thông tin xe dưới đây.
+						Bạn là nhân viên tư vấn của Shark Eat Rice. Hãy trả lời câu hỏi của khách hàng dựa trên thông tin xe dưới đây.
 						
 						THÔNG TIN XE TÌM ĐƯỢC TRONG KHO:
 						${contextData}
@@ -210,6 +210,8 @@ export default {
 						2. Chỉ giới thiệu các xe có trong danh sách trên.
 						3. Cuối câu trả lời, hãy chốt bằng một câu mời gọi đặt xe.
 						4. Đừng nhắc đến ID hay thông tin kỹ thuật khô khan nếu khách không hỏi.
+						5. Nếu khách không hỏi những gì liên quan đến xe thì bạn chỉ cần trả lời sao cho sát với câu hỏi của khách hàng nhất (ví dụ khách chào bạn thì bạn sẻ chào lại khách đừng nói dài lam man).
+						6. Khi giới thiệu sản phẩm bạn hãy giới thiệu tối đa 2 sản phẩm liên quan nhất mà khách đề cập và chỉ giới thiệu tên  giá thuê và công năng công dụng cũng như điểm mạnh của nó.
 					`;
 
 					const chatResult = await chatModel.generateContent(prompt);
@@ -474,9 +476,9 @@ export default {
 				const orderId = path.split('/')[3];
 				return handleCheckOrderViolation(request, env, orderId);
 			}
-			 if (path.match(/^\/api\/don-thue\/(\d+)\/reject$/) && request.method === 'POST') {
-			const orderId = path.split('/')[3];
-			return handleRejectOrderLevel3(request, env, orderId);
+			if (path.match(/^\/api\/don-thue\/(\d+)\/reject$/) && request.method === 'POST') {
+				const orderId = path.split('/')[3];
+				return handleRejectOrderLevel3(request, env, orderId);
 			}
 
 			const confirmViolationPaymentMatch = path.match(/^\/api\/don-thue\/(\d+)\/confirm-violation-payment$/);
@@ -489,8 +491,8 @@ export default {
 				return getOverdueOrders(request, env);
 			}
 
-			
-			
+
+
 			// ------------------- Vi phạm -------------------
 			if (path === '/api/violations' && method === 'POST') {
 				return handleCreateViolation(request, env);
@@ -515,7 +517,7 @@ export default {
 				return handleBatchCheckViolations(request, env);
 			}
 
-		// ✅ API lấy lịch sử vi phạm đầy đủ
+			// ✅ API lấy lịch sử vi phạm đầy đủ
 			if (path.match(/^\/api\/customers\/(\d+)\/violations\/history$/) && method === 'GET') {
 				const khachHangId = path.match(/^\/api\/customers\/(\d+)\/violations\/history$/)![1];
 				return handleGetCustomerViolationHistory(request, env, khachHangId);
@@ -599,19 +601,19 @@ export default {
 
 			// config
 
-			 if (url.pathname === '/api/config/current' && request.method === 'GET') {
+			if (url.pathname === '/api/config/current' && request.method === 'GET') {
 				const response = await handleGetConfig(env);
 				return new Response(response.body, {
-				status: response.status,
-				headers, 
+					status: response.status,
+					headers,
 				});
 			}
 
 			if (url.pathname === '/api/config/save' && request.method === 'POST') {
 				const response = await handleSaveConfig(request, env);
 				return new Response(response.body, {
-				status: response.status,
-				headers, 
+					status: response.status,
+					headers,
 				});
 			}
 

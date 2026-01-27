@@ -78,7 +78,7 @@
   border-radius: 20px;
   color: var(--secondary-color);
   padding: 1em 1.8em;
-  /* background: var(--primary-color); */
+  background: var(--primary-color);
   display: flex;
   transition: 0.2s background;
   align-items: center;

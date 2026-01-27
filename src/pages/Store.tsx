@@ -51,7 +51,8 @@ const Store = () => {
                                     onClick={() => setIsChatOpen(true)}
                                     backgroundColor="transparent"
                                     textColor="var(--text-blue)"
-                                    style={{ border: 'none', padding: 0 }}
+                                    style={{ border: 'none', padding: '0', outline: 'none', boxShadow: 'none' }}
+                                    arrowStyle={{ display: 'none' }}
                                 />
                             </div>
                         </div>

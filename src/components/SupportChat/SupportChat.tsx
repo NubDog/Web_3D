@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './../../styles/components/SupportChat/SupportChat.css';
+import agentAvatar from '../../assets/Admin Support.jpg';
 
 interface SupportChatProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
+const API_BASE_URL = 'https://r2-api.sharkeatrice.workers.dev';
+
 const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
     const [messages, setMessages] = useState<{ text: string, sender: 'bot' | 'user' }[]>([
         { text: 'Xin chào! Tôi có thể giúp gì cho bạn hôm nay?', sender: 'bot' }
     ]);
     const [inputValue, setInputValue] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -19,20 +23,36 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages, isOpen]);
+    }, [messages, isOpen, isLoading]);
 
-    const handleSendMessage = () => {
-        if (inputValue.trim() === '') return;
+    const handleSendMessage = async () => {
+        if (inputValue.trim() === '' || isLoading) return;
 
-        const newUserMessage = { text: inputValue, sender: 'user' as const };
+        const userText = inputValue;
+        const newUserMessage = { text: userText, sender: 'user' as const };
         setMessages(prev => [...prev, newUserMessage]);
         setInputValue('');
+        setIsLoading(true);
 
-        // Simulate bot response
-        setTimeout(() => {
-            const botResponse = { text: 'Cảm ơn bạn đã liên hệ. Chuyên gia của chúng tôi sẽ phản hồi sớm nhất!', sender: 'bot' as const };
-            setMessages(prev => [...prev, botResponse]);
-        }, 1000);
+        try {
+            const response = await fetch(`${API_BASE_URL}/search?q=${encodeURIComponent(userText)}`);
+            const data = await response.json();
+
+            if (data.answer) {
+                const botResponse = { text: data.answer, sender: 'bot' as const };
+                setMessages(prev => [...prev, botResponse]);
+            } else {
+                const errorResponse = { text: 'Xin lỗi, tôi không tìm thấy thông tin bạn cần.', sender: 'bot' as const };
+                setMessages(prev => [...prev, errorResponse]);
+            }
+
+        } catch (error) {
+            console.error("Chat error:", error);
+            const errorResponse = { text: 'Xin lỗi, kết nối đến máy chủ bị gián đoạn.', sender: 'bot' as const };
+            setMessages(prev => [...prev, errorResponse]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -42,12 +62,35 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
     };
 
     if (!isOpen) {
-        // We render it but hide it via CSS for animation, or null if we want to unmount.
-        // CSS animation approach: always render, toggle class.
-        // But to keep it simple and performant, we might want to unmount.
-        // However, for the "jump out" animation, we need it mounted.
-        // Let's rely on CSS class 'open' valid in container.
+        // Keep mounted for animation logic if handled by CSS opacity/transform
     }
+
+    const formatMessage = (text: string) => {
+        // Simple parser for basic markdown-like formatting from AI
+        return text.split('\n').map((line, index) => {
+            // Handle lists (lines starting with *)
+            if (line.trim().startsWith('* ')) {
+                const content = line.trim().substring(2);
+                return (
+                    <div key={index} className="chat-list-item">
+                        <span className="bullet">•</span>
+                        <span dangerouslySetInnerHTML={{
+                            __html: content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                        }} />
+                    </div>
+                );
+            }
+            // Handle bold text **text** in normal lines
+            if (line.trim() !== '') {
+                return (
+                    <p key={index} className="chat-paragraph" dangerouslySetInnerHTML={{
+                        __html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    }} />
+                );
+            }
+            return <div key={index} style={{ height: '8px' }}></div>; // Spacing for empty lines
+        });
+    };
 
     return (
         <div className={`support-chat-container ${isOpen ? 'open' : ''}`}>
@@ -60,10 +103,25 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
 
             <div className="support-chat-body">
                 {messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.sender}`}>
-                        {msg.text}
+                    <div key={index} className={`message-row ${msg.sender}`}>
+                        {msg.sender === 'bot' && (
+                            <img src={agentAvatar} alt="Agent" className="agent-avatar" />
+                        )}
+                        <div className={`message ${msg.sender}`}>
+                            {formatMessage(msg.text)}
+                        </div>
                     </div>
                 ))}
+
+                {isLoading && (
+                    <div className="message-row bot">
+                        <img src={agentAvatar} alt="Agent" className="agent-avatar" />
+                        <div className="message bot" style={{ fontStyle: 'italic', color: '#888' }}>
+                            Đang trả lời...
+                        </div>
+                    </div>
+                )}
+
                 <div ref={messagesEndRef} />
             </div>
 
@@ -75,8 +133,9 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    disabled={isLoading}
                 />
-                <button className="send-btn" onClick={handleSendMessage}>
+                <button className="send-btn" onClick={handleSendMessage} disabled={isLoading}>
                     <i className="fa-brands fa-telegram"></i>
                 </button>
             </div>

@@ -7,14 +7,16 @@ const Button = ({
     backgroundColor,
     textColor,
     style,
-    className
+    className,
+    arrowStyle
 }: {
     conttent: string,
     onClick?: () => void,
     backgroundColor?: string,
     textColor?: string,
     style?: React.CSSProperties,
-    className?: string
+    className?: string,
+    arrowStyle?: React.CSSProperties
 }) => {
     return (
         <button
@@ -28,10 +30,9 @@ const Button = ({
         >
             {conttent}
             <div className="arrow-wrapper">
-                <div className="arrow"></div>
+                <div className="arrow" style={arrowStyle}></div>
             </div>
         </button>
     )
 }
-
 export default Button;
