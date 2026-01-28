@@ -25,6 +25,7 @@ export interface PhuongTien {
   hanBaoTri?: string;
   nguoi_thay_doi_chinh_sach_gia?: string;
   ngay_update_chinh_sach_gia?: string;
+  img?: string;
 }
 
 export interface ApiResponse {
@@ -340,6 +341,7 @@ const PhuongTienList: React.FC = () => {
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">STT</th>
+              <th className="py-3 px-6 text-left">Hình ảnh</th>
               <th className="py-3 px-6 text-left">Tên Phương tiện</th>
               <th className="py-3 px-6 text-left">Biển số</th>
               <th className="py-3 px-6 text-left">Trạng thái</th>
@@ -359,6 +361,24 @@ const PhuongTienList: React.FC = () => {
                 <td className="py-3 px-6 text-left whitespace-nowrap">
                   {(currentPage - 1) * itemsPerPage + index + 1}
                 </td>
+
+                <td className="py-3 px-6 text-left">
+                  {item.img ? (
+                    <img
+                      src={item.img}
+                      alt={item.ten_phuong_tien}
+                      style={{
+                        width: "90px",
+                        height: "40px",
+                        objectFit: "contain",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  ) : (
+                    <span className="text-gray-400">Không có ảnh</span>
+                  )}
+                </td>
+
                 <td className="py-3 px-6 text-left">{item.ten_phuong_tien}</td>
                 <td className="py-3 px-6 text-left">{item.bien_so}</td>
                 <td className="py-3 px-6 text-left">
