@@ -3,13 +3,13 @@
     bottom: 20px;
     right: 20px;
     width: 490px;
-    /* Increased by ~40% (350 * 1.4) */
+    /* To hơn 40% (350 * 1.4) */
     height: 700px;
-    /* Increased by ~40% (500 * 1.4) */
+    /* To hơn 40% (500 * 1.4) */
     background-color: rgba(255, 255, 255, 0.85);
-    /* Translucent white for glassmorphism */
+    /* Trắng mờ kiểu kính */
     backdrop-filter: blur(20px);
-    /* Apple-like blur */
+    /* Blur kiểu Apple */
     -webkit-backdrop-filter: blur(20px);
     border-radius: 24px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
@@ -70,7 +70,7 @@
     gap: 12px;
 }
 
-/* Apple-style Scrollbar */
+/* Scrollbar kiểu Apple */
 .support-chat-body::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -120,7 +120,7 @@
 .chat-product-image {
     display: block;
     width: 100%;
-    /* Fill the message bubble */
+    /* Full bong bóng chat */
     height: auto;
     border-radius: 12px;
     margin-top: 8px;
@@ -197,7 +197,7 @@
 
 .support-chat-input:focus {
     box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
-    /* var(--text-blue) with opacity */
+    /* Xanh blue mờ */
 }
 
 .send-btn {

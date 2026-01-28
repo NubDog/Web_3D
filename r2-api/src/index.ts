@@ -175,28 +175,28 @@ export default {
 
 					// 1. Model Embed (để tìm xe)
 					const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
-					// const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Moved to fallback loop
+					// const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Đưa vào loop fallback rồi
 
 					// --- BƯỚC 1: TÌM XE ---
 					const result = await embedModel.embedContent(question);
 					const userVector = result.embedding.values;
 
-					// 3. So khớp với Database Vectorize/
+					// 3. So khớp với Database Vectorize
 					const matches = await env.VECTORIZE.query(userVector, {
 						topK: 3, // Lấy 3 xe giống nhất
 						returnMetadata: true,
 					});
 
 					// --- BƯỚC 2: TỔNG HỢP DỮ LIỆU ---
-					// Gom thông tin các xe tìm được thành 1 đoạn văn bản
+					// Gom thông tin xe tìm được thành 1 cục text
 					const contextData = matches.matches
 						.map((m) => {
-							const xe = m.metadata as any; // Ép kiểu để lấy dữ liệu
+							const xe = m.metadata as any; // Ép kiểu lấy data
 							return `- Xe: ${xe.name}\n  + Thông tin: ${xe.text}\n  + Ảnh: ${xe.image}`;
 						})
 						.join('\n\n');
 
-					// --- BƯỚC 3: KÊU GEMINI TRẢ LỜI ---
+					// --- BƯỚC 3: HỎI GEMINI ---
 					const prompt = `
 						Bạn là nhân viên tư vấn của Shark Eat Rice. Hãy trả lời câu hỏi của khách hàng dựa trên thông tin xe dưới đây.
 						
@@ -216,7 +216,7 @@ export default {
 						8. Nếu khách có yêu cầu xem ảnh thì bạn hãy show ra hình ảnh luôn còn nếu khách không có nhu cầu xem ảnh thì không được show
 					`;
 
-					// --- BƯỚC 3: KÊU GEMINI TRẢ LỜI (CÓ FALLBACK) ---
+					// --- BƯỚC 3: HỎI GEMINI (CÓ FALLBACK) ---
 					const models = [
 						"gemini-flash-latest",
 						"gemini-2.0-flash",
@@ -230,11 +230,11 @@ export default {
 
 					for (const modelName of models) {
 						try {
-							// console.log(`Trying model: ${modelName}`);
+							// console.log(`Thử model: ${modelName}`);
 							const chatModel = genAI.getGenerativeModel({ model: modelName });
 							const chatResult = await chatModel.generateContent(prompt);
 							textResponse = chatResult.response.text();
-							if (textResponse) break; // Thành công, thoát vòng lặp
+							if (textResponse) break; // Ngon, thoát vòng lặp
 						} catch (error: any) {
 							console.error(`Error with model ${modelName}:`, error.message);
 							errorLogs.push(`Model ${modelName} failed: ${error.message}`);
@@ -248,8 +248,8 @@ export default {
 
 					// 4. Trả kết quả JSON
 					return jsonResponse({
-						answer: textResponse, // Lời AI nói
-						cars: matches.matches.map((match) => match.metadata), // Dữ liệu xe để hiện thẻ card
+						answer: textResponse, // Câu trả lời của AI
+						cars: matches.matches.map((match) => match.metadata), // Data xe để hiện thẻ card
 					});
 				} catch (error: any) {
 					return jsonResponse({ error: error.message }, 500);
