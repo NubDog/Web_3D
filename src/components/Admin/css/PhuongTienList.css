@@ -59,7 +59,9 @@
   padding: 1.5rem;
   background-color: var(--white);
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -76,7 +78,9 @@
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
   background-color: var(--primary-color);
   color: var(--white);
 }
@@ -91,7 +95,9 @@
   overflow-x: auto;
   background-color: var(--white);
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .phuong-tien-table {
@@ -264,7 +270,9 @@
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   background-color: #f9fafb;
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
   color: var(--text-primary);
   font-size: 15px;
 }
@@ -290,7 +298,9 @@
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .form-actions button:last-child {
@@ -319,7 +329,9 @@
   color: var(--white);
   padding: 0.75rem 1.5rem;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
   animation: slideUp 0.5s ease-out;
   z-index: 100;
 }
@@ -364,96 +376,97 @@
 }
 
 .filter-bar {
-    animation: fadeInDown 0.3s ease-in-out;
+  animation: fadeInDown 0.3s ease-in-out;
 }
 
 @keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .filter-bar {
-    padding: 1.5rem;
-    /* margin-top: 1rem; */
-    margin-bottom: 1rem;
-    background-color: #f7fbff;
-    border-radius: 0.75rem;
-    border: 1px solid #e2e8f0;
-    
-    /* Sử dụng Flexbox để tạo layout */
-    display: flex;
-    flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
-    justify-content: space-between; /* Đẩy 2 nhóm ra xa nhau */
-    align-items: flex-end; /* Căn các item xuống dưới */
-    gap: 1.5rem; /* Khoảng cách giữa 2 nhóm */
-    
-    animation: fadeInDown 0.3s ease-in-out;
+  padding: 1.5rem;
+  /* margin-top: 1rem; */
+  margin-bottom: 1rem;
+  background-color: #f7fbff;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
+
+  /* Sử dụng Flexbox để tạo layout */
+  display: flex;
+  flex-wrap: wrap; /* Cho phép xuống dòng trên màn hình nhỏ */
+  justify-content: space-between; /* Đẩy 2 nhóm ra xa nhau */
+  align-items: flex-end; /* Căn các item xuống dưới */
+  gap: 1.5rem; /* Khoảng cách giữa 2 nhóm */
+
+  animation: fadeInDown 0.3s ease-in-out;
 }
 
 /* Nhóm các phần tử lọc lại với nhau */
 .filter-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    flex-grow: 1; /* Cho phép các nhóm co giãn */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  flex-grow: 1; /* Cho phép các nhóm co giãn */
 }
 
 .filter-input,
 .filter-select {
-    width: auto; /* Bỏ width 100% cũ */
-    flex: 1 1 200px; /* Cho phép co giãn với kích thước cơ bản 200px */
-    padding: 0.65rem 1rem;
-    border: 1px solid #cbd5e1;
-    border-radius: 0.5rem;
-    font-size: 0.875rem;
-    background-color: #fff;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    color: #8b8d8c !important;
-
+  width: auto; /* Bỏ width 100% cũ */
+  flex: 1 1 200px; /* Cho phép co giãn với kích thước cơ bản 200px */
+  padding: 0.65rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  background-color: #fff;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  color: #8b8d8c !important;
 }
 
 /* Ô tìm kiếm chính rộng hơn */
 .filter-search-input {
-    flex: 2 1 300px; /* Rộng gấp đôi các ô khác */
-    min-width: 300px;
+  flex: 2 1 300px; /* Rộng gấp đôi các ô khác */
+  min-width: 300px;
 }
 
 .filter-input:focus,
 .filter-select:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
 .reset-button {
-    background-color: #e2e8f0;
-    color: #4a5568;
-    padding: 0.65rem 1.5rem;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    transition: background-color 0.3s;
-    border: 1px solid transparent;
-    height: fit-content; /* Giúp căn chỉnh với các ô input */
+  background-color: #e2e8f0;
+  color: #4a5568;
+  padding: 0.65rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: background-color 0.3s;
+  border: 1px solid transparent;
+  height: fit-content; /* Giúp căn chỉnh với các ô input */
 }
 
 .reset-button:hover {
-    background-color: #cbd5e1;
+  background-color: #cbd5e1;
 }
 
 @keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .filter-toggle-button {
@@ -475,3 +488,45 @@
   border-color: #9ca3af;
 }
 
+.bao-tri-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background-color: #ef4444;
+  color: #ffffff;
+
+  padding: 10px 14px;
+  border-radius: 10px;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+}
+
+.bao-tri-alert__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.bao-tri-alert__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.bao-tri-alert__title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bao-tri-alert__count {
+  font-size: 12px;
+  opacity: 0.95;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: nowrap; /* 🔥 BẮT BUỘC */
+}

@@ -32,20 +32,16 @@ export interface ApiResponse {
   data: PhuongTien[];
 }
 
-// The main component
 const PhuongTienList: React.FC = () => {
-  // States for the list, loading, and errors
   const [phuongTien, setPhuongTien] = useState<PhuongTien[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // States for Modals (Chỉ giữ lại modal Xóa)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [phuongTienIdToDelete, setPhuongTienIdToDelete] = useState<
     number | null
   >(null);
 
-  // State for Toast notifications
   const [toast, setToast] = useState<{
     message: string;
     isError: boolean;
@@ -56,7 +52,6 @@ const PhuongTienList: React.FC = () => {
     show: false,
   });
 
-  //lọc
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -65,16 +60,17 @@ const PhuongTienList: React.FC = () => {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  //phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  const [baoTriCount, setBaoTriCount] = useState<number>(0);
 
   const uniqueCategories = useMemo(
     () =>
       [
         ...new Set(phuongTien.map((pt) => pt.ten_danh_muc).filter(Boolean)),
       ] as string[],
-    [phuongTien]
+    [phuongTien],
   );
 
   const uniquePolicies = useMemo(
@@ -82,10 +78,9 @@ const PhuongTienList: React.FC = () => {
       [
         ...new Set(phuongTien.map((pt) => pt.ten_chinh_sach).filter(Boolean)),
       ] as string[],
-    [phuongTien]
+    [phuongTien],
   );
 
-  // === BƯỚC 3: LOGIC LỌC CHÍNH ===
   const filteredPhuongTien = useMemo(() => {
     const parsedMinPrice = minPrice ? parseFloat(minPrice) : 0;
     const parsedMaxPrice = maxPrice ? parseFloat(maxPrice) : Infinity;
@@ -124,7 +119,6 @@ const PhuongTienList: React.FC = () => {
     maxPrice,
   ]);
 
-  // Function to display Toast
   const showToast = (message: string, isError = false) => {
     setToast({ message, isError, show: true });
     setTimeout(() => {
@@ -132,13 +126,12 @@ const PhuongTienList: React.FC = () => {
     }, 3000);
   };
 
-  // Fetch data from API
   const fetchPhuongTien = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(
-        `https://r2-api.sharkeatrice.workers.dev/Admin/phuong-tien`
+        `https://r2-api.sharkeatrice.workers.dev/Admin/phuong-tien`,
       );
       if (!response.ok) throw new Error("Network response was not ok");
       const result: ApiResponse = await response.json();
@@ -153,10 +146,24 @@ const PhuongTienList: React.FC = () => {
       setLoading(false);
     }
   };
+  const fetchPhuongTienBaoTri = async () => {
+    try {
+      const res = await fetch(
+        "https://r2-api.sharkeatrice.workers.dev/api/baotri/hanbaotri",
+      );
+      const result = await res.json();
 
-  // Fetch data on component mount
+      if (result.success && Array.isArray(result.data)) {
+        setBaoTriCount(result.data.length);
+      }
+    } catch (err) {
+      console.error("Lỗi lấy phương tiện tới hạn bảo trì", err);
+    }
+  };
+
   useEffect(() => {
     fetchPhuongTien();
+    fetchPhuongTienBaoTri();
   }, []);
 
   useEffect(() => {
@@ -169,19 +176,17 @@ const PhuongTienList: React.FC = () => {
     return filteredPhuongTien.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredPhuongTien, currentPage, itemsPerPage]);
 
-  // Open the Delete Confirmation Modal
   const handleDeleteClick = (id: number) => {
     setPhuongTienIdToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
-  // Confirm and execute delete action
   const confirmDelete = async () => {
     if (!phuongTienIdToDelete) return;
     try {
       const response = await fetch(
         `https://r2-api.sharkeatrice.workers.dev/Admin/phuong-tien/${phuongTienIdToDelete}`,
-        { method: "DELETE" }
+        { method: "DELETE" },
       );
       const result = await response.json();
       if (response.ok && result.success) {
@@ -196,31 +201,6 @@ const PhuongTienList: React.FC = () => {
       setIsDeleteModalOpen(false);
       setPhuongTienIdToDelete(null);
     }
-  };
-  const formatDateTimehanbaotri = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "";
-
-    return date.toLocaleString("vi-VN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    });
-  };
-  const formatDateTimecapnhattao = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "";
-
-    return date.toLocaleString("vi-VN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
   };
 
   if (loading) {
@@ -245,8 +225,24 @@ const PhuongTienList: React.FC = () => {
         <h2 className="title text-2xl font-semibold text-gray-800">
           Danh sách Phương tiện
         </h2>
-        {/* Nút Thêm bây giờ là một Link */}
-        <div className="flex items-center gap-4">
+
+        <div className="header-actions">
+          {baoTriCount > 0 && (
+            <Link
+              to="/admin/han_bao_tri"
+              className="add-button-link no-underline"
+            >
+              <div className="bao-tri-alert">
+                <span className="bao-tri-alert__icon">⚠️</span>
+
+                <div className="bao-tri-alert__text">
+                  <div className="bao-tri-alert__count">
+                    {baoTriCount} phương tiện tới hạn bảo trì
+                  </div>
+                </div>
+              </div>
+            </Link>
+          )}
           <button
             onClick={() => setIsFilterVisible(!isFilterVisible)}
             className="filter-toggle-button"
@@ -350,18 +346,7 @@ const PhuongTienList: React.FC = () => {
               <th className="py-3 px-6 text-left">Danh mục</th>
               <th className="py-3 px-6 text-left">Phân loại</th>
               <th className="py-3 px-6 text-left">Chính sách</th>
-              <th className="py-3 px-6 text-left">Số khung</th>
-              <th className="py-3 px-6 text-left">Số Km đã đi</th>
               <th className="py-3 px-6 text-left">Giá Thuê</th>
-              <th className="py-3 px-6 text-left">
-                Người Thay Đổi Chính Sách Giá
-              </th>
-              <th className="py-3 px-6 text-left">Hạn Bảo Hành</th>
-              <th className="py-3 px-6 text-left">Ngày Tạo</th>
-              <th className="py-3 px-6 text-left">Ngày Cập Nhật</th>
-              <th className="py-3 px-6 text-left">
-                Ngày Cập Nhật Chính Sách Giá
-              </th>
               <th className="py-3 px-6 text-center">Chức năng</th>
             </tr>
           </thead>
@@ -382,49 +367,31 @@ const PhuongTienList: React.FC = () => {
                       item.trang_thai === "DA_DAT"
                         ? "bg-grey-500y text-white"
                         : item.trang_thai === "SAN_SANG"
-                        ? "bg-green-500y text-white"
-                        : item.trang_thai === "BAO_TRI"
-                        ? "bg-red-500y text-white"
-                        : "bg-yelow-500y text-white"
+                          ? "bg-green-500y text-white"
+                          : item.trang_thai === "BAO_TRI"
+                            ? "bg-red-500y text-white"
+                            : "bg-yelow-500y text-white"
                     }`}
                   >
                     {item.trang_thai == "DA_DAT"
                       ? "Đã Đặt"
                       : item.trang_thai == "SAN_SANG"
-                      ? "Sẵn sàng"
-                      : item.trang_thai == "BAO_TRI"
-                      ? "Bảo trì"
-                      : "Chờ Duyệt"}
+                        ? "Sẵn sàng"
+                        : item.trang_thai == "BAO_TRI"
+                          ? "Bảo trì"
+                          : "Chờ Duyệt"}
                   </span>
                 </td>
 
                 <td className="py-3 px-6 text-left">{item.ten_danh_muc}</td>
                 <td className="py-3 px-6 text-left">{item.ten_phan_loai}</td>
                 <td className="py-3 px-6 text-left">{item.ten_chinh_sach}</td>
-                <td className="py-3 px-6 text-left">{item.so_khung}</td>
-                <td className="py-3 px-6 text-left">{item.so_km}</td>
                 <td className="py-3 px-6 text-left">
                   {item.gia_thue.toLocaleString("vi-VN")} VND
                 </td>
-                <td className="py-3 px-6 text-left">
-                  {item.nguoi_thay_doi_chinh_sach_gia || "N/A"}
-                </td>
-                <td className="py-3 px-6 text-left">
-                  {formatDateTimehanbaotri(item.hanBaoTri)}
-                </td>
 
-                <td className="py-3 px-6 text-left">
-                  {formatDateTimecapnhattao(item.ngay_tao)}
-                </td>
-                <td className="py-3 px-6 text-left">
-                  {formatDateTimecapnhattao(item.ngay_cap_nhat)}
-                </td>
-                <td className="py-3 px-6 text-left">
-                  {formatDateTimecapnhattao(item.ngay_update_chinh_sach_gia)}
-                </td>
                 <td className="py-3 px-6 text-center">
                   <div className="action-buttons flex item-center justify-center space-x-2">
-                    {/* Nút Sửa bây giờ là một Link */}
                     <Link to={`them/${item.phuong_tien_id}`}>
                       <button className="btn btn-edit bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 transition-colors">
                         Sửa
@@ -474,7 +441,6 @@ const PhuongTienList: React.FC = () => {
         </table>
       </div>
 
-      {/* Modal Xóa */}
       {isDeleteModalOpen && (
         <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="modal-content-small bg-white p-8 rounded-xl text-center max-w-sm w-full shadow-lg">
@@ -505,7 +471,6 @@ const PhuongTienList: React.FC = () => {
         </div>
       )}
 
-      {/* Toast */}
       {toast.show && (
         <div
           className={`toast fixed bottom-8 right-8 py-3 px-6 rounded-lg text-white shadow-lg transition-opacity duration-300 z-50 ${

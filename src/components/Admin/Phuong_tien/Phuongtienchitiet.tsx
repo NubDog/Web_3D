@@ -122,8 +122,13 @@ const Phuongtienchitietadmin = () => {
 
           <div className="pt-card">
             <div className="pt-card-header">Mô phỏng 3D</div>
+
             <div className="pt-3d-box">
-              <BabylonScene modelUrl={item.model} />
+              {item.model ? (
+                <BabylonScene modelUrl={item.model} />
+              ) : (
+                <div className="pt-3d-empty">Mô hình chưa tải</div>
+              )}
             </div>
           </div>
 
@@ -139,16 +144,16 @@ const Phuongtienchitietadmin = () => {
                 <span className="pt-value">
                   <span
                     className={`status-badge-base ${getStatusClass(
-                      item.trang_thai
+                      item.trang_thai,
                     )}`}
                   >
                     {item.trang_thai === "SAN_SANG"
                       ? "Sẵn sàng"
                       : item.trang_thai === "DA_DAT"
-                      ? "Đã đặt"
-                      : item.trang_thai === "BAO_TRI"
-                      ? "Bảo trì"
-                      : item.trang_thai}
+                        ? "Đã đặt"
+                        : item.trang_thai === "BAO_TRI"
+                          ? "Bảo trì"
+                          : item.trang_thai}
                   </span>
                 </span>
               </div>
@@ -217,6 +222,22 @@ const Phuongtienchitietadmin = () => {
                 <span className="pt-label">Cập nhật cuối</span>
                 <span className="pt-value text-slate-500">
                   {new Date(item.ngay_cap_nhat).toLocaleString("vi-VN")}
+                </span>
+              </div>
+              <div className="pt-info-row">
+                <span className="pt-label">Người cập nhật chính sách giá</span>
+                <span className="pt-value text-slate-500">
+                  {item.nguoi_thay_doi_chinh_sach_gia}
+                </span>
+              </div>
+              <div className="pt-info-row">
+                <span className="pt-label">Ngày cập nhật chính sách giá</span>
+                <span className="pt-value text-slate-500">
+                  {item.ngay_update_chinh_sach_gia
+                    ? new Date(item.ngay_update_chinh_sach_gia).toLocaleString(
+                        "vi-VN",
+                      )
+                    : ""}
                 </span>
               </div>
             </div>
