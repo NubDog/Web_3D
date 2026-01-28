@@ -33,7 +33,7 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
         setMessages(prev => [...prev, newUserMessage]);
         setInputValue('');
 
-        // Random delay between 1000ms and 2000ms
+        // Delay 1-2s cho giống thật
         const delay = Math.floor(Math.random() * 1000) + 1000;
 
         setTimeout(async () => {
@@ -67,7 +67,7 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
     };
 
     if (!isOpen) {
-        // Keep mounted for animation logic if handled by CSS opacity/transform
+        // Giữ mount để animation mượt (nếu dùng CSS transition)
     }
 
     const formatMessage = (text: string) => {
@@ -76,11 +76,11 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
         return lines.map((line, index) => {
             let processedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-            // Regex to match "list item" style image prefixes often used by Gemini
-            // e.g. "* Ảnh:", "* Hình ảnh:", "- Ảnh:", etc.
+            // Regex bắt mấy cái prefix ảnh kiểu list của Gemini
+            // vd: "* Ảnh:", "* Hình ảnh:", "- Ảnh:", ...
             const imageLabelRegex = /^[\*\-]\s*(Ảnh|Hình ảnh|Image):?/i;
 
-            // Check if line starts with an image label, strip it
+            // Nếu dòng bắt đầu bằng label ảnh -> xóa nó đi
             if (imageLabelRegex.test(processedLine)) {
                 processedLine = processedLine.replace(imageLabelRegex, '').trim();
             }
@@ -90,24 +90,20 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
             // 3. Raw URL
             const rawUrlRegex = /(https?:\/\/[^\s]+?\.(?:png|jpg|jpeg|gif|webp))/gi;
 
-            // Check if the line is NOW just an image URL (after stripping label) or similar
-            // If the line *became* empty after stripping label, but had an image url, we might need to find it.
-            // Let's look for URL in the processed line.
-
-            // Simplified logic: Find all image URLs in the line.
-            // If found, render images.
-            // If text remains after removing URLs, render text.
+            // Check xem dòng này có phải mỗi URL ảnh không (sau khi xóa label)
+            // Logic đơn giản: Tìm hết URL ảnh trong dòng
+            // Có thì render ảnh, còn text thừa thì render text
 
             const urls = processedLine.match(rawUrlRegex);
 
             if (urls && urls.length > 0) {
-                // Remove URLs from text to see what's left
+                // Xóa URL khỏi text để xem còn dư chữ gì không
                 let textContent = processedLine;
                 urls.forEach(url => {
                     textContent = textContent.replace(url, '');
                 });
 
-                // Clean up common markdown link syntax artifacts left over: [] ()
+                // Dọn rác markdown link còn sót: [] ()
                 textContent = textContent.replace(/\[.*?\]/g, '').replace(/\(\)/g, '').trim();
 
                 return (
@@ -120,10 +116,10 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
                 );
             }
 
-            // Handle lists (text only)
+            // Xử lý list (chỉ text)
             if (line.trim().startsWith('* ')) {
                 const content = processedLine.trim().substring(2);
-                // If content is empty (e.g. was just "* "), skip
+                // Nếu content rỗng (vd mỗi "* ") thì skip
                 if (!content) return null;
 
                 return (
@@ -134,7 +130,7 @@ const SupportChat: React.FC<SupportChatProps> = ({ isOpen, onClose }) => {
                 );
             }
 
-            // Standard paragraph
+            // Đoạn văn thường
             if (processedLine.trim() !== '') {
                 return (
                     <p key={index} className="chat-paragraph" dangerouslySetInnerHTML={{

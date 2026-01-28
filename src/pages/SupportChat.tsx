@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/pages/SupportChat/SupportChat.css';
-import agentAvatar from '../assets/Admin Support.jpg'; // Verify path
-import Header from '../components/Header/header'; // Assuming we want header
+import agentAvatar from '../assets/Admin Support.jpg'; // Check kỹ path nhé
+import Header from '../components/Header/header'; // Header chung
 
 const API_BASE_URL = 'https://r2-api.sharkeatrice.workers.dev';
 
@@ -29,7 +29,7 @@ const SupportChatPage: React.FC = () => {
         setMessages(prev => [...prev, newUserMessage]);
         setInputValue('');
 
-        // Random natural delay
+        // Delay xíu cho tự nhiên
         const delay = Math.floor(Math.random() * 1000) + 1000;
 
         setTimeout(async () => {
@@ -67,7 +67,7 @@ const SupportChatPage: React.FC = () => {
         return lines.map((line, index) => {
             let processedLine = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
-            // Filter image labels
+            // Lọc mấy cái label ảnh thừa
             const imageLabelRegex = /^[\*\-]\s*(Ảnh|Hình ảnh|Image):?/i;
             if (imageLabelRegex.test(processedLine)) {
                 processedLine = processedLine.replace(imageLabelRegex, '').trim();
@@ -93,7 +93,7 @@ const SupportChatPage: React.FC = () => {
                 );
             }
 
-            // Lists
+            // Xử lý list
             if (line.trim().startsWith('* ')) {
                 const content = processedLine.trim().substring(2);
                 if (!content) return null;
@@ -105,7 +105,7 @@ const SupportChatPage: React.FC = () => {
                 );
             }
 
-            // Paragraphs
+            // Xử lý đoạn văn
             if (processedLine.trim() !== '') {
                 return (
                     <p key={index} className="chat-paragraph" dangerouslySetInnerHTML={{ __html: processedLine }} />
@@ -117,7 +117,7 @@ const SupportChatPage: React.FC = () => {
 
     return (
         <div className="full-chat-page">
-            <Header /> {/* Reuse Header */}
+            <Header /> {/* Tái sử dụng Header */}
             <div className="chat-interface-container">
                 <div className="chat-main-window">
                     <div className="chat-header-simple">

@@ -1,6 +1,6 @@
 .full-chat-page {
     background-color: #f5f5f7;
-    /* Apple light gray background */
+    /* Nền xám nhạt kiểu Apple */
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -13,7 +13,7 @@
     justify-content: center;
     padding: 40px 20px;
     align-items: center;
-    /* Center vertically if content implies */
+    /* Căn giữa dọc */
 }
 
 .chat-main-window {
@@ -46,7 +46,7 @@
 .online-status {
     font-size: 13px;
     color: #34c759;
-    /* Apple Green */
+    /* Xanh Apple */
     font-weight: 500;
 }
 
@@ -108,19 +108,19 @@
 
 .message-bubble.bot {
     background-color: #f2f2f7;
-    /* Apple system gray 6 */
+    /* Xám system 6 của Apple */
     color: #1d1d1f;
     border-bottom-left-radius: 4px;
 }
 
 .message-bubble.user {
     background-color: #007aff;
-    /* Apple Blue */
+    /* Xanh Apple */
     color: white;
     border-bottom-right-radius: 4px;
 }
 
-/* Format content inside bubble */
+/* CSS trong bong bóng chat */
 .chat-paragraph {
     margin: 0 0 10px 0;
 }
@@ -149,7 +149,7 @@
     border: 1px solid #f0f0f0;
 }
 
-/* Typing Indicator */
+/* Hiệu ứng đang gõ */
 .typing-indicator {
     display: flex;
     gap: 4px;
@@ -211,7 +211,7 @@
     display: flex;
     background-color: #f5f5f7;
     border-radius: 28px;
-    /* Classic Pill shape */
+    /* Dáng viên thuốc */
     padding: 6px;
     align-items: center;
     border: 1px solid transparent;
