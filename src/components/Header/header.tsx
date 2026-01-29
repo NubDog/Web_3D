@@ -6,6 +6,7 @@ import Logo from './../Logo/logo.tsx'
 import Button from '../Button/Button.tsx'
 import Button_logout from '../Button/Button_logout.tsx'
 import { useAuth } from '../../contexts/AuthContext';
+import Search from '../../components/Search/search.tsx'
 
 interface danhMucPhuongTien {
     ten_danh_muc: string;
@@ -67,7 +68,6 @@ const Header: React.FC<HeaderProps> = ({ id }) => {
                 <li className="header-menu_items"><a href="/store">Tank</a></li>
 
                 <li className="header-menu_items"><a href="#" onClick={(e) => { e.preventDefault(); navigate('/support'); }}>Hỗ trợ</a></li>
-                <li className="header-menu_items"><a href="#"><i className="fa-solid fa-magnifying-glass"></i></a></li>
             </ul>
 
             <div className="user-login" >
@@ -117,6 +117,7 @@ const Header: React.FC<HeaderProps> = ({ id }) => {
                     />
                 )}
             </div>
+            <Search placeholder="Tìm kiếm" />
         </div>
     )
 }

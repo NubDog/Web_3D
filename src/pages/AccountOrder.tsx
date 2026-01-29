@@ -208,7 +208,7 @@ const AccountOrder = () => {
             case 'da_tra':
             case 'cho_thanh_toan': color = '#fd7e14'; bg = '#fff4e6'; text = 'Đã trả phương tiện - Chờ thanh toán'; break;
             case 'hoan_thanh': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành'; break;
-            case 'hoan_tat': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành';break
+            case 'hoan_tat': color = '#198754'; bg = '#d1e7dd'; text = 'Hoàn thành'; break
             case 'tu_choi': color = '#dc3545'; bg = '#f8d7da'; text = 'Đã hủy'; break;
         }
         return (
@@ -228,40 +228,40 @@ const AccountOrder = () => {
     };
 
     const getPaymentAmount = () => {
-    if (!selectedOrder) return 0;
+        if (!selectedOrder) return 0;
 
         if (paymentType === 'DEPOSIT') {
             const d1 = new Date(selectedOrder.ngay_bat_dau);
             const d2 = new Date(selectedOrder.ngay_ket_thuc);
             const soNgay = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) || 1;
-            
+
             const giaThueGoc = (selectedOrder.gia_thue || 0) * soNgay;
             const tyLeGiamPercent = selectedOrder.ty_le_giam || 0;
             const tienGiamGia = giaThueGoc * (tyLeGiamPercent / 100);
             const tongSauGiam = giaThueGoc - tienGiamGia;
-            
-            const phanTramCoc = selectedOrder.tien_coc_yeu_cau || 0; 
+
+            const phanTramCoc = selectedOrder.tien_coc_yeu_cau || 0;
             const tienCoc = tongSauGiam * (phanTramCoc / 100);
-            
+
             return tienCoc;
         }
 
         const d1 = new Date(selectedOrder.ngay_bat_dau);
         const d2 = new Date(selectedOrder.ngay_ket_thuc);
         const soNgay = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) || 1;
-        
+
         const giaThueGoc = (selectedOrder.gia_thue || 0) * soNgay;
         const tyLeGiamPercent = selectedOrder.ty_le_giam || 0;
         const tienGiamGia = giaThueGoc * (tyLeGiamPercent / 100);
         const tongSauGiam = giaThueGoc - tienGiamGia;
-        
+
         const phanTramCoc = selectedOrder.tien_coc_yeu_cau || 0;
         const tienCoc = tongSauGiam * (phanTramCoc / 100);
-        
+
         const soTienConLai = selectedOrder.tong_tien - tienCoc;
         return soTienConLai > 0 ? soTienConLai : 0;
     };
-    
+
     const renderPaymentDetails = () => {
         if (!selectedOrder) return null;
 
@@ -273,8 +273,8 @@ const AccountOrder = () => {
         const tyLeGiamPercent = selectedOrder.ty_le_giam || 0;
         const tienGiamGia = giaThueGoc * (tyLeGiamPercent / 100);
         const tongSauGiam = giaThueGoc - tienGiamGia;
-        
-        const phanTramCoc = selectedOrder.tien_coc_yeu_cau || 0; 
+
+        const phanTramCoc = selectedOrder.tien_coc_yeu_cau || 0;
         const tienCocThucTe = tongSauGiam * (phanTramCoc / 100);
 
         // 🔥 TRƯỜNG HỢP 1: THANH TOÁN QUYẾT TOÁN
@@ -332,7 +332,7 @@ const AccountOrder = () => {
                     <span style={{ color: '#666' }}>Loại giao dịch:</span>
                     <strong style={{ color: '#000000ff' }}>Đặt cọc thuê phương tiện</strong>
                 </div>
-                
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                     <span style={{ color: '#666' }}>Số tiền cần thanh toán:</span>
                     <span style={{ color: '#dc3545', fontWeight: 'bold', fontSize: '18px' }}>
@@ -346,18 +346,18 @@ const AccountOrder = () => {
                         {getPaymentContent()}
                     </code>
                 </div>
-                
+
                 <div style={{ marginTop: '12px', padding: '12px', background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)', borderRadius: '8px', border: '1px solid #90caf9' }}>
                     <div style={{ display: 'flex', alignItems: 'start', gap: '10px' }}>
-                        <i className="fa-solid fa-info-circle" style={{color: '#1976d2', fontSize: '16px', marginTop: '2px'}}></i>
+                        <i className="fa-solid fa-info-circle" style={{ color: '#1976d2', fontSize: '16px', marginTop: '2px' }}></i>
                         <div style={{ flex: 1 }}>
-                            <div style={{color: '#1565c0', fontSize: '13px', fontWeight: '600', marginBottom: '6px'}}>
+                            <div style={{ color: '#1565c0', fontSize: '13px', fontWeight: '600', marginBottom: '6px' }}>
                                 📋 Thông tin đặt cọc
                             </div>
-                            <div style={{color: '#424242', fontSize: '13px', lineHeight: '1.6'}}>
-                                • Tổng giá trị đơn hàng: <strong>{formatCurrency(tongSauGiam)}</strong><br/>
-                                • Tỷ lệ cọc: <strong style={{color: '#6610f2'}}>{phanTramCoc}%</strong><br/>
-                                • Tiền cọc phải trả: <strong style={{color: '#d32f2f'}}>{formatCurrency(tienCocThucTe)}</strong><br/>
+                            <div style={{ color: '#424242', fontSize: '13px', lineHeight: '1.6' }}>
+                                • Tổng giá trị đơn hàng: <strong>{formatCurrency(tongSauGiam)}</strong><br />
+                                • Tỷ lệ cọc: <strong style={{ color: '#6610f2' }}>{phanTramCoc}%</strong><br />
+                                • Tiền cọc phải trả: <strong style={{ color: '#d32f2f' }}>{formatCurrency(tienCocThucTe)}</strong><br />
                                 • Còn lại thanh toán khi trả phương tiện: <strong>{formatCurrency(tongSauGiam - tienCocThucTe)}</strong>
                             </div>
                         </div>
@@ -381,7 +381,7 @@ const AccountOrder = () => {
             <div className="accountOrder-content" style={{ maxWidth: '1000px', margin: '0 auto', padding: '40px 20px', minHeight: '60vh' }}>
                 <div className="accountOrder-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                     <h1 style={{ fontSize: '28px', color: '#333' }}>Đơn thuê của tôi</h1>
-                    <Link to="/account_home" style={{ textDecoration: 'none', backgroundColor: 'gray', borderRadius: '2rem'}}>
+                    <Link to="/account_home" style={{ textDecoration: 'none', backgroundColor: 'gray', borderRadius: '2rem' }}>
                         <Button conttent="Quay lại" />
                     </Link>
                 </div>
@@ -426,10 +426,10 @@ const AccountOrder = () => {
                                             const soNgay = Math.ceil((d2.getTime() - d1.getTime()) / (1000 * 60 * 60 * 24)) || 1;
 
                                             const giaThueGoc = (order.gia_thue || 0) * soNgay;
-                                            
+
                                             const tyLeGiamPercent = order.ty_le_giam || 0;
                                             const tienGiam = giaThueGoc * (tyLeGiamPercent / 100);
-                                            
+
                                             const tongSauGiam = giaThueGoc - tienGiam;
                                             const phiPhatSinh = order.tong_tien - tongSauGiam;
                                             const TongTienTamThoi = tongSauGiam;
@@ -460,12 +460,12 @@ const AccountOrder = () => {
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                                                         <span style={{ color: 'black', fontWeight: '600' }}>
                                                             {(['CHO_THANH_TOAN', 'DA_TRA', 'HOAN_THANH', 'HOAN_TAT'].includes(order.trang_thai))
-                                                                ? 'Tổng thanh toán (Chưa tính cọc):' 
+                                                                ? 'Tổng thanh toán (Chưa tính cọc):'
                                                                 : 'Tổng thanh toán tạm (Chưa tính cọc):'}
                                                         </span>
                                                         <span style={{ fontWeight: 'bold', color: '#007bff', fontSize: '16px' }}>
                                                             {(['CHO_THANH_TOAN', 'DA_TRA', 'HOAN_THANH', 'HOAN_TAT'].includes(order.trang_thai))
-                                                                ? formatCurrency(order.tong_tien) 
+                                                                ? formatCurrency(order.tong_tien)
                                                                 : formatCurrency(TongTienTamThoi)}
                                                         </span>
                                                     </div>

@@ -78,6 +78,13 @@ export async function handleGetPhuongTien(request: Request, env: Env): Promise<R
         params.push(trang_thai);
     }
 
+    // Tìm kiếm theo tên phương tiện
+    const search = url.searchParams.get('search');
+    if (search) {
+        conditions.push("ten_phuong_tien LIKE ?");
+        params.push(`%${search}%`);
+    }
+
     if (conditions.length > 0) {
         query += " WHERE " + conditions.join(" AND ");
     }
