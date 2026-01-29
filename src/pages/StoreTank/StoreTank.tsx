@@ -124,7 +124,7 @@ const StoreTank: React.FC = () => {
                             <HypercarCard2
                                 key={item.phuong_tien_id}
                                 id={item.phuong_tien_id}
-                                name={item.loai}
+                                name={item.ten_phuong_tien}
                                 imageUrl={item.img}
                                 price={item.gia_thue}
                                 status={item.trang_thai}
