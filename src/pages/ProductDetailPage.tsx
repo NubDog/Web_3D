@@ -79,7 +79,7 @@ const ProductDetailPage = () => {
                     console.log("Giá thuê cơ bản của phương tiện là:", vehicle.gia_thue);
                     console.log("Thông tin phương tiện:", vehicle);
 
-                    const calculatedTotalPrice = (priceInfo?.gia_co_ban ?? 0) + (vehicle?.gia_thue ?? 0);
+                    const calculatedTotalPrice = vehicle?.gia_thue ?? 0;
                     setTotalPrice(calculatedTotalPrice);
                     console.log("Tổng giá của san phẩm là: ", calculatedTotalPrice);
                 } else {
