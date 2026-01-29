@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './../../styles/components/Search/Search.css';
 
 interface SearchProps {
@@ -11,12 +12,19 @@ export const Search: React.FC<SearchProps> = ({
     onSearch
 }) => {
     const [searchText, setSearchText] = useState('');
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const text = e.target.value;
         setSearchText(text);
         if (onSearch) {
             onSearch(text);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            navigate('/search', { state: { query: searchText } });
         }
     };
 
@@ -28,6 +36,7 @@ export const Search: React.FC<SearchProps> = ({
                 className="search-input"
                 value={searchText}
                 onChange={handleChange}
+                onKeyDown={handleKeyDown}
                 required
                 placeholder={placeholder}
             />
