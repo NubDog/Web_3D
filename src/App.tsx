@@ -33,6 +33,7 @@ import StoreBike from "./pages/StoreBike";
 import StoreHypercar from "./pages/StoreHypercar";
 import StoreSUV from "./pages/StoreSUV/StoreSUV";
 import StoreHelicopter from "./pages/StoreHelicopter/StoreHelicopter";
+import StoreCycelBike from "./pages/StoreCycelBike/StoreCycelBike";
 import AccountOrder from "./pages/AccountOrder";
 import UserContract from "./pages/UserContract";
 import AdminDashboardReportRental from "./components/Admin/admin_dashboard/admin_dashboard_report-rental/admin_dashboard_report-rental";
@@ -69,6 +70,7 @@ function App() {
             <Route path="/store/store-hypercar" element={<StoreHypercar />} />
             <Route path="/store/store-suv" element={<StoreSUV />} />
             <Route path="/store/store-helicopter" element={<StoreHelicopter />} />
+            <Route path="/store/store-cycle-bike" element={<StoreCycelBike />} />
             <Route path="/user/order" element={<AccountOrder />} />
             <Route path="/user/contract" element={<UserContract />} />
             <Route path="/signin" element={<SignInPage />} />
