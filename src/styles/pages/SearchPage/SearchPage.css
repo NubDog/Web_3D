@@ -1,0 +1,101 @@
+/* Base & Wrapper */
+.searchpage-wrapper {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #F5F5F7;
+    /* Apple-style light gray background */
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.searchpage-main {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Container constraints: Max 1690px, Padding 340px sides */
+.searchpage-container {
+    width: 100%;
+    max-width: 1690px;
+    margin: 0 auto;
+    padding: 0 340px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* All content starts from left */
+}
+
+/* Header Section */
+.searchpage-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 40px;
+    margin-bottom: 32px;
+}
+
+.searchpage-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1D1D1F;
+    /* Apple-style dark text */
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+.searchpage-filter-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #FFFFFF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #1D1D1F;
+}
+
+.searchpage-filter-icon:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Grid Layout */
+.searchpage-grid {
+    width: 100%;
+    display: grid;
+    /* Responsive grid logic */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding-bottom: 60px;
+}
+
+/* Responsive Adjustments to handle the extreme padding on smaller screens */
+@media (max-width: 1440px) {
+    .searchpage-container {
+        padding: 0 120px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .searchpage-container {
+        padding: 0 60px;
+    }
+}
+
+@media (max-width: 768px) {
+    .searchpage-container {
+        padding: 0 24px;
+    }
+
+    .searchpage-title {
+        font-size: 24px;
+    }
+}
