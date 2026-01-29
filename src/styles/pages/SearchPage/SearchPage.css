@@ -2,11 +2,12 @@
 .searchpage-wrapper {
     width: 100%;
     min-height: 100vh;
-    background-color: #F5F5F7;
-    /* Apple-style light gray background */
+    background-color: var(--background-white);
+    /* Using global variable */
     display: flex;
     flex-direction: column;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    /* Global font */
 }
 
 .searchpage-main {
@@ -35,49 +36,55 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 40px;
-    margin-bottom: 32px;
+    margin-top: 60px;
+    /* More breathing room */
+    margin-bottom: 40px;
 }
 
 .searchpage-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #1D1D1F;
-    /* Apple-style dark text */
-    letter-spacing: -0.01em;
+    font-size: 40px;
+    /* Larger, more impactful */
+    font-weight: 600;
+    color: var(--text-gray);
+    /* Global variable */
+    letter-spacing: -0.02em;
     margin: 0;
 }
 
 .searchpage-filter-icon {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background-color: #FFFFFF;
+    background-color: var(--white);
+    /* Global variable */
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    /* Softer, more refined shadow */
     cursor: pointer;
-    transition: all 0.2s ease;
-    color: #1D1D1F;
+    transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    /* Apple-like easing */
+    color: var(--text-gray);
 }
 
 .searchpage-filter-icon:hover {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* Grid Layout */
+/* Grid Layout - 2 Columns Strict */
 .searchpage-grid {
     width: 100%;
     display: grid;
-    /* Responsive grid logic */
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 24px;
-    padding-bottom: 60px;
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 products per row */
+    gap: 40px;
+    /* Generous gap for luxury feel */
+    padding-bottom: 80px;
 }
 
-/* Responsive Adjustments to handle the extreme padding on smaller screens */
+/* Responsive Adjustments */
 @media (max-width: 1440px) {
     .searchpage-container {
         padding: 0 120px;
@@ -88,6 +95,10 @@
     .searchpage-container {
         padding: 0 60px;
     }
+
+    .searchpage-title {
+        font-size: 32px;
+    }
 }
 
 @media (max-width: 768px) {
@@ -95,7 +106,13 @@
         padding: 0 24px;
     }
 
+    .searchpage-grid {
+        grid-template-columns: 1fr;
+        /* Stack on mobile */
+        gap: 24px;
+    }
+
     .searchpage-title {
-        font-size: 24px;
+        font-size: 28px;
     }
 }
