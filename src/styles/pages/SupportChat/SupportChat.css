@@ -108,14 +108,12 @@
 
 .message-bubble.bot {
     background-color: #f2f2f7;
-    /* Xám system 6 của Apple */
     color: #1d1d1f;
     border-bottom-left-radius: 4px;
 }
 
 .message-bubble.user {
-    background-color: #007aff;
-    /* Xanh Apple */
+    background-color: #eaeaea;
     color: white;
     border-bottom-right-radius: 4px;
 }
