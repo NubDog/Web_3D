@@ -175,28 +175,28 @@ export default {
 
 					// 1. Model Embed (để tìm xe)
 					const embedModel = genAI.getGenerativeModel({ model: 'text-embedding-004' });
-					// const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Đưa vào loop fallback rồi
+					// const chatModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Moved to fallback loop
 
 					// --- BƯỚC 1: TÌM XE ---
 					const result = await embedModel.embedContent(question);
 					const userVector = result.embedding.values;
 
-					// 3. So khớp với Database Vectorize
+					// 3. So khớp với Database Vectorize/
 					const matches = await env.VECTORIZE.query(userVector, {
 						topK: 3, // Lấy 3 xe giống nhất
 						returnMetadata: true,
 					});
 
 					// --- BƯỚC 2: TỔNG HỢP DỮ LIỆU ---
-					// Gom thông tin xe tìm được thành 1 cục text
+					// Gom thông tin các xe tìm được thành 1 đoạn văn bản
 					const contextData = matches.matches
 						.map((m) => {
-							const xe = m.metadata as any; // Ép kiểu lấy data
+							const xe = m.metadata as any; // Ép kiểu để lấy dữ liệu
 							return `- Xe: ${xe.name}\n  + Thông tin: ${xe.text}\n  + Ảnh: ${xe.image}`;
 						})
 						.join('\n\n');
 
-					// --- BƯỚC 3: HỎI GEMINI ---
+					// --- BƯỚC 3: KÊU GEMINI TRẢ LỜI ---
 					const prompt = `
 						Bạn là nhân viên tư vấn của Shark Eat Rice. Hãy trả lời câu hỏi của khách hàng dựa trên thông tin xe dưới đây.
 						
@@ -216,7 +216,7 @@ export default {
 						8. Nếu khách có yêu cầu xem ảnh thì bạn hãy show ra hình ảnh luôn còn nếu khách không có nhu cầu xem ảnh thì không được show
 					`;
 
-					// --- BƯỚC 3: HỎI GEMINI (CÓ FALLBACK) ---
+					// --- BƯỚC 3: KÊU GEMINI TRẢ LỜI (CÓ FALLBACK) ---
 					const models = [
 						"gemini-flash-latest",
 						"gemini-2.0-flash",
@@ -230,11 +230,11 @@ export default {
 
 					for (const modelName of models) {
 						try {
-							// console.log(`Thử model: ${modelName}`);
+							// console.log(`Trying model: ${modelName}`);
 							const chatModel = genAI.getGenerativeModel({ model: modelName });
 							const chatResult = await chatModel.generateContent(prompt);
 							textResponse = chatResult.response.text();
-							if (textResponse) break; // Ngon, thoát vòng lặp
+							if (textResponse) break; // Thành công, thoát vòng lặp
 						} catch (error: any) {
 							console.error(`Error with model ${modelName}:`, error.message);
 							errorLogs.push(`Model ${modelName} failed: ${error.message}`);
@@ -248,8 +248,8 @@ export default {
 
 					// 4. Trả kết quả JSON
 					return jsonResponse({
-						answer: textResponse, // Câu trả lời của AI
-						cars: matches.matches.map((match) => match.metadata), // Data xe để hiện thẻ card
+						answer: textResponse, // Lời AI nói
+						cars: matches.matches.map((match) => match.metadata), // Dữ liệu xe để hiện thẻ card
 					});
 				} catch (error: any) {
 					return jsonResponse({ error: error.message }, 500);
@@ -587,6 +587,16 @@ export default {
 			}
 
 			// ------------------- Bảo trì -------------------
+			// if (path === '/api/baotri/tonghop' && method === 'GET') {
+			// 	return getBaotriTongHop(request, env);
+			// }
+			// if (path.startsWith('/api/baotri/chitiet/') && method === 'GET') {
+			// 	const phuongTienId = parseInt(path.split('/').pop() || '0', 10);
+			// 	return getBaotriChiTiet(request, env, phuongTienId);
+			// }
+			// if (path === '/api/baotri' && method === 'POST') {
+			// 	return addBaoTri(request, env);
+			// }
 			if (path.startsWith('/api/baotri/') && method === 'PUT') {
 				const id = parseInt(path.split('/').pop() || '0', 10);
 				return updateBaotri(request, env, id);
@@ -595,6 +605,11 @@ export default {
 				const id = parseInt(path.split('/').pop() || '0', 10);
 				return deleteBaotri(request, env, id);
 			}
+			// if (path.startsWith('/Admin/don-thue') && method === 'GET') {
+			// 	const url = new URL(request.url);
+			// 	const phuongTienId = url.searchParams.get('phuong_tien_id');
+			// 	return getDonThueByPhuongTien(request, env, phuongTienId ? parseInt(phuongTienId, 10) : 0);
+			// }
 			const baotrichitiet = path.match(/^\/Admin\/baotri\/chitiet\/(\d+)$/);
 			if (baotrichitiet && method === 'POST') {
 				const baoTriId = parseInt(baotrichitiet[1], 10);
