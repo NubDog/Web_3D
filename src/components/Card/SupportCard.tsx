@@ -10,7 +10,7 @@ const supportData: DataItem[] = [
         id: 1,
         img: expert_img,
         product_name: "CHUYÊN gia SHARK EAT RICE",
-        product_category: "Thuê xe với tư vấn trực tiếp từ Chuyên gia",
+        product_category: "Thuê đa phương tiện với tư vấn trực tiếp từ Chuyên gia",
         product_price: null,
     },
 
@@ -25,11 +25,11 @@ const supportData: DataItem[] = [
 
 const SupportCard = () => {
     return (
-<div className="Card-container">
+        <div className="Card-container">
             <div className="Card-title-container col-1617">
                 <h2 className="Card-title">Chuyên gia <span>Shark Eat Rice</span></h2>
             </div>
-            
+
             <div className="Card-box">
                 <div className="Card-scroll-buttons">
                     <button className='non-active'>
@@ -50,7 +50,7 @@ const SupportCard = () => {
                     >
                         <div className="Card-content-title-link">
                             <a href="#">
-                                <img 
+                                <img
                                     style={{
                                         objectFit: 'cover',
                                         borderRadius: '28px',
@@ -65,7 +65,7 @@ const SupportCard = () => {
                             </a>
                         </div>
                         <div className="Card-content-title">
-                            <h3 
+                            <h3
                                 className="Card-content-title-header text-font-14"
                                 style={{
                                     zIndex: 1,
@@ -73,7 +73,7 @@ const SupportCard = () => {
                             >
                                 {item.product_name}
                             </h3>
-                            <p 
+                            <p
                                 className="Card-content-title-subtitle"
                                 style={{
                                     width: '50%',

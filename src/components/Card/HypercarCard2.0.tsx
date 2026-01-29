@@ -58,7 +58,7 @@ const HypercarCard2: React.FC<HypercarCardProps> = ({
 
                 <div className="HypercarCard2-actions">
                     <Button
-                        conttent="Thuê xe"
+                        conttent="Thuê ngay"
                         onClick={handleRentClick}
                         backgroundColor='#0071e3'
                         textColor='white'
