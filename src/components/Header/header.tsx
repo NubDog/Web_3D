@@ -6,7 +6,7 @@ import Logo from './../Logo/logo.tsx'
 import Button from '../Button/Button.tsx'
 import Button_logout from '../Button/Button_logout.tsx'
 import { useAuth } from '../../contexts/AuthContext';
-import Search from '../../components/Search/search.tsx'
+import Search from '../../components/Search/Search.tsx'
 
 interface danhMucPhuongTien {
     ten_danh_muc: string;
@@ -62,7 +62,7 @@ const Header: React.FC<HeaderProps> = ({ id }) => {
                 <li className="header-menu_items"><a href="/store/store-bike">Xe máy</a></li>
                 <li className="header-menu_items"><a href="/store/store-hypercar">Siêu xe</a></li>
                 <li className="header-menu_items"><a href="/store/store-suv">SUV</a></li>
-                <li className="header-menu_items"><a href="/store">Trực Thăng</a></li>
+                <li className="header-menu_items"><a href="/store/store-helicopter">Trực Thăng</a></li>
                 <li className="header-menu_items"><a href="/store">Xe đạp</a></li>
                 <li className="header-menu_items"><a href="/store">Flycam</a></li>
                 <li className="header-menu_items"><a href="/store">Tank</a></li>
