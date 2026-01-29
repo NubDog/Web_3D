@@ -90,7 +90,7 @@ const DEFAULT_CONFIG: AppConfig = {
     EMAIL: {
       // Email khóa tài khoản
       SUBJECT_BLOCKED: '⛔ TÀI KHOẢN BỊ KHÓA DO VI PHẠM',
-      REASON_DEBT: 'Tổng số tiền vi phạm vượt quá 5.000.000đ',
+      REASON_DEBT: 'Tổng số tiền vi phạm vượt quá 2.000.000đ',
       REASON_COUNT: 'Số lần vi phạm vượt quá 3 lần',
       AFTER_PAYMENT_NOTE: 'Sau khi chuyển khoản, vui lòng gọi hotline 0123 456 789 để xác nhận thanh toán và mở khóa tài khoản.',
       // Email vi phạm thông thường

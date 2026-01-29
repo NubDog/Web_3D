@@ -255,6 +255,7 @@ const FinalizeModal: React.FC<FinalizeModalProps> = ({
                   <input 
                     type="number" 
                     min="0"
+                    readOnly
                     value={daysLate} 
                     onChange={(e) => setDaysLate(Number(e.target.value))} 
                   />
@@ -265,6 +266,7 @@ const FinalizeModal: React.FC<FinalizeModalProps> = ({
                     type="number" 
                     min="0"
                     max="23"
+                    readOnly
                     value={hoursLate} 
                     onChange={(e) => setHoursLate(Number(e.target.value))} 
                   />

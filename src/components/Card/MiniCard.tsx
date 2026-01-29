@@ -61,7 +61,7 @@ const MiniCard = () => {
                     <div className="Card-content-title">
                         <i className="fa-brands fa-telegram"></i>
                         <p>
-                            <span>Đổi xe miễn phí, </span>
+                            <span>Đổi phương tiện miễn phí, </span>
                             nhận điểm tín dụng cho lần thuê tới
                         </p>
                     </div>
@@ -88,7 +88,7 @@ const MiniCard = () => {
                         <i className="fa-brands fa-twitch"></i>
                         <p>
                             Thêm yêu cầu của riêng bạn.
-                            <span> Khắc kết hợp biể tượng cảm xúc, tên và số miễn phí.</span>
+                            <span> Khắc kết hợp biểu tượng cảm xúc, tên và số miễn phí.</span>
                         </p>
                     </div>
                 </div>
