@@ -16,6 +16,7 @@ import EditComponents from "./components/EditComponents/EditComponents";
 import DanhMucPhuongTienList from "./components/Admin/Danh_muc_phuong_tien/Danhsachdanhmuc";
 import ChinhSachGiaList from "./components/Admin/Chinh_sach_gia/Danhsach";
 import Store from "./pages/Store";
+import SearchPage from "./pages/SearchPage/SearchPage";
 import OrderList from "./components/Admin/Admin_Order/OrderList";
 import OrderDetail from "./components/Admin/Admin_Order/OrderDetail";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -60,6 +61,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/store" element={<Store />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/support" element={<SupportChatPage />} />
             <Route path="/store/store-bike" element={<StoreBike />} />
             <Route path="/store/store-hypercar" element={<StoreHypercar />} />
